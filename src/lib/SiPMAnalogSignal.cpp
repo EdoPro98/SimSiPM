@@ -11,7 +11,7 @@ const double SiPMAnalogSignal::integral(const double intstart, const double intg
    static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
 
-  return std::accumulate(start, end, 0.d) * m_Sampling;
+  return std::accumulate(start, end, 0.0) * m_Sampling;
 }
 
 
