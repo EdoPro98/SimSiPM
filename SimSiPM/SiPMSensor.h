@@ -36,9 +36,8 @@ public:
   void addPhotons(const std::vector<double>&, const std::vector<double>&);
   void addPhotons(const std::vector<double>&);
   void addPhotons();
-
   void runEvent();
-  void resetState();
+
 
 private:
   // Helper functions
@@ -58,8 +57,7 @@ private:
   void addApEvents();
   void calculateSignalAmplitudes();
   void generateSignal();
-  // void runEvent();
-  // void resetState();
+  void resetState();
 
   SiPMProperties m_Properties;
 
