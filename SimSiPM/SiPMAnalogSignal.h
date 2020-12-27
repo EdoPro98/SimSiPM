@@ -23,17 +23,17 @@ public:
   double& operator[](const uint32_t i){return m_Waveform[i];}
   const double& operator[](const uint32_t i)const{return m_Waveform[i];}
 
-  const std::vector<double>& waveform()const{return m_Waveform;}
+  const uint32_t size()const{return m_Waveform.size();}
   const double sampling()const{return m_Sampling;}
+  const std::vector<double>& waveform()const{return m_Waveform;}
 
   const double integral(const double, const double, const double)const;
   const double peak(const double, const double, const double)const;
   const double tot(const double, const double, const double)const;
   const double toa(const double, const double, const double)const;
   const double top(const double, const double, const double)const;
-  const uint32_t size()const{return m_Waveform.size();}
 
-  void setSampling(double x){m_Sampling = x;}
+  void setSampling(const double x){m_Sampling = x;}
 
 private:
   std::vector<double> m_Waveform;

@@ -1,9 +1,4 @@
 #include "SiPMSensor.h"
-#include <iostream>
-
-#ifdef __AVX2__
-#include <immintrin.h>
-#endif
 
 #include <iostream>
 
@@ -14,6 +9,19 @@ namespace sipm{
 // Ctor
 SiPMSensor::SiPMSensor(const SiPMProperties& aProperty){
   m_Properties = aProperty;
+  m_SignalShape = signalShape();
+}
+
+void SiPMSensor::setProperty(const std::string& prop, const double val){
+  m_Properties.setProperty(prop, val);
+  m_SignalShape = signalShape();
+}
+
+void SiPMSensor::setProperties(const std::vector<std::string>& props, const std::vector<double>& vals){
+  for (uint32_t i=0; i<props.size(); ++i){
+    m_Properties.setProperty(props[i], vals[i]);
+  }
+  m_SignalShape = signalShape();
 }
 
 
@@ -26,7 +34,7 @@ const std::vector<double> SiPMSensor::signalShape()const{
 
   if (m_Properties.hasSlowComponent()){
     double tfs = m_Properties.fallingTimeSlow() / sampling;
-    double slf = m_Properties.slowComponentFraction() / sampling;
+    double slf = m_Properties.slowComponentFraction();
 
     for (int32_t i=0; i < m_Properties.nSignalPoints(); ++i){
       lSignalShape[i] = (1-slf)*exp(-i/tff) + slf*exp(-i/tfs) - exp(-i/tr);
@@ -48,12 +56,6 @@ const std::vector<double> SiPMSensor::signalShape()const{
 }
 
 
-void SiPMSensor::setProperties(const SiPMProperties& aProp){
-  m_Properties = aProp;
-  m_SignalShape = signalShape();
-}
-
-
 void SiPMSensor::addPhotons(const std::vector<double> &aTimes,
   const std::vector<double> &aWavelengths){
   resetState();
@@ -62,25 +64,9 @@ void SiPMSensor::addPhotons(const std::vector<double> &aTimes,
 }
 
 
-void SiPMSensor::addPhotons(const std::vector<double> &aTimes){
-  resetState();
-  m_PhotonTimes = aTimes;
-}
-
-
-void SiPMSensor::addPhotons(){
-  resetState();
-}
-
-
 // Private
 const double SiPMSensor::evaluatePde(const double aPhotonWavelength)const{
   return 0;
-}
-
-
-const bool SiPMSensor::isDetected(const double aPde){
-  return(aPde==1)?true:Rand()<aPde;
 }
 
 
@@ -102,7 +88,7 @@ const std::array<uint32_t,2> SiPMSensor::hitCell()const{
 }
 
 
-void SiPMSensor::addPhotoelecrons(){
+void SiPMSensor::addPhotoelectrons(){
   const uint32_t nPhotons = m_PhotonTimes.size();
   std::vector<double> pdes(nPhotons,1);
   std::array<uint32_t,2> position;
@@ -176,7 +162,6 @@ void SiPMSensor::addXtEvents(){
   double xtTime;
 
   uint32_t currentCell = 0;
-  // Cannotuse iterator based loop becouse of reallocation
 
   while (currentCell < m_nTotalHits){
     SiPMHit* hit = &m_Hits[currentCell];
@@ -260,7 +245,7 @@ void SiPMSensor::addApEvents(){
 
 const std::pair<std::vector<uint32_t>,std::unordered_set<uint32_t>>
  SiPMSensor::getUniqueId()const{
-  std::vector<uint32_t> cellId;
+  std::vector<uint32_t> cellId(m_Hits.size());
 
   for (auto hit = m_Hits.begin(); hit != m_Hits.end(); ++hit){
     cellId.emplace_back(hit->id());
@@ -305,6 +290,10 @@ void SiPMSensor::calculateSignalAmplitudes(){
 
 void SiPMSensor::generateSignal(){
   const uint32_t nSignalPoints = m_Properties.nSignalPoints();
+
+  m_Signal = randGaussian(0, m_Properties.snrLinear(), nSignalPoints);
+  m_Signal.setSampling(m_Properties.sampling());
+
   uint32_t time;
   double amplitude;
 
@@ -313,22 +302,19 @@ void SiPMSensor::generateSignal(){
     amplitude = hit->amplitude() * randGaussian(1, m_Properties.ccgv());
 
     for (uint32_t j = time; j < nSignalPoints; ++j){
-      m_Signal[j] += m_SignalShape[j - time] * amplitude;
+        m_Signal[j] += m_SignalShape[j - time] * amplitude;
     }
   }
 }
 
 
 void SiPMSensor::runEvent(){
-  m_Signal = randGaussian(0, m_Properties.snrLinear(),
-   m_Properties.nSignalPoints());
-  m_Signal.setSampling(m_Properties.sampling());
 
   if (m_Properties.hasDcr()){
     addDcrEvents();
   }
 
-  addPhotoelecrons();
+  addPhotoelectrons();
 
   if (m_Properties.hasXt()){
     addXtEvents();
@@ -339,11 +325,7 @@ void SiPMSensor::runEvent(){
     addApEvents();
   }
 
-  if (m_nTotalHits > 0){
-    m_SignalShape = signalShape();
-    generateSignal();
-  }
-
+  generateSignal();
 }
 
 

@@ -9,10 +9,11 @@ namespace sipm{
 class SiPMDigitalSignal{
 public:
 
-  SiPMDigitalSignal(uint32_t pts, double sampling) :
-    m_SignalPoints(pts),
-    m_Sampling(sampling)
+  SiPMDigitalSignal(double sampling, uint32_t dpp) :
+    m_Sampling(sampling),
+    m_Dpp(dpp)
   {};
+
   // Move assignement
   SiPMDigitalSignal& operator=(const std::vector<int32_t>&& aVect){
     m_Waveform = std::move(aVect);
@@ -39,7 +40,7 @@ public:
 private:
   std::vector<int32_t> m_Waveform;
   const double m_Sampling;
-  const uint32_t m_SignalPoints;
+  const uint32_t m_Dpp;
 };
 
 } /* NAMESPACE_SIPM */

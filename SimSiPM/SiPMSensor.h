@@ -20,6 +20,7 @@ public:
 
   // Special
   SiPMSensor(const SiPMProperties&);
+  SiPMSensor() = default;
 
   // Debugging
   void dumpSettings()const;
@@ -28,31 +29,31 @@ public:
 
   // Getters
   const SiPMProperties& properties()const{return m_Properties;}
-  SiPMProperties& properties(){return m_Properties;}
   const SiPMAnalogSignal& signal()const{return m_Signal;}
 
   // Setters
-  void setProperties(const SiPMProperties&);
   void addPhotons(const std::vector<double>&, const std::vector<double>&);
-  void addPhotons(const std::vector<double>&);
-  void addPhotons();
+  void addPhotons(const std::vector<double>& aTimes){resetState();m_PhotonTimes = aTimes;}
+  void addPhotons(){resetState();}
   void runEvent();
+  void setProperty(const std::string&, const double);
+  void setProperties(const std::vector<std::string>&, const std::vector<double>&);
 
 
 private:
   // Helper functions
   const double evaluatePde(const double)const;
-  const bool static isDetected(const double);
+  static const bool isDetected(const double aPde){return(aPde==1)?true:Rand()<aPde;}
   const bool isInSensor(const uint32_t, const uint32_t)const;
   const std::array<uint32_t,2> hitCell()const;
-  const std::pair<std::vector<uint32_t>,std::unordered_set<uint32_t>>
+  const std::pair<std::vector<uint32_t>, std::unordered_set<uint32_t>>
    getUniqueId()const;
   const std::vector<double> signalShape()const;
   void sortHits(){std::sort(m_Hits.begin(), m_Hits.end());}
 
   // SiPM functions
   void addDcrEvents();
-  void addPhotoelecrons();
+  void addPhotoelectrons();
   void addXtEvents();
   void addApEvents();
   void calculateSignalAmplitudes();

@@ -18,8 +18,28 @@ uint32_t randInteger(const uint32_t);
 uint32_t randPoisson(const double);
 
 //Uniform random in [0,1)
+#pragma GCC optimize("Ofast")
 inline double Rand(){
   return rng() / MT_MAX;
+}
+
+// Gaussian random value with mean "mu" and sigma "sigma"
+// Using Box-Muller transform
+#pragma GCC optimize("Ofast")
+inline double randGaussian(const double mu, const double sigma){
+  static bool isSine;
+  static double angle;
+  static double sqrtlog;
+
+  if (isSine) {
+    isSine = false;
+    return sqrtlog * sin(angle) * sigma + mu;
+  } else {
+    const double sqrtlog = sqrt(-2 * log(Rand()));
+    const double angle = TWO_PI * Rand();
+    isSine = true;
+    return sqrtlog * cos(angle) * sigma + mu;
+  }
 }
 
 } /* NAMESPACE_SIPM */

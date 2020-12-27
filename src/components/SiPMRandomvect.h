@@ -10,7 +10,6 @@
 namespace sipm{
 
 std::vector<double> Rand (const uint32_t);
-std::vector<double> randExponential (const double, const uint32_t);
 std::vector<double> randGaussian (const double, const double,
  const uint32_t);
  std::vector<uint32_t> randInteger (const uint32_t max, const uint32_t n);

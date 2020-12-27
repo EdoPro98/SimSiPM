@@ -1,6 +1,5 @@
 #include <stdint.h>
 #include <vector>
-#include <array>
 #include <string>
 
 #ifndef SIPM_SIPMPROPERTIES_H
@@ -50,9 +49,8 @@ public:
 
   // Setters
   void setProperty(const std::string&, const double);
-  void setProperties(const std::vector<std::string>&,
-   const std::vector<double>&);
 
+private:
   void setSize(const double x){m_Size = x;}
   void setPitch(const double x){m_Pitch = x;}
   void setSampling(const double x);
@@ -60,14 +58,14 @@ public:
   void setRiseTime(const double x){m_RiseTime = x;}
   void setFallTimeFast(const double x){m_FallTimeFast = x;}
   void setFallTimeSlow(const double x)
-    {m_FallTimeSlow = x; m_HasSlowComponent = true;}
+  {m_FallTimeSlow = x; m_HasSlowComponent = true;}
   void setSlowComponentFraction(const double x){m_SlowComponentFraction = x;}
   void setRecoveryTime(const double x){m_RecoveryTime = x;}
   void setSnr(const double aSnr){m_SnrdB = aSnr;}
   void setTauApFastComponent(const double x)
-    {m_TauApFastComponent = x;m_HasAp = true;}
+  {m_TauApFastComponent = x;m_HasAp = true;}
   void setTauApSlowComponent(const double x)
-    {m_TauApFastComponent = x;m_HasAp = true;}
+  {m_TauApFastComponent = x;m_HasAp = true;}
   void setTauApSlowFraction(const double x){m_ApSlowFraction = x;}
   void setTauAp(const double,const  double);
   void setCcgv(const double x){m_Ccgv = x;}
@@ -81,34 +79,34 @@ public:
   void setApOff(){m_HasAp = false;}
   void setXtOff(){m_HasXt = false;}
   void setPdeOff(){m_HasPde = PdeType::kNoPde;}
+  void setHasSlowComponent(const bool x){m_HasSlowComponent = x;}
 
-private:
   // Geometry
-  double m_Size;
-  double m_Pitch;
+  double m_Size = 1;
+  double m_Pitch = 25;
   mutable uint32_t m_SideCells = 0;
   mutable uint32_t m_Ncells = 0;
   HitDistribution m_HitDistribution = HitDistribution::kUniform;
 
   // Signal
   double m_Sampling = 1;
-  double m_SignalLength;
+  double m_SignalLength = 500;
   mutable uint32_t m_SignalPoints = 0;
-  double m_RiseTime;
-  double m_FallTimeFast;
+  double m_RiseTime = 1;
+  double m_FallTimeFast = 50;
   double m_FallTimeSlow;
   double m_SlowComponentFraction;
-  double m_RecoveryTime;
+  double m_RecoveryTime = 50;
 
   // Noise
-  double m_Dcr;
-  double m_Xt;
-  double m_Ap;
-  double m_TauApFastComponent;
-  double m_TauApSlowComponent;
+  double m_Dcr = 200e3;
+  double m_Xt = 0.05;
+  double m_Ap = 0.03;
+  double m_TauApFastComponent = 10;
+  double m_TauApSlowComponent = 80;
   double m_ApSlowFraction = 0.8;
-  double m_Ccgv;
-  double m_SnrdB;
+  double m_Ccgv = 0.05;
+  double m_SnrdB = 30;
   mutable double m_SnrLinear = 0;
 
   // Pde

@@ -92,16 +92,11 @@ void SiPMProperties::setProperty(const std::string& aProp,
       setXtOff();
     } else if( aProp == "NoAp"){
       setApOff();
+    } else if( aProp == "HasSlowComponent"){
+      setHasSlowComponent(aPropValue);
     } else {
       std::cerr << "Property: "<<aProp<<" not found! \n";
     }
-}
-
-void SiPMProperties::setProperties(const std::vector<std::string>& aProps,
-   const std::vector<double>& aPropValues){
-  for(uint32_t i = 0; i < aProps.size(); ++i){
-    setProperty(aProps[i], aPropValues[i]);
-  }
 }
 
 
