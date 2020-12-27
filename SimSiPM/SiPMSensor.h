@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <unordered_set>
+#include <array>
 
 #include "SiPMAnalogSignal.h"
 #include "SiPMHit.h"
