@@ -2,3 +2,5 @@
 test/*
 build
 install
+*.s
+*.o

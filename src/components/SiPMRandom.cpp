@@ -1,7 +1,20 @@
-#include <SiPMRandom.h>
-
+#include "SiPMRandom.h"
 
 namespace sipm{
+//Poisson random with mean value "mu"
+uint32_t randPoisson(const double mu){
+  if (mu == 0){return 0;}
+  const double q = exp(-mu);
+  double p = 1;
+  int32_t out = -1;
+
+  while (p > q) {
+    ++out;
+    p *= Rand();
+  }
+  return out;
+}
+
 
 //Exponential random with mean value "mu"
 double randExponential(const double mu){
@@ -9,24 +22,22 @@ double randExponential(const double mu){
 }
 
 
-//Integer random in range [0,max]
-uint32_t randInteger(const uint32_t max){
-  return static_cast<uint32_t>(Rand() * (max + 1));
-}
+// Gaussian random value with mean "mu" and sigma "sigma"
+// Using Box-Muller transform
+double randGaussian(const double mu, const double sigma){
+  static bool isSine;
+  static double angle;
+  static double sqrtlog;
 
-
-//Poisson random with mean value "mu"
-uint32_t randPoisson(const double mu){
-  if (mu == 0){return 0;}
-  const double q = exp(-mu);
-  double p = 1;
-  int out = -1;
-
-  while (p > q) {
-    ++out;
-    p *= Rand();
+  if (isSine) {
+    isSine = false;
+    return sqrtlog * sin(angle) + mu;
+  } else {
+    sqrtlog = sqrt(-2 * log(Rand())) * sigma;
+    angle = TWO_PI * Rand();
+    isSine = true;
+    return sqrtlog * cos(angle) + mu;
   }
-  return out;
 }
 
 } /* NAMESPACE_SIPM */
