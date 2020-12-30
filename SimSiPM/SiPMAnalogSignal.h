@@ -8,6 +8,14 @@ namespace sipm{
 
 class SiPMAnalogSignal{
 public:
+  // Sgnal constructor
+  SiPMAnalogSignal() = default;
+
+  SiPMAnalogSignal(const std::vector<double> wav, const double sampling) :
+    m_Waveform(wav),
+    m_Sampling(sampling)
+  {};
+
   // Move assignement
   SiPMAnalogSignal& operator=(const std::vector<double>&& aVect){
     m_Waveform = std::move(aVect);

@@ -19,11 +19,6 @@ add_library(sipm SHARED
   src/lib/SiPMAdc.cpp
 )
 
-find_package(OpenMP)
-if(OpenMP_CXX_FOUND)
-  target_link_libraries(sipm PRIVATE OpenMP::OpenMP_CXX)
-endif()
-
 set_target_properties(sipm PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER SimSiPM/SiPM.h)
 set_target_properties(sipm PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "SimSiPM/SiPM.h;SimSiPM/SiPMAdc.h;SimSiPM/SiPMAnalogSignal.h;SimSiPM/SiPMDigitalSignal.h;SimSiPM/SiPMHit.h;SimSiPM/SiPMProperties.h;SimSiPM/SiPMSensor.h")
 set_target_properties(sipm PROPERTIES VERSION ${PROJECT_VERSION} PRIVATE_HEADER "src/components/SiPMHelpers.h;src/components/SiPMRandomvect.h;src/components/SiPMRandom.h")

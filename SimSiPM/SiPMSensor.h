@@ -44,13 +44,13 @@ public:
 private:
   // Helper functions
   const double evaluatePde(const double)const;
-  static const bool isDetected(const double aPde){return(aPde==1)?true:Rand()<aPde;}
-  const bool isInSensor(const uint32_t, const uint32_t)const;
-  const std::array<uint32_t,2> hitCell()const;
+  static const bool isDetected(const double aPde){return Rand()<aPde;}
+  const bool isInSensor(const int32_t, const int32_t)const;
+  const std::array<int32_t,2> hitCell()const;
   const std::pair<std::vector<uint32_t>, std::unordered_set<uint32_t>>
    getUniqueId()const;
   const std::vector<double> signalShape()const;
-  void sortHits(){std::sort(m_Hits.begin(), m_Hits.end());}
+  inline void sortHits(){std::sort(m_Hits.begin(), m_Hits.end());}
 
   // SiPM functions
   void addDcrEvents();

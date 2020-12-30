@@ -9,26 +9,33 @@ namespace sipm{
 class SiPMDigitalSignal{
 public:
 
-  SiPMDigitalSignal(double sampling, uint32_t dpp) :
-    m_Sampling(sampling),
-    m_Dpp(dpp)
+  // Empty signal constructor
+  SiPMDigitalSignal(const double sampling) :
+    m_Sampling(sampling)
   {};
 
-  // Move assignement
+  // Sgnal constructor
+  SiPMDigitalSignal(const std::vector<int32_t> wav, const double sampling) :
+    m_Waveform(wav),
+    m_Sampling(sampling)
+  {};
+
+  // Move assignement from vector
   SiPMDigitalSignal& operator=(const std::vector<int32_t>&& aVect){
     m_Waveform = std::move(aVect);
     return *this;
   };
-  //Copy assignement
+  //Copy assignement from vector
   SiPMDigitalSignal& operator=(const std::vector<int32_t>& aVect){
     m_Waveform = aVect;
     return *this;
   };
 
-  // Access to array
+  // Access to signal elements
   int32_t& operator[](const uint32_t i){return m_Waveform[i];}
   const int32_t& operator[](const uint32_t i)const{return m_Waveform[i];}
 
+  // Access to waveform
   const std::vector<int32_t>& waveform()const{return m_Waveform;}
 
   const int32_t integral(const double, const double, const int32_t)const;
@@ -40,7 +47,6 @@ public:
 private:
   std::vector<int32_t> m_Waveform;
   const double m_Sampling;
-  const uint32_t m_Dpp;
 };
 
 } /* NAMESPACE_SIPM */
