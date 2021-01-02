@@ -19,6 +19,7 @@ add_library(sipm SHARED
   src/lib/SiPMAdc.cpp
 )
 
+
 set_target_properties(sipm PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER SimSiPM/SiPM.h)
 set_target_properties(sipm PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "SimSiPM/SiPM.h;SimSiPM/SiPMAdc.h;SimSiPM/SiPMAnalogSignal.h;SimSiPM/SiPMDigitalSignal.h;SimSiPM/SiPMHit.h;SimSiPM/SiPMProperties.h;SimSiPM/SiPMSensor.h")
 set_target_properties(sipm PROPERTIES VERSION ${PROJECT_VERSION} PRIVATE_HEADER "src/components/SiPMHelpers.h;src/components/SiPMRandomvect.h;src/components/SiPMRandom.h")
@@ -33,3 +34,15 @@ install(TARGETS sipm
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
+
+add_subdirectory(tests)
+enable_testing()
+
+add_test(Uniform tests/Rand)
+add_test(Exponential tests/Exp)
+add_test(Integer tests/Integer)
+add_test(Gaussian tests/Gaussian)
+add_test(Poisson tests/Poisson)
+add_test(Xorshift32 tests/Xorshift32)
+add_test(Xorshift64 tests/Xorshift64)
+add_test(Xoroshiro256p tests/Xoroshiro256p)

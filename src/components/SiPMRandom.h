@@ -17,6 +17,7 @@ static constexpr double UINT32_MAXD = UINT32_MAX;
 inline uint32_t xorshift32();
 inline uint64_t xorshift64();
 inline uint64_t xoroshiro256p();
+
 inline double Rand();
 inline uint32_t randInteger(const uint32_t);
 double randGaussian(const double, const double);

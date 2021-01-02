@@ -158,13 +158,13 @@ void SiPMSensor::addDcrEvents(){
   const double meanDcr = 1e9 * m_Properties.dcrTau();
   const int32_t nSideCells = m_Properties.nSideCells();
 
-  double last = 0;
+  double last = -100;
 
   while (last < signalLength){
     last += randExponential(meanDcr);
-    if (last < signalLength){
-      int32_t row = randInteger(nSideCells - 1);
-      int32_t col = randInteger(nSideCells - 1);
+    if ((last > 0) && (last < signalLength)){
+      int32_t row = randInteger(nSideCells);
+      int32_t col = randInteger(nSideCells);
 
       m_Hits.emplace_back(last,
        1,
@@ -183,10 +183,10 @@ void SiPMSensor::addXtEvents(){
   const double xt = m_Properties.xt();
   const int32_t nSideCells = m_Properties.nSideCells();
 
-  uint32_t currentCell = 0;
-  while (currentCell < m_nTotalHits){
-    SiPMHit* hit = &m_Hits[currentCell];
-    currentCell++;
+  uint32_t currentCellIdx = 0;
+  while (currentCellIdx < m_nTotalHits){
+    SiPMHit* hit = &m_Hits[currentCellIdx];
+    currentCellIdx++;
     uint32_t nxt = randPoisson(xt);
 
     if (nxt == 0){continue;}
@@ -205,8 +205,8 @@ void SiPMSensor::addXtEvents(){
          xtRow,
          xtCol,
          SiPMHit::HitType::kOpticalCrosstalk);
-        m_nTotalHits++;
-        m_nXt++;
+        ++m_nTotalHits;
+        ++m_nXt;
       }
     } /* FOR XT */
   } /* WHILE HIT */
@@ -221,12 +221,12 @@ void SiPMSensor::addApEvents(){
   const double recoveryTime = m_Properties.recoveryTime();
   const double slowFraction = m_Properties.apSlowFraction();
 
-  uint32_t currentCell = 0;
 
   // Cannot use iterator based loop becouse of reallocation
-  while (currentCell < m_nTotalHits){
-    SiPMHit* hit = &m_Hits[currentCell];
-    currentCell++;
+  uint32_t currentCellIdx = 0;
+  while (currentCellIdx < m_nTotalHits){
+    SiPMHit* hit = &m_Hits[currentCellIdx];
+    currentCellIdx++;
 
     int32_t nap = randPoisson(ap);
 
@@ -236,7 +236,7 @@ void SiPMSensor::addApEvents(){
     int32_t apGeneratorCol = hit->col();
 
     // Choose fast or slow ap
-    for (uint32_t j = 0; j < nap; j++){
+    for (uint32_t j = 0; j < nap; ++j){
       double apDelay;
       if (Rand() < slowFraction){
         apDelay = randExponential(tauApSlow);
@@ -266,7 +266,8 @@ const std::pair<std::vector<uint32_t>,std::unordered_set<uint32_t>>
  SiPMSensor::getUniqueId()const{
   std::pair<std::vector<uint32_t>,std::unordered_set<uint32_t>> out;
 
-  std::vector<uint32_t> cellId(m_Hits.size());
+  std::vector<uint32_t> cellId;
+  cellId.reserve(m_Hits.size());
   for (auto hit = m_Hits.begin(); hit != m_Hits.end(); ++hit){
     cellId.emplace_back(hit->id());
   }
@@ -284,7 +285,7 @@ void SiPMSensor::calculateSignalAmplitudes(){
   const std::unordered_set<uint32_t> uniqueCellId = std::get<1>(unique);
   const double cellRecovery = m_Properties.recoveryTime();
 
-  for (auto itr = uniqueCellId.begin(); itr != uniqueCellId.cend(); ++itr){
+  for (auto itr = uniqueCellId.begin(); itr != uniqueCellId.end(); ++itr){
     // If cell hitted more than once
     if (std::count(cellId.begin(), cellId.end(), *itr) > 1){
 
@@ -295,8 +296,8 @@ void SiPMSensor::calculateSignalAmplitudes(){
           if (previousHitTime == 0){
             previousHitTime = hit->time();
           } else {
-            double delay = previousHitTime - hit->time();
-            hit->amplitude() = 1 - exp(delay / cellRecovery);
+            double delay = hit->time() - previousHitTime;
+            hit->amplitude() = 1 - exp(-delay / cellRecovery);
             previousHitTime = hit->time();
           }
         }

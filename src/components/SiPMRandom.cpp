@@ -31,12 +31,12 @@ double randGaussian(const double mu, const double sigma){
 
   if (isSine) {
     isSine = false;
-    return sqrtlog * sin(angle) + mu;
+    return sqrtlog * sin(angle) * sigma + mu;
   } else {
-    sqrtlog = sqrt(-2 * log(Rand())) * sigma;
+    sqrtlog = sqrt(-2 * log(Rand()));
     angle = TWO_PI * Rand();
     isSine = true;
-    return sqrtlog * cos(angle) + mu;
+    return sqrtlog * cos(angle) * sigma + mu;
   }
 }
 
