@@ -7,39 +7,32 @@ using namespace std;
 int main(int argc, char const *argv[]) {
   int k;
 
+  SiPMRng::Xorshift256plus rng;
 
-  k = 1000;
-  while(k > 0){
+  k = 10000;
+  while (k > 0) {
     uint64_t temp[100];
-    for (int j=0;j<100;++j){
-      temp[j] = xorshift64();
-    }
+    for (int j = 0; j < 100; ++j) { temp[j] = rng(); }
 
-    for(int i=0;i<100;++i){
-      for(int j=0;j<100;++j){
-        if(i != j){
-          assert(temp[i] != temp[j]);
-        }
+    for (int i = 0; i < 100; ++i) {
+      for (int j = 0; j < 100; ++j) {
+        if (i != j) { assert(temp[i] != temp[j]); }
       }
     }
-  --k;
+    --k;
   }
 
   k = 1000;
-  while(k > 0){
+  while (k > 0) {
     uint64_t temp[1000];
-    for (int j=0;j<1000;++j){
-      temp[j] = xorshift64();
-    }
+    for (int j = 0; j < 1000; ++j) { temp[j] = rng(); }
 
-    for(int i=0;i<1000;++i){
-      for(int j=0;j<1000;++j){
-        if(i != j){
-          assert(temp[i] != temp[j]);
-        }
+    for (int i = 0; i < 1000; ++i) {
+      for (int j = 0; j < 1000; ++j) {
+        if (i != j) { assert(temp[i] != temp[j]); }
       }
     }
-  --k;
+    --k;
   }
 
   return 0;

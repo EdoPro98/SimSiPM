@@ -6,17 +6,19 @@ using namespace std;
 int main(int argc, char const *argv[]) {
   static const int N = 1000000;
 
+  sipm::SiPMRandom rng;
   int i = N;
-  while (i > 0){
-    double x = randExponential(1);
+
+  while (i > 0) {
+    double x = rng.randExponential(1);
     assert(x > 0);
     --i;
   }
 
   i = N;
-  while(i > 0){
-    double x = randExponential(1);
-    double y = randExponential(1);
+  while (i > 0) {
+    double x = rng.randExponential(1);
+    double y = rng.randExponential(1);
     assert(x != y);
     i--;
   }

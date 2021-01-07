@@ -10,7 +10,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Library
 add_library(sipm SHARED
   src/components/SiPMRandom.cpp
-  src/components/SiPMRandomvect.cpp
   src/lib/SiPMHit.cpp
   src/lib/SiPMProperties.cpp
   src/lib/SiPMAnalogSignal.cpp
@@ -22,7 +21,7 @@ add_library(sipm SHARED
 
 set_target_properties(sipm PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER SimSiPM/SiPM.h)
 set_target_properties(sipm PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "SimSiPM/SiPM.h;SimSiPM/SiPMAdc.h;SimSiPM/SiPMAnalogSignal.h;SimSiPM/SiPMDigitalSignal.h;SimSiPM/SiPMHit.h;SimSiPM/SiPMProperties.h;SimSiPM/SiPMSensor.h")
-set_target_properties(sipm PROPERTIES VERSION ${PROJECT_VERSION} PRIVATE_HEADER "src/components/SiPMHelpers.h;src/components/SiPMRandomvect.h;src/components/SiPMRandom.h")
+set_target_properties(sipm PROPERTIES VERSION ${PROJECT_VERSION} PRIVATE_HEADER "src/components/SiPMHelpers.h;src/components/SiPMRandom.h")
 
 # Include files
 target_include_directories(sipm PUBLIC SimSiPM/)
@@ -43,6 +42,4 @@ add_test(Exponential tests/Exp)
 add_test(Integer tests/Integer)
 add_test(Gaussian tests/Gaussian)
 add_test(Poisson tests/Poisson)
-add_test(Xorshift32 tests/Xorshift32)
 add_test(Xorshift64 tests/Xorshift64)
-add_test(Xoroshiro256p tests/Xoroshiro256p)

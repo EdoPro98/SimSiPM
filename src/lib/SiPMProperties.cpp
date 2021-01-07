@@ -1,12 +1,13 @@
 #include "SiPMProperties.h"
-#include <math.h>
-#include <iostream>
 
-namespace sipm{
+#include <iostream>
+#include <math.h>
+
+namespace sipm {
 
 // Getters
-const uint32_t SiPMProperties::nCells()const{
-  if (m_SideCells == 0 | m_Ncells == 0){
+const uint32_t SiPMProperties::nCells() const {
+  if (m_SideCells == 0 | m_Ncells == 0) {
     m_SideCells = 1000 * m_Size / m_Pitch;
     m_Ncells = m_SideCells * m_SideCells;
   }
@@ -14,9 +15,8 @@ const uint32_t SiPMProperties::nCells()const{
   return m_Ncells;
 }
 
-
-const uint32_t SiPMProperties::nSideCells()const{
-  if (m_SideCells == 0 | m_Ncells == 0){
+const uint32_t SiPMProperties::nSideCells() const {
+  if (m_SideCells == 0 | m_Ncells == 0) {
     m_SideCells = 1000 * m_Size / m_Pitch;
     m_Ncells = m_SideCells * m_SideCells;
   }
@@ -24,142 +24,136 @@ const uint32_t SiPMProperties::nSideCells()const{
   return m_SideCells;
 }
 
-
-const uint32_t SiPMProperties::nSignalPoints()const{
-  if (m_SignalPoints == 0){
-    m_SignalPoints = m_SignalLength / m_Sampling;
-  }
+const uint32_t SiPMProperties::nSignalPoints() const {
+  if (m_SignalPoints == 0) { m_SignalPoints = m_SignalLength / m_Sampling; }
 
   return m_SignalPoints;
 }
 
-
-const double SiPMProperties::snrLinear() const{
-  if (m_SnrLinear == 0){
-    m_SnrLinear = pow(10, -m_SnrdB / 20);
-  }
+const double SiPMProperties::snrLinear() const {
+  if (m_SnrLinear == 0) { m_SnrLinear = pow(10, -m_SnrdB / 20); }
   return m_SnrLinear;
 }
 
-
-const std::pair<std::vector<double>, std::vector<double>> SiPMProperties::pdeSpectrum() const{
+const std::pair<std::vector<double>, std::vector<double>>
+SiPMProperties::pdeSpectrum() const {
   const auto pair = std::make_pair(m_PdeSpectrum, m_PhotonWavelength);
   return pair;
 }
 
 // Setters
-void SiPMProperties::setProperty(const std::string& aProp,
-   const double aPropValue){
-    if( aProp == "Size"){
-      setSize(aPropValue);
-    } else if( aProp == "Pitch"){
-      setPitch(aPropValue);
-    } else if( aProp == "Sampling"){
-      setSampling(aPropValue);
-    } else if( aProp == "CellRecovery"){
-      setRecoveryTime(aPropValue);
-    } else if( aProp == "SignalLength"){
-      setSignalLength(aPropValue);
-    } else if( aProp == "RiseTime"){
-      setRiseTime(aPropValue);
-    } else if( aProp == "FallTimeFast"){
-      setFallTimeFast(aPropValue);
-    } else if( aProp == "FallTimeSlow"){
-      setFallTimeSlow(aPropValue);
-    } else if( aProp == "SlowComponentFraction"){
-      setSlowComponentFraction(aPropValue);
-    } else if( aProp == "RecoveryTime"){
-      setRecoveryTime(aPropValue);
-    } else if( aProp == "TauApFast"){
-      setTauApFastComponent(aPropValue);
-    } else if( aProp == "TauApSlow"){
-      setTauApSlowComponent(aPropValue);
-    } else if( aProp == "Ccgv"){
-      setCcgv(aPropValue);
-    } else if( aProp == "Snr"){
-      setSnr(aPropValue);
-    } else if( aProp == "Pde"){
-      setPde(aPropValue);
-    } else if( aProp == "Dcr"){
-      setDcr(aPropValue);
-    } else if( aProp == "Xt"){
-      setXt(aPropValue);
-    } else if( aProp == "Ap"){
-      setAp(aPropValue);
-    } else if( aProp == "NoDcr"){
-      setDcrOff();
-    } else if( aProp == "NoXt"){
-      setXtOff();
-    } else if( aProp == "NoAp"){
-      setApOff();
-    } else if( aProp == "HasSlowComponent"){
-      setHasSlowComponent(aPropValue);
-    } else {
-      std::cerr << "Property: "<<aProp<<" not found! \n";
-    }
+void SiPMProperties::setProperty(const std::string &aProp,
+                                 const double aPropValue) {
+  if (aProp == "Size") {
+    setSize(aPropValue);
+  } else if (aProp == "Pitch") {
+    setPitch(aPropValue);
+  } else if (aProp == "Sampling") {
+    setSampling(aPropValue);
+  } else if (aProp == "CellRecovery") {
+    setRecoveryTime(aPropValue);
+  } else if (aProp == "SignalLength") {
+    setSignalLength(aPropValue);
+  } else if (aProp == "RiseTime") {
+    setRiseTime(aPropValue);
+  } else if (aProp == "FallTimeFast") {
+    setFallTimeFast(aPropValue);
+  } else if (aProp == "FallTimeSlow") {
+    setFallTimeSlow(aPropValue);
+  } else if (aProp == "SlowComponentFraction") {
+    setSlowComponentFraction(aPropValue);
+  } else if (aProp == "RecoveryTime") {
+    setRecoveryTime(aPropValue);
+  } else if (aProp == "TauApFast") {
+    setTauApFastComponent(aPropValue);
+  } else if (aProp == "TauApSlow") {
+    setTauApSlowComponent(aPropValue);
+  } else if (aProp == "Ccgv") {
+    setCcgv(aPropValue);
+  } else if (aProp == "Snr") {
+    setSnr(aPropValue);
+  } else if (aProp == "Pde") {
+    setPde(aPropValue);
+  } else if (aProp == "Dcr") {
+    setDcr(aPropValue);
+  } else if (aProp == "Xt") {
+    setXt(aPropValue);
+  } else if (aProp == "Ap") {
+    setAp(aPropValue);
+  } else if (aProp == "NoDcr") {
+    setDcrOff();
+  } else if (aProp == "NoXt") {
+    setXtOff();
+  } else if (aProp == "NoAp") {
+    setApOff();
+  } else if (aProp == "HasSlowComponent") {
+    setHasSlowComponent(aPropValue);
+  } else {
+    std::cerr << "Property: " << aProp << " not found! \n";
+  }
 }
 
-
-void SiPMProperties::setSampling(const double aSampling){
+void SiPMProperties::setSampling(const double aSampling) {
   m_Sampling = aSampling;
   m_SignalPoints = static_cast<uint32_t>(m_SignalLength / aSampling);
 }
 
-
-void SiPMProperties::setTauAp(const double aTauApFast, const double aTauApSlow){
+void SiPMProperties::setTauAp(const double aTauApFast,
+                              const double aTauApSlow) {
   m_TauApFastComponent = aTauApFast;
   m_TauApSlowComponent = aTauApSlow;
   m_HasAp = true;
 }
 
-
 // Read/Write settings
-void SiPMProperties::dumpSettings()const{
+void SiPMProperties::dumpSettings() const {
   std::cout << "===> SiPM Settings <===" << '\n';
-  std::cout << "Size: "<<m_Size<<" mm\n";
-  std::cout << "Pitch: "<<m_Pitch<<" um\n";
-  std::cout << "Number of cells: "<<nCells()<<"\n";
+  std::cout << "Size: " << m_Size << " mm\n";
+  std::cout << "Pitch: " << m_Pitch << " um\n";
+  std::cout << "Number of cells: " << nCells() << "\n";
   switch (m_HitDistribution) {
-    case (HitDistribution::kUniform):
-      std::cout << "Hit distribution: "<<"Uniform"<<"\n";
+  case (HitDistribution::kUniform):
+    std::cout << "Hit distribution: "
+              << "Uniform"
+              << "\n";
   }
-  std::cout << "Cell recovery time: "<<m_RecoveryTime<<" nm\n";
-  if (m_HasDcr){
-    std::cout << "Dark count rate: "<<m_Dcr / 1e3<<" kHz\n";
-  }else{
+  std::cout << "Cell recovery time: " << m_RecoveryTime << " nm\n";
+  if (m_HasDcr) {
+    std::cout << "Dark count rate: " << m_Dcr / 1e3 << " kHz\n";
+  } else {
     std::cout << "Dark count rate: Off\n";
   }
-  if (m_HasXt){
-    std::cout << "Crosstalk probability: "<<m_Xt * 100<<" %\n";
-  }else{
+  if (m_HasXt) {
+    std::cout << "Crosstalk probability: " << m_Xt * 100 << " %\n";
+  } else {
     std::cout << "Crosstalk probability: Off\n";
   }
-  if (m_HasAp){
-    std::cout << "Afterpulse probability: "<<m_Ap * 100<<" %\n";
-    std::cout << "Tau afterpulses (fast): "<<m_TauApFastComponent<<" ns\n";
-    std::cout << "Tau afterpulses (slow): "<<m_TauApSlowComponent<<" ns\n";
-  }else{
+  if (m_HasAp) {
+    std::cout << "Afterpulse probability: " << m_Ap * 100 << " %\n";
+    std::cout << "Tau afterpulses (fast): " << m_TauApFastComponent << " ns\n";
+    std::cout << "Tau afterpulses (slow): " << m_TauApSlowComponent << " ns\n";
+  } else {
     std::cout << "Afterpulse probability: Off\n";
   }
-  std::cout << "Cell-to-cell gain variation: "<<m_Ccgv<<" %\n";
-  std::cout << "SNR: "<<m_SnrdB<<" dB\n";
-  if (m_HasPde == PdeType::kSimplePde){
-    std::cout << "Photon detection efficiency: "<<m_Pde * 100<<" %\n";
-  } else if (m_HasPde == PdeType::kSimplePde){
+  std::cout << "Cell-to-cell gain variation: " << m_Ccgv << " %\n";
+  std::cout << "SNR: " << m_SnrdB << " dB\n";
+  if (m_HasPde == PdeType::kSimplePde) {
+    std::cout << "Photon detection efficiency: " << m_Pde * 100 << " %\n";
+  } else if (m_HasPde == PdeType::kSimplePde) {
     std::cout << "Photon detection efficiency: depending on wavelength\n";
-  }else{
+  } else {
     std::cout << "Photon detection efficiency: Off\n";
   }
-  std::cout << "Rising time of signal: "<<m_RiseTime<<" ns\n";
-  std::cout << "Falling time of signal (fast): "<<m_FallTimeFast<<" ns\n";
-  if (m_HasSlowComponent){
-    std::cout << "Falling time of signal (slow): "<<m_FallTimeSlow<<" ns\n";
-    std::cout << "Slow component fraction: "
-    <<m_SlowComponentFraction * 100<<" %\n";
+  std::cout << "Rising time of signal: " << m_RiseTime << " ns\n";
+  std::cout << "Falling time of signal (fast): " << m_FallTimeFast << " ns\n";
+  if (m_HasSlowComponent) {
+    std::cout << "Falling time of signal (slow): " << m_FallTimeSlow << " ns\n";
+    std::cout << "Slow component fraction: " << m_SlowComponentFraction * 100
+              << " %\n";
   }
-  std::cout << "Signal length: "<<m_SignalLength<<" ns\n";
-  std::cout << "Sampling time: "<<m_Sampling<<" ns\n";
+  std::cout << "Signal length: " << m_SignalLength << " ns\n";
+  std::cout << "Sampling time: " << m_Sampling << " ns\n";
   std::cout << "==> End of SiPM Settings <===" << '\n';
 }
 
-} /* NAMESPACE_SIPM */
+} // namespace sipm
