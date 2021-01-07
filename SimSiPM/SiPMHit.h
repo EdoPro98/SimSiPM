@@ -30,7 +30,7 @@ public:
 
 private:
   static const uint32_t makePair(const uint32_t x, const uint32_t y) {
-    return (x + y + 1) * (x + y) << 1 + y;
+    return ((x + y + 1) * (x + y) << 1) + y;
   }
 
   uint32_t m_Row, m_Col;
