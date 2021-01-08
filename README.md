@@ -1,5 +1,6 @@
 # SimSiPM
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/EdoPro98/SimSiPM/CMake)
+![GCC](https://github.com/EdoPro98/SimSiPM/workflows/GCC/badge.svg?branch=master&event=push)
+![AppleClang](https://github.com/EdoPro98/SimSiPM/workflows/AppleClang/badge.svg?branch=master&event=push)
 ![GitHub issues](https://img.shields.io/github/issues/EdoPro98/SimSiPM)
 ![GitHub last commit](https://img.shields.io/github/last-commit/EdoPro98/SimSiPM)
 ![GitHub](https://img.shields.io/github/license/EdoPro98/SimSiPM)
