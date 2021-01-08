@@ -42,7 +42,7 @@ SiPMProperties::pdeSpectrum() const {
 }
 
 // Setters
-void SiPMProperties::setProperty(const std::string &aProp,
+void SiPMProperties::setProperty(const std::string& aProp,
                                  const double aPropValue) {
   if (aProp == "Size") {
     setSize(aPropValue);
@@ -80,11 +80,11 @@ void SiPMProperties::setProperty(const std::string &aProp,
     setXt(aPropValue);
   } else if (aProp == "Ap") {
     setAp(aPropValue);
-  } else if (aProp == "NoDcr") {
+  } else if (aProp == "DcrOff") {
     setDcrOff();
-  } else if (aProp == "NoXt") {
+  } else if (aProp == "XtOff") {
     setXtOff();
-  } else if (aProp == "NoAp") {
+  } else if (aProp == "ApOff") {
     setApOff();
   } else if (aProp == "HasSlowComponent") {
     setHasSlowComponent(aPropValue);

@@ -6,7 +6,7 @@
 
 using namespace sipm;
 using namespace std;
-int main(int argc, char const *argv[]) {
+int main(int argc, char const* argv[]) {
   static const int N = (int)1e7;
 
   SiPMRandom rng;

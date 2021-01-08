@@ -11,18 +11,18 @@ public:
   SiPMAdc() = default;
   SiPMAdc(const uint32_t, const double, const double);
 
-  SiPMDigitalSignal digitize(const SiPMAnalogSignal &) const;
+  SiPMDigitalSignal digitize(const SiPMAnalogSignal&) const;
 
   void setJitter(const double jit) { m_Jitter = jit; }
   void setBandwidth(const double);
 
 private:
-  void lowpass(std::vector<double> &, const double) const
-      __attribute__((hot, optimize("Ofast", "fast-math")));
-  std::vector<int32_t> quantize(const std::vector<double> &) const
-      __attribute__((hot, optimize("Ofast", "fast-math")));
-  void jitter(std::vector<double> &, const double) const
-      __attribute__((hot, optimize("Ofast", "fast-math")));
+  void lowpass(std::vector<double>&, const double) const
+    __attribute__((hot, optimize("Ofast", "fast-math")));
+  std::vector<int32_t> quantize(const std::vector<double>&) const
+    __attribute__((hot, optimize("Ofast", "fast-math")));
+  void jitter(std::vector<double>&, const double) const
+    __attribute__((hot, optimize("Ofast", "fast-math")));
 
   uint32_t m_Nbits;
   uint32_t m_Qlevels;

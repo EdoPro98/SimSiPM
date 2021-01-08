@@ -13,7 +13,7 @@ public:
   enum class HitDistribution { kUniform };
 
   // Read/Write settings
-  void readSettings(std::string &);
+  void readSettings(std::string&);
   void dumpSettings() const;
 
   // Getters
@@ -46,7 +46,7 @@ public:
   const bool hasSlowComponent() const { return m_HasSlowComponent; }
 
   // Setters
-  void setProperty(const std::string &, const double);
+  void setProperty(const std::string&, const double);
 
 private:
   void setSize(const double x) { m_Size = x; }
@@ -77,8 +77,8 @@ private:
     m_Pde = x;
     m_HasPde = PdeType::kSimplePde;
   }
-  void setPdeSpectrum(const std::vector<double> &x,
-                      const std::vector<double> &y) {
+  void setPdeSpectrum(const std::vector<double>& x,
+                      const std::vector<double>& y) {
     m_PdeSpectrum = x;
     m_PhotonWavelength = y;
     m_HasPde = PdeType::kSpectrumPde;

@@ -4,7 +4,7 @@
 
 using namespace sipm;
 using namespace std;
-int main(int argc, char const *argv[]) {
+int main(int argc, char const* argv[]) {
   int k;
 
   SiPMRng::Xorshift256plus rng;

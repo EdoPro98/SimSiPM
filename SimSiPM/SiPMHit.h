@@ -14,8 +14,8 @@ public:
     kAfterPulse
   };
 
-  SiPMHit(double, double, uint32_t, uint32_t, const HitType &) noexcept;
-  const bool operator<(const SiPMHit &aHit) const noexcept{
+  SiPMHit(double, double, uint32_t, uint32_t, const HitType&) noexcept;
+  const bool operator<(const SiPMHit& aHit) const noexcept {
     return m_Time < aHit.m_Time;
   }
 
@@ -25,8 +25,8 @@ public:
   const uint32_t col() const { return m_Col; }
   const uint32_t id() const { return m_Id; }
   const double amplitude() const { return m_Amplitude; }
-  double &amplitude() { return m_Amplitude; }
-  const HitType &hitType() const { return m_HitType; }
+  double& amplitude() { return m_Amplitude; }
+  const HitType& hitType() const { return m_HitType; }
 
 private:
   static const uint32_t makePair(const uint32_t x, const uint32_t y) {

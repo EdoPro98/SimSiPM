@@ -12,14 +12,14 @@
 namespace sipm {
 
 SiPMAdc::SiPMAdc(const uint32_t nbits, const double range, const double gain)
-    : m_Nbits(nbits), m_Range(range), m_Gain(gain), m_Qlevels(pow(2, nbits)) {}
+  : m_Nbits(nbits), m_Range(range), m_Gain(gain), m_Qlevels(pow(2, nbits)) {}
 
 void SiPMAdc::setBandwidth(const double bw) {
   m_Bandwidth = bw;
   m_RC = 1 / (2 * M_PI * bw);
 }
 
-void SiPMAdc::lowpass(std::vector<double> &v, const double sampling) const {
+void SiPMAdc::lowpass(std::vector<double>& v, const double sampling) const {
   const double dt = 1e-9 * sampling;
   const double alpha = dt / (m_RC + dt);
 
@@ -29,7 +29,7 @@ void SiPMAdc::lowpass(std::vector<double> &v, const double sampling) const {
   }
 }
 
-std::vector<int32_t> SiPMAdc::quantize(const std::vector<double> &v) const {
+std::vector<int32_t> SiPMAdc::quantize(const std::vector<double>& v) const {
   std::vector<int32_t> out(v.size());
 
   const int32_t qlevels = m_Qlevels;
@@ -38,12 +38,12 @@ std::vector<int32_t> SiPMAdc::quantize(const std::vector<double> &v) const {
 
   for (uint32_t i = 0; i < v.size(); ++i) { out[i] = v[i] / width; }
   std::replace_if(
-      out.begin(), out.end(), [qlevels](int32_t x) { return x > qlevels; },
-      qlevels);
+    out.begin(), out.end(), [qlevels](int32_t x) { return x > qlevels; },
+    qlevels);
   return out;
 }
 
-void SiPMAdc::jitter(std::vector<double> &lsignal, const double jit) const {
+void SiPMAdc::jitter(std::vector<double>& lsignal, const double jit) const {
   std::vector<double> lsignalshift = lsignal; // Copy of signal
   double jitweight;
 
@@ -75,7 +75,7 @@ void SiPMAdc::jitter(std::vector<double> &lsignal, const double jit) const {
     __signal = _mm256_loadu_pd(&lsignal[i]);
     __signalshift = _mm256_loadu_pd(&lsignalshift[i]);
     __signal = _mm256_fmadd_pd(
-        __jitweight, _mm256_sub_pd(__signalshift, __signal), __signal);
+      __jitweight, _mm256_sub_pd(__signalshift, __signal), __signal);
     _mm256_storeu_pd(&lsignal[i], __signal);
   }
   for (uint32_t i = last; i < n; ++i) {
@@ -89,7 +89,7 @@ void SiPMAdc::jitter(std::vector<double> &lsignal, const double jit) const {
 #endif
 }
 
-SiPMDigitalSignal SiPMAdc::digitize(const SiPMAnalogSignal &signal) const {
+SiPMDigitalSignal SiPMAdc::digitize(const SiPMAnalogSignal& signal) const {
   std::vector<double> lsignal = signal.waveform(); // Local analog signal
 
   if (m_Jitter > 0) {

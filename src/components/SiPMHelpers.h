@@ -4,12 +4,12 @@
 using namespace std;
 
 struct Timer {
-  Timer()noexcept;
+  Timer() noexcept;
   ~Timer();
   chrono::time_point<chrono::high_resolution_clock> start;
 };
 
-Timer::Timer()noexcept { start = std::chrono::high_resolution_clock::now(); }
+Timer::Timer() noexcept { start = std::chrono::high_resolution_clock::now(); }
 
 Timer::~Timer() {
   auto end = std::chrono::high_resolution_clock::now();

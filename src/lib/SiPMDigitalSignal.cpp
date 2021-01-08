@@ -9,7 +9,7 @@ const int32_t SiPMDigitalSignal::integral(const double intstart,
                                           const int32_t threshold) const {
 
   const auto start =
-      m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
+    m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
 
   if (*std::max_element(start, end) > threshold) {
@@ -24,7 +24,7 @@ const int32_t SiPMDigitalSignal::peak(const double intstart,
                                       const int32_t threshold) const {
 
   const auto start =
-      m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
+    m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
 
   const int32_t peak = *std::max_element(start, end);
@@ -39,13 +39,13 @@ const double SiPMDigitalSignal::tot(const double intstart, const double intgate,
                                     const int32_t threshold) const {
 
   const auto start =
-      m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
+    m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
 
   if (*std::max_element(start, end) > threshold) {
     return std::count_if(
-               start, end,
-               [threshold](const double v) { return v > threshold; }) *
+             start, end,
+             [threshold](const double v) { return v > threshold; }) *
            m_Sampling;
   } else {
     return -1;
@@ -56,7 +56,7 @@ const double SiPMDigitalSignal::toa(const double intstart, const double intgate,
                                     const int32_t threshold) const {
 
   const auto start =
-      m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
+    m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
   double toa = -1;
 
@@ -73,7 +73,7 @@ const double SiPMDigitalSignal::top(const double intstart, const double intgate,
                                     const int32_t threshold) const {
 
   const auto start =
-      m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
+    m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
 
   if (*std::max_element(start, end) > threshold) {

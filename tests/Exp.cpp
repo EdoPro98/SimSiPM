@@ -3,7 +3,7 @@
 
 using namespace sipm;
 using namespace std;
-int main(int argc, char const *argv[]) {
+int main(int argc, char const* argv[]) {
   static const int N = 1000000;
 
   sipm::SiPMRandom rng;
