@@ -21,8 +21,6 @@ public:
   SiPMSensor(const SiPMProperties&) noexcept;
   SiPMSensor() = default;
 
-  void dumpSettings() const;
-
   const SiPMProperties& properties() const { return m_Properties; }
   const SiPMAnalogSignal& signal() const { return m_Signal; }
   const SiPMRandom& rng() const { return m_rng; }
@@ -32,13 +30,17 @@ public:
     return SiPMDebugInfo(m_PhotonTimes.size(), m_nPe, m_nDcr, m_nXt, m_nAp);
   }
 
-  void addPhotons(const std::vector<double>&, const std::vector<double>&);
+  inline void addPhoton(const double aTime) {
+    m_PhotonTimes.emplace_back(aTime);
+  }
+  void addPhoton(const double, const double);
   inline void addPhotons(const std::vector<double>& aTimes) {
-    resetState();
     m_PhotonTimes = aTimes;
   }
-  void addPhotons() { resetState(); }
+  void addPhotons(const std::vector<double>&, const std::vector<double>&);
   void runEvent();
+  void resetState();
+
   void setProperty(const std::string&, const double);
   void setProperties(const std::vector<std::string>&,
                      const std::vector<double>&);
@@ -60,7 +62,6 @@ private:
   void addApEvents();
   void calculateSignalAmplitudes();
   void generateSignal() __attribute__((hot, optimize("Ofast", "fast-math")));
-  void resetState();
 
   SiPMProperties m_Properties;
   mutable SiPMRandom m_rng;

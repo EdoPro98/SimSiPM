@@ -51,7 +51,7 @@ void SiPMAdc::jitter(std::vector<double>& lsignal, const double jit) const {
 
   // Right shift
   if (jit > 0) {
-    const uint32_t jitidx = std::floor(jit);
+    const uint32_t jitidx = floor(jit);
     jitweight = jit - jitidx;
     std::rotate(lsignal.rbegin(), lsignal.rbegin() + jitidx, lsignal.rend());
     // Signal shifted by 1 to right
@@ -60,7 +60,7 @@ void SiPMAdc::jitter(std::vector<double>& lsignal, const double jit) const {
   }
   // Left shift
   else {
-    const uint32_t jitidx = std::floor(-jit);
+    const uint32_t jitidx = floor(-jit);
     jitweight = -jit - jitidx;
     std::rotate(lsignal.begin(), lsignal.begin() + jitidx, lsignal.end());
     // Signal shifted by 1 to left

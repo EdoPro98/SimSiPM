@@ -59,6 +59,11 @@ const std::vector<double> SiPMSensor::signalShape() const {
   return lSignalShape;
 }
 
+void SiPMSensor::addPhoton(const double aTime, const double aWavelength) {
+  m_PhotonTimes.emplace_back(aTime);
+  m_PhotonWavelengths.emplace_back(aWavelength);
+}
+
 void SiPMSensor::addPhotons(const std::vector<double>& aTimes,
                             const std::vector<double>& aWavelengths) {
   resetState();
@@ -223,7 +228,8 @@ void SiPMSensor::addApEvents() {
 
       // If ap event is in signal window
       if (apGeneratorTime + apDelay < signalLength) {
-        double apAmplitude = 1 - exp(-apDelay / recoveryTime);
+        double apAmplitude =
+          hit->amplitude() * (1 - exp(-apDelay / recoveryTime));
 
         m_Hits.emplace_back(apGeneratorTime + apDelay, apAmplitude, hit->row(),
                             hit->col(), SiPMHit::HitType::kAfterPulse);
