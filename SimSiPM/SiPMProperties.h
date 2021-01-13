@@ -1,4 +1,7 @@
+#include <math.h>
 #include <stdint.h>
+
+#include <map>
 #include <string>
 #include <vector>
 
@@ -38,7 +41,7 @@ public:
   const double snrdB() const { return m_SnrdB; }
   const double snrLinear() const;
   const double pde() const { return m_Pde; }
-  const std::pair<std::vector<double>, std::vector<double>> pdeSpectrum() const;
+  const std::map<double, double> pdeSpectrum() const;
   const PdeType hasPde() { return m_HasPde; }
   const bool hasDcr() const { return m_HasDcr; }
   const bool hasXt() const { return m_HasXt; }
@@ -51,12 +54,8 @@ public:
   void setApOff() { m_HasAp = false; }
   void setXtOff() { m_HasXt = false; }
   void setPdeOff() { m_HasPde = PdeType::kNoPde; }
-  void setPdeSpectrum(const std::vector<double>& x,
-                      const std::vector<double>& y) {
-    m_PdeSpectrum = x;
-    m_PhotonWavelength = y;
-    m_HasPde = PdeType::kSpectrumPde;
-  }
+  void setPdeSpectrum(const std::map<double, double>&);
+  void setPdeSpectrum(const std::vector<double>&, const std::vector<double>&);
 
 private:
   void setSize(const double x) { m_Size = x; }
@@ -71,7 +70,10 @@ private:
   }
   void setSlowComponentFraction(const double x) { m_SlowComponentFraction = x; }
   void setRecoveryTime(const double x) { m_RecoveryTime = x; }
-  void setSnr(const double aSnr) { m_SnrdB = aSnr; }
+  void setSnr(const double aSnr) {
+    m_SnrdB = aSnr;
+    m_SnrLinear = pow(10, -aSnr / 20);
+  }
   void setTauApFastComponent(const double x) {
     m_TauApFastComponent = x;
     m_HasAp = true;
@@ -81,7 +83,6 @@ private:
     m_HasAp = true;
   }
   void setTauApSlowFraction(const double x) { m_ApSlowFraction = x; }
-  void setTauAp(const double, const double);
   void setCcgv(const double x) { m_Ccgv = x; }
   void setPde(const double x) {
     m_Pde = x;
@@ -130,8 +131,7 @@ private:
 
   // Pde
   double m_Pde;
-  std::vector<double> m_PdeSpectrum;
-  std::vector<double> m_PhotonWavelength;
+  std::map<double, double> m_PdeSpectrum;
   PdeType m_HasPde = PdeType::kNoPde;
 
   // Bools

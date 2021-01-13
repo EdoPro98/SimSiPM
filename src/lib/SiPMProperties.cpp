@@ -11,7 +11,6 @@ const uint32_t SiPMProperties::nCells() const {
     m_SideCells = 1000 * m_Size / m_Pitch;
     m_Ncells = m_SideCells * m_SideCells;
   }
-
   return m_Ncells;
 }
 
@@ -20,13 +19,11 @@ const uint32_t SiPMProperties::nSideCells() const {
     m_SideCells = 1000 * m_Size / m_Pitch;
     m_Ncells = m_SideCells * m_SideCells;
   }
-
   return m_SideCells;
 }
 
 const uint32_t SiPMProperties::nSignalPoints() const {
   if (m_SignalPoints == 0) { m_SignalPoints = m_SignalLength / m_Sampling; }
-
   return m_SignalPoints;
 }
 
@@ -35,10 +32,8 @@ const double SiPMProperties::snrLinear() const {
   return m_SnrLinear;
 }
 
-const std::pair<std::vector<double>, std::vector<double>>
-SiPMProperties::pdeSpectrum() const {
-  const auto pair = std::make_pair(m_PdeSpectrum, m_PhotonWavelength);
-  return pair;
+const std::map<double, double> SiPMProperties::pdeSpectrum() const {
+  return m_PdeSpectrum;
 }
 
 // Setters
@@ -80,12 +75,6 @@ void SiPMProperties::setProperty(const std::string& aProp,
     setXt(aPropValue);
   } else if (aProp == "Ap") {
     setAp(aPropValue);
-  } else if (aProp == "DcrOff") {
-    setDcrOff();
-  } else if (aProp == "XtOff") {
-    setXtOff();
-  } else if (aProp == "ApOff") {
-    setApOff();
   } else {
     std::cerr << "Property: " << aProp << " not found! \n";
   }
@@ -96,14 +85,17 @@ void SiPMProperties::setSampling(const double aSampling) {
   m_SignalPoints = static_cast<uint32_t>(m_SignalLength / aSampling);
 }
 
-void SiPMProperties::setTauAp(const double aTauApFast,
-                              const double aTauApSlow) {
-  m_TauApFastComponent = aTauApFast;
-  m_TauApSlowComponent = aTauApSlow;
-  m_HasAp = true;
+void SiPMProperties::setPdeSpectrum(const std::map<double, double>& x) {
+  m_PdeSpectrum = x;
+  m_HasPde = PdeType::kSpectrumPde;
 }
 
-// Read/Write settings
+void SiPMProperties::setPdeSpectrum(const std::vector<double>& wav,
+                                    const std::vector<double>& pde) {
+  for (uint32_t i = 0; i < wav.size(); ++i) { m_PdeSpectrum[wav[i]] = pde[i]; }
+  m_HasPde = PdeType::kSpectrumPde;
+}
+
 void SiPMProperties::dumpSettings() const {
   std::cout << "===> SiPM Settings <===" << '\n';
   std::cout << "Size: " << m_Size << " mm\n";

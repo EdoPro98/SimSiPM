@@ -30,30 +30,27 @@ public:
     return SiPMDebugInfo(m_PhotonTimes.size(), m_nPe, m_nDcr, m_nXt, m_nAp);
   }
 
-  inline void addPhoton(const double aTime) {
-    m_PhotonTimes.emplace_back(aTime);
-  }
+  void setProperty(const std::string&, const double);
+  void setProperties(const SiPMProperties& x){m_Properties = x;}
+
+  void addPhoton(const double);
   void addPhoton(const double, const double);
-  inline void addPhotons(const std::vector<double>& aTimes) {
-    m_PhotonTimes = aTimes;
-  }
+  void addPhotons(const std::vector<double>&);
   void addPhotons(const std::vector<double>&, const std::vector<double>&);
+
   void runEvent();
   void resetState();
 
-  void setProperty(const std::string&, const double);
-  void setProperties(const std::vector<std::string>&,
-                     const std::vector<double>&);
   void setPrecisionLevel(const PrecisionLevel x) { m_PrecisionLevel = x; }
 
 private:
+  const std::vector<double> signalShape() const;
   const double evaluatePde(const double) const;
-  const bool isDetected(const double aPde) { return m_rng.Rand() < aPde; }
+  const bool isDetected(const double aPde) const { return m_rng.Rand() < aPde; }
   const bool isInSensor(const int32_t, const int32_t) const;
   const std::pair<int32_t, int32_t> hitCell() const;
   const std::pair<std::vector<uint32_t>, std::unordered_set<uint32_t>>
   getUniqueId() const;
-  const std::vector<double> signalShape() const;
   void sortHits() { std::sort(m_Hits.begin(), m_Hits.end()); }
 
   void addDcrEvents();

@@ -2,13 +2,12 @@
 #ifdef __AVX2__
 #include <immintrin.h>
 #endif
+#include <algorithm>
 
 #include "SiPMProperties.h"
 
 namespace sipm {
 
-// Public
-// Ctor
 SiPMSensor::SiPMSensor(const SiPMProperties& aProperty) noexcept {
   m_Properties = aProperty;
   m_SignalShape = signalShape();
@@ -21,11 +20,44 @@ void SiPMSensor::setProperty(const std::string& prop, const double val) {
   m_Signal.setSampling(m_Properties.sampling());
 }
 
-void SiPMSensor::setProperties(const std::vector<std::string>& props,
-                               const std::vector<double>& vals) {
-  for (uint32_t i = 0; i < props.size(); ++i) {
-    m_Properties.setProperty(props[i], vals[i]);
-  }
+void SiPMSensor::addPhoton(const double aTime) {
+  m_PhotonTimes.emplace_back(aTime);
+}
+
+void SiPMSensor::addPhoton(const double aTime, const double aWavelength) {
+  m_PhotonTimes.emplace_back(aTime);
+  m_PhotonWavelengths.emplace_back(aWavelength);
+}
+
+void SiPMSensor::addPhotons(const std::vector<double>& aTimes) {
+  m_PhotonTimes = aTimes;
+}
+
+void SiPMSensor::addPhotons(const std::vector<double>& aTimes,
+  const std::vector<double>& aWavelengths) {
+    m_PhotonTimes = aTimes;
+    m_PhotonWavelengths = aWavelengths;
+}
+
+void SiPMSensor::runEvent() {
+  if (m_Properties.hasDcr()) { addDcrEvents(); }
+  addPhotoelectrons();
+  if (m_Properties.hasXt()) { addXtEvents(); }
+  calculateSignalAmplitudes();
+  if (m_Properties.hasAp()) { addApEvents(); }
+  generateSignal();
+}
+
+void SiPMSensor::resetState() {
+  m_nTotalHits = 0;
+  m_nPe = 0;
+  m_nDcr = 0;
+  m_nXt = 0;
+  m_nAp = 0;
+
+  m_Hits.clear();
+  m_PhotonTimes.clear();
+  m_PhotonWavelengths.clear();
 }
 
 const std::vector<double> SiPMSensor::signalShape() const {
@@ -59,21 +91,16 @@ const std::vector<double> SiPMSensor::signalShape() const {
   return lSignalShape;
 }
 
-void SiPMSensor::addPhoton(const double aTime, const double aWavelength) {
-  m_PhotonTimes.emplace_back(aTime);
-  m_PhotonWavelengths.emplace_back(aWavelength);
-}
-
-void SiPMSensor::addPhotons(const std::vector<double>& aTimes,
-                            const std::vector<double>& aWavelengths) {
-  resetState();
-  m_PhotonTimes = aTimes;
-  m_PhotonWavelengths = aWavelengths;
-}
-
-// Private
 const double SiPMSensor::evaluatePde(const double aPhotonWavelength) const {
-  return 0;
+  const std::map<double, double> pde = m_Properties.pdeSpectrum();
+  auto right = pde.upper_bound(aPhotonWavelength);
+  if (right == pde.end()) { --right; }
+  if (right == pde.begin()) { ++right; }
+  auto left = right;
+  --left;
+  const double delta =
+    (aPhotonWavelength - left->first) / (right->first - left->first);
+  return delta * right->second + (1 - delta) * left->second;
 }
 
 const bool SiPMSensor::isInSensor(const int32_t r, const int32_t c) const {
@@ -91,6 +118,40 @@ const std::pair<int32_t, int32_t> SiPMSensor::hitCell() const {
   }
 
   return std::make_pair(row, col);
+}
+
+const std::pair<std::vector<uint32_t>, std::unordered_set<uint32_t>>
+SiPMSensor::getUniqueId() const {
+
+  std::vector<uint32_t> cellId;
+  cellId.reserve(m_Hits.size());
+  for (auto hit = m_Hits.begin(); hit != m_Hits.end(); ++hit) {
+    cellId.emplace_back(hit->id());
+  }
+  std::unordered_set<uint32_t> uniqueCellId(cellId.begin(), cellId.end());
+
+  return std::make_pair(cellId, uniqueCellId);
+}
+
+void SiPMSensor::addDcrEvents() {
+  const double signalLength = m_Properties.signalLength();
+  const double meanDcr = 1e9 / m_Properties.dcr();
+  const int32_t nSideCells = m_Properties.nSideCells();
+
+  double last = -100;
+
+  while (last < signalLength) {
+    last += m_rng.randExponential(meanDcr);
+    if ((last > 0) && (last < signalLength)) {
+      int32_t row = m_rng.randInteger(nSideCells);
+      int32_t col = m_rng.randInteger(nSideCells);
+
+      m_Hits.emplace_back(last, 1, row, col, SiPMHit::HitType::kDarkCount);
+
+      m_nTotalHits++;
+      m_nDcr++;
+    }
+  }
 }
 
 void SiPMSensor::addPhotoelectrons() {
@@ -142,27 +203,6 @@ void SiPMSensor::addPhotoelectrons() {
     }
     break;
   } /* SWITCH */
-}
-
-void SiPMSensor::addDcrEvents() {
-  const double signalLength = m_Properties.signalLength();
-  const double meanDcr = 1e9 / m_Properties.dcr();
-  const int32_t nSideCells = m_Properties.nSideCells();
-
-  double last = -100;
-
-  while (last < signalLength) {
-    last += m_rng.randExponential(meanDcr);
-    if ((last > 0) && (last < signalLength)) {
-      int32_t row = m_rng.randInteger(nSideCells);
-      int32_t col = m_rng.randInteger(nSideCells);
-
-      m_Hits.emplace_back(last, 1, row, col, SiPMHit::HitType::kDarkCount);
-
-      m_nTotalHits++;
-      m_nDcr++;
-    }
-  }
 }
 
 void SiPMSensor::addXtEvents() {
@@ -241,19 +281,6 @@ void SiPMSensor::addApEvents() {
   }   /* WHILE HIT */
 }
 
-const std::pair<std::vector<uint32_t>, std::unordered_set<uint32_t>>
-SiPMSensor::getUniqueId() const {
-
-  std::vector<uint32_t> cellId;
-  cellId.reserve(m_Hits.size());
-  for (auto hit = m_Hits.begin(); hit != m_Hits.end(); ++hit) {
-    cellId.emplace_back(hit->id());
-  }
-  std::unordered_set<uint32_t> uniqueCellId(cellId.begin(), cellId.end());
-
-  return std::make_pair(cellId, uniqueCellId);
-}
-
 void SiPMSensor::calculateSignalAmplitudes() {
   sortHits();
   const auto unique = getUniqueId();
@@ -286,7 +313,7 @@ void SiPMSensor::generateSignal() {
 
   m_Signal = m_rng.randGaussian(0, m_Properties.snrLinear(), nSignalPoints);
 
-  for (auto hit = m_Hits.begin(); hit != m_Hits.cend(); ++hit) {
+  for (auto hit = m_Hits.begin(); hit != m_Hits.end(); ++hit) {
     const uint32_t time = hit->time() / sampling;
     const double amplitude =
       hit->amplitude() * m_rng.randGaussian(1, m_Properties.ccgv());
@@ -295,13 +322,14 @@ void SiPMSensor::generateSignal() {
     uint32_t i = 0;
     const __m256d __amplitude = _mm256_set1_pd(amplitude);
     for (i = time; i < nSignalPoints - 4; i += 4) {
-      __m256d __signal = _mm256_loadu_pd(&m_Signal[i]);
-      __m256d __shape = _mm256_loadu_pd(&m_SignalShape[i - time]);
+      __m256d __signal = _mm256_loadu_pd(&m_Signal[i]); // Load s
+      __m256d __shape = _mm256_loadu_pd(&m_SignalShape[i - time]); // Load sh
       __signal = _mm256_fmadd_pd(__shape, __amplitude, __signal); // s += sh * a
-      _mm256_storeu_pd(&m_Signal[i], __signal);
+      _mm256_storeu_pd(&m_Signal[i], __signal); // Save signal
     }
-    for (i; i < nSignalPoints; ++i) {
+    while (i < nSignalPoints) {
       m_Signal[i] += m_SignalShape[i - time] * amplitude;
+      ++i;
     }
 #else
     for (uint32_t i = time; i < nSignalPoints; ++i) {
@@ -309,27 +337,6 @@ void SiPMSensor::generateSignal() {
     }
 #endif
   }
-}
-
-void SiPMSensor::runEvent() {
-  if (m_Properties.hasDcr()) { addDcrEvents(); }
-  addPhotoelectrons();
-  if (m_Properties.hasXt()) { addXtEvents(); }
-  calculateSignalAmplitudes();
-  if (m_Properties.hasAp()) { addApEvents(); }
-  generateSignal();
-}
-
-void SiPMSensor::resetState() {
-  m_nTotalHits = 0;
-  m_nPe = 0;
-  m_nDcr = 0;
-  m_nXt = 0;
-  m_nAp = 0;
-
-  m_Hits.clear();
-  m_PhotonTimes.clear();
-  m_PhotonWavelengths.clear();
 }
 
 } // namespace sipm
