@@ -47,6 +47,16 @@ public:
 
   // Setters
   void setProperty(const std::string&, const double);
+  void setDcrOff() { m_HasDcr = false; }
+  void setApOff() { m_HasAp = false; }
+  void setXtOff() { m_HasXt = false; }
+  void setPdeOff() { m_HasPde = PdeType::kNoPde; }
+  void setPdeSpectrum(const std::vector<double>& x,
+                      const std::vector<double>& y) {
+    m_PdeSpectrum = x;
+    m_PhotonWavelength = y;
+    m_HasPde = PdeType::kSpectrumPde;
+  }
 
 private:
   void setSize(const double x) { m_Size = x; }
@@ -77,12 +87,6 @@ private:
     m_Pde = x;
     m_HasPde = PdeType::kSimplePde;
   }
-  void setPdeSpectrum(const std::vector<double>& x,
-                      const std::vector<double>& y) {
-    m_PdeSpectrum = x;
-    m_PhotonWavelength = y;
-    m_HasPde = PdeType::kSpectrumPde;
-  }
   void setDcr(const double x) {
     m_Dcr = x;
     m_HasDcr = true;
@@ -95,11 +99,6 @@ private:
     m_Ap = x;
     m_HasAp = true;
   }
-  void setDcrOff() { m_HasDcr = false; }
-  void setApOff() { m_HasAp = false; }
-  void setXtOff() { m_HasXt = false; }
-  void setPdeOff() { m_HasPde = PdeType::kNoPde; }
-  void setHasSlowComponent(const bool x) { m_HasSlowComponent = x; }
 
   // Geometry
   double m_Size = 1;

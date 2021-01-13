@@ -49,11 +49,11 @@ const double SiPMAnalogSignal::toa(const double intstart, const double intgate,
 
   for (auto it = start; it < end; ++it) {
     if (*it > threshold) {
-      toa = (it - start) * m_Sampling;
+      toa = (it - start);
       break;
     }
   }
-  return toa;
+  return toa * m_Sampling;
 }
 
 const double SiPMAnalogSignal::top(const double intstart, const double intgate,

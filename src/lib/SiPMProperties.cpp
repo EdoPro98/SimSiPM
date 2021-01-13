@@ -86,8 +86,6 @@ void SiPMProperties::setProperty(const std::string& aProp,
     setXtOff();
   } else if (aProp == "ApOff") {
     setApOff();
-  } else if (aProp == "HasSlowComponent") {
-    setHasSlowComponent(aPropValue);
   } else {
     std::cerr << "Property: " << aProp << " not found! \n";
   }
