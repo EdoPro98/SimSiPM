@@ -33,11 +33,11 @@ private:
     return ((x + y + 1) * (x + y) << 1) + y;
   }
 
-  uint32_t m_Row, m_Col;
-  uint32_t m_Id;
   double m_Time;
   double m_Amplitude;
+  uint32_t m_Row, m_Col;
   HitType m_HitType;
+  uint32_t m_Id;
 };
 
 } // namespace sipm

@@ -50,14 +50,6 @@ public:
 
   // Setters
   void setProperty(const std::string&, const double);
-  void setDcrOff() { m_HasDcr = false; }
-  void setApOff() { m_HasAp = false; }
-  void setXtOff() { m_HasXt = false; }
-  void setPdeOff() { m_HasPde = PdeType::kNoPde; }
-  void setPdeSpectrum(const std::map<double, double>&);
-  void setPdeSpectrum(const std::vector<double>&, const std::vector<double>&);
-
-private:
   void setSize(const double x) { m_Size = x; }
   void setPitch(const double x) { m_Pitch = x; }
   void setSampling(const double x);
@@ -100,7 +92,14 @@ private:
     m_Ap = x;
     m_HasAp = true;
   }
+  void setDcrOff() { m_HasDcr = false; }
+  void setApOff() { m_HasAp = false; }
+  void setXtOff() { m_HasXt = false; }
+  void setPdeOff() { m_HasPde = PdeType::kNoPde; }
+  void setPdeSpectrum(const std::map<double, double>&);
+  void setPdeSpectrum(const std::vector<double>&, const std::vector<double>&);
 
+private:
   // Geometry
   double m_Size = 1;
   double m_Pitch = 25;

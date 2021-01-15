@@ -31,7 +31,7 @@ public:
   }
 
   void setProperty(const std::string&, const double);
-  void setProperties(const SiPMProperties& x){m_Properties = x;}
+  void setProperties(const SiPMProperties& x) { m_Properties = x; }
 
   void addPhoton(const double);
   void addPhoton(const double, const double);
@@ -58,7 +58,7 @@ private:
   void addXtEvents();
   void addApEvents();
   void calculateSignalAmplitudes();
-  void generateSignal() __attribute__((hot, optimize("Ofast", "fast-math")));
+  void generateSignal() __attribute__((hot));
 
   SiPMProperties m_Properties;
   mutable SiPMRandom m_rng;

@@ -17,17 +17,15 @@ public:
   void setBandwidth(const double);
 
 private:
-  void lowpass(std::vector<double>&, const double) const
-    __attribute__((hot, optimize("Ofast", "fast-math")));
+  void lowpass(std::vector<double>&, const double) const __attribute__((hot));
   std::vector<int32_t> quantize(const std::vector<double>&) const
-    __attribute__((hot, optimize("Ofast", "fast-math")));
-  void jitter(std::vector<double>&, const double) const
-    __attribute__((hot, optimize("Ofast", "fast-math")));
+    __attribute__((hot));
+  void jitter(std::vector<double>&, const double) const __attribute__((hot));
 
   uint32_t m_Nbits;
-  uint32_t m_Qlevels;
   double m_Range;
   double m_Gain;
+  uint32_t m_Qlevels;
 
   double m_Jitter = 0;
   double m_Bandwidth = 0;

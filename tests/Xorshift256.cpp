@@ -5,30 +5,32 @@
 using namespace sipm;
 using namespace std;
 int main(int argc, char const* argv[]) {
-  int k;
+  int k,s;
 
   SiPMRng::Xorshift256plus rng;
 
-  k = 10000;
+  k = 1000;
+  s = 1000;
   while (k > 0) {
-    uint64_t temp[100];
-    for (int j = 0; j < 100; ++j) { temp[j] = rng(); }
+    uint64_t temp[s];
+    for (int j = 0; j < s; ++j) { temp[j] = rand(); }
 
-    for (int i = 0; i < 100; ++i) {
-      for (int j = 0; j < 100; ++j) {
+    for (int i = 0; i < s; ++i) {
+      for (int j = 0; j < s; ++j) {
         if (i != j) { assert(temp[i] != temp[j]); }
       }
     }
     --k;
   }
 
-  k = 1000;
+  k = 100;
+  s = 10000;
   while (k > 0) {
-    uint64_t temp[1000];
-    for (int j = 0; j < 1000; ++j) { temp[j] = rng(); }
+    uint64_t temp[s];
+    for (int j = 0; j < s; ++j) { temp[j] = rng(); }
 
-    for (int i = 0; i < 1000; ++i) {
-      for (int j = 0; j < 1000; ++j) {
+    for (int i = 0; i < s; ++i) {
+      for (int j = 0; j < s; ++j) {
         if (i != j) { assert(temp[i] != temp[j]); }
       }
     }

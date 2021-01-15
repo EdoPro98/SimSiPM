@@ -3,9 +3,26 @@ project(SimSiPM VERSION 1.0.0 DESCRIPTION "Library for SiPM simulation" LANGUAGE
 include(GNUInstallDirs)
 
 # CXX standard
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 11 CACHE STRING "C++ standard to be used")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+if(NOT CMAKE_BUILD_TYPE)
+	message(STATUS "No default build type specified: setting CMAKE_BUILD_TYPE=Release")
+	set(CMAKE_BUILD_TYPE Release CACHE STRING
+		"Choose the build type: options are: Debug Release RelWithDebInfo MinSizeRel"
+		FORCE)
+else(NOT CMAKE_BUILD_TYPE)
+	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		message("====================================================================================")
+		message(STATUS "Build type is set to Debug: Performance will be negatively impacted")
+		message(STATUS "Add -DCMAKE_BUILD_TYPE=Release to the CMake command line to get an optimized build")
+		message("====================================================================================")
+	endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+endif(NOT CMAKE_BUILD_TYPE)
+
 
 # Library
 add_library(sipm SHARED
@@ -37,9 +54,10 @@ install(TARGETS sipm
 add_subdirectory(tests)
 enable_testing()
 
+
 add_test(Uniform tests/Rand)
 add_test(Exponential tests/Exp)
 add_test(Integer tests/Integer)
 add_test(Gaussian tests/Gaussian)
 add_test(Poisson tests/Poisson)
-add_test(Xorshift64 tests/Xorshift64)
+add_test(Xorshift256 tests/Xorshift256)
