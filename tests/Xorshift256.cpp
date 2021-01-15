@@ -5,7 +5,7 @@
 using namespace sipm;
 using namespace std;
 int main(int argc, char const* argv[]) {
-  int k,s;
+  int k, s;
 
   SiPMRng::Xorshift256plus rng;
 

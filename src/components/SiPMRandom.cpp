@@ -103,6 +103,7 @@ std::vector<double> SiPMRandom::Rand(const uint32_t n) {
 std::vector<double> SiPMRandom::randGaussian(const double mu,
                                              const double sigma,
                                              const uint32_t n) {
+  if (n == 0) { return {}; }
   std::vector<double> out(n);
 
   for (uint32_t i = 0; i < n - 1; ++i) {

@@ -7,7 +7,7 @@ namespace sipm {
 
 // Getters
 const uint32_t SiPMProperties::nCells() const {
-  if (m_SideCells == 0 | m_Ncells == 0) {
+  if ((m_SideCells == 0) || (m_Ncells == 0)) {
     m_SideCells = 1000 * m_Size / m_Pitch;
     m_Ncells = m_SideCells * m_SideCells;
   }
@@ -15,7 +15,7 @@ const uint32_t SiPMProperties::nCells() const {
 }
 
 const uint32_t SiPMProperties::nSideCells() const {
-  if (m_SideCells == 0 | m_Ncells == 0) {
+  if ((m_SideCells == 0) || (m_Ncells == 0)) {
     m_SideCells = 1000 * m_Size / m_Pitch;
     m_Ncells = m_SideCells * m_SideCells;
   }

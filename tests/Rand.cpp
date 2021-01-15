@@ -13,6 +13,7 @@ int main(int argc, char const* argv[]) {
     double x = rng.Rand();
     assert(x > 0);
     assert(x < 1);
+    double y = x + x;
     --i;
   }
 
@@ -21,6 +22,7 @@ int main(int argc, char const* argv[]) {
     double x = rng.Rand();
     double y = rng.Rand();
     assert(x != y);
+    double z = x + y;
     i--;
   }
   return 0;
