@@ -1,0 +1,84 @@
+\hypertarget{classsipm_1_1_si_p_m_adc}{}\doxysection{sipm\+::Si\+PMAdc Class Reference}
+\label{classsipm_1_1_si_p_m_adc}\index{sipm::SiPMAdc@{sipm::SiPMAdc}}
+
+
+{\ttfamily \#include $<$Si\+PMAdc.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classsipm_1_1_si_p_m_adc_aae91e1cd4104225b7e99ed2e6ed727f1}{Si\+PMAdc}} ()=default
+\item 
+\mbox{\hyperlink{classsipm_1_1_si_p_m_adc_ad1c390d7a35408bcf69f84d202d0b64f}{Si\+PMAdc}} (const uint32\+\_\+t, const double, const double)
+\item 
+\mbox{\hyperlink{classsipm_1_1_si_p_m_digital_signal}{Si\+PMDigital\+Signal}} \mbox{\hyperlink{classsipm_1_1_si_p_m_adc_a4a45c1bea2185dd6ab012266cce1ed50}{digitize}} (const \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal}{Si\+PMAnalog\+Signal}} \&) const
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_adc_a1f4912caf1084ec7b6589f011a4ace7b}{set\+Jitter}} (const double jit)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_adc_afc78eff63c7773c21b7bb5f4ec714401}{set\+Bandwidth}} (const double)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 9 of file Si\+PMAdc.\+h.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_adc_aae91e1cd4104225b7e99ed2e6ed727f1}\label{classsipm_1_1_si_p_m_adc_aae91e1cd4104225b7e99ed2e6ed727f1}} 
+\index{sipm::SiPMAdc@{sipm::SiPMAdc}!SiPMAdc@{SiPMAdc}}
+\index{SiPMAdc@{SiPMAdc}!sipm::SiPMAdc@{sipm::SiPMAdc}}
+\doxysubsubsection{\texorpdfstring{SiPMAdc()}{SiPMAdc()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily sipm\+::\+Si\+PMAdc\+::\+Si\+PMAdc (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_adc_ad1c390d7a35408bcf69f84d202d0b64f}\label{classsipm_1_1_si_p_m_adc_ad1c390d7a35408bcf69f84d202d0b64f}} 
+\index{sipm::SiPMAdc@{sipm::SiPMAdc}!SiPMAdc@{SiPMAdc}}
+\index{SiPMAdc@{SiPMAdc}!sipm::SiPMAdc@{sipm::SiPMAdc}}
+\doxysubsubsection{\texorpdfstring{SiPMAdc()}{SiPMAdc()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily sipm\+::\+Si\+PMAdc\+::\+Si\+PMAdc (\begin{DoxyParamCaption}\item[{const uint32\+\_\+t}]{nbits,  }\item[{const double}]{range,  }\item[{const double}]{gain }\end{DoxyParamCaption})}
+
+
+
+Definition at line 14 of file Si\+PMAdc.\+cpp.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_adc_a4a45c1bea2185dd6ab012266cce1ed50}\label{classsipm_1_1_si_p_m_adc_a4a45c1bea2185dd6ab012266cce1ed50}} 
+\index{sipm::SiPMAdc@{sipm::SiPMAdc}!digitize@{digitize}}
+\index{digitize@{digitize}!sipm::SiPMAdc@{sipm::SiPMAdc}}
+\doxysubsubsection{\texorpdfstring{digitize()}{digitize()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classsipm_1_1_si_p_m_digital_signal}{Si\+PMDigital\+Signal}} sipm\+::\+Si\+PMAdc\+::digitize (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal}{Si\+PMAnalog\+Signal}} \&}]{signal }\end{DoxyParamCaption}) const}
+
+
+
+Definition at line 92 of file Si\+PMAdc.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_adc_afc78eff63c7773c21b7bb5f4ec714401}\label{classsipm_1_1_si_p_m_adc_afc78eff63c7773c21b7bb5f4ec714401}} 
+\index{sipm::SiPMAdc@{sipm::SiPMAdc}!setBandwidth@{setBandwidth}}
+\index{setBandwidth@{setBandwidth}!sipm::SiPMAdc@{sipm::SiPMAdc}}
+\doxysubsubsection{\texorpdfstring{setBandwidth()}{setBandwidth()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMAdc\+::set\+Bandwidth (\begin{DoxyParamCaption}\item[{const double}]{bw }\end{DoxyParamCaption})}
+
+
+
+Definition at line 17 of file Si\+PMAdc.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_adc_a1f4912caf1084ec7b6589f011a4ace7b}\label{classsipm_1_1_si_p_m_adc_a1f4912caf1084ec7b6589f011a4ace7b}} 
+\index{sipm::SiPMAdc@{sipm::SiPMAdc}!setJitter@{setJitter}}
+\index{setJitter@{setJitter}!sipm::SiPMAdc@{sipm::SiPMAdc}}
+\doxysubsubsection{\texorpdfstring{setJitter()}{setJitter()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMAdc\+::set\+Jitter (\begin{DoxyParamCaption}\item[{const double}]{jit }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 16 of file Si\+PMAdc.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/edo/\+Ubuntu\+Data/\+Projects/\+Sim\+Si\+PM/\+Sim\+Si\+PM/\mbox{\hyperlink{_si_p_m_adc_8h}{Si\+PMAdc.\+h}}\item 
+/home/edo/\+Ubuntu\+Data/\+Projects/\+Sim\+Si\+PM/src/lib/\mbox{\hyperlink{_si_p_m_adc_8cpp}{Si\+PMAdc.\+cpp}}\end{DoxyCompactItemize}

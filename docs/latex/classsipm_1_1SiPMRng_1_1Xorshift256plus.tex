@@ -1,0 +1,69 @@
+\hypertarget{classsipm_1_1SiPMRng_1_1Xorshift256plus}{}\doxysection{sipm\+::Si\+PMRng\+::Xorshift256plus Class Reference}
+\label{classsipm_1_1SiPMRng_1_1Xorshift256plus}\index{sipm::SiPMRng::Xorshift256plus@{sipm::SiPMRng::Xorshift256plus}}
+
+
+Implementation of Xorshift256+ algorithm.  
+
+
+
+
+{\ttfamily \#include $<$Si\+PMRandom.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMRng_1_1Xorshift256plus_a1cf9094f9acb14cc31398d6939be0589}\label{classsipm_1_1SiPMRng_1_1Xorshift256plus_a1cf9094f9acb14cc31398d6939be0589}} 
+\mbox{\hyperlink{classsipm_1_1SiPMRng_1_1Xorshift256plus_a1cf9094f9acb14cc31398d6939be0589}{Xorshift256plus}} () noexcept
+\begin{DoxyCompactList}\small\item\em Default contructor for \mbox{\hyperlink{classsipm_1_1SiPMRng_1_1Xorshift256plus}{Xorshift256plus}}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMRng_1_1Xorshift256plus_afade5581d8beb42817926999985849cd}\label{classsipm_1_1SiPMRng_1_1Xorshift256plus_afade5581d8beb42817926999985849cd}} 
+\mbox{\hyperlink{classsipm_1_1SiPMRng_1_1Xorshift256plus_afade5581d8beb42817926999985849cd}{Xorshift256plus}} (uint64\+\_\+t aseed) noexcept
+\begin{DoxyCompactList}\small\item\em Contructor for \mbox{\hyperlink{classsipm_1_1SiPMRng_1_1Xorshift256plus}{Xorshift256plus}} given a seed value. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMRng_1_1Xorshift256plus_abff6d1b0349ec0dcfc930b49b1fb4007}\label{classsipm_1_1SiPMRng_1_1Xorshift256plus_abff6d1b0349ec0dcfc930b49b1fb4007}} 
+uint64\+\_\+t \mbox{\hyperlink{classsipm_1_1SiPMRng_1_1Xorshift256plus_abff6d1b0349ec0dcfc930b49b1fb4007}{operator()}} () noexcept
+\begin{DoxyCompactList}\small\item\em Returns a pseud-\/random 64-\/bits intger. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsipm_1_1SiPMRng_1_1Xorshift256plus_a057f606c7b5cbf7b9e528875dd482eb9}{jump}} ()
+\begin{DoxyCompactList}\small\item\em Jump function for the alghoritm. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMRng_1_1Xorshift256plus_a5550578ce491e2002bbfab845e78b90d}\label{classsipm_1_1SiPMRng_1_1Xorshift256plus_a5550578ce491e2002bbfab845e78b90d}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMRng_1_1Xorshift256plus_a5550578ce491e2002bbfab845e78b90d}{seed}} ()
+\begin{DoxyCompactList}\small\item\em Sets a random seed generated with rand() \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMRng_1_1Xorshift256plus_a950c13a42d8ccba15a6bb53fa85dd6c8}\label{classsipm_1_1SiPMRng_1_1Xorshift256plus_a950c13a42d8ccba15a6bb53fa85dd6c8}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMRng_1_1Xorshift256plus_a950c13a42d8ccba15a6bb53fa85dd6c8}{seed}} (uint64\+\_\+t)
+\begin{DoxyCompactList}\small\item\em Sets a new seed. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implementation of Xorshift256+ algorithm. 
+
+\begin{DoxyAuthor}{Author}
+Edoardo Proserpio 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2020 
+\end{DoxyDate}
+
+
+Definition at line 31 of file Si\+PMRandom.\+h.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classsipm_1_1SiPMRng_1_1Xorshift256plus_a057f606c7b5cbf7b9e528875dd482eb9}\label{classsipm_1_1SiPMRng_1_1Xorshift256plus_a057f606c7b5cbf7b9e528875dd482eb9}} 
+\index{sipm::SiPMRng::Xorshift256plus@{sipm::SiPMRng::Xorshift256plus}!jump@{jump}}
+\index{jump@{jump}!sipm::SiPMRng::Xorshift256plus@{sipm::SiPMRng::Xorshift256plus}}
+\doxysubsubsection{\texorpdfstring{jump()}{jump()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMRng\+::\+Xorshift256plus\+::jump (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Jump function for the alghoritm. 
+
+Usefull in case the same generator is used in multiple instancies. The jump function will make sure that pseud-\/random values generated from the different instancies are uncorrelated. 
+
+Definition at line 27 of file Si\+PMRandom.\+cpp.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/edo/\+Ubuntu\+Data/\+Projects/\+Sim\+Si\+PM/src/components/Si\+PMRandom.\+h\item 
+/home/edo/\+Ubuntu\+Data/\+Projects/\+Sim\+Si\+PM/src/components/Si\+PMRandom.\+cpp\end{DoxyCompactItemize}

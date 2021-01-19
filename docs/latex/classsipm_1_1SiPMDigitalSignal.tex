@@ -1,0 +1,188 @@
+\hypertarget{classsipm_1_1SiPMDigitalSignal}{}\doxysection{sipm\+::Si\+PMDigital\+Signal Class Reference}
+\label{classsipm_1_1SiPMDigitalSignal}\index{sipm::SiPMDigitalSignal@{sipm::SiPMDigitalSignal}}
+
+
+Class containing the digitized waveform of the generated signal.  
+
+
+
+
+{\ttfamily \#include $<$Sim\+Si\+PM/\+Sim\+Si\+PM/\+Si\+PMDigital\+Signal.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMDigitalSignal_ab233561ee856d13e7b4b40c2ecdd4011}\label{classsipm_1_1SiPMDigitalSignal_ab233561ee856d13e7b4b40c2ecdd4011}} 
+\mbox{\hyperlink{classsipm_1_1SiPMDigitalSignal_ab233561ee856d13e7b4b40c2ecdd4011}{Si\+PMDigital\+Signal}} (const double \mbox{\hyperlink{classsipm_1_1SiPMDigitalSignal_afa341db142a118fa5cd534951a0bbc6a}{sampling}}) noexcept
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{classsipm_1_1SiPMDigitalSignal}{Si\+PMDigital\+Signal}} default constructor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMDigitalSignal_aabf7bfe2f17b56fc2c59c940734ad8a4}\label{classsipm_1_1SiPMDigitalSignal_aabf7bfe2f17b56fc2c59c940734ad8a4}} 
+\mbox{\hyperlink{classsipm_1_1SiPMDigitalSignal_aabf7bfe2f17b56fc2c59c940734ad8a4}{Si\+PMDigital\+Signal}} (const std\+::vector$<$ int32\+\_\+t $>$ \&wav, const double \mbox{\hyperlink{classsipm_1_1SiPMDigitalSignal_afa341db142a118fa5cd534951a0bbc6a}{sampling}}) noexcept
+\begin{DoxyCompactList}\small\item\em \mbox{\hyperlink{classsipm_1_1SiPMDigitalSignal}{Si\+PMDigital\+Signal}} constructor from a std\+::vector. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMDigitalSignal_a9da537c51c4793a314a046bc8d601fb8}\label{classsipm_1_1SiPMDigitalSignal_a9da537c51c4793a314a046bc8d601fb8}} 
+\mbox{\hyperlink{classsipm_1_1SiPMDigitalSignal}{Si\+PMDigital\+Signal}} \& \mbox{\hyperlink{classsipm_1_1SiPMDigitalSignal_a9da537c51c4793a314a046bc8d601fb8}{operator=}} (const std\+::vector$<$ int32\+\_\+t $>$ \&\&a\+Vect) noexcept
+\begin{DoxyCompactList}\small\item\em Move assignement operator from a std\+::vector. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMDigitalSignal_aeab842923d12ad630819009a975b8bc0}\label{classsipm_1_1SiPMDigitalSignal_aeab842923d12ad630819009a975b8bc0}} 
+int32\+\_\+t \& \mbox{\hyperlink{classsipm_1_1SiPMDigitalSignal_aeab842923d12ad630819009a975b8bc0}{operator\mbox{[}$\,$\mbox{]}}} (const uint32\+\_\+t i) noexcept
+\begin{DoxyCompactList}\small\item\em Copy assignement operator from a std\+::vector. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMDigitalSignal_ac2b12bf5718a7809d539af39b343bf31}\label{classsipm_1_1SiPMDigitalSignal_ac2b12bf5718a7809d539af39b343bf31}} 
+const uint32\+\_\+t \mbox{\hyperlink{classsipm_1_1SiPMDigitalSignal_ac2b12bf5718a7809d539af39b343bf31}{size}} () const
+\begin{DoxyCompactList}\small\item\em Returns the size of the vector containing the signal. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMDigitalSignal_afa341db142a118fa5cd534951a0bbc6a}\label{classsipm_1_1SiPMDigitalSignal_afa341db142a118fa5cd534951a0bbc6a}} 
+const double \mbox{\hyperlink{classsipm_1_1SiPMDigitalSignal_afa341db142a118fa5cd534951a0bbc6a}{sampling}} () const
+\begin{DoxyCompactList}\small\item\em Returns the sampling time of the signal in ns. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMDigitalSignal_a455ed6c436f5798a2abc191c3d118bd0}\label{classsipm_1_1SiPMDigitalSignal_a455ed6c436f5798a2abc191c3d118bd0}} 
+const std\+::vector$<$ int32\+\_\+t $>$ \& \mbox{\hyperlink{classsipm_1_1SiPMDigitalSignal_a455ed6c436f5798a2abc191c3d118bd0}{waveform}} () const
+\begin{DoxyCompactList}\small\item\em Used to access signal elements as if it is a std\+::vector. \end{DoxyCompactList}\item 
+const int32\+\_\+t \mbox{\hyperlink{classsipm_1_1SiPMDigitalSignal_a93e73d4e5ad5baa2e277a0021c9dc261}{integral}} (const double, const double, const int32\+\_\+t) const
+\begin{DoxyCompactList}\small\item\em Returns integral of the signal. \end{DoxyCompactList}\item 
+const int32\+\_\+t \mbox{\hyperlink{classsipm_1_1SiPMDigitalSignal_ad4039b758c4af38e2b05b5db868c5888}{peak}} (const double, const double, const int32\+\_\+t) const
+\begin{DoxyCompactList}\small\item\em Returns peak of the signal. \end{DoxyCompactList}\item 
+const double \mbox{\hyperlink{classsipm_1_1SiPMDigitalSignal_a00a6b3490fe842aca23a95692e701c79}{tot}} (const double, const double, const int32\+\_\+t) const
+\begin{DoxyCompactList}\small\item\em Returns time over threshold of the signal. \end{DoxyCompactList}\item 
+const double \mbox{\hyperlink{classsipm_1_1SiPMDigitalSignal_ac510ee0755f79460058efe9072debfeb}{toa}} (const double, const double, const int32\+\_\+t) const
+\begin{DoxyCompactList}\small\item\em Returns time of arrival of the signal. \end{DoxyCompactList}\item 
+const double \mbox{\hyperlink{classsipm_1_1SiPMDigitalSignal_a0fc7da013da76b33b1e12016b8c781b3}{top}} (const double, const double, const int32\+\_\+t) const
+\begin{DoxyCompactList}\small\item\em Returns time of peak. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class containing the digitized waveform of the generated signal. 
+
+\mbox{\hyperlink{SiPMDigitalSignal_8h_source}{Si\+PMDigital\+Signal.\+h}}
+
+This class stores the generated signal as a std\+::vector$<$int32\+\_\+t$>$ representing the sampled analog waveform passed through an ADC. It also has some methods that can be used to extract some simple features from the signal.
+
+\begin{DoxyAuthor}{Author}
+Edoardo Proserpio 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2020 
+\end{DoxyDate}
+
+
+Definition at line 22 of file Si\+PMDigital\+Signal.\+h.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classsipm_1_1SiPMDigitalSignal_a93e73d4e5ad5baa2e277a0021c9dc261}\label{classsipm_1_1SiPMDigitalSignal_a93e73d4e5ad5baa2e277a0021c9dc261}} 
+\index{sipm::SiPMDigitalSignal@{sipm::SiPMDigitalSignal}!integral@{integral}}
+\index{integral@{integral}!sipm::SiPMDigitalSignal@{sipm::SiPMDigitalSignal}}
+\doxysubsubsection{\texorpdfstring{integral()}{integral()}}
+{\footnotesize\ttfamily const int32\+\_\+t sipm\+::\+Si\+PMDigital\+Signal\+::integral (\begin{DoxyParamCaption}\item[{const double}]{intstart,  }\item[{const double}]{intgate,  }\item[{const int32\+\_\+t}]{threshold }\end{DoxyParamCaption}) const}
+
+
+
+Returns integral of the signal. 
+
+Integral of the signal defined as the sum of all samples in the integration window normalized for the sampling time. If the signal is below the threshold the output is set to -\/1. 
+\begin{DoxyParams}{Parameters}
+{\em intstart} & Starting time of integration in ns \\
+\hline
+{\em intgate} & Length of the integration gate \\
+\hline
+{\em threshold} & Threshold to use for one-\/suppression \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 15 of file Si\+PMDigital\+Signal.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1SiPMDigitalSignal_ad4039b758c4af38e2b05b5db868c5888}\label{classsipm_1_1SiPMDigitalSignal_ad4039b758c4af38e2b05b5db868c5888}} 
+\index{sipm::SiPMDigitalSignal@{sipm::SiPMDigitalSignal}!peak@{peak}}
+\index{peak@{peak}!sipm::SiPMDigitalSignal@{sipm::SiPMDigitalSignal}}
+\doxysubsubsection{\texorpdfstring{peak()}{peak()}}
+{\footnotesize\ttfamily const int32\+\_\+t sipm\+::\+Si\+PMDigital\+Signal\+::peak (\begin{DoxyParamCaption}\item[{const double}]{intstart,  }\item[{const double}]{intgate,  }\item[{const int32\+\_\+t}]{threshold }\end{DoxyParamCaption}) const}
+
+
+
+Returns peak of the signal. 
+
+Peak of the signal defined as sample with maximum amplitude in the integration gate. If the signal is below the threshold the output is set to -\/1. 
+\begin{DoxyParams}{Parameters}
+{\em intstart} & Starting time of integration in ns \\
+\hline
+{\em intgate} & Length of the integration gate \\
+\hline
+{\em threshold} & Threshold to use for one-\/suppression \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 38 of file Si\+PMDigital\+Signal.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1SiPMDigitalSignal_ac510ee0755f79460058efe9072debfeb}\label{classsipm_1_1SiPMDigitalSignal_ac510ee0755f79460058efe9072debfeb}} 
+\index{sipm::SiPMDigitalSignal@{sipm::SiPMDigitalSignal}!toa@{toa}}
+\index{toa@{toa}!sipm::SiPMDigitalSignal@{sipm::SiPMDigitalSignal}}
+\doxysubsubsection{\texorpdfstring{toa()}{toa()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMDigital\+Signal\+::toa (\begin{DoxyParamCaption}\item[{const double}]{intstart,  }\item[{const double}]{intgate,  }\item[{const int32\+\_\+t}]{threshold }\end{DoxyParamCaption}) const}
+
+
+
+Returns time of arrival of the signal. 
+
+Arriving time of the signal defined as the time in ns of the first sample above the threshold. If the signal is below the threshold the output is set to -\/1. 
+\begin{DoxyParams}{Parameters}
+{\em intstart} & Starting time of integration in ns \\
+\hline
+{\em intgate} & Length of the integration gate \\
+\hline
+{\em threshold} & Threshold to use for one-\/suppression \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 87 of file Si\+PMDigital\+Signal.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1SiPMDigitalSignal_a0fc7da013da76b33b1e12016b8c781b3}\label{classsipm_1_1SiPMDigitalSignal_a0fc7da013da76b33b1e12016b8c781b3}} 
+\index{sipm::SiPMDigitalSignal@{sipm::SiPMDigitalSignal}!top@{top}}
+\index{top@{top}!sipm::SiPMDigitalSignal@{sipm::SiPMDigitalSignal}}
+\doxysubsubsection{\texorpdfstring{top()}{top()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMDigital\+Signal\+::top (\begin{DoxyParamCaption}\item[{const double}]{intstart,  }\item[{const double}]{intgate,  }\item[{const int32\+\_\+t}]{threshold }\end{DoxyParamCaption}) const}
+
+
+
+Returns time of peak. 
+
+Time in ns of the sample in the peak If the signal is below the threshold the output is set to -\/1. 
+\begin{DoxyParams}{Parameters}
+{\em intstart} & Starting time of integration in ns \\
+\hline
+{\em intgate} & Length of the integration gate \\
+\hline
+{\em threshold} & Threshold to use for one-\/suppression \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 111 of file Si\+PMDigital\+Signal.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1SiPMDigitalSignal_a00a6b3490fe842aca23a95692e701c79}\label{classsipm_1_1SiPMDigitalSignal_a00a6b3490fe842aca23a95692e701c79}} 
+\index{sipm::SiPMDigitalSignal@{sipm::SiPMDigitalSignal}!tot@{tot}}
+\index{tot@{tot}!sipm::SiPMDigitalSignal@{sipm::SiPMDigitalSignal}}
+\doxysubsubsection{\texorpdfstring{tot()}{tot()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMDigital\+Signal\+::tot (\begin{DoxyParamCaption}\item[{const double}]{intstart,  }\item[{const double}]{intgate,  }\item[{const int32\+\_\+t}]{threshold }\end{DoxyParamCaption}) const}
+
+
+
+Returns time over threshold of the signal. 
+
+Time over threshold of the signal in the integration gate defined as the number of samples higher than the threshold normalized for the sampling time. If the signal is below the threshold the output is set to -\/1. 
+\begin{DoxyParams}{Parameters}
+{\em intstart} & Starting time of integration in ns \\
+\hline
+{\em intgate} & Length of the integration gate \\
+\hline
+{\em threshold} & Threshold to use for one-\/suppression \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 62 of file Si\+PMDigital\+Signal.\+cpp.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/edo/\+Ubuntu\+Data/\+Projects/\+Sim\+Si\+PM/\+Sim\+Si\+PM/Si\+PMDigital\+Signal.\+h\item 
+/home/edo/\+Ubuntu\+Data/\+Projects/\+Sim\+Si\+PM/src/lib/Si\+PMDigital\+Signal.\+cpp\end{DoxyCompactItemize}

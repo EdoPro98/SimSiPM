@@ -1,0 +1,486 @@
+\hypertarget{classsipm_1_1SiPMProperties}{}\doxysection{sipm\+::Si\+PMProperties Class Reference}
+\label{classsipm_1_1SiPMProperties}\index{sipm::SiPMProperties@{sipm::SiPMProperties}}
+
+
+Class storing all the parameters that describe a Si\+PM.  
+
+
+
+
+{\ttfamily \#include $<$Sim\+Si\+PM/\+Sim\+Si\+PM/\+Si\+PMProperties.\+h$>$}
+
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum class \mbox{\hyperlink{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715}{Pde\+Type}} \{ \mbox{\hyperlink{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715adb5415d27a148383706ccec3282e3622}{k\+No\+Pde}}
+, \mbox{\hyperlink{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715adcc8bef75976224fb6f8148fbab478b7}{k\+Simple\+Pde}}
+, \mbox{\hyperlink{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715a64dac3c526a347b78896382e7018add1}{k\+Spectrum\+Pde}}
+ \}
+\begin{DoxyCompactList}\small\item\em Used to set different methods to evaluate PDE for each photon. \end{DoxyCompactList}\item 
+enum class \mbox{\hyperlink{classsipm_1_1SiPMProperties_ae898f0a2faccc08ccb33e094c2a5906d}{Hit\+Distribution}} \{ \mbox{\hyperlink{classsipm_1_1SiPMProperties_ae898f0a2faccc08ccb33e094c2a5906da3ea9f7aca87fd7b64469a0d1119f0b50}{k\+Uniform}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_af9cafc158bff29f8aaa65841b20e7514}{read\+Settings}} (std\+::string \&)
+\begin{DoxyCompactList}\small\item\em Used to read settings from a macro file. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_ad33db424d11416146e4e8a2a1f213138}\label{classsipm_1_1SiPMProperties_ad33db424d11416146e4e8a2a1f213138}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_ad33db424d11416146e4e8a2a1f213138}{dump\+Settings}} () const
+\begin{DoxyCompactList}\small\item\em Prints current settings of the sensor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a1537ab8ce564db2e19d6082f4c393f4c}\label{classsipm_1_1SiPMProperties_a1537ab8ce564db2e19d6082f4c393f4c}} 
+const uint32\+\_\+t \mbox{\hyperlink{classsipm_1_1SiPMProperties_a1537ab8ce564db2e19d6082f4c393f4c}{n\+Cells}} () const
+\begin{DoxyCompactList}\small\item\em Returns total number of cells in the sensor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_aa4aeb39489ec93d987ba3ea07da810c6}\label{classsipm_1_1SiPMProperties_aa4aeb39489ec93d987ba3ea07da810c6}} 
+const uint32\+\_\+t \mbox{\hyperlink{classsipm_1_1SiPMProperties_aa4aeb39489ec93d987ba3ea07da810c6}{n\+Side\+Cells}} () const
+\begin{DoxyCompactList}\small\item\em Returns number of cells in the side of the sensor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a7f01e48f07ca0540bdc7bb812325b144}\label{classsipm_1_1SiPMProperties_a7f01e48f07ca0540bdc7bb812325b144}} 
+const uint32\+\_\+t \mbox{\hyperlink{classsipm_1_1SiPMProperties_a7f01e48f07ca0540bdc7bb812325b144}{n\+Signal\+Points}} () const
+\begin{DoxyCompactList}\small\item\em Returns total number of points in the signal. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_ac2d8aca055d740853819b9d4e01cd625}\label{classsipm_1_1SiPMProperties_ac2d8aca055d740853819b9d4e01cd625}} 
+const \mbox{\hyperlink{classsipm_1_1SiPMProperties_ae898f0a2faccc08ccb33e094c2a5906d}{Hit\+Distribution}} \mbox{\hyperlink{classsipm_1_1SiPMProperties_ac2d8aca055d740853819b9d4e01cd625}{hit\+Distribution}} () const
+\begin{DoxyCompactList}\small\item\em Returns \mbox{\hyperlink{classsipm_1_1SiPMProperties_ae898f0a2faccc08ccb33e094c2a5906d}{Hit\+Distribution}} type of the sensor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_ae97d35ed80018c26ff725655bdf5168b}\label{classsipm_1_1SiPMProperties_ae97d35ed80018c26ff725655bdf5168b}} 
+const double \mbox{\hyperlink{classsipm_1_1SiPMProperties_ae97d35ed80018c26ff725655bdf5168b}{signal\+Length}} () const
+\begin{DoxyCompactList}\small\item\em Returns total signal length in ns. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_aafee362ac16750adbc68bdffb4f657ed}\label{classsipm_1_1SiPMProperties_aafee362ac16750adbc68bdffb4f657ed}} 
+const double \mbox{\hyperlink{classsipm_1_1SiPMProperties_aafee362ac16750adbc68bdffb4f657ed}{sampling}} () const
+\begin{DoxyCompactList}\small\item\em Returns sampling time considered by the sensor in ns. \end{DoxyCompactList}\item 
+const double \mbox{\hyperlink{classsipm_1_1SiPMProperties_ac46f271f003476b6411d470918234bdd}{rising\+Time}} () const
+\begin{DoxyCompactList}\small\item\em Returns rising time constant. \end{DoxyCompactList}\item 
+const double \mbox{\hyperlink{classsipm_1_1SiPMProperties_a940f9e292d925cd221567f0bc9caeded}{falling\+Time\+Fast}} () const
+\begin{DoxyCompactList}\small\item\em Returns falling time constant. \end{DoxyCompactList}\item 
+const double \mbox{\hyperlink{classsipm_1_1SiPMProperties_a9c9af4d8454e0a15fa53075717b30085}{falling\+Time\+Slow}} () const
+\begin{DoxyCompactList}\small\item\em Returns falling time constant of slow component. \end{DoxyCompactList}\item 
+const double \mbox{\hyperlink{classsipm_1_1SiPMProperties_a44c64d7eb7debceb48370a0e19ea006f}{slow\+Component\+Fraction}} () const
+\begin{DoxyCompactList}\small\item\em Returns weight of slow component of the signal. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a9daafd67e5b5721868409b4fcde70c98}\label{classsipm_1_1SiPMProperties_a9daafd67e5b5721868409b4fcde70c98}} 
+const double \mbox{\hyperlink{classsipm_1_1SiPMProperties_a9daafd67e5b5721868409b4fcde70c98}{recovery\+Time}} () const
+\begin{DoxyCompactList}\small\item\em Returns recovery time of Si\+PM cells. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a0b60246bac5633d511d1396947a865d8}\label{classsipm_1_1SiPMProperties_a0b60246bac5633d511d1396947a865d8}} 
+const double \mbox{\hyperlink{classsipm_1_1SiPMProperties_a0b60246bac5633d511d1396947a865d8}{dcr}} () const
+\begin{DoxyCompactList}\small\item\em Returns DCR value. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_ae5eda7f4c3f01e5b7f47a294eb44828c}\label{classsipm_1_1SiPMProperties_ae5eda7f4c3f01e5b7f47a294eb44828c}} 
+const double \mbox{\hyperlink{classsipm_1_1SiPMProperties_ae5eda7f4c3f01e5b7f47a294eb44828c}{xt}} () const
+\begin{DoxyCompactList}\small\item\em Returns XT value. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a2f2a810170dacf527ddc769dba6a4f12}\label{classsipm_1_1SiPMProperties_a2f2a810170dacf527ddc769dba6a4f12}} 
+const double \mbox{\hyperlink{classsipm_1_1SiPMProperties_a2f2a810170dacf527ddc769dba6a4f12}{ap}} () const
+\begin{DoxyCompactList}\small\item\em Returns AP value. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a41d8345cc179146b8cda2f605bc40296}\label{classsipm_1_1SiPMProperties_a41d8345cc179146b8cda2f605bc40296}} 
+const double \mbox{\hyperlink{classsipm_1_1SiPMProperties_a41d8345cc179146b8cda2f605bc40296}{tau\+Ap\+Fast}} () const
+\begin{DoxyCompactList}\small\item\em Returns fast time constant for AP. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a0496c07b5576be70009fdb75b70f6491}\label{classsipm_1_1SiPMProperties_a0496c07b5576be70009fdb75b70f6491}} 
+const double \mbox{\hyperlink{classsipm_1_1SiPMProperties_a0496c07b5576be70009fdb75b70f6491}{tau\+Ap\+Slow}} () const
+\begin{DoxyCompactList}\small\item\em Returns slow time constant for AP. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_af896254e9e4dc923e24be278635000c7}\label{classsipm_1_1SiPMProperties_af896254e9e4dc923e24be278635000c7}} 
+const double \mbox{\hyperlink{classsipm_1_1SiPMProperties_af896254e9e4dc923e24be278635000c7}{ap\+Slow\+Fraction}} () const
+\begin{DoxyCompactList}\small\item\em Returns fraction of AP generated as slow. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_ab89f11944192c057ec4c48f87398d5b5}\label{classsipm_1_1SiPMProperties_ab89f11944192c057ec4c48f87398d5b5}} 
+const double \mbox{\hyperlink{classsipm_1_1SiPMProperties_ab89f11944192c057ec4c48f87398d5b5}{ccgv}} () const
+\begin{DoxyCompactList}\small\item\em Returns value of cell-\/to-\/cell gain variation. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_acda90b6ec5b2c2304c7092a6ff46d6d0}\label{classsipm_1_1SiPMProperties_acda90b6ec5b2c2304c7092a6ff46d6d0}} 
+const double \mbox{\hyperlink{classsipm_1_1SiPMProperties_acda90b6ec5b2c2304c7092a6ff46d6d0}{snrdB}} () const
+\begin{DoxyCompactList}\small\item\em Returns SNR in dB. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a6cc4b7482749dea88cc086d1e5ed0c2c}\label{classsipm_1_1SiPMProperties_a6cc4b7482749dea88cc086d1e5ed0c2c}} 
+const double \mbox{\hyperlink{classsipm_1_1SiPMProperties_a6cc4b7482749dea88cc086d1e5ed0c2c}{snr\+Linear}} () const
+\begin{DoxyCompactList}\small\item\em Returns RMS of the noise. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a0e0621665ad1c9b05807b920639cb697}\label{classsipm_1_1SiPMProperties_a0e0621665ad1c9b05807b920639cb697}} 
+const double \mbox{\hyperlink{classsipm_1_1SiPMProperties_a0e0621665ad1c9b05807b920639cb697}{pde}} () const
+\begin{DoxyCompactList}\small\item\em Returns value of PDE if \mbox{\hyperlink{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715adcc8bef75976224fb6f8148fbab478b7}{Pde\+Type\+::k\+Simple\+Pde}} is set. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_abb6b95c344c8368f3258c215b0229ac9}\label{classsipm_1_1SiPMProperties_abb6b95c344c8368f3258c215b0229ac9}} 
+const std\+::map$<$ double, double $>$ \mbox{\hyperlink{classsipm_1_1SiPMProperties_abb6b95c344c8368f3258c215b0229ac9}{pde\+Spectrum}} () const
+\begin{DoxyCompactList}\small\item\em Returns wavelength-\/\+PDE values if \mbox{\hyperlink{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715a64dac3c526a347b78896382e7018add1}{Pde\+Type\+::k\+Spectrum\+Pde}} is set. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a5a1e701efd439ee5640d778749850172}\label{classsipm_1_1SiPMProperties_a5a1e701efd439ee5640d778749850172}} 
+const \mbox{\hyperlink{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715}{Pde\+Type}} \mbox{\hyperlink{classsipm_1_1SiPMProperties_a5a1e701efd439ee5640d778749850172}{pde\+Type}} ()
+\begin{DoxyCompactList}\small\item\em Returns type of PDE calculation used. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a3ff7f6ea582f48491f97688ada6634ab}\label{classsipm_1_1SiPMProperties_a3ff7f6ea582f48491f97688ada6634ab}} 
+const bool \mbox{\hyperlink{classsipm_1_1SiPMProperties_a3ff7f6ea582f48491f97688ada6634ab}{has\+Dcr}} () const
+\begin{DoxyCompactList}\small\item\em Returns true if DCR is considered. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a3c4946680fa02d1587d8817892c3e19a}\label{classsipm_1_1SiPMProperties_a3c4946680fa02d1587d8817892c3e19a}} 
+const bool \mbox{\hyperlink{classsipm_1_1SiPMProperties_a3c4946680fa02d1587d8817892c3e19a}{has\+Xt}} () const
+\begin{DoxyCompactList}\small\item\em Returns true if XT is considered. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a3b5bb5985e334cb022de6ab308379996}\label{classsipm_1_1SiPMProperties_a3b5bb5985e334cb022de6ab308379996}} 
+const bool \mbox{\hyperlink{classsipm_1_1SiPMProperties_a3b5bb5985e334cb022de6ab308379996}{has\+Ap}} () const
+\begin{DoxyCompactList}\small\item\em Returns true if AP is considered. \end{DoxyCompactList}\item 
+const bool \mbox{\hyperlink{classsipm_1_1SiPMProperties_ab1c553d271a0ebe395fa9004087b1a31}{has\+Slow\+Component}} () const
+\begin{DoxyCompactList}\small\item\em Returns true if slow component of the signal is considered. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_ace365d588b96a32e66953a8294451751}\label{classsipm_1_1SiPMProperties_ace365d588b96a32e66953a8294451751}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_ace365d588b96a32e66953a8294451751}{set\+Property}} (const std\+::string \&, const double)
+\begin{DoxyCompactList}\small\item\em Sets a property using its name. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a5ba4dd6d35394c3351ea0403ea9f2b86}\label{classsipm_1_1SiPMProperties_a5ba4dd6d35394c3351ea0403ea9f2b86}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_a5ba4dd6d35394c3351ea0403ea9f2b86}{set\+Size}} (const double x)
+\begin{DoxyCompactList}\small\item\em Set size of Si\+PM sensitive area (side in mm) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_ab016fc227da0d9bef3eb074df1c55750}\label{classsipm_1_1SiPMProperties_ab016fc227da0d9bef3eb074df1c55750}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_ab016fc227da0d9bef3eb074df1c55750}{set\+Pitch}} (const double x)
+\begin{DoxyCompactList}\small\item\em Set pitch of Si\+PM cells (side in um) \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_ad5882742467332e662383b31a1b3a5cf}\label{classsipm_1_1SiPMProperties_ad5882742467332e662383b31a1b3a5cf}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_ad5882742467332e662383b31a1b3a5cf}{set\+Sampling}} (const double x)
+\begin{DoxyCompactList}\small\item\em Set sampling time of the signal in ns. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a17b2e48e18e69de176cc7dcd707c10b4}\label{classsipm_1_1SiPMProperties_a17b2e48e18e69de176cc7dcd707c10b4}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_a17b2e48e18e69de176cc7dcd707c10b4}{set\+Signal\+Length}} (const double x)
+\begin{DoxyCompactList}\small\item\em Set length of the signa in ns. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_a8c94668f60dc5a7328bee282df18463c}{set\+Rise\+Time}} (const double x)
+\begin{DoxyCompactList}\small\item\em Set rising time constant of signal. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_ab0566e8f4f9576db788dc92046490212}{set\+Fall\+Time\+Fast}} (const double x)
+\begin{DoxyCompactList}\small\item\em Set falling time constant of signal. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_ad75316b0ab04143e0943ea8303bb6906}{set\+Fall\+Time\+Slow}} (const double x)
+\begin{DoxyCompactList}\small\item\em Set falling time constant for the slow component of signal. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_ab4e00070e75beef79d244633d30fdf67}\label{classsipm_1_1SiPMProperties_ab4e00070e75beef79d244633d30fdf67}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_ab4e00070e75beef79d244633d30fdf67}{set\+Slow\+Component\+Fraction}} (const double x)
+\begin{DoxyCompactList}\small\item\em Set weigth of slow component in the signal. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a532d15d9ab0a9caa13b119a18be95dcf}\label{classsipm_1_1SiPMProperties_a532d15d9ab0a9caa13b119a18be95dcf}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_a532d15d9ab0a9caa13b119a18be95dcf}{set\+Recovery\+Time}} (const double x)
+\begin{DoxyCompactList}\small\item\em Set recovery time of the Si\+PM cell. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a28479f16e31c879c60adb599e45a986e}\label{classsipm_1_1SiPMProperties_a28479f16e31c879c60adb599e45a986e}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_a28479f16e31c879c60adb599e45a986e}{set\+Snr}} (const double x)
+\begin{DoxyCompactList}\small\item\em Set SNR value in dB. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_afbff1b815faa7c55a2a91d23a4482e36}\label{classsipm_1_1SiPMProperties_afbff1b815faa7c55a2a91d23a4482e36}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_afbff1b815faa7c55a2a91d23a4482e36}{set\+Tau\+Ap\+Fast\+Component}} (const double x)
+\begin{DoxyCompactList}\small\item\em Set time constant for the delay of fast afterpulses. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a2b7abf6b6414d421e751d2ba84e329fd}\label{classsipm_1_1SiPMProperties_a2b7abf6b6414d421e751d2ba84e329fd}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_a2b7abf6b6414d421e751d2ba84e329fd}{set\+Tau\+Ap\+Slow\+Component}} (const double x)
+\begin{DoxyCompactList}\small\item\em Set time constant for the delay of slow afterpulses. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a1061413e3685f67431a0fb63ffb78230}\label{classsipm_1_1SiPMProperties_a1061413e3685f67431a0fb63ffb78230}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_a1061413e3685f67431a0fb63ffb78230}{set\+Tau\+Ap\+Slow\+Fraction}} (const double x)
+\begin{DoxyCompactList}\small\item\em Set probability to have slow afterpulses over fast ones. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_ae775278f3339547c1ca0e51f1a11d8ca}{set\+Ccgv}} (const double x)
+\begin{DoxyCompactList}\small\item\em Set cell-\/to-\/cell gain variation. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_adc0f420837d38b9c58ddd26c1fc9a074}\label{classsipm_1_1SiPMProperties_adc0f420837d38b9c58ddd26c1fc9a074}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_adc0f420837d38b9c58ddd26c1fc9a074}{set\+Pde}} (const double x)
+\begin{DoxyCompactList}\small\item\em Set value for PDE (and sets \mbox{\hyperlink{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715adcc8bef75976224fb6f8148fbab478b7}{Pde\+Type\+::k\+Simple\+Pde}}) \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_aab12843c0ddfab1c166e948632074194}{set\+Dcr}} (const double a\+Dcr)
+\begin{DoxyCompactList}\small\item\em Set dark counts rate. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_a25be2f84bbe85c47b3975ab2f4f2bd5b}{set\+Xt}} (const double a\+Xt)
+\begin{DoxyCompactList}\small\item\em Set optical crosstalk probability. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_a24f4cb4a6ca24b24eac6ff2d61711a5e}{set\+Ap}} (const double a\+Ap)
+\begin{DoxyCompactList}\small\item\em Set afterpulse probability. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_ad122e39988afd4e55aada5f8ad4abe28}\label{classsipm_1_1SiPMProperties_ad122e39988afd4e55aada5f8ad4abe28}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_ad122e39988afd4e55aada5f8ad4abe28}{set\+Dcr\+Off}} ()
+\begin{DoxyCompactList}\small\item\em Turn off dark counts. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a5b6090c5ea94cf26505a39c292927861}\label{classsipm_1_1SiPMProperties_a5b6090c5ea94cf26505a39c292927861}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_a5b6090c5ea94cf26505a39c292927861}{set\+Xt\+Off}} ()
+\begin{DoxyCompactList}\small\item\em Turn off optical crosstalk. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_aea115daa09d3cb19062ec0c55fff92d5}\label{classsipm_1_1SiPMProperties_aea115daa09d3cb19062ec0c55fff92d5}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_aea115daa09d3cb19062ec0c55fff92d5}{set\+Ap\+Off}} ()
+\begin{DoxyCompactList}\small\item\em Turn off afterpulses. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a2e8fe4b5a28e60c3aa8074466843b066}\label{classsipm_1_1SiPMProperties_a2e8fe4b5a28e60c3aa8074466843b066}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_a2e8fe4b5a28e60c3aa8074466843b066}{set\+Slow\+Component\+Off}} ()
+\begin{DoxyCompactList}\small\item\em Turns off slow component of the signal. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_ae0ffaf826346e43188051eff082c2f50}\label{classsipm_1_1SiPMProperties_ae0ffaf826346e43188051eff082c2f50}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_ae0ffaf826346e43188051eff082c2f50}{set\+Dcr\+On}} ()
+\begin{DoxyCompactList}\small\item\em Turn on dark counts. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a68a1d0ddcf615cb8169d8bf1ff1990e6}\label{classsipm_1_1SiPMProperties_a68a1d0ddcf615cb8169d8bf1ff1990e6}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_a68a1d0ddcf615cb8169d8bf1ff1990e6}{set\+Xt\+On}} ()
+\begin{DoxyCompactList}\small\item\em Turn on optical crosstalk. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_af8e753ad8deedf604ecc39760f764a06}\label{classsipm_1_1SiPMProperties_af8e753ad8deedf604ecc39760f764a06}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_af8e753ad8deedf604ecc39760f764a06}{set\+Ap\+On}} ()
+\begin{DoxyCompactList}\small\item\em Turn on afterpulses. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a8b8f00b523f3d4753d84350cef31ed50}\label{classsipm_1_1SiPMProperties_a8b8f00b523f3d4753d84350cef31ed50}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_a8b8f00b523f3d4753d84350cef31ed50}{set\+Slow\+Component\+On}} ()
+\begin{DoxyCompactList}\small\item\em Turns on slow component of the signal. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a3f9fb51500b38943f5cbdb449167688a}\label{classsipm_1_1SiPMProperties_a3f9fb51500b38943f5cbdb449167688a}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_a3f9fb51500b38943f5cbdb449167688a}{set\+Pde\+Off}} ()
+\begin{DoxyCompactList}\small\item\em Turn off PDE\+: set \mbox{\hyperlink{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715adb5415d27a148383706ccec3282e3622}{Pde\+Type\+::k\+No\+Pde}}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_ad566848b2c8d238e34b23691116ae45b}\label{classsipm_1_1SiPMProperties_ad566848b2c8d238e34b23691116ae45b}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_ad566848b2c8d238e34b23691116ae45b}{set\+Pde\+Spectrum}} (const std\+::map$<$ double, double $>$ \&)
+\begin{DoxyCompactList}\small\item\em Set a spectral response of the Si\+PM and sets \mbox{\hyperlink{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715a64dac3c526a347b78896382e7018add1}{Pde\+Type\+::k\+Spectrum\+Pde}}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a3ad3521ac3075050e8ec061535312217}\label{classsipm_1_1SiPMProperties_a3ad3521ac3075050e8ec061535312217}} 
+void \mbox{\hyperlink{classsipm_1_1SiPMProperties_a3ad3521ac3075050e8ec061535312217}{set\+Pde\+Spectrum}} (const std\+::vector$<$ double $>$ \&, const std\+::vector$<$ double $>$ \&)
+\begin{DoxyCompactList}\small\item\em Set a spectral response of the Si\+PM and sets \mbox{\hyperlink{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715a64dac3c526a347b78896382e7018add1}{Pde\+Type\+::k\+Spectrum\+Pde}}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class storing all the parameters that describe a Si\+PM. 
+
+\mbox{\hyperlink{SiPMDigitalSignal_8h_source}{Si\+PMDigital\+Signal.\+h}}
+
+This class stores all the parameters and values used to describe a Si\+PM sensor or signal. It also allows to switch on or off some noise effects and can set different levels of detail in the evaluation of PDE.
+
+\begin{DoxyAuthor}{Author}
+Edoardo Proserpio 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2020 
+\end{DoxyDate}
+
+
+Definition at line 25 of file Si\+PMProperties.\+h.
+
+
+
+\doxysubsection{Member Enumeration Documentation}
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_ae898f0a2faccc08ccb33e094c2a5906d}\label{classsipm_1_1SiPMProperties_ae898f0a2faccc08ccb33e094c2a5906d}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!HitDistribution@{HitDistribution}}
+\index{HitDistribution@{HitDistribution}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{HitDistribution}{HitDistribution}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{classsipm_1_1SiPMProperties_ae898f0a2faccc08ccb33e094c2a5906d}{sipm\+::\+Si\+PMProperties\+::\+Hit\+Distribution}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+Used to describe how photoelectrons are distributed on the Si\+PM surface \begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{kUniform@{kUniform}!sipm::SiPMProperties@{sipm::SiPMProperties}}\index{sipm::SiPMProperties@{sipm::SiPMProperties}!kUniform@{kUniform}}}\mbox{\Hypertarget{classsipm_1_1SiPMProperties_ae898f0a2faccc08ccb33e094c2a5906da3ea9f7aca87fd7b64469a0d1119f0b50}\label{classsipm_1_1SiPMProperties_ae898f0a2faccc08ccb33e094c2a5906da3ea9f7aca87fd7b64469a0d1119f0b50}} 
+k\+Uniform&Photons uniformly distributed on the sensor surface. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line 38 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715}\label{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!PdeType@{PdeType}}
+\index{PdeType@{PdeType}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{PdeType}{PdeType}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715}{sipm\+::\+Si\+PMProperties\+::\+Pde\+Type}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+
+
+Used to set different methods to evaluate PDE for each photon. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{kNoPde@{kNoPde}!sipm::SiPMProperties@{sipm::SiPMProperties}}\index{sipm::SiPMProperties@{sipm::SiPMProperties}!kNoPde@{kNoPde}}}\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715adb5415d27a148383706ccec3282e3622}\label{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715adb5415d27a148383706ccec3282e3622}} 
+k\+No\+Pde&No PDE applied, all photons will turn in photoelectrons. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{kSimplePde@{kSimplePde}!sipm::SiPMProperties@{sipm::SiPMProperties}}\index{sipm::SiPMProperties@{sipm::SiPMProperties}!kSimplePde@{kSimplePde}}}\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715adcc8bef75976224fb6f8148fbab478b7}\label{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715adcc8bef75976224fb6f8148fbab478b7}} 
+k\+Simple\+Pde&Same PDE value used for all photons. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{kSpectrumPde@{kSpectrumPde}!sipm::SiPMProperties@{sipm::SiPMProperties}}\index{sipm::SiPMProperties@{sipm::SiPMProperties}!kSpectrumPde@{kSpectrumPde}}}\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715a64dac3c526a347b78896382e7018add1}\label{classsipm_1_1SiPMProperties_a96a03b8df7eeaad55505aa202450e715a64dac3c526a347b78896382e7018add1}} 
+k\+Spectrum\+Pde&PDE calculated considering the wavelength of each photon. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line 30 of file Si\+PMProperties.\+h.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a940f9e292d925cd221567f0bc9caeded}\label{classsipm_1_1SiPMProperties_a940f9e292d925cd221567f0bc9caeded}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!fallingTimeFast@{fallingTimeFast}}
+\index{fallingTimeFast@{fallingTimeFast}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{fallingTimeFast()}{fallingTimeFast()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::falling\+Time\+Fast (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns falling time constant. 
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classsipm_1_1SiPMSensor_a0d1ef02713d05b7bc759f72778cd6855}{Si\+PMSensor\+::signal\+Shape}} 
+\end{DoxySeeAlso}
+
+
+Definition at line 70 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a9c9af4d8454e0a15fa53075717b30085}\label{classsipm_1_1SiPMProperties_a9c9af4d8454e0a15fa53075717b30085}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!fallingTimeSlow@{fallingTimeSlow}}
+\index{fallingTimeSlow@{fallingTimeSlow}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{fallingTimeSlow()}{fallingTimeSlow()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::falling\+Time\+Slow (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns falling time constant of slow component. 
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classsipm_1_1SiPMSensor_a0d1ef02713d05b7bc759f72778cd6855}{Si\+PMSensor\+::signal\+Shape}} 
+\end{DoxySeeAlso}
+
+
+Definition at line 74 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_ab1c553d271a0ebe395fa9004087b1a31}\label{classsipm_1_1SiPMProperties_ab1c553d271a0ebe395fa9004087b1a31}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!hasSlowComponent@{hasSlowComponent}}
+\index{hasSlowComponent@{hasSlowComponent}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{hasSlowComponent()}{hasSlowComponent()}}
+{\footnotesize\ttfamily const bool sipm\+::\+Si\+PMProperties\+::has\+Slow\+Component (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns true if slow component of the signal is considered. 
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classsipm_1_1SiPMSensor_a0d1ef02713d05b7bc759f72778cd6855}{Si\+PMSensor\+::signal\+Shape}} 
+\end{DoxySeeAlso}
+
+
+Definition at line 130 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_af9cafc158bff29f8aaa65841b20e7514}\label{classsipm_1_1SiPMProperties_af9cafc158bff29f8aaa65841b20e7514}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!readSettings@{readSettings}}
+\index{readSettings@{readSettings}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{readSettings()}{readSettings()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::read\+Settings (\begin{DoxyParamCaption}\item[{std\+::string \&}]{ }\end{DoxyParamCaption})}
+
+
+
+Used to read settings from a macro file. 
+
+\begin{DoxyRefDesc}{Todo}
+\item[\mbox{\hyperlink{todo__todo000002}{Todo}}]Still to implement \end{DoxyRefDesc}
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_ac46f271f003476b6411d470918234bdd}\label{classsipm_1_1SiPMProperties_ac46f271f003476b6411d470918234bdd}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!risingTime@{risingTime}}
+\index{risingTime@{risingTime}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{risingTime()}{risingTime()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::rising\+Time (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns rising time constant. 
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classsipm_1_1SiPMSensor_a0d1ef02713d05b7bc759f72778cd6855}{Si\+PMSensor\+::signal\+Shape}} 
+\end{DoxySeeAlso}
+
+
+Definition at line 67 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a24f4cb4a6ca24b24eac6ff2d61711a5e}\label{classsipm_1_1SiPMProperties_a24f4cb4a6ca24b24eac6ff2d61711a5e}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setAp@{setAp}}
+\index{setAp@{setAp}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setAp()}{setAp()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Ap (\begin{DoxyParamCaption}\item[{const double}]{a\+Ap }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set afterpulse probability. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Ap} & afterpulse probability \mbox{[}0-\/1\mbox{]} \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 207 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_ae775278f3339547c1ca0e51f1a11d8ca}\label{classsipm_1_1SiPMProperties_ae775278f3339547c1ca0e51f1a11d8ca}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setCcgv@{setCcgv}}
+\index{setCcgv@{setCcgv}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setCcgv()}{setCcgv()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Ccgv (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set cell-\/to-\/cell gain variation. 
+
+\begin{DoxySeeAlso}{See also}
+m\+\_\+\+Ccgv 
+\end{DoxySeeAlso}
+
+
+Definition at line 185 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_aab12843c0ddfab1c166e948632074194}\label{classsipm_1_1SiPMProperties_aab12843c0ddfab1c166e948632074194}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setDcr@{setDcr}}
+\index{setDcr@{setDcr}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setDcr()}{setDcr()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Dcr (\begin{DoxyParamCaption}\item[{const double}]{a\+Dcr }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set dark counts rate. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Dcr} & Dark counts rate in Hz \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 195 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_ab0566e8f4f9576db788dc92046490212}\label{classsipm_1_1SiPMProperties_ab0566e8f4f9576db788dc92046490212}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setFallTimeFast@{setFallTimeFast}}
+\index{setFallTimeFast@{setFallTimeFast}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setFallTimeFast()}{setFallTimeFast()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Fall\+Time\+Fast (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set falling time constant of signal. 
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classsipm_1_1SiPMSensor_a0d1ef02713d05b7bc759f72778cd6855}{Si\+PMSensor\+::signal\+Shape}} 
+\end{DoxySeeAlso}
+
+
+Definition at line 151 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_ad75316b0ab04143e0943ea8303bb6906}\label{classsipm_1_1SiPMProperties_ad75316b0ab04143e0943ea8303bb6906}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setFallTimeSlow@{setFallTimeSlow}}
+\index{setFallTimeSlow@{setFallTimeSlow}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setFallTimeSlow()}{setFallTimeSlow()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Fall\+Time\+Slow (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set falling time constant for the slow component of signal. 
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classsipm_1_1SiPMSensor_a0d1ef02713d05b7bc759f72778cd6855}{Si\+PMSensor\+::signal\+Shape}} 
+\end{DoxySeeAlso}
+
+
+Definition at line 155 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a8c94668f60dc5a7328bee282df18463c}\label{classsipm_1_1SiPMProperties_a8c94668f60dc5a7328bee282df18463c}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setRiseTime@{setRiseTime}}
+\index{setRiseTime@{setRiseTime}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setRiseTime()}{setRiseTime()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Rise\+Time (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set rising time constant of signal. 
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classsipm_1_1SiPMSensor_a0d1ef02713d05b7bc759f72778cd6855}{Si\+PMSensor\+::signal\+Shape}} 
+\end{DoxySeeAlso}
+
+
+Definition at line 148 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a25be2f84bbe85c47b3975ab2f4f2bd5b}\label{classsipm_1_1SiPMProperties_a25be2f84bbe85c47b3975ab2f4f2bd5b}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setXt@{setXt}}
+\index{setXt@{setXt}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setXt()}{setXt()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Xt (\begin{DoxyParamCaption}\item[{const double}]{a\+Xt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set optical crosstalk probability. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Xt} & optical crosstalk probability \mbox{[}0-\/1\mbox{]} \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 201 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1SiPMProperties_a44c64d7eb7debceb48370a0e19ea006f}\label{classsipm_1_1SiPMProperties_a44c64d7eb7debceb48370a0e19ea006f}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!slowComponentFraction@{slowComponentFraction}}
+\index{slowComponentFraction@{slowComponentFraction}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{slowComponentFraction()}{slowComponentFraction()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::slow\+Component\+Fraction (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns weight of slow component of the signal. 
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classsipm_1_1SiPMSensor_a0d1ef02713d05b7bc759f72778cd6855}{Si\+PMSensor\+::signal\+Shape}}. 
+\end{DoxySeeAlso}
+
+
+Definition at line 78 of file Si\+PMProperties.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/edo/\+Ubuntu\+Data/\+Projects/\+Sim\+Si\+PM/\+Sim\+Si\+PM/Si\+PMProperties.\+h\item 
+/home/edo/\+Ubuntu\+Data/\+Projects/\+Sim\+Si\+PM/src/lib/Si\+PMProperties.\+cpp\end{DoxyCompactItemize}

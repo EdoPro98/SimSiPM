@@ -1,0 +1,155 @@
+\hypertarget{classsipm_1_1SiPMHit}{}\doxysection{sipm\+::Si\+PMHit Class Reference}
+\label{classsipm_1_1SiPMHit}\index{sipm::SiPMHit@{sipm::SiPMHit}}
+
+
+Class storing informations relative to a single Si\+PM hitted cell.  
+
+
+
+
+{\ttfamily \#include $<$Si\+PMHit.\+h$>$}
+
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum class \mbox{\hyperlink{classsipm_1_1SiPMHit_a6bd3b40e862e6b02042f2dd5c0636ad2}{Hit\+Type}} \{ \mbox{\hyperlink{classsipm_1_1SiPMHit_a6bd3b40e862e6b02042f2dd5c0636ad2a5c6d57f362ef214fc65661f9c8de6635}{k\+Photoelectron}}
+, \mbox{\hyperlink{classsipm_1_1SiPMHit_a6bd3b40e862e6b02042f2dd5c0636ad2ac08ad8bd98f74091d38661041e53286c}{k\+Dark\+Count}}
+, \mbox{\hyperlink{classsipm_1_1SiPMHit_a6bd3b40e862e6b02042f2dd5c0636ad2afec5e1b8afdfa5485209456b33743e10}{k\+Optical\+Crosstalk}}
+, \mbox{\hyperlink{classsipm_1_1SiPMHit_a6bd3b40e862e6b02042f2dd5c0636ad2acaf47475e32a3c0934dec394a33d9e56}{k\+After\+Pulse}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classsipm_1_1SiPMHit_ab0634d3b061e906d79f6dea4d7bdaf70}{Si\+PMHit}} (const double, const double, const uint32\+\_\+t, const uint32\+\_\+t, const \mbox{\hyperlink{classsipm_1_1SiPMHit_a6bd3b40e862e6b02042f2dd5c0636ad2}{Hit\+Type}}) noexcept
+\begin{DoxyCompactList}\small\item\em Constructor of \mbox{\hyperlink{classsipm_1_1SiPMHit}{Si\+PMHit}}. \end{DoxyCompactList}\item 
+const bool \mbox{\hyperlink{classsipm_1_1SiPMHit_a066af1a0a0251d9cebdd71472c73a04e}{operator$<$}} (const \mbox{\hyperlink{classsipm_1_1SiPMHit}{Si\+PMHit}} \&a\+Hit) const noexcept
+\begin{DoxyCompactList}\small\item\em Operator used to sort hits. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMHit_a7706a86d5b717d904d6741496814fea0}\label{classsipm_1_1SiPMHit_a7706a86d5b717d904d6741496814fea0}} 
+const double \mbox{\hyperlink{classsipm_1_1SiPMHit_a7706a86d5b717d904d6741496814fea0}{time}} () const
+\begin{DoxyCompactList}\small\item\em Returns hit time. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMHit_a5c3f5a0ae01e4550c3801b112a71a99d}\label{classsipm_1_1SiPMHit_a5c3f5a0ae01e4550c3801b112a71a99d}} 
+const uint32\+\_\+t \mbox{\hyperlink{classsipm_1_1SiPMHit_a5c3f5a0ae01e4550c3801b112a71a99d}{row}} () const
+\begin{DoxyCompactList}\small\item\em Returns row of hitted cell. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMHit_a21d090b2d77df7ee222defcb00a5cc1d}\label{classsipm_1_1SiPMHit_a21d090b2d77df7ee222defcb00a5cc1d}} 
+const uint32\+\_\+t \mbox{\hyperlink{classsipm_1_1SiPMHit_a21d090b2d77df7ee222defcb00a5cc1d}{col}} () const
+\begin{DoxyCompactList}\small\item\em Returns column of hitted cell. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMHit_ab9c14b4739e560914dbd94c70d6019e0}\label{classsipm_1_1SiPMHit_ab9c14b4739e560914dbd94c70d6019e0}} 
+const uint32\+\_\+t \mbox{\hyperlink{classsipm_1_1SiPMHit_ab9c14b4739e560914dbd94c70d6019e0}{id}} () const
+\begin{DoxyCompactList}\small\item\em Returns a unique id to identify a hitted cell. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMHit_a5d44b583aebba79238d2b719bb56a9bb}\label{classsipm_1_1SiPMHit_a5d44b583aebba79238d2b719bb56a9bb}} 
+const double \mbox{\hyperlink{classsipm_1_1SiPMHit_a5d44b583aebba79238d2b719bb56a9bb}{amplitude}} () const
+\begin{DoxyCompactList}\small\item\em Returns amplitude of the signal produced by the hit. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMHit_a811eaca323e7023aaad20df13ce13dbb}\label{classsipm_1_1SiPMHit_a811eaca323e7023aaad20df13ce13dbb}} 
+double \& \mbox{\hyperlink{classsipm_1_1SiPMHit_a811eaca323e7023aaad20df13ce13dbb}{amplitude}} ()
+\begin{DoxyCompactList}\small\item\em Used to modify the amplitude if needed. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMHit_a0c36f4ba419047453c0398648020fc08}\label{classsipm_1_1SiPMHit_a0c36f4ba419047453c0398648020fc08}} 
+const \mbox{\hyperlink{classsipm_1_1SiPMHit_a6bd3b40e862e6b02042f2dd5c0636ad2}{Hit\+Type}} \& \mbox{\hyperlink{classsipm_1_1SiPMHit_a0c36f4ba419047453c0398648020fc08}{hit\+Type}} () const
+\begin{DoxyCompactList}\small\item\em Returns hit type to identify the hits. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classsipm_1_1SiPMHit_aaa36b3e09add72c1378b0dfb70bcd526}\label{classsipm_1_1SiPMHit_aaa36b3e09add72c1378b0dfb70bcd526}} 
+static const uint32\+\_\+t \mbox{\hyperlink{classsipm_1_1SiPMHit_aaa36b3e09add72c1378b0dfb70bcd526}{make\+Pair}} (const uint32\+\_\+t x, const uint32\+\_\+t y)
+\begin{DoxyCompactList}\small\item\em Creates an unique id from two integers (based on Cantor pairing function) \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class storing informations relative to a single Si\+PM hitted cell. 
+
+This class is used mainly to store informations relative to a single hit on a Si\+PM cell. Informations stored in thiss class will be used to generate the signal for each Si\+PM cell.
+
+\begin{DoxyAuthor}{Author}
+Edoardo Proserpio 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2020 
+\end{DoxyDate}
+
+
+Definition at line 20 of file Si\+PMHit.\+h.
+
+
+
+\doxysubsection{Member Enumeration Documentation}
+\mbox{\Hypertarget{classsipm_1_1SiPMHit_a6bd3b40e862e6b02042f2dd5c0636ad2}\label{classsipm_1_1SiPMHit_a6bd3b40e862e6b02042f2dd5c0636ad2}} 
+\index{sipm::SiPMHit@{sipm::SiPMHit}!HitType@{HitType}}
+\index{HitType@{HitType}!sipm::SiPMHit@{sipm::SiPMHit}}
+\doxysubsubsection{\texorpdfstring{HitType}{HitType}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{classsipm_1_1SiPMHit_a6bd3b40e862e6b02042f2dd5c0636ad2}{sipm\+::\+Si\+PMHit\+::\+Hit\+Type}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+Used to distinguish between hits generated by different processes \begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{kPhotoelectron@{kPhotoelectron}!sipm::SiPMHit@{sipm::SiPMHit}}\index{sipm::SiPMHit@{sipm::SiPMHit}!kPhotoelectron@{kPhotoelectron}}}\mbox{\Hypertarget{classsipm_1_1SiPMHit_a6bd3b40e862e6b02042f2dd5c0636ad2a5c6d57f362ef214fc65661f9c8de6635}\label{classsipm_1_1SiPMHit_a6bd3b40e862e6b02042f2dd5c0636ad2a5c6d57f362ef214fc65661f9c8de6635}} 
+k\+Photoelectron&Hit generated by a photoelectron. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{kDarkCount@{kDarkCount}!sipm::SiPMHit@{sipm::SiPMHit}}\index{sipm::SiPMHit@{sipm::SiPMHit}!kDarkCount@{kDarkCount}}}\mbox{\Hypertarget{classsipm_1_1SiPMHit_a6bd3b40e862e6b02042f2dd5c0636ad2ac08ad8bd98f74091d38661041e53286c}\label{classsipm_1_1SiPMHit_a6bd3b40e862e6b02042f2dd5c0636ad2ac08ad8bd98f74091d38661041e53286c}} 
+k\+Dark\+Count&Hit generated by a dark count. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{kOpticalCrosstalk@{kOpticalCrosstalk}!sipm::SiPMHit@{sipm::SiPMHit}}\index{sipm::SiPMHit@{sipm::SiPMHit}!kOpticalCrosstalk@{kOpticalCrosstalk}}}\mbox{\Hypertarget{classsipm_1_1SiPMHit_a6bd3b40e862e6b02042f2dd5c0636ad2afec5e1b8afdfa5485209456b33743e10}\label{classsipm_1_1SiPMHit_a6bd3b40e862e6b02042f2dd5c0636ad2afec5e1b8afdfa5485209456b33743e10}} 
+k\+Optical\+Crosstalk&Hit generated by an optical crosstalk. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{kAfterPulse@{kAfterPulse}!sipm::SiPMHit@{sipm::SiPMHit}}\index{sipm::SiPMHit@{sipm::SiPMHit}!kAfterPulse@{kAfterPulse}}}\mbox{\Hypertarget{classsipm_1_1SiPMHit_a6bd3b40e862e6b02042f2dd5c0636ad2acaf47475e32a3c0934dec394a33d9e56}\label{classsipm_1_1SiPMHit_a6bd3b40e862e6b02042f2dd5c0636ad2acaf47475e32a3c0934dec394a33d9e56}} 
+k\+After\+Pulse&Hit generated by an afterpulse. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line 25 of file Si\+PMHit.\+h.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classsipm_1_1SiPMHit_ab0634d3b061e906d79f6dea4d7bdaf70}\label{classsipm_1_1SiPMHit_ab0634d3b061e906d79f6dea4d7bdaf70}} 
+\index{sipm::SiPMHit@{sipm::SiPMHit}!SiPMHit@{SiPMHit}}
+\index{SiPMHit@{SiPMHit}!sipm::SiPMHit@{sipm::SiPMHit}}
+\doxysubsubsection{\texorpdfstring{SiPMHit()}{SiPMHit()}}
+{\footnotesize\ttfamily sipm\+::\+Si\+PMHit\+::\+Si\+PMHit (\begin{DoxyParamCaption}\item[{const double}]{a\+Time,  }\item[{const double}]{a\+Amplitude,  }\item[{const uint32\+\_\+t}]{a\+Row,  }\item[{const uint32\+\_\+t}]{a\+Col,  }\item[{const \mbox{\hyperlink{classsipm_1_1SiPMHit_a6bd3b40e862e6b02042f2dd5c0636ad2}{Hit\+Type}}}]{a\+Hit\+Type }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+
+Constructor of \mbox{\hyperlink{classsipm_1_1SiPMHit}{Si\+PMHit}}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+Time} & Time of the hit in ns \\
+\hline
+{\em a\+Amplitude} & Amplitude of the hit \\
+\hline
+{\em a\+Row} & Row of the hitted cell \\
+\hline
+{\em a\+Col} & Column of the hitted cell \\
+\hline
+{\em a\+Hit\+Type} & Hit type (PE,DCR,XT,...) \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 11 of file Si\+PMHit.\+cpp.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classsipm_1_1SiPMHit_a066af1a0a0251d9cebdd71472c73a04e}\label{classsipm_1_1SiPMHit_a066af1a0a0251d9cebdd71472c73a04e}} 
+\index{sipm::SiPMHit@{sipm::SiPMHit}!operator$<$@{operator$<$}}
+\index{operator$<$@{operator$<$}!sipm::SiPMHit@{sipm::SiPMHit}}
+\doxysubsubsection{\texorpdfstring{operator$<$()}{operator<()}}
+{\footnotesize\ttfamily const bool sipm\+::\+Si\+PMHit\+::operator$<$ (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsipm_1_1SiPMHit}{Si\+PMHit}} \&}]{a\+Hit }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Operator used to sort hits. 
+
+Hits are sorted based on theyr time parameter\+: \[Hit_1 < Hit_2 \Leftrightarrow Hit_1.time < Hit_2.time \] 
+
+Definition at line 40 of file Si\+PMHit.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/edo/\+Ubuntu\+Data/\+Projects/\+Sim\+Si\+PM/\+Sim\+Si\+PM/Si\+PMHit.\+h\item 
+/home/edo/\+Ubuntu\+Data/\+Projects/\+Sim\+Si\+PM/src/lib/Si\+PMHit.\+cpp\end{DoxyCompactItemize}

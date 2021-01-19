@@ -1,6 +1,6 @@
 .git
-test/*
-build
+test
+build/*
 install
 *.s
 *.o

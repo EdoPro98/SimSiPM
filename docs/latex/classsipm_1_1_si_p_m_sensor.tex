@@ -1,0 +1,258 @@
+\hypertarget{classsipm_1_1_si_p_m_sensor}{}\doxysection{sipm\+::Si\+PMSensor Class Reference}
+\label{classsipm_1_1_si_p_m_sensor}\index{sipm::SiPMSensor@{sipm::SiPMSensor}}
+
+
+{\ttfamily \#include $<$Si\+PMSensor.\+h$>$}
+
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum class \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_a622d9cb0bc556588f6b5822e202355d8}{Precision\+Level}} \{ \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_a622d9cb0bc556588f6b5822e202355d8aa60924e124da4d51bd4dc74c8f85b158}{k\+Full}}
+, \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_a622d9cb0bc556588f6b5822e202355d8ae250345d92c29e0a7d8d215ac3b67997}{k\+Fast}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_a7efea5d2f4bb0aac2cb639ef7f3d2f56}{Si\+PMSensor}} (const \mbox{\hyperlink{classsipm_1_1_si_p_m_properties}{Si\+PMProperties}} \&) noexcept
+\item 
+\mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_afcfa239e1cae3817e67c583199e69fbe}{Si\+PMSensor}} ()=default
+\item 
+const \mbox{\hyperlink{classsipm_1_1_si_p_m_properties}{Si\+PMProperties}} \& \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_a572fd4cb3ca484ec497d8ffe9c88b9b7}{properties}} () const
+\item 
+const \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal}{Si\+PMAnalog\+Signal}} \& \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_a9b852b59087ece2187b8f6bcb935d782}{signal}} () const
+\item 
+const \mbox{\hyperlink{classsipm_1_1_si_p_m_random}{Si\+PMRandom}} \& \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_affe9842b2eb9b07bb803f55ce009213a}{rng}} () const
+\item 
+\mbox{\hyperlink{classsipm_1_1_si_p_m_properties}{Si\+PMProperties}} \& \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_ab1363534bf2e15363dce50381e0e246d}{properties}} ()
+\item 
+\mbox{\hyperlink{classsipm_1_1_si_p_m_random}{Si\+PMRandom}} \& \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_a74ed3199ae8154d4b91e52207bd52b49}{rng}} ()
+\item 
+\mbox{\hyperlink{structsipm_1_1_si_p_m_debug_info}{Si\+PMDebug\+Info}} \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_ab58f5ba8153c849b7233245a601da398}{debug}} ()
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_abb05376b3469209ed645f8c7ffdbf6cb}{set\+Property}} (const std\+::string \&, const double)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_a58e7fbe030431af2ebd6bfe17bda4557}{set\+Properties}} (const \mbox{\hyperlink{classsipm_1_1_si_p_m_properties}{Si\+PMProperties}} \&x)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_a6fb933dec365e08566bd1f5d0cca338c}{add\+Photon}} (const double)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_a8d82ed213ce55799ca2daf181fcd93af}{add\+Photon}} (const double, const double)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_a474b33f382835b94900db7f38c2e0d29}{add\+Photons}} (const std\+::vector$<$ double $>$ \&)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_a801f3150d802b4ebcc79c70b3f54ce2b}{add\+Photons}} (const std\+::vector$<$ double $>$ \&, const std\+::vector$<$ double $>$ \&)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_af4bdf8329376777dadf2bb17704e3925}{run\+Event}} ()
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_a9b7a167c33a16181401d9aae616ff391}{reset\+State}} ()
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_a46e83b0f781861177d6070dc6c93da0b}{set\+Precision\+Level}} (const \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_a622d9cb0bc556588f6b5822e202355d8}{Precision\+Level}} x)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 17 of file Si\+PMSensor.\+h.
+
+
+
+\doxysubsection{Member Enumeration Documentation}
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_a622d9cb0bc556588f6b5822e202355d8}\label{classsipm_1_1_si_p_m_sensor_a622d9cb0bc556588f6b5822e202355d8}} 
+\index{sipm::SiPMSensor@{sipm::SiPMSensor}!PrecisionLevel@{PrecisionLevel}}
+\index{PrecisionLevel@{PrecisionLevel}!sipm::SiPMSensor@{sipm::SiPMSensor}}
+\doxysubsubsection{\texorpdfstring{PrecisionLevel}{PrecisionLevel}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_a622d9cb0bc556588f6b5822e202355d8}{sipm\+::\+Si\+PMSensor\+::\+Precision\+Level}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{kFull@{kFull}!sipm::SiPMSensor@{sipm::SiPMSensor}}\index{sipm::SiPMSensor@{sipm::SiPMSensor}!kFull@{kFull}}}\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_a622d9cb0bc556588f6b5822e202355d8aa60924e124da4d51bd4dc74c8f85b158}\label{classsipm_1_1_si_p_m_sensor_a622d9cb0bc556588f6b5822e202355d8aa60924e124da4d51bd4dc74c8f85b158}} 
+k\+Full&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{kFast@{kFast}!sipm::SiPMSensor@{sipm::SiPMSensor}}\index{sipm::SiPMSensor@{sipm::SiPMSensor}!kFast@{kFast}}}\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_a622d9cb0bc556588f6b5822e202355d8ae250345d92c29e0a7d8d215ac3b67997}\label{classsipm_1_1_si_p_m_sensor_a622d9cb0bc556588f6b5822e202355d8ae250345d92c29e0a7d8d215ac3b67997}} 
+k\+Fast&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line 19 of file Si\+PMSensor.\+h.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_a7efea5d2f4bb0aac2cb639ef7f3d2f56}\label{classsipm_1_1_si_p_m_sensor_a7efea5d2f4bb0aac2cb639ef7f3d2f56}} 
+\index{sipm::SiPMSensor@{sipm::SiPMSensor}!SiPMSensor@{SiPMSensor}}
+\index{SiPMSensor@{SiPMSensor}!sipm::SiPMSensor@{sipm::SiPMSensor}}
+\doxysubsubsection{\texorpdfstring{SiPMSensor()}{SiPMSensor()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily sipm\+::\+Si\+PMSensor\+::\+Si\+PMSensor (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsipm_1_1_si_p_m_properties}{Si\+PMProperties}} \&}]{a\+Property }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+
+
+Definition at line 11 of file Si\+PMSensor.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_afcfa239e1cae3817e67c583199e69fbe}\label{classsipm_1_1_si_p_m_sensor_afcfa239e1cae3817e67c583199e69fbe}} 
+\index{sipm::SiPMSensor@{sipm::SiPMSensor}!SiPMSensor@{SiPMSensor}}
+\index{SiPMSensor@{SiPMSensor}!sipm::SiPMSensor@{sipm::SiPMSensor}}
+\doxysubsubsection{\texorpdfstring{SiPMSensor()}{SiPMSensor()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily sipm\+::\+Si\+PMSensor\+::\+Si\+PMSensor (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_a6fb933dec365e08566bd1f5d0cca338c}\label{classsipm_1_1_si_p_m_sensor_a6fb933dec365e08566bd1f5d0cca338c}} 
+\index{sipm::SiPMSensor@{sipm::SiPMSensor}!addPhoton@{addPhoton}}
+\index{addPhoton@{addPhoton}!sipm::SiPMSensor@{sipm::SiPMSensor}}
+\doxysubsubsection{\texorpdfstring{addPhoton()}{addPhoton()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMSensor\+::add\+Photon (\begin{DoxyParamCaption}\item[{const double}]{a\+Time }\end{DoxyParamCaption})}
+
+
+
+Definition at line 23 of file Si\+PMSensor.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_a8d82ed213ce55799ca2daf181fcd93af}\label{classsipm_1_1_si_p_m_sensor_a8d82ed213ce55799ca2daf181fcd93af}} 
+\index{sipm::SiPMSensor@{sipm::SiPMSensor}!addPhoton@{addPhoton}}
+\index{addPhoton@{addPhoton}!sipm::SiPMSensor@{sipm::SiPMSensor}}
+\doxysubsubsection{\texorpdfstring{addPhoton()}{addPhoton()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMSensor\+::add\+Photon (\begin{DoxyParamCaption}\item[{const double}]{a\+Time,  }\item[{const double}]{a\+Wavelength }\end{DoxyParamCaption})}
+
+
+
+Definition at line 27 of file Si\+PMSensor.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_a474b33f382835b94900db7f38c2e0d29}\label{classsipm_1_1_si_p_m_sensor_a474b33f382835b94900db7f38c2e0d29}} 
+\index{sipm::SiPMSensor@{sipm::SiPMSensor}!addPhotons@{addPhotons}}
+\index{addPhotons@{addPhotons}!sipm::SiPMSensor@{sipm::SiPMSensor}}
+\doxysubsubsection{\texorpdfstring{addPhotons()}{addPhotons()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMSensor\+::add\+Photons (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&}]{a\+Times }\end{DoxyParamCaption})}
+
+
+
+Definition at line 32 of file Si\+PMSensor.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_a801f3150d802b4ebcc79c70b3f54ce2b}\label{classsipm_1_1_si_p_m_sensor_a801f3150d802b4ebcc79c70b3f54ce2b}} 
+\index{sipm::SiPMSensor@{sipm::SiPMSensor}!addPhotons@{addPhotons}}
+\index{addPhotons@{addPhotons}!sipm::SiPMSensor@{sipm::SiPMSensor}}
+\doxysubsubsection{\texorpdfstring{addPhotons()}{addPhotons()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMSensor\+::add\+Photons (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&}]{a\+Times,  }\item[{const std\+::vector$<$ double $>$ \&}]{a\+Wavelengths }\end{DoxyParamCaption})}
+
+
+
+Definition at line 36 of file Si\+PMSensor.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_ab58f5ba8153c849b7233245a601da398}\label{classsipm_1_1_si_p_m_sensor_ab58f5ba8153c849b7233245a601da398}} 
+\index{sipm::SiPMSensor@{sipm::SiPMSensor}!debug@{debug}}
+\index{debug@{debug}!sipm::SiPMSensor@{sipm::SiPMSensor}}
+\doxysubsubsection{\texorpdfstring{debug()}{debug()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structsipm_1_1_si_p_m_debug_info}{Si\+PMDebug\+Info}} sipm\+::\+Si\+PMSensor\+::debug (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 29 of file Si\+PMSensor.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_ab1363534bf2e15363dce50381e0e246d}\label{classsipm_1_1_si_p_m_sensor_ab1363534bf2e15363dce50381e0e246d}} 
+\index{sipm::SiPMSensor@{sipm::SiPMSensor}!properties@{properties}}
+\index{properties@{properties}!sipm::SiPMSensor@{sipm::SiPMSensor}}
+\doxysubsubsection{\texorpdfstring{properties()}{properties()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classsipm_1_1_si_p_m_properties}{Si\+PMProperties}}\& sipm\+::\+Si\+PMSensor\+::properties (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 27 of file Si\+PMSensor.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_a572fd4cb3ca484ec497d8ffe9c88b9b7}\label{classsipm_1_1_si_p_m_sensor_a572fd4cb3ca484ec497d8ffe9c88b9b7}} 
+\index{sipm::SiPMSensor@{sipm::SiPMSensor}!properties@{properties}}
+\index{properties@{properties}!sipm::SiPMSensor@{sipm::SiPMSensor}}
+\doxysubsubsection{\texorpdfstring{properties()}{properties()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classsipm_1_1_si_p_m_properties}{Si\+PMProperties}}\& sipm\+::\+Si\+PMSensor\+::properties (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 24 of file Si\+PMSensor.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_a9b7a167c33a16181401d9aae616ff391}\label{classsipm_1_1_si_p_m_sensor_a9b7a167c33a16181401d9aae616ff391}} 
+\index{sipm::SiPMSensor@{sipm::SiPMSensor}!resetState@{resetState}}
+\index{resetState@{resetState}!sipm::SiPMSensor@{sipm::SiPMSensor}}
+\doxysubsubsection{\texorpdfstring{resetState()}{resetState()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMSensor\+::reset\+State (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 51 of file Si\+PMSensor.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_a74ed3199ae8154d4b91e52207bd52b49}\label{classsipm_1_1_si_p_m_sensor_a74ed3199ae8154d4b91e52207bd52b49}} 
+\index{sipm::SiPMSensor@{sipm::SiPMSensor}!rng@{rng}}
+\index{rng@{rng}!sipm::SiPMSensor@{sipm::SiPMSensor}}
+\doxysubsubsection{\texorpdfstring{rng()}{rng()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classsipm_1_1_si_p_m_random}{Si\+PMRandom}}\& sipm\+::\+Si\+PMSensor\+::rng (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 28 of file Si\+PMSensor.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_affe9842b2eb9b07bb803f55ce009213a}\label{classsipm_1_1_si_p_m_sensor_affe9842b2eb9b07bb803f55ce009213a}} 
+\index{sipm::SiPMSensor@{sipm::SiPMSensor}!rng@{rng}}
+\index{rng@{rng}!sipm::SiPMSensor@{sipm::SiPMSensor}}
+\doxysubsubsection{\texorpdfstring{rng()}{rng()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classsipm_1_1_si_p_m_random}{Si\+PMRandom}}\& sipm\+::\+Si\+PMSensor\+::rng (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 26 of file Si\+PMSensor.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_af4bdf8329376777dadf2bb17704e3925}\label{classsipm_1_1_si_p_m_sensor_af4bdf8329376777dadf2bb17704e3925}} 
+\index{sipm::SiPMSensor@{sipm::SiPMSensor}!runEvent@{runEvent}}
+\index{runEvent@{runEvent}!sipm::SiPMSensor@{sipm::SiPMSensor}}
+\doxysubsubsection{\texorpdfstring{runEvent()}{runEvent()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMSensor\+::run\+Event (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Definition at line 42 of file Si\+PMSensor.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_a46e83b0f781861177d6070dc6c93da0b}\label{classsipm_1_1_si_p_m_sensor_a46e83b0f781861177d6070dc6c93da0b}} 
+\index{sipm::SiPMSensor@{sipm::SiPMSensor}!setPrecisionLevel@{setPrecisionLevel}}
+\index{setPrecisionLevel@{setPrecisionLevel}!sipm::SiPMSensor@{sipm::SiPMSensor}}
+\doxysubsubsection{\texorpdfstring{setPrecisionLevel()}{setPrecisionLevel()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMSensor\+::set\+Precision\+Level (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsipm_1_1_si_p_m_sensor_a622d9cb0bc556588f6b5822e202355d8}{Precision\+Level}}}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 44 of file Si\+PMSensor.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_a58e7fbe030431af2ebd6bfe17bda4557}\label{classsipm_1_1_si_p_m_sensor_a58e7fbe030431af2ebd6bfe17bda4557}} 
+\index{sipm::SiPMSensor@{sipm::SiPMSensor}!setProperties@{setProperties}}
+\index{setProperties@{setProperties}!sipm::SiPMSensor@{sipm::SiPMSensor}}
+\doxysubsubsection{\texorpdfstring{setProperties()}{setProperties()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMSensor\+::set\+Properties (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classsipm_1_1_si_p_m_properties}{Si\+PMProperties}} \&}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 34 of file Si\+PMSensor.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_abb05376b3469209ed645f8c7ffdbf6cb}\label{classsipm_1_1_si_p_m_sensor_abb05376b3469209ed645f8c7ffdbf6cb}} 
+\index{sipm::SiPMSensor@{sipm::SiPMSensor}!setProperty@{setProperty}}
+\index{setProperty@{setProperty}!sipm::SiPMSensor@{sipm::SiPMSensor}}
+\doxysubsubsection{\texorpdfstring{setProperty()}{setProperty()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMSensor\+::set\+Property (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{prop,  }\item[{const double}]{val }\end{DoxyParamCaption})}
+
+
+
+Definition at line 17 of file Si\+PMSensor.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_sensor_a9b852b59087ece2187b8f6bcb935d782}\label{classsipm_1_1_si_p_m_sensor_a9b852b59087ece2187b8f6bcb935d782}} 
+\index{sipm::SiPMSensor@{sipm::SiPMSensor}!signal@{signal}}
+\index{signal@{signal}!sipm::SiPMSensor@{sipm::SiPMSensor}}
+\doxysubsubsection{\texorpdfstring{signal()}{signal()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal}{Si\+PMAnalog\+Signal}}\& sipm\+::\+Si\+PMSensor\+::signal (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 25 of file Si\+PMSensor.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/edo/\+Ubuntu\+Data/\+Projects/\+Sim\+Si\+PM/\+Sim\+Si\+PM/\mbox{\hyperlink{_si_p_m_sensor_8h}{Si\+PMSensor.\+h}}\item 
+/home/edo/\+Ubuntu\+Data/\+Projects/\+Sim\+Si\+PM/src/lib/\mbox{\hyperlink{_si_p_m_sensor_8cpp}{Si\+PMSensor.\+cpp}}\end{DoxyCompactItemize}

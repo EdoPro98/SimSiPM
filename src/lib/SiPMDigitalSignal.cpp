@@ -4,6 +4,14 @@
 #include <numeric>
 
 namespace sipm {
+/**
+* Integral of the signal defined as the sum of all samples in the integration
+* window normalized for the sampling time. If the signal is below the threshold
+* the output is set to -1.
+@param intstart   Starting time of integration in ns
+@param intgate    Length of the integration gate
+@param threshold  Threshold to use for one-suppression
+*/
 const int32_t SiPMDigitalSignal::integral(const double intstart,
                                           const double intgate,
                                           const int32_t threshold) const {
@@ -19,6 +27,14 @@ const int32_t SiPMDigitalSignal::integral(const double intstart,
   }
 }
 
+/**
+* Peak of the signal defined as sample with maximum amplitude in the integration
+* gate.
+* If the signal is below the threshold the output is set to -1.
+@param intstart   Starting time of integration in ns
+@param intgate    Length of the integration gate
+@param threshold  Threshold to use for one-suppression
+*/
 const int32_t SiPMDigitalSignal::peak(const double intstart,
                                       const double intgate,
                                       const int32_t threshold) const {
@@ -35,6 +51,14 @@ const int32_t SiPMDigitalSignal::peak(const double intstart,
   }
 }
 
+/**
+* Time over threshold of the signal in the integration gate defined as the
+* number of samples higher than the threshold normalized for the sampling time.
+* If the signal is below the threshold the output is set to -1.
+@param intstart   Starting time of integration in ns
+@param intgate    Length of the integration gate
+@param threshold  Threshold to use for one-suppression
+*/
 const double SiPMDigitalSignal::tot(const double intstart, const double intgate,
                                     const int32_t threshold) const {
 
@@ -52,6 +76,14 @@ const double SiPMDigitalSignal::tot(const double intstart, const double intgate,
   }
 }
 
+/**
+* Arriving time of the signal defined as the time in ns of the first sample
+* above the threshold.
+* If the signal is below the threshold the output is set to -1.
+@param intstart   Starting time of integration in ns
+@param intgate    Length of the integration gate
+@param threshold  Threshold to use for one-suppression
+*/
 const double SiPMDigitalSignal::toa(const double intstart, const double intgate,
                                     const int32_t threshold) const {
 
@@ -69,6 +101,13 @@ const double SiPMDigitalSignal::toa(const double intstart, const double intgate,
   return toa;
 }
 
+/**
+* Time in ns of the sample in the peak
+* If the signal is below the threshold the output is set to -1.
+@param intstart   Starting time of integration in ns
+@param intgate    Length of the integration gate
+@param threshold  Threshold to use for one-suppression
+*/
 const double SiPMDigitalSignal::top(const double intstart, const double intgate,
                                     const int32_t threshold) const {
 

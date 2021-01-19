@@ -1,0 +1,254 @@
+\begin{theindex}
+
+  \item {addApEvents}
+    \subitem {sipm::SiPMSensor}, \hyperpage{34}
+  \item {addDcrEvents}
+    \subitem {sipm::SiPMSensor}, \hyperpage{34}
+  \item {addJitter}
+    \subitem {sipm::SiPMAdc}, \hyperpage{6}
+  \item {addPhotoelectrons}
+    \subitem {sipm::SiPMSensor}, \hyperpage{34}
+  \item {addXtEvents}
+    \subitem {sipm::SiPMSensor}, \hyperpage{35}
+
+  \indexspace
+
+  \item {calculateSignalAmplitudes}
+    \subitem {sipm::SiPMSensor}, \hyperpage{35}
+
+  \indexspace
+
+  \item {debug}
+    \subitem {sipm::SiPMSensor}, \hyperpage{35}
+  \item {digitize}
+    \subitem {sipm::SiPMAdc}, \hyperpage{7}
+
+  \indexspace
+
+  \item {evaluatePde}
+    \subitem {sipm::SiPMSensor}, \hyperpage{35}
+
+  \indexspace
+
+  \item {fallingTimeFast}
+    \subitem {sipm::SiPMProperties}, \hyperpage{23}
+  \item {fallingTimeSlow}
+    \subitem {sipm::SiPMProperties}, \hyperpage{23}
+
+  \indexspace
+
+  \item {generateSignal}
+    \subitem {sipm::SiPMSensor}, \hyperpage{36}
+
+  \indexspace
+
+  \item {hasSlowComponent}
+    \subitem {sipm::SiPMProperties}, \hyperpage{23}
+  \item {hitCell}
+    \subitem {sipm::SiPMSensor}, \hyperpage{36}
+  \item {HitDistribution}
+    \subitem {sipm::SiPMProperties}, \hyperpage{22}
+  \item {HitType}
+    \subitem {sipm::SiPMHit}, \hyperpage{18}
+
+  \indexspace
+
+  \item {integral}
+    \subitem {sipm::SiPMAnalogSignal}, \hyperpage{9}
+    \subitem {sipm::SiPMDigitalSignal}, \hyperpage{14}
+
+  \indexspace
+
+  \item {jump}
+    \subitem {sipm::SiPMRng::Xorshift256plus}, \hyperpage{40}
+
+  \indexspace
+
+  \item {kAfterPulse}
+    \subitem {sipm::SiPMHit}, \hyperpage{18}
+  \item {kDarkCount}
+    \subitem {sipm::SiPMHit}, \hyperpage{18}
+  \item {kNoPde}
+    \subitem {sipm::SiPMProperties}, \hyperpage{23}
+  \item {kOpticalCrosstalk}
+    \subitem {sipm::SiPMHit}, \hyperpage{18}
+  \item {kPhotoelectron}
+    \subitem {sipm::SiPMHit}, \hyperpage{18}
+  \item {kSimplePde}
+    \subitem {sipm::SiPMProperties}, \hyperpage{23}
+  \item {kSpectrumPde}
+    \subitem {sipm::SiPMProperties}, \hyperpage{23}
+  \item {kUniform}
+    \subitem {sipm::SiPMProperties}, \hyperpage{23}
+
+  \indexspace
+
+  \item {lowpass}
+    \subitem {sipm::SiPMAnalogSignal}, \hyperpage{9}
+
+  \indexspace
+
+  \item {operator$<$}
+    \subitem {sipm::SiPMHit}, \hyperpage{19}
+
+  \indexspace
+
+  \item {PdeType}
+    \subitem {sipm::SiPMProperties}, \hyperpage{23}
+  \item {peak}
+    \subitem {sipm::SiPMAnalogSignal}, \hyperpage{11}
+    \subitem {sipm::SiPMDigitalSignal}, \hyperpage{15}
+  \item {PrecisionLevel}
+    \subitem {sipm::SiPMSensor}, \hyperpage{33}
+  \item {properties}
+    \subitem {sipm::SiPMSensor}, \hyperpage{36}
+
+  \indexspace
+
+  \item {quantize}
+    \subitem {sipm::SiPMAdc}, \hyperpage{7}
+
+  \indexspace
+
+  \item {Rand}
+    \subitem {sipm::SiPMRandom}, \hyperpage{28}
+  \item {randExponential}
+    \subitem {sipm::SiPMRandom}, \hyperpage{29}
+  \item {randGaussian}
+    \subitem {sipm::SiPMRandom}, \hyperpage{29}
+  \item {randInteger}
+    \subitem {sipm::SiPMRandom}, \hyperpage{30}
+  \item {randPoisson}
+    \subitem {sipm::SiPMRandom}, \hyperpage{30}
+  \item {readSettings}
+    \subitem {sipm::SiPMProperties}, \hyperpage{24}
+  \item {resetState}
+    \subitem {sipm::SiPMSensor}, \hyperpage{37}
+  \item {risingTime}
+    \subitem {sipm::SiPMProperties}, \hyperpage{24}
+  \item {rng}
+    \subitem {sipm::SiPMSensor}, \hyperpage{37}
+
+  \indexspace
+
+  \item {seed}
+    \subitem {sipm::SiPMRandom}, \hyperpage{31}
+  \item {setAp}
+    \subitem {sipm::SiPMProperties}, \hyperpage{24}
+  \item {setCcgv}
+    \subitem {sipm::SiPMProperties}, \hyperpage{25}
+  \item {setDcr}
+    \subitem {sipm::SiPMProperties}, \hyperpage{25}
+  \item {setFallTimeFast}
+    \subitem {sipm::SiPMProperties}, \hyperpage{25}
+  \item {setFallTimeSlow}
+    \subitem {sipm::SiPMProperties}, \hyperpage{25}
+  \item {setPrecisionLevel}
+    \subitem {sipm::SiPMSensor}, \hyperpage{37}
+  \item {setProperties}
+    \subitem {sipm::SiPMSensor}, \hyperpage{37}
+  \item {setProperty}
+    \subitem {sipm::SiPMSensor}, \hyperpage{38}
+  \item {setRiseTime}
+    \subitem {sipm::SiPMProperties}, \hyperpage{26}
+  \item {setXt}
+    \subitem {sipm::SiPMProperties}, \hyperpage{26}
+  \item {signal}
+    \subitem {sipm::SiPMSensor}, \hyperpage{38}
+  \item {signalShape}
+    \subitem {sipm::SiPMSensor}, \hyperpage{38}
+  \item {sipm::SiPMAdc}, \hyperpage{5}
+    \subitem {addJitter}, \hyperpage{6}
+    \subitem {digitize}, \hyperpage{7}
+    \subitem {quantize}, \hyperpage{7}
+  \item {sipm::SiPMAnalogSignal}, \hyperpage{8}
+    \subitem {integral}, \hyperpage{9}
+    \subitem {lowpass}, \hyperpage{9}
+    \subitem {peak}, \hyperpage{11}
+    \subitem {toa}, \hyperpage{11}
+    \subitem {top}, \hyperpage{12}
+    \subitem {tot}, \hyperpage{12}
+  \item {sipm::SiPMDebugInfo}, \hyperpage{13}
+  \item {sipm::SiPMDigitalSignal}, \hyperpage{13}
+    \subitem {integral}, \hyperpage{14}
+    \subitem {peak}, \hyperpage{15}
+    \subitem {toa}, \hyperpage{15}
+    \subitem {top}, \hyperpage{16}
+    \subitem {tot}, \hyperpage{16}
+  \item {sipm::SiPMHit}, \hyperpage{17}
+    \subitem {HitType}, \hyperpage{18}
+    \subitem {kAfterPulse}, \hyperpage{18}
+    \subitem {kDarkCount}, \hyperpage{18}
+    \subitem {kOpticalCrosstalk}, \hyperpage{18}
+    \subitem {kPhotoelectron}, \hyperpage{18}
+    \subitem {operator$<$}, \hyperpage{19}
+    \subitem {SiPMHit}, \hyperpage{18}
+  \item {sipm::SiPMProperties}, \hyperpage{19}
+    \subitem {fallingTimeFast}, \hyperpage{23}
+    \subitem {fallingTimeSlow}, \hyperpage{23}
+    \subitem {hasSlowComponent}, \hyperpage{23}
+    \subitem {HitDistribution}, \hyperpage{22}
+    \subitem {kNoPde}, \hyperpage{23}
+    \subitem {kSimplePde}, \hyperpage{23}
+    \subitem {kSpectrumPde}, \hyperpage{23}
+    \subitem {kUniform}, \hyperpage{23}
+    \subitem {PdeType}, \hyperpage{23}
+    \subitem {readSettings}, \hyperpage{24}
+    \subitem {risingTime}, \hyperpage{24}
+    \subitem {setAp}, \hyperpage{24}
+    \subitem {setCcgv}, \hyperpage{25}
+    \subitem {setDcr}, \hyperpage{25}
+    \subitem {setFallTimeFast}, \hyperpage{25}
+    \subitem {setFallTimeSlow}, \hyperpage{25}
+    \subitem {setRiseTime}, \hyperpage{26}
+    \subitem {setXt}, \hyperpage{26}
+    \subitem {slowComponentFraction}, \hyperpage{26}
+  \item {sipm::SiPMRandom}, \hyperpage{27}
+    \subitem {Rand}, \hyperpage{28}
+    \subitem {randExponential}, \hyperpage{29}
+    \subitem {randGaussian}, \hyperpage{29}
+    \subitem {randInteger}, \hyperpage{30}
+    \subitem {randPoisson}, \hyperpage{30}
+    \subitem {seed}, \hyperpage{31}
+  \item {sipm::SiPMRng::Xorshift256plus}, \hyperpage{39}
+    \subitem {jump}, \hyperpage{40}
+  \item {sipm::SiPMSensor}, \hyperpage{31}
+    \subitem {addApEvents}, \hyperpage{34}
+    \subitem {addDcrEvents}, \hyperpage{34}
+    \subitem {addPhotoelectrons}, \hyperpage{34}
+    \subitem {addXtEvents}, \hyperpage{35}
+    \subitem {calculateSignalAmplitudes}, \hyperpage{35}
+    \subitem {debug}, \hyperpage{35}
+    \subitem {evaluatePde}, \hyperpage{35}
+    \subitem {generateSignal}, \hyperpage{36}
+    \subitem {hitCell}, \hyperpage{36}
+    \subitem {PrecisionLevel}, \hyperpage{33}
+    \subitem {properties}, \hyperpage{36}
+    \subitem {resetState}, \hyperpage{37}
+    \subitem {rng}, \hyperpage{37}
+    \subitem {setPrecisionLevel}, \hyperpage{37}
+    \subitem {setProperties}, \hyperpage{37}
+    \subitem {setProperty}, \hyperpage{38}
+    \subitem {signal}, \hyperpage{38}
+    \subitem {signalShape}, \hyperpage{38}
+    \subitem {SiPMSensor}, \hyperpage{34}
+  \item {SiPMHit}
+    \subitem {sipm::SiPMHit}, \hyperpage{18}
+  \item {SiPMSensor}
+    \subitem {sipm::SiPMSensor}, \hyperpage{34}
+  \item {slowComponentFraction}
+    \subitem {sipm::SiPMProperties}, \hyperpage{26}
+
+  \indexspace
+
+  \item {toa}
+    \subitem {sipm::SiPMAnalogSignal}, \hyperpage{11}
+    \subitem {sipm::SiPMDigitalSignal}, \hyperpage{15}
+  \item {top}
+    \subitem {sipm::SiPMAnalogSignal}, \hyperpage{12}
+    \subitem {sipm::SiPMDigitalSignal}, \hyperpage{16}
+  \item {tot}
+    \subitem {sipm::SiPMAnalogSignal}, \hyperpage{12}
+    \subitem {sipm::SiPMDigitalSignal}, \hyperpage{16}
+
+\end{theindex}

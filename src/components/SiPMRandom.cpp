@@ -1,4 +1,5 @@
 #include "SiPMRandom.h"
+#include <random>
 
 #ifdef __AVX2__
 #include <immintrin.h>
@@ -7,6 +8,21 @@
 namespace sipm {
 
 namespace SiPMRng {
+  void Xorshift256plus::seed() {
+    std::random_device rd;
+    s[0] = rd();
+    s[1] = rd();
+    s[2] = rd();
+    s[3] = rd();
+    this->operator()();
+  }
+
+  void Xorshift256plus::seed(uint64_t aseed) {
+    s[0] = aseed;
+    s[1] = aseed + 1;
+    s[2] = aseed + 2;
+    s[3] = aseed + 3;
+  }
 
 void Xorshift256plus::jump() {
   static const uint64_t JUMP[] = {0x180ec6d33cfd0aba, 0xd5a61266f0c9392c,
@@ -33,22 +49,11 @@ void Xorshift256plus::jump() {
   s[3] = s3;
 }
 
-void Xorshift256plus::seed() {
-  s[0] = rand();
-  s[1] = rand();
-  s[2] = rand();
-  s[3] = rand();
-}
-
-void Xorshift256plus::seed(uint64_t aseed) {
-  s[0] = aseed;
-  s[1] = aseed + 1;
-  s[2] = aseed + 2;
-  s[3] = aseed + 3;
-}
 } // namespace SiPMRng
 
-// Poisson random with mean value "mu"
+/** @brief Returns a value from a poisson distribution given its mean value.
+ * @param mu Mean value of the poisson distribution
+ */
 uint32_t SiPMRandom::randPoisson(const double mu) {
   if (mu == 0) { return 0; }
   const double q = exp(-mu);
@@ -62,13 +67,20 @@ uint32_t SiPMRandom::randPoisson(const double mu) {
   return out;
 }
 
-// Exponential random with mean value "mu"
+/** @brief Returns a value from a exponential distribution given its mean value.
+ * @param mu Mean value of the exponential distribution
+ */
 double SiPMRandom::randExponential(const double mu) {
   return -log(Rand()) * mu;
 }
 
-// Gaussian random value with mean "mu" and sigma "sigma"
-// Using Box-Muller transform
+/** @brief Returns a value from a gaussian distribution given its mean value and
+ * sigma.
+ *
+ * This function is based on Ziggurat algorithm for random gaussian generation.
+ * @param mu Mean value of the gaussian distribution
+ * @param sigma Standard deviation of the gaussian distribution
+ */
 double SiPMRandom::randGaussian(const double mu, const double sigma) {
   static double spare;
   static bool hasSpare = false;
@@ -90,6 +102,9 @@ double SiPMRandom::randGaussian(const double mu, const double sigma) {
   }
 }
 
+/**
+ * @param n Number of values to generate
+ */
 std::vector<double> SiPMRandom::Rand(const uint32_t n) {
   std::vector<double> out(n);
 
@@ -99,7 +114,11 @@ std::vector<double> SiPMRandom::Rand(const uint32_t n) {
   return out;
 }
 
-// Generate n random gaussian values with mean mu and std sigma
+/**
+ * @param mu Mean value of the gaussuan
+ * @param sigma Standard deviation value of the gaussuan
+ * @param n Number of values to generate
+ */
 std::vector<double> SiPMRandom::randGaussian(const double mu,
                                              const double sigma,
                                              const uint32_t n) {
@@ -123,12 +142,17 @@ std::vector<double> SiPMRandom::randGaussian(const double mu,
   return out;
 }
 
-// Generate random integers in range [0 - max]
+/**
+ * @param max Max value to generate
+ * @param n Number of values to generate
+ */
 std::vector<uint32_t> SiPMRandom::randInteger(const uint32_t max,
                                               const uint32_t n) {
   std::vector<uint32_t> out(n);
 
-  for (uint32_t i = 0; i < n; ++i) { out[i] = m_rng() % max; }
+  for (uint32_t i = 0; i < n; ++i) {
+    out[i] = static_cast<uint32_t>(Rand() * (max + 1));
+  }
   return out;
 }
 } // namespace sipm

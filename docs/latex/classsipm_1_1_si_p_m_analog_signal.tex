@@ -1,0 +1,379 @@
+\hypertarget{classsipm_1_1_si_p_m_analog_signal}{}\doxysection{sipm\+::Si\+PMAnalog\+Signal Class Reference}
+\label{classsipm_1_1_si_p_m_analog_signal}\index{sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}}
+
+
+{\ttfamily \#include $<$Si\+PMAnalog\+Signal.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal_a9dbd612fa11490b69762ee95789a5364}{Si\+PMAnalog\+Signal}} ()=default
+\begin{DoxyCompactList}\small\item\em \begin{quote}
+\mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal}{Si\+PMAnalog\+Signal}} default constructor \end{quote}
+\end{DoxyCompactList}\item 
+\mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal_afdaefbe6d23c855f86a6c20191fcd1e3}{Si\+PMAnalog\+Signal}} (const std\+::vector$<$ double $>$ \&wav, const double \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal_aa9dbae79ad10e15e3e8cc4b151ca9c80}{sampling}}) noexcept
+\begin{DoxyCompactList}\small\item\em \begin{quote}
+\mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal}{Si\+PMAnalog\+Signal}} constructor from a std\+::vector \end{quote}
+\end{DoxyCompactList}\item 
+\mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal}{Si\+PMAnalog\+Signal}} \& \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal_ada32e4596c45b5442af0e77bac918b76}{operator=}} (const std\+::vector$<$ double $>$ \&\&a\+Vect) noexcept
+\begin{DoxyCompactList}\small\item\em \begin{quote}
+Move assignement operator from a std\+::vector \end{quote}
+\end{DoxyCompactList}\item 
+\mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal}{Si\+PMAnalog\+Signal}} \& \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal_aeb133d4ae5e759d1d9d4b63f4e5144fa}{operator=}} (const std\+::vector$<$ double $>$ \&a\+Vect) noexcept
+\begin{DoxyCompactList}\small\item\em \begin{quote}
+Copy assignement operator from a std\+::vector \end{quote}
+\end{DoxyCompactList}\item 
+double \& \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal_a80654d1233c4129a955a5449dafbb740}{operator\mbox{[}$\,$\mbox{]}}} (const uint32\+\_\+t i) noexcept
+\begin{DoxyCompactList}\small\item\em \begin{quote}
+Used to access signal elements as if it is a std\+::vector \end{quote}
+\end{DoxyCompactList}\item 
+const double \& \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal_a182c2640bb28776fbc19675e22de70b5}{operator\mbox{[}$\,$\mbox{]}}} (const uint32\+\_\+t i) const noexcept
+\begin{DoxyCompactList}\small\item\em \begin{quote}
+Used to access signal elements as if it is a std\+::vector \end{quote}
+\end{DoxyCompactList}\item 
+const uint32\+\_\+t \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal_ab9db82263c21355a70372dff7f043186}{size}} () const
+\begin{DoxyCompactList}\small\item\em \begin{quote}
+Returns the size of the vector containing the signal \end{quote}
+\end{DoxyCompactList}\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal_aa9dbae79ad10e15e3e8cc4b151ca9c80}{sampling}} () const
+\begin{DoxyCompactList}\small\item\em \begin{quote}
+Returns the sampling time of the signal in ns \end{quote}
+\end{DoxyCompactList}\item 
+const std\+::vector$<$ double $>$ \& \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal_ab599b0d2b0f39010c66c123b46182f6c}{waveform}} () const
+\begin{DoxyCompactList}\small\item\em \begin{quote}
+Returns a std\+::vector containing the sampled waveform \end{quote}
+\end{DoxyCompactList}\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal_aac617da9d5d2b5aca63a53cebc737563}{integral}} (const double, const double, const double) const
+\begin{DoxyCompactList}\small\item\em \begin{quote}
+Returns integral of the signal \end{quote}
+\end{DoxyCompactList}\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal_a51eff57c9137571200cba01b2fdba3dd}{peak}} (const double, const double, const double) const
+\begin{DoxyCompactList}\small\item\em \begin{quote}
+Returns peak of the signal \end{quote}
+\end{DoxyCompactList}\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal_a7948e57a3440e33540e3c1d29441341d}{tot}} (const double, const double, const double) const
+\begin{DoxyCompactList}\small\item\em \begin{quote}
+Returns time over threshold of the signal \end{quote}
+\end{DoxyCompactList}\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal_ae3ebef8f10d741d73febb2eb38c2644f}{toa}} (const double, const double, const double) const
+\begin{DoxyCompactList}\small\item\em \begin{quote}
+Returns time of arrival of the signal \end{quote}
+\end{DoxyCompactList}\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal_abb34c19a19ab36f4324cf7df96b0cbfd}{top}} (const double, const double, const double) const
+\begin{DoxyCompactList}\small\item\em \begin{quote}
+Returns time of peak \end{quote}
+\end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal_ad8fe76b7b2c2d5317468cd59521b0cb1}{set\+Sampling}} (const double x)
+\begin{DoxyCompactList}\small\item\em \begin{quote}
+Sets the sampligng time of the signal \end{quote}
+\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 20 of file Si\+PMAnalog\+Signal.\+h.
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_analog_signal_a9dbd612fa11490b69762ee95789a5364}\label{classsipm_1_1_si_p_m_analog_signal_a9dbd612fa11490b69762ee95789a5364}} 
+\index{sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}!SiPMAnalogSignal@{SiPMAnalogSignal}}
+\index{SiPMAnalogSignal@{SiPMAnalogSignal}!sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}}
+\doxysubsubsection{\texorpdfstring{SiPMAnalogSignal()}{SiPMAnalogSignal()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily sipm\+::\+Si\+PMAnalog\+Signal\+::\+Si\+PMAnalog\+Signal (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\begin{quote}
+\mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal}{Si\+PMAnalog\+Signal}} default constructor \end{quote}
+
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_analog_signal_afdaefbe6d23c855f86a6c20191fcd1e3}\label{classsipm_1_1_si_p_m_analog_signal_afdaefbe6d23c855f86a6c20191fcd1e3}} 
+\index{sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}!SiPMAnalogSignal@{SiPMAnalogSignal}}
+\index{SiPMAnalogSignal@{SiPMAnalogSignal}!sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}}
+\doxysubsubsection{\texorpdfstring{SiPMAnalogSignal()}{SiPMAnalogSignal()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily sipm\+::\+Si\+PMAnalog\+Signal\+::\+Si\+PMAnalog\+Signal (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&}]{wav,  }\item[{const double}]{sampling }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+\begin{quote}
+\mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal}{Si\+PMAnalog\+Signal}} constructor from a std\+::vector \end{quote}
+
+
+
+
+Definition at line 26 of file Si\+PMAnalog\+Signal.\+h.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_analog_signal_aac617da9d5d2b5aca63a53cebc737563}\label{classsipm_1_1_si_p_m_analog_signal_aac617da9d5d2b5aca63a53cebc737563}} 
+\index{sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}!integral@{integral}}
+\index{integral@{integral}!sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}}
+\doxysubsubsection{\texorpdfstring{integral()}{integral()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMAnalog\+Signal\+::integral (\begin{DoxyParamCaption}\item[{const double}]{intstart,  }\item[{const double}]{intgate,  }\item[{const double}]{threshold }\end{DoxyParamCaption}) const}
+
+
+
+\begin{quote}
+Returns integral of the signal \end{quote}
+
+
+Integral of the signal defined as the sum of all samples in the integration window normalized for the sampling time.
+
+If the signal is below the threshold the output is set to -\/1. 
+\begin{DoxyParams}{Parameters}
+{\em intstart} & Starting time of integration in ns \\
+\hline
+{\em intgate} & Length of the integration gate \\
+\hline
+{\em threshold} & Threshold to use for one-\/suppression \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 15 of file Si\+PMAnalog\+Signal.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_analog_signal_ada32e4596c45b5442af0e77bac918b76}\label{classsipm_1_1_si_p_m_analog_signal_ada32e4596c45b5442af0e77bac918b76}} 
+\index{sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}!operator=@{operator=}}
+\index{operator=@{operator=}!sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal}{Si\+PMAnalog\+Signal}}\& sipm\+::\+Si\+PMAnalog\+Signal\+::operator= (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&\&}]{a\+Vect }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+\begin{quote}
+Move assignement operator from a std\+::vector \end{quote}
+
+
+
+
+Definition at line 31 of file Si\+PMAnalog\+Signal.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_analog_signal_aeb133d4ae5e759d1d9d4b63f4e5144fa}\label{classsipm_1_1_si_p_m_analog_signal_aeb133d4ae5e759d1d9d4b63f4e5144fa}} 
+\index{sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}!operator=@{operator=}}
+\index{operator=@{operator=}!sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classsipm_1_1_si_p_m_analog_signal}{Si\+PMAnalog\+Signal}}\& sipm\+::\+Si\+PMAnalog\+Signal\+::operator= (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&}]{a\+Vect }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+\begin{quote}
+Copy assignement operator from a std\+::vector \end{quote}
+
+
+
+
+Definition at line 37 of file Si\+PMAnalog\+Signal.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_analog_signal_a182c2640bb28776fbc19675e22de70b5}\label{classsipm_1_1_si_p_m_analog_signal_a182c2640bb28776fbc19675e22de70b5}} 
+\index{sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}}
+\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily const double\& sipm\+::\+Si\+PMAnalog\+Signal\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{const uint32\+\_\+t}]{i }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+\begin{quote}
+Used to access signal elements as if it is a std\+::vector \end{quote}
+
+
+
+
+Definition at line 45 of file Si\+PMAnalog\+Signal.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_analog_signal_a80654d1233c4129a955a5449dafbb740}\label{classsipm_1_1_si_p_m_analog_signal_a80654d1233c4129a955a5449dafbb740}} 
+\index{sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}}
+\doxysubsubsection{\texorpdfstring{operator[]()}{operator[]()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily double\& sipm\+::\+Si\+PMAnalog\+Signal\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{const uint32\+\_\+t}]{i }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+\begin{quote}
+Used to access signal elements as if it is a std\+::vector \end{quote}
+
+
+
+
+Definition at line 43 of file Si\+PMAnalog\+Signal.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_analog_signal_a51eff57c9137571200cba01b2fdba3dd}\label{classsipm_1_1_si_p_m_analog_signal_a51eff57c9137571200cba01b2fdba3dd}} 
+\index{sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}!peak@{peak}}
+\index{peak@{peak}!sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}}
+\doxysubsubsection{\texorpdfstring{peak()}{peak()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMAnalog\+Signal\+::peak (\begin{DoxyParamCaption}\item[{const double}]{intstart,  }\item[{const double}]{intgate,  }\item[{const double}]{threshold }\end{DoxyParamCaption}) const}
+
+
+
+\begin{quote}
+Returns peak of the signal \end{quote}
+
+
+Peak of the signal defined as sample with maximum amplitude in the integration gate.
+
+If the signal is below the threshold the output is set to -\/1. 
+\begin{DoxyParams}{Parameters}
+{\em intstart} & Starting time of integration in ns \\
+\hline
+{\em intgate} & Length of the integration gate \\
+\hline
+{\em threshold} & Threshold to use for one-\/suppression \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 34 of file Si\+PMAnalog\+Signal.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_analog_signal_aa9dbae79ad10e15e3e8cc4b151ca9c80}\label{classsipm_1_1_si_p_m_analog_signal_aa9dbae79ad10e15e3e8cc4b151ca9c80}} 
+\index{sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}!sampling@{sampling}}
+\index{sampling@{sampling}!sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}}
+\doxysubsubsection{\texorpdfstring{sampling()}{sampling()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMAnalog\+Signal\+::sampling (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\begin{quote}
+Returns the sampling time of the signal in ns \end{quote}
+
+
+
+
+Definition at line 52 of file Si\+PMAnalog\+Signal.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_analog_signal_ad8fe76b7b2c2d5317468cd59521b0cb1}\label{classsipm_1_1_si_p_m_analog_signal_ad8fe76b7b2c2d5317468cd59521b0cb1}} 
+\index{sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}!setSampling@{setSampling}}
+\index{setSampling@{setSampling}!sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}}
+\doxysubsubsection{\texorpdfstring{setSampling()}{setSampling()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMAnalog\+Signal\+::set\+Sampling (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\begin{quote}
+Sets the sampligng time of the signal \end{quote}
+
+
+
+
+Definition at line 68 of file Si\+PMAnalog\+Signal.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_analog_signal_ab9db82263c21355a70372dff7f043186}\label{classsipm_1_1_si_p_m_analog_signal_ab9db82263c21355a70372dff7f043186}} 
+\index{sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}!size@{size}}
+\index{size@{size}!sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily const uint32\+\_\+t sipm\+::\+Si\+PMAnalog\+Signal\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\begin{quote}
+Returns the size of the vector containing the signal \end{quote}
+
+
+
+
+Definition at line 50 of file Si\+PMAnalog\+Signal.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_analog_signal_ae3ebef8f10d741d73febb2eb38c2644f}\label{classsipm_1_1_si_p_m_analog_signal_ae3ebef8f10d741d73febb2eb38c2644f}} 
+\index{sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}!toa@{toa}}
+\index{toa@{toa}!sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}}
+\doxysubsubsection{\texorpdfstring{toa()}{toa()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMAnalog\+Signal\+::toa (\begin{DoxyParamCaption}\item[{const double}]{intstart,  }\item[{const double}]{intgate,  }\item[{const double}]{threshold }\end{DoxyParamCaption}) const}
+
+
+
+\begin{quote}
+Returns time of arrival of the signal \end{quote}
+
+
+Arriving time of the signal defined as the time in ns of the first sample above the threshold.
+
+If the signal is below the threshold the output is set to -\/1. 
+\begin{DoxyParams}{Parameters}
+{\em intstart} & Starting time of integration in ns \\
+\hline
+{\em intgate} & Length of the integration gate \\
+\hline
+{\em threshold} & Threshold to use for one-\/suppression \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 74 of file Si\+PMAnalog\+Signal.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_analog_signal_abb34c19a19ab36f4324cf7df96b0cbfd}\label{classsipm_1_1_si_p_m_analog_signal_abb34c19a19ab36f4324cf7df96b0cbfd}} 
+\index{sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}!top@{top}}
+\index{top@{top}!sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}}
+\doxysubsubsection{\texorpdfstring{top()}{top()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMAnalog\+Signal\+::top (\begin{DoxyParamCaption}\item[{const double}]{intstart,  }\item[{const double}]{intgate,  }\item[{const double}]{threshold }\end{DoxyParamCaption}) const}
+
+
+
+\begin{quote}
+Returns time of peak \end{quote}
+
+
+Time in ns of the sample in the peak If the signal is below the threshold the output is set to -\/1.
+
+
+\begin{DoxyParams}{Parameters}
+{\em intstart} & Starting time of integration in ns \\
+\hline
+{\em intgate} & Length of the integration gate \\
+\hline
+{\em threshold} & Threshold to use for one-\/suppression \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 98 of file Si\+PMAnalog\+Signal.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_analog_signal_a7948e57a3440e33540e3c1d29441341d}\label{classsipm_1_1_si_p_m_analog_signal_a7948e57a3440e33540e3c1d29441341d}} 
+\index{sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}!tot@{tot}}
+\index{tot@{tot}!sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}}
+\doxysubsubsection{\texorpdfstring{tot()}{tot()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMAnalog\+Signal\+::tot (\begin{DoxyParamCaption}\item[{const double}]{intstart,  }\item[{const double}]{intgate,  }\item[{const double}]{threshold }\end{DoxyParamCaption}) const}
+
+
+
+\begin{quote}
+Returns time over threshold of the signal \end{quote}
+
+
+Time over threshold of the signal in the integration gate defined as the number of samples higher than the threshold normalized for the sampling time.
+
+If the signal is below the threshold the output is set to -\/1. 
+\begin{DoxyParams}{Parameters}
+{\em intstart} & Starting time of integration in ns \\
+\hline
+{\em intgate} & Length of the integration gate \\
+\hline
+{\em threshold} & Threshold to use for one-\/suppression \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line 52 of file Si\+PMAnalog\+Signal.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_analog_signal_ab599b0d2b0f39010c66c123b46182f6c}\label{classsipm_1_1_si_p_m_analog_signal_ab599b0d2b0f39010c66c123b46182f6c}} 
+\index{sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}!waveform@{waveform}}
+\index{waveform@{waveform}!sipm::SiPMAnalogSignal@{sipm::SiPMAnalogSignal}}
+\doxysubsubsection{\texorpdfstring{waveform()}{waveform()}}
+{\footnotesize\ttfamily const std\+::vector$<$double$>$\& sipm\+::\+Si\+PMAnalog\+Signal\+::waveform (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\begin{quote}
+Returns a std\+::vector containing the sampled waveform \end{quote}
+
+
+
+
+Definition at line 54 of file Si\+PMAnalog\+Signal.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/edo/\+Ubuntu\+Data/\+Projects/\+Sim\+Si\+PM/\+Sim\+Si\+PM/\mbox{\hyperlink{_si_p_m_analog_signal_8h}{Si\+PMAnalog\+Signal.\+h}}\item 
+/home/edo/\+Ubuntu\+Data/\+Projects/\+Sim\+Si\+PM/src/lib/\mbox{\hyperlink{_si_p_m_analog_signal_8cpp}{Si\+PMAnalog\+Signal.\+cpp}}\end{DoxyCompactItemize}

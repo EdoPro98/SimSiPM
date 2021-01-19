@@ -1,0 +1,100 @@
+\@ifundefined {etoctocstyle}{\let \etoc@startlocaltoc \@gobble \let \etoc@settocdepth \@gobble \let \etoc@depthtag \@gobble \let \etoc@setlocaltop \@gobble }{}
+\contentsline {chapter}{\numberline {1}Todo List}{1}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Class Index}{3}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Class List}{3}{section.2.1}%
+\contentsline {chapter}{\numberline {3}Class Documentation}{5}{chapter.3}%
+\contentsline {section}{\numberline {3.1}sipm\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}::Si\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}PMAdc Class Reference}{5}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Detailed Description}{6}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Member Function Documentation}{6}{subsection.3.1.2}%
+\contentsline {subsubsection}{\numberline {3.1.2.1}addJitter()}{6}{subsubsection.3.1.2.1}%
+\contentsline {subsubsection}{\numberline {3.1.2.2}digitize()}{7}{subsubsection.3.1.2.2}%
+\contentsline {subsubsection}{\numberline {3.1.2.3}quantize()}{7}{subsubsection.3.1.2.3}%
+\contentsline {section}{\numberline {3.2}sipm\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}::Si\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}PMAnalog\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Signal Class Reference}{8}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Detailed Description}{9}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Member Function Documentation}{9}{subsection.3.2.2}%
+\contentsline {subsubsection}{\numberline {3.2.2.1}integral()}{9}{subsubsection.3.2.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2.2}lowpass()}{9}{subsubsection.3.2.2.2}%
+\contentsline {subsubsection}{\numberline {3.2.2.3}peak()}{11}{subsubsection.3.2.2.3}%
+\contentsline {subsubsection}{\numberline {3.2.2.4}toa()}{11}{subsubsection.3.2.2.4}%
+\contentsline {subsubsection}{\numberline {3.2.2.5}top()}{12}{subsubsection.3.2.2.5}%
+\contentsline {subsubsection}{\numberline {3.2.2.6}tot()}{12}{subsubsection.3.2.2.6}%
+\contentsline {section}{\numberline {3.3}sipm\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}::Si\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}PMDebug\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Info Struct Reference}{13}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Detailed Description}{13}{subsection.3.3.1}%
+\contentsline {section}{\numberline {3.4}sipm\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}::Si\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}PMDigital\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Signal Class Reference}{13}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Detailed Description}{14}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Member Function Documentation}{14}{subsection.3.4.2}%
+\contentsline {subsubsection}{\numberline {3.4.2.1}integral()}{15}{subsubsection.3.4.2.1}%
+\contentsline {subsubsection}{\numberline {3.4.2.2}peak()}{15}{subsubsection.3.4.2.2}%
+\contentsline {subsubsection}{\numberline {3.4.2.3}toa()}{15}{subsubsection.3.4.2.3}%
+\contentsline {subsubsection}{\numberline {3.4.2.4}top()}{16}{subsubsection.3.4.2.4}%
+\contentsline {subsubsection}{\numberline {3.4.2.5}tot()}{16}{subsubsection.3.4.2.5}%
+\contentsline {section}{\numberline {3.5}sipm\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}::Si\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}PMHit Class Reference}{17}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}Detailed Description}{18}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.2}Member Enumeration Documentation}{18}{subsection.3.5.2}%
+\contentsline {subsubsection}{\numberline {3.5.2.1}HitType}{18}{subsubsection.3.5.2.1}%
+\contentsline {subsection}{\numberline {3.5.3}Constructor \& Destructor Documentation}{18}{subsection.3.5.3}%
+\contentsline {subsubsection}{\numberline {3.5.3.1}SiPMHit()}{18}{subsubsection.3.5.3.1}%
+\contentsline {subsection}{\numberline {3.5.4}Member Function Documentation}{19}{subsection.3.5.4}%
+\contentsline {subsubsection}{\numberline {3.5.4.1}operator$<$()}{19}{subsubsection.3.5.4.1}%
+\contentsline {section}{\numberline {3.6}sipm\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}::Si\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}PMProperties Class Reference}{19}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Detailed Description}{22}{subsection.3.6.1}%
+\contentsline {subsection}{\numberline {3.6.2}Member Enumeration Documentation}{22}{subsection.3.6.2}%
+\contentsline {subsubsection}{\numberline {3.6.2.1}HitDistribution}{22}{subsubsection.3.6.2.1}%
+\contentsline {subsubsection}{\numberline {3.6.2.2}PdeType}{23}{subsubsection.3.6.2.2}%
+\contentsline {subsection}{\numberline {3.6.3}Member Function Documentation}{23}{subsection.3.6.3}%
+\contentsline {subsubsection}{\numberline {3.6.3.1}fallingTimeFast()}{23}{subsubsection.3.6.3.1}%
+\contentsline {subsubsection}{\numberline {3.6.3.2}fallingTimeSlow()}{23}{subsubsection.3.6.3.2}%
+\contentsline {subsubsection}{\numberline {3.6.3.3}hasSlowComponent()}{24}{subsubsection.3.6.3.3}%
+\contentsline {subsubsection}{\numberline {3.6.3.4}readSettings()}{24}{subsubsection.3.6.3.4}%
+\contentsline {subsubsection}{\numberline {3.6.3.5}risingTime()}{24}{subsubsection.3.6.3.5}%
+\contentsline {subsubsection}{\numberline {3.6.3.6}setAp()}{24}{subsubsection.3.6.3.6}%
+\contentsline {subsubsection}{\numberline {3.6.3.7}setCcgv()}{25}{subsubsection.3.6.3.7}%
+\contentsline {subsubsection}{\numberline {3.6.3.8}setDcr()}{25}{subsubsection.3.6.3.8}%
+\contentsline {subsubsection}{\numberline {3.6.3.9}setFallTimeFast()}{25}{subsubsection.3.6.3.9}%
+\contentsline {subsubsection}{\numberline {3.6.3.10}setFallTimeSlow()}{26}{subsubsection.3.6.3.10}%
+\contentsline {subsubsection}{\numberline {3.6.3.11}setRiseTime()}{26}{subsubsection.3.6.3.11}%
+\contentsline {subsubsection}{\numberline {3.6.3.12}setXt()}{26}{subsubsection.3.6.3.12}%
+\contentsline {subsubsection}{\numberline {3.6.3.13}slowComponentFraction()}{26}{subsubsection.3.6.3.13}%
+\contentsline {section}{\numberline {3.7}sipm\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}::Si\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}PMRandom Class Reference}{27}{section.3.7}%
+\contentsline {subsection}{\numberline {3.7.1}Detailed Description}{28}{subsection.3.7.1}%
+\contentsline {subsection}{\numberline {3.7.2}Member Function Documentation}{28}{subsection.3.7.2}%
+\contentsline {subsubsection}{\numberline {3.7.2.1}Rand()\hspace {0.1cm}{\footnotesize \ttfamily [1/2]}}{28}{subsubsection.3.7.2.1}%
+\contentsline {subsubsection}{\numberline {3.7.2.2}Rand()\hspace {0.1cm}{\footnotesize \ttfamily [2/2]}}{28}{subsubsection.3.7.2.2}%
+\contentsline {subsubsection}{\numberline {3.7.2.3}randExponential()}{29}{subsubsection.3.7.2.3}%
+\contentsline {subsubsection}{\numberline {3.7.2.4}randGaussian()\hspace {0.1cm}{\footnotesize \ttfamily [1/2]}}{29}{subsubsection.3.7.2.4}%
+\contentsline {subsubsection}{\numberline {3.7.2.5}randGaussian()\hspace {0.1cm}{\footnotesize \ttfamily [2/2]}}{29}{subsubsection.3.7.2.5}%
+\contentsline {subsubsection}{\numberline {3.7.2.6}randInteger()\hspace {0.1cm}{\footnotesize \ttfamily [1/2]}}{30}{subsubsection.3.7.2.6}%
+\contentsline {subsubsection}{\numberline {3.7.2.7}randInteger()\hspace {0.1cm}{\footnotesize \ttfamily [2/2]}}{30}{subsubsection.3.7.2.7}%
+\contentsline {subsubsection}{\numberline {3.7.2.8}randPoisson()}{30}{subsubsection.3.7.2.8}%
+\contentsline {subsubsection}{\numberline {3.7.2.9}seed()}{31}{subsubsection.3.7.2.9}%
+\contentsline {section}{\numberline {3.8}sipm\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}::Si\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}PMSensor Class Reference}{31}{section.3.8}%
+\contentsline {subsection}{\numberline {3.8.1}Detailed Description}{33}{subsection.3.8.1}%
+\contentsline {subsection}{\numberline {3.8.2}Member Enumeration Documentation}{33}{subsection.3.8.2}%
+\contentsline {subsubsection}{\numberline {3.8.2.1}PrecisionLevel}{33}{subsubsection.3.8.2.1}%
+\contentsline {subsection}{\numberline {3.8.3}Constructor \& Destructor Documentation}{34}{subsection.3.8.3}%
+\contentsline {subsubsection}{\numberline {3.8.3.1}SiPMSensor()\hspace {0.1cm}{\footnotesize \ttfamily [1/2]}}{34}{subsubsection.3.8.3.1}%
+\contentsline {subsubsection}{\numberline {3.8.3.2}SiPMSensor()\hspace {0.1cm}{\footnotesize \ttfamily [2/2]}}{34}{subsubsection.3.8.3.2}%
+\contentsline {subsection}{\numberline {3.8.4}Member Function Documentation}{34}{subsection.3.8.4}%
+\contentsline {subsubsection}{\numberline {3.8.4.1}addApEvents()}{34}{subsubsection.3.8.4.1}%
+\contentsline {subsubsection}{\numberline {3.8.4.2}addDcrEvents()}{34}{subsubsection.3.8.4.2}%
+\contentsline {subsubsection}{\numberline {3.8.4.3}addPhotoelectrons()}{35}{subsubsection.3.8.4.3}%
+\contentsline {subsubsection}{\numberline {3.8.4.4}addXtEvents()}{35}{subsubsection.3.8.4.4}%
+\contentsline {subsubsection}{\numberline {3.8.4.5}calculateSignalAmplitudes()}{35}{subsubsection.3.8.4.5}%
+\contentsline {subsubsection}{\numberline {3.8.4.6}debug()}{35}{subsubsection.3.8.4.6}%
+\contentsline {subsubsection}{\numberline {3.8.4.7}evaluatePde()}{36}{subsubsection.3.8.4.7}%
+\contentsline {subsubsection}{\numberline {3.8.4.8}generateSignal()}{36}{subsubsection.3.8.4.8}%
+\contentsline {subsubsection}{\numberline {3.8.4.9}hitCell()}{36}{subsubsection.3.8.4.9}%
+\contentsline {subsubsection}{\numberline {3.8.4.10}properties()\hspace {0.1cm}{\footnotesize \ttfamily [1/2]}}{36}{subsubsection.3.8.4.10}%
+\contentsline {subsubsection}{\numberline {3.8.4.11}properties()\hspace {0.1cm}{\footnotesize \ttfamily [2/2]}}{37}{subsubsection.3.8.4.11}%
+\contentsline {subsubsection}{\numberline {3.8.4.12}resetState()}{37}{subsubsection.3.8.4.12}%
+\contentsline {subsubsection}{\numberline {3.8.4.13}rng()}{37}{subsubsection.3.8.4.13}%
+\contentsline {subsubsection}{\numberline {3.8.4.14}setPrecisionLevel()}{37}{subsubsection.3.8.4.14}%
+\contentsline {subsubsection}{\numberline {3.8.4.15}setProperties()}{38}{subsubsection.3.8.4.15}%
+\contentsline {subsubsection}{\numberline {3.8.4.16}setProperty()}{38}{subsubsection.3.8.4.16}%
+\contentsline {subsubsection}{\numberline {3.8.4.17}signal()}{38}{subsubsection.3.8.4.17}%
+\contentsline {subsubsection}{\numberline {3.8.4.18}signalShape()}{39}{subsubsection.3.8.4.18}%
+\contentsline {section}{\numberline {3.9}sipm\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}::Si\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}PMRng\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}::Xorshift256plus Class Reference}{39}{section.3.9}%
+\contentsline {subsection}{\numberline {3.9.1}Detailed Description}{39}{subsection.3.9.1}%
+\contentsline {subsection}{\numberline {3.9.2}Member Function Documentation}{40}{subsection.3.9.2}%
+\contentsline {subsubsection}{\numberline {3.9.2.1}jump()}{40}{subsubsection.3.9.2.1}%
+\contentsline {chapter}{Index}{41}{section*.20}%

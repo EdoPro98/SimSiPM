@@ -20,6 +20,12 @@ void SiPMSensor::setProperty(const std::string& prop, const double val) {
   m_Signal.setSampling(m_Properties.sampling());
 }
 
+void SiPMSensor::setProperties(const SiPMProperties& x) { m_Properties = x; }
+
+void SiPMSensor::setPrecisionLevel(const PrecisionLevel x) {
+  m_PrecisionLevel = x;
+}
+
 void SiPMSensor::addPhoton(const double aTime) {
   m_PhotonTimes.emplace_back(aTime);
 }
@@ -124,17 +130,14 @@ const std::pair<int32_t, int32_t> SiPMSensor::hitCell() const {
   return std::make_pair(row, col);
 }
 
-const std::pair<std::vector<uint32_t>, std::unordered_set<uint32_t>>
-SiPMSensor::getUniqueId() const {
-
+const std::vector<uint32_t> SiPMSensor::getCellIds() const {
   std::vector<uint32_t> cellId;
   cellId.reserve(m_Hits.size());
   for (auto hit = m_Hits.begin(); hit != m_Hits.end(); ++hit) {
     cellId.emplace_back(hit->id());
   }
-  std::unordered_set<uint32_t> uniqueCellId(cellId.begin(), cellId.end());
 
-  return std::make_pair(cellId, uniqueCellId);
+  return cellId;
 }
 
 void SiPMSensor::addDcrEvents() {
@@ -146,7 +149,7 @@ void SiPMSensor::addDcrEvents() {
 
   while (last < signalLength) {
     last += m_rng.randExponential(meanDcr);
-    if ((last > 0)&&(last < signalLength)) {
+    if ((last > 0) && (last < signalLength)) {
       int32_t row = m_rng.randInteger(nSideCells);
       int32_t col = m_rng.randInteger(nSideCells);
 
@@ -163,7 +166,7 @@ void SiPMSensor::addPhotoelectrons() {
   const double pde = m_Properties.pde();
   m_Hits.reserve(nPhotons);
 
-  switch (m_Properties.hasPde()) {
+  switch (m_Properties.pdeType()) {
   case (SiPMProperties::PdeType::kNoPde):
     // Add all photons
     for (uint32_t i = 0; i < nPhotons; ++i) {
@@ -287,9 +290,8 @@ void SiPMSensor::addApEvents() {
 
 void SiPMSensor::calculateSignalAmplitudes() {
   sortHits();
-  const auto unique = getUniqueId();
-  const std::vector<uint32_t> cellId = unique.first;
-  const std::unordered_set<uint32_t> uniqueCellId = unique.second;
+  const std::vector<uint32_t> cellId = getCellIds();
+  const std::unordered_set<uint32_t> uniqueCellId(cellId.begin(), cellId.end());
   const double cellRecovery = m_Properties.recoveryTime();
 
   for (auto itr = uniqueCellId.begin(); itr != uniqueCellId.end(); ++itr) {
@@ -328,9 +330,8 @@ void SiPMSensor::generateSignal() {
     for (i = time; i < nSignalPoints - 4; i += 4) {
       __m256d __signal = _mm256_loadu_pd(&m_Signal[i]);            // Load s
       __m256d __shape = _mm256_loadu_pd(&m_SignalShape[i - time]); // Load sh
-      __signal =
-        _mm256_fmadd_pd(__shape, __amplitude, __signal); // s += sh * a
-      _mm256_storeu_pd(&m_Signal[i], __signal);          // Save signal
+      __signal = _mm256_fmadd_pd(__shape, __amplitude, __signal); // s += sh * a
+      _mm256_storeu_pd(&m_Signal[i], __signal);                   // Save signal
     }
     while (i < nSignalPoints) {
       m_Signal[i] += m_SignalShape[i - time] * amplitude;

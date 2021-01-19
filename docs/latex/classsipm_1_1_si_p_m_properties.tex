@@ -1,0 +1,723 @@
+\hypertarget{classsipm_1_1_si_p_m_properties}{}\doxysection{sipm\+::Si\+PMProperties Class Reference}
+\label{classsipm_1_1_si_p_m_properties}\index{sipm::SiPMProperties@{sipm::SiPMProperties}}
+
+
+{\ttfamily \#include $<$Si\+PMProperties.\+h$>$}
+
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum class \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a96a03b8df7eeaad55505aa202450e715}{Pde\+Type}} \{ \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a96a03b8df7eeaad55505aa202450e715adb5415d27a148383706ccec3282e3622}{k\+No\+Pde}}
+, \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a96a03b8df7eeaad55505aa202450e715adcc8bef75976224fb6f8148fbab478b7}{k\+Simple\+Pde}}
+, \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a96a03b8df7eeaad55505aa202450e715a64dac3c526a347b78896382e7018add1}{k\+Spectrum\+Pde}}
+ \}
+\item 
+enum class \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ae898f0a2faccc08ccb33e094c2a5906d}{Hit\+Distribution}} \{ \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ae898f0a2faccc08ccb33e094c2a5906da3ea9f7aca87fd7b64469a0d1119f0b50}{k\+Uniform}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_af9cafc158bff29f8aaa65841b20e7514}{read\+Settings}} (std\+::string \&)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ad33db424d11416146e4e8a2a1f213138}{dump\+Settings}} () const
+\item 
+const uint32\+\_\+t \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a1537ab8ce564db2e19d6082f4c393f4c}{n\+Cells}} () const
+\item 
+const uint32\+\_\+t \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_aa4aeb39489ec93d987ba3ea07da810c6}{n\+Side\+Cells}} () const
+\item 
+const uint32\+\_\+t \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a7f01e48f07ca0540bdc7bb812325b144}{n\+Signal\+Points}} () const
+\item 
+const \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ae898f0a2faccc08ccb33e094c2a5906d}{Hit\+Distribution}} \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ac2d8aca055d740853819b9d4e01cd625}{hit\+Distribution}} () const
+\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ae97d35ed80018c26ff725655bdf5168b}{signal\+Length}} () const
+\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_aafee362ac16750adbc68bdffb4f657ed}{sampling}} () const
+\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ac46f271f003476b6411d470918234bdd}{rising\+Time}} () const
+\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a940f9e292d925cd221567f0bc9caeded}{falling\+Time\+Fast}} () const
+\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a9c9af4d8454e0a15fa53075717b30085}{falling\+Time\+Slow}} () const
+\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a44c64d7eb7debceb48370a0e19ea006f}{slow\+Component\+Fraction}} () const
+\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a9daafd67e5b5721868409b4fcde70c98}{recovery\+Time}} () const
+\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a0b60246bac5633d511d1396947a865d8}{dcr}} () const
+\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ae5eda7f4c3f01e5b7f47a294eb44828c}{xt}} () const
+\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a2f2a810170dacf527ddc769dba6a4f12}{ap}} () const
+\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a41d8345cc179146b8cda2f605bc40296}{tau\+Ap\+Fast}} () const
+\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a0496c07b5576be70009fdb75b70f6491}{tau\+Ap\+Slow}} () const
+\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_af896254e9e4dc923e24be278635000c7}{ap\+Slow\+Fraction}} () const
+\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ab89f11944192c057ec4c48f87398d5b5}{ccgv}} () const
+\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_acda90b6ec5b2c2304c7092a6ff46d6d0}{snrdB}} () const
+\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a6cc4b7482749dea88cc086d1e5ed0c2c}{snr\+Linear}} () const
+\item 
+const double \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a0e0621665ad1c9b05807b920639cb697}{pde}} () const
+\item 
+const std\+::map$<$ double, double $>$ \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_abb6b95c344c8368f3258c215b0229ac9}{pde\+Spectrum}} () const
+\item 
+const \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a96a03b8df7eeaad55505aa202450e715}{Pde\+Type}} \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a83b06365270289964cfc126dd690ee8d}{has\+Pde}} ()
+\item 
+const bool \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a3ff7f6ea582f48491f97688ada6634ab}{has\+Dcr}} () const
+\item 
+const bool \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a3c4946680fa02d1587d8817892c3e19a}{has\+Xt}} () const
+\item 
+const bool \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a3b5bb5985e334cb022de6ab308379996}{has\+Ap}} () const
+\item 
+const bool \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ab1c553d271a0ebe395fa9004087b1a31}{has\+Slow\+Component}} () const
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ace365d588b96a32e66953a8294451751}{set\+Property}} (const std\+::string \&, const double)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a5ba4dd6d35394c3351ea0403ea9f2b86}{set\+Size}} (const double x)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ab016fc227da0d9bef3eb074df1c55750}{set\+Pitch}} (const double x)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ad5882742467332e662383b31a1b3a5cf}{set\+Sampling}} (const double x)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a17b2e48e18e69de176cc7dcd707c10b4}{set\+Signal\+Length}} (const double x)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a8c94668f60dc5a7328bee282df18463c}{set\+Rise\+Time}} (const double x)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ab0566e8f4f9576db788dc92046490212}{set\+Fall\+Time\+Fast}} (const double x)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ad75316b0ab04143e0943ea8303bb6906}{set\+Fall\+Time\+Slow}} (const double x)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ab4e00070e75beef79d244633d30fdf67}{set\+Slow\+Component\+Fraction}} (const double x)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a532d15d9ab0a9caa13b119a18be95dcf}{set\+Recovery\+Time}} (const double x)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_aada7c61c5435244b00ac03b54dc57722}{set\+Snr}} (const double a\+Snr)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_afbff1b815faa7c55a2a91d23a4482e36}{set\+Tau\+Ap\+Fast\+Component}} (const double x)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a2b7abf6b6414d421e751d2ba84e329fd}{set\+Tau\+Ap\+Slow\+Component}} (const double x)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a1061413e3685f67431a0fb63ffb78230}{set\+Tau\+Ap\+Slow\+Fraction}} (const double x)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ae775278f3339547c1ca0e51f1a11d8ca}{set\+Ccgv}} (const double x)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_adc0f420837d38b9c58ddd26c1fc9a074}{set\+Pde}} (const double x)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a21bf053a9f872e2369d83028510fcbb1}{set\+Dcr}} (const double x)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_aa3ad1f3f47b1505189952f0849958390}{set\+Xt}} (const double x)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a0336c5348d3e0b724bed3cc72ab88134}{set\+Ap}} (const double x)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ad122e39988afd4e55aada5f8ad4abe28}{set\+Dcr\+Off}} ()
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_aea115daa09d3cb19062ec0c55fff92d5}{set\+Ap\+Off}} ()
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a5b6090c5ea94cf26505a39c292927861}{set\+Xt\+Off}} ()
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a3f9fb51500b38943f5cbdb449167688a}{set\+Pde\+Off}} ()
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ad566848b2c8d238e34b23691116ae45b}{set\+Pde\+Spectrum}} (const std\+::map$<$ double, double $>$ \&)
+\item 
+void \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a3ad3521ac3075050e8ec061535312217}{set\+Pde\+Spectrum}} (const std\+::vector$<$ double $>$ \&, const std\+::vector$<$ double $>$ \&)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+
+
+Definition at line 13 of file Si\+PMProperties.\+h.
+
+
+
+\doxysubsection{Member Enumeration Documentation}
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_ae898f0a2faccc08ccb33e094c2a5906d}\label{classsipm_1_1_si_p_m_properties_ae898f0a2faccc08ccb33e094c2a5906d}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!HitDistribution@{HitDistribution}}
+\index{HitDistribution@{HitDistribution}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{HitDistribution}{HitDistribution}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ae898f0a2faccc08ccb33e094c2a5906d}{sipm\+::\+Si\+PMProperties\+::\+Hit\+Distribution}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{kUniform@{kUniform}!sipm::SiPMProperties@{sipm::SiPMProperties}}\index{sipm::SiPMProperties@{sipm::SiPMProperties}!kUniform@{kUniform}}}\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_ae898f0a2faccc08ccb33e094c2a5906da3ea9f7aca87fd7b64469a0d1119f0b50}\label{classsipm_1_1_si_p_m_properties_ae898f0a2faccc08ccb33e094c2a5906da3ea9f7aca87fd7b64469a0d1119f0b50}} 
+k\+Uniform&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line 16 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a96a03b8df7eeaad55505aa202450e715}\label{classsipm_1_1_si_p_m_properties_a96a03b8df7eeaad55505aa202450e715}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!PdeType@{PdeType}}
+\index{PdeType@{PdeType}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{PdeType}{PdeType}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a96a03b8df7eeaad55505aa202450e715}{sipm\+::\+Si\+PMProperties\+::\+Pde\+Type}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{kNoPde@{kNoPde}!sipm::SiPMProperties@{sipm::SiPMProperties}}\index{sipm::SiPMProperties@{sipm::SiPMProperties}!kNoPde@{kNoPde}}}\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a96a03b8df7eeaad55505aa202450e715adb5415d27a148383706ccec3282e3622}\label{classsipm_1_1_si_p_m_properties_a96a03b8df7eeaad55505aa202450e715adb5415d27a148383706ccec3282e3622}} 
+k\+No\+Pde&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{kSimplePde@{kSimplePde}!sipm::SiPMProperties@{sipm::SiPMProperties}}\index{sipm::SiPMProperties@{sipm::SiPMProperties}!kSimplePde@{kSimplePde}}}\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a96a03b8df7eeaad55505aa202450e715adcc8bef75976224fb6f8148fbab478b7}\label{classsipm_1_1_si_p_m_properties_a96a03b8df7eeaad55505aa202450e715adcc8bef75976224fb6f8148fbab478b7}} 
+k\+Simple\+Pde&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{kSpectrumPde@{kSpectrumPde}!sipm::SiPMProperties@{sipm::SiPMProperties}}\index{sipm::SiPMProperties@{sipm::SiPMProperties}!kSpectrumPde@{kSpectrumPde}}}\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a96a03b8df7eeaad55505aa202450e715a64dac3c526a347b78896382e7018add1}\label{classsipm_1_1_si_p_m_properties_a96a03b8df7eeaad55505aa202450e715a64dac3c526a347b78896382e7018add1}} 
+k\+Spectrum\+Pde&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line 15 of file Si\+PMProperties.\+h.
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a2f2a810170dacf527ddc769dba6a4f12}\label{classsipm_1_1_si_p_m_properties_a2f2a810170dacf527ddc769dba6a4f12}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!ap@{ap}}
+\index{ap@{ap}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{ap()}{ap()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::ap (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 36 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_af896254e9e4dc923e24be278635000c7}\label{classsipm_1_1_si_p_m_properties_af896254e9e4dc923e24be278635000c7}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!apSlowFraction@{apSlowFraction}}
+\index{apSlowFraction@{apSlowFraction}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{apSlowFraction()}{apSlowFraction()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::ap\+Slow\+Fraction (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 39 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_ab89f11944192c057ec4c48f87398d5b5}\label{classsipm_1_1_si_p_m_properties_ab89f11944192c057ec4c48f87398d5b5}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!ccgv@{ccgv}}
+\index{ccgv@{ccgv}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{ccgv()}{ccgv()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::ccgv (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 40 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a0b60246bac5633d511d1396947a865d8}\label{classsipm_1_1_si_p_m_properties_a0b60246bac5633d511d1396947a865d8}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!dcr@{dcr}}
+\index{dcr@{dcr}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{dcr()}{dcr()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::dcr (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 34 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_ad33db424d11416146e4e8a2a1f213138}\label{classsipm_1_1_si_p_m_properties_ad33db424d11416146e4e8a2a1f213138}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!dumpSettings@{dumpSettings}}
+\index{dumpSettings@{dumpSettings}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{dumpSettings()}{dumpSettings()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::dump\+Settings (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Definition at line 99 of file Si\+PMProperties.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a940f9e292d925cd221567f0bc9caeded}\label{classsipm_1_1_si_p_m_properties_a940f9e292d925cd221567f0bc9caeded}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!fallingTimeFast@{fallingTimeFast}}
+\index{fallingTimeFast@{fallingTimeFast}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{fallingTimeFast()}{fallingTimeFast()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::falling\+Time\+Fast (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 30 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a9c9af4d8454e0a15fa53075717b30085}\label{classsipm_1_1_si_p_m_properties_a9c9af4d8454e0a15fa53075717b30085}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!fallingTimeSlow@{fallingTimeSlow}}
+\index{fallingTimeSlow@{fallingTimeSlow}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{fallingTimeSlow()}{fallingTimeSlow()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::falling\+Time\+Slow (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 31 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a3b5bb5985e334cb022de6ab308379996}\label{classsipm_1_1_si_p_m_properties_a3b5bb5985e334cb022de6ab308379996}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!hasAp@{hasAp}}
+\index{hasAp@{hasAp}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{hasAp()}{hasAp()}}
+{\footnotesize\ttfamily const bool sipm\+::\+Si\+PMProperties\+::has\+Ap (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 48 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a3ff7f6ea582f48491f97688ada6634ab}\label{classsipm_1_1_si_p_m_properties_a3ff7f6ea582f48491f97688ada6634ab}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!hasDcr@{hasDcr}}
+\index{hasDcr@{hasDcr}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{hasDcr()}{hasDcr()}}
+{\footnotesize\ttfamily const bool sipm\+::\+Si\+PMProperties\+::has\+Dcr (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 46 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a83b06365270289964cfc126dd690ee8d}\label{classsipm_1_1_si_p_m_properties_a83b06365270289964cfc126dd690ee8d}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!hasPde@{hasPde}}
+\index{hasPde@{hasPde}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{hasPde()}{hasPde()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_a96a03b8df7eeaad55505aa202450e715}{Pde\+Type}} sipm\+::\+Si\+PMProperties\+::has\+Pde (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 45 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_ab1c553d271a0ebe395fa9004087b1a31}\label{classsipm_1_1_si_p_m_properties_ab1c553d271a0ebe395fa9004087b1a31}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!hasSlowComponent@{hasSlowComponent}}
+\index{hasSlowComponent@{hasSlowComponent}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{hasSlowComponent()}{hasSlowComponent()}}
+{\footnotesize\ttfamily const bool sipm\+::\+Si\+PMProperties\+::has\+Slow\+Component (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 49 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a3c4946680fa02d1587d8817892c3e19a}\label{classsipm_1_1_si_p_m_properties_a3c4946680fa02d1587d8817892c3e19a}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!hasXt@{hasXt}}
+\index{hasXt@{hasXt}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{hasXt()}{hasXt()}}
+{\footnotesize\ttfamily const bool sipm\+::\+Si\+PMProperties\+::has\+Xt (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 47 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_ac2d8aca055d740853819b9d4e01cd625}\label{classsipm_1_1_si_p_m_properties_ac2d8aca055d740853819b9d4e01cd625}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!hitDistribution@{hitDistribution}}
+\index{hitDistribution@{hitDistribution}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{hitDistribution()}{hitDistribution()}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{classsipm_1_1_si_p_m_properties_ae898f0a2faccc08ccb33e094c2a5906d}{Hit\+Distribution}} sipm\+::\+Si\+PMProperties\+::hit\+Distribution (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 26 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a1537ab8ce564db2e19d6082f4c393f4c}\label{classsipm_1_1_si_p_m_properties_a1537ab8ce564db2e19d6082f4c393f4c}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!nCells@{nCells}}
+\index{nCells@{nCells}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{nCells()}{nCells()}}
+{\footnotesize\ttfamily const uint32\+\_\+t sipm\+::\+Si\+PMProperties\+::n\+Cells (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Definition at line 9 of file Si\+PMProperties.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_aa4aeb39489ec93d987ba3ea07da810c6}\label{classsipm_1_1_si_p_m_properties_aa4aeb39489ec93d987ba3ea07da810c6}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!nSideCells@{nSideCells}}
+\index{nSideCells@{nSideCells}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{nSideCells()}{nSideCells()}}
+{\footnotesize\ttfamily const uint32\+\_\+t sipm\+::\+Si\+PMProperties\+::n\+Side\+Cells (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Definition at line 17 of file Si\+PMProperties.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a7f01e48f07ca0540bdc7bb812325b144}\label{classsipm_1_1_si_p_m_properties_a7f01e48f07ca0540bdc7bb812325b144}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!nSignalPoints@{nSignalPoints}}
+\index{nSignalPoints@{nSignalPoints}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{nSignalPoints()}{nSignalPoints()}}
+{\footnotesize\ttfamily const uint32\+\_\+t sipm\+::\+Si\+PMProperties\+::n\+Signal\+Points (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Definition at line 25 of file Si\+PMProperties.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a0e0621665ad1c9b05807b920639cb697}\label{classsipm_1_1_si_p_m_properties_a0e0621665ad1c9b05807b920639cb697}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!pde@{pde}}
+\index{pde@{pde}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{pde()}{pde()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::pde (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 43 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_abb6b95c344c8368f3258c215b0229ac9}\label{classsipm_1_1_si_p_m_properties_abb6b95c344c8368f3258c215b0229ac9}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!pdeSpectrum@{pdeSpectrum}}
+\index{pdeSpectrum@{pdeSpectrum}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{pdeSpectrum()}{pdeSpectrum()}}
+{\footnotesize\ttfamily const std\+::map$<$ double, double $>$ sipm\+::\+Si\+PMProperties\+::pde\+Spectrum (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Definition at line 35 of file Si\+PMProperties.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_af9cafc158bff29f8aaa65841b20e7514}\label{classsipm_1_1_si_p_m_properties_af9cafc158bff29f8aaa65841b20e7514}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!readSettings@{readSettings}}
+\index{readSettings@{readSettings}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{readSettings()}{readSettings()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::read\+Settings (\begin{DoxyParamCaption}\item[{std\+::string \&}]{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a9daafd67e5b5721868409b4fcde70c98}\label{classsipm_1_1_si_p_m_properties_a9daafd67e5b5721868409b4fcde70c98}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!recoveryTime@{recoveryTime}}
+\index{recoveryTime@{recoveryTime}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{recoveryTime()}{recoveryTime()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::recovery\+Time (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 33 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_ac46f271f003476b6411d470918234bdd}\label{classsipm_1_1_si_p_m_properties_ac46f271f003476b6411d470918234bdd}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!risingTime@{risingTime}}
+\index{risingTime@{risingTime}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{risingTime()}{risingTime()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::rising\+Time (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 29 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_aafee362ac16750adbc68bdffb4f657ed}\label{classsipm_1_1_si_p_m_properties_aafee362ac16750adbc68bdffb4f657ed}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!sampling@{sampling}}
+\index{sampling@{sampling}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{sampling()}{sampling()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::sampling (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 28 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a0336c5348d3e0b724bed3cc72ab88134}\label{classsipm_1_1_si_p_m_properties_a0336c5348d3e0b724bed3cc72ab88134}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setAp@{setAp}}
+\index{setAp@{setAp}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setAp()}{setAp()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Ap (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 91 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_aea115daa09d3cb19062ec0c55fff92d5}\label{classsipm_1_1_si_p_m_properties_aea115daa09d3cb19062ec0c55fff92d5}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setApOff@{setApOff}}
+\index{setApOff@{setApOff}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setApOff()}{setApOff()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Ap\+Off (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 96 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_ae775278f3339547c1ca0e51f1a11d8ca}\label{classsipm_1_1_si_p_m_properties_ae775278f3339547c1ca0e51f1a11d8ca}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setCcgv@{setCcgv}}
+\index{setCcgv@{setCcgv}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setCcgv()}{setCcgv()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Ccgv (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 78 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a21bf053a9f872e2369d83028510fcbb1}\label{classsipm_1_1_si_p_m_properties_a21bf053a9f872e2369d83028510fcbb1}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setDcr@{setDcr}}
+\index{setDcr@{setDcr}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setDcr()}{setDcr()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Dcr (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 83 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_ad122e39988afd4e55aada5f8ad4abe28}\label{classsipm_1_1_si_p_m_properties_ad122e39988afd4e55aada5f8ad4abe28}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setDcrOff@{setDcrOff}}
+\index{setDcrOff@{setDcrOff}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setDcrOff()}{setDcrOff()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Dcr\+Off (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 95 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_ab0566e8f4f9576db788dc92046490212}\label{classsipm_1_1_si_p_m_properties_ab0566e8f4f9576db788dc92046490212}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setFallTimeFast@{setFallTimeFast}}
+\index{setFallTimeFast@{setFallTimeFast}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setFallTimeFast()}{setFallTimeFast()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Fall\+Time\+Fast (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 58 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_ad75316b0ab04143e0943ea8303bb6906}\label{classsipm_1_1_si_p_m_properties_ad75316b0ab04143e0943ea8303bb6906}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setFallTimeSlow@{setFallTimeSlow}}
+\index{setFallTimeSlow@{setFallTimeSlow}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setFallTimeSlow()}{setFallTimeSlow()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Fall\+Time\+Slow (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 59 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_adc0f420837d38b9c58ddd26c1fc9a074}\label{classsipm_1_1_si_p_m_properties_adc0f420837d38b9c58ddd26c1fc9a074}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setPde@{setPde}}
+\index{setPde@{setPde}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setPde()}{setPde()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Pde (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 79 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a3f9fb51500b38943f5cbdb449167688a}\label{classsipm_1_1_si_p_m_properties_a3f9fb51500b38943f5cbdb449167688a}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setPdeOff@{setPdeOff}}
+\index{setPdeOff@{setPdeOff}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setPdeOff()}{setPdeOff()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Pde\+Off (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 98 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_ad566848b2c8d238e34b23691116ae45b}\label{classsipm_1_1_si_p_m_properties_ad566848b2c8d238e34b23691116ae45b}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setPdeSpectrum@{setPdeSpectrum}}
+\index{setPdeSpectrum@{setPdeSpectrum}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setPdeSpectrum()}{setPdeSpectrum()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Pde\+Spectrum (\begin{DoxyParamCaption}\item[{const std\+::map$<$ double, double $>$ \&}]{x }\end{DoxyParamCaption})}
+
+
+
+Definition at line 88 of file Si\+PMProperties.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a3ad3521ac3075050e8ec061535312217}\label{classsipm_1_1_si_p_m_properties_a3ad3521ac3075050e8ec061535312217}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setPdeSpectrum@{setPdeSpectrum}}
+\index{setPdeSpectrum@{setPdeSpectrum}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setPdeSpectrum()}{setPdeSpectrum()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Pde\+Spectrum (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&}]{wav,  }\item[{const std\+::vector$<$ double $>$ \&}]{pde }\end{DoxyParamCaption})}
+
+
+
+Definition at line 93 of file Si\+PMProperties.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_ab016fc227da0d9bef3eb074df1c55750}\label{classsipm_1_1_si_p_m_properties_ab016fc227da0d9bef3eb074df1c55750}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setPitch@{setPitch}}
+\index{setPitch@{setPitch}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setPitch()}{setPitch()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Pitch (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 54 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_ace365d588b96a32e66953a8294451751}\label{classsipm_1_1_si_p_m_properties_ace365d588b96a32e66953a8294451751}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setProperty@{setProperty}}
+\index{setProperty@{setProperty}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setProperty()}{setProperty()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Property (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{a\+Prop,  }\item[{const double}]{a\+Prop\+Value }\end{DoxyParamCaption})}
+
+
+
+Definition at line 40 of file Si\+PMProperties.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a532d15d9ab0a9caa13b119a18be95dcf}\label{classsipm_1_1_si_p_m_properties_a532d15d9ab0a9caa13b119a18be95dcf}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setRecoveryTime@{setRecoveryTime}}
+\index{setRecoveryTime@{setRecoveryTime}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setRecoveryTime()}{setRecoveryTime()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Recovery\+Time (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 64 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a8c94668f60dc5a7328bee282df18463c}\label{classsipm_1_1_si_p_m_properties_a8c94668f60dc5a7328bee282df18463c}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setRiseTime@{setRiseTime}}
+\index{setRiseTime@{setRiseTime}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setRiseTime()}{setRiseTime()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Rise\+Time (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 57 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_ad5882742467332e662383b31a1b3a5cf}\label{classsipm_1_1_si_p_m_properties_ad5882742467332e662383b31a1b3a5cf}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setSampling@{setSampling}}
+\index{setSampling@{setSampling}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setSampling()}{setSampling()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Sampling (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})}
+
+
+
+Definition at line 83 of file Si\+PMProperties.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a17b2e48e18e69de176cc7dcd707c10b4}\label{classsipm_1_1_si_p_m_properties_a17b2e48e18e69de176cc7dcd707c10b4}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setSignalLength@{setSignalLength}}
+\index{setSignalLength@{setSignalLength}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setSignalLength()}{setSignalLength()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Signal\+Length (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 56 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a5ba4dd6d35394c3351ea0403ea9f2b86}\label{classsipm_1_1_si_p_m_properties_a5ba4dd6d35394c3351ea0403ea9f2b86}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setSize@{setSize}}
+\index{setSize@{setSize}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setSize()}{setSize()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Size (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 53 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_ab4e00070e75beef79d244633d30fdf67}\label{classsipm_1_1_si_p_m_properties_ab4e00070e75beef79d244633d30fdf67}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setSlowComponentFraction@{setSlowComponentFraction}}
+\index{setSlowComponentFraction@{setSlowComponentFraction}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setSlowComponentFraction()}{setSlowComponentFraction()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Slow\+Component\+Fraction (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 63 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_aada7c61c5435244b00ac03b54dc57722}\label{classsipm_1_1_si_p_m_properties_aada7c61c5435244b00ac03b54dc57722}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setSnr@{setSnr}}
+\index{setSnr@{setSnr}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setSnr()}{setSnr()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Snr (\begin{DoxyParamCaption}\item[{const double}]{a\+Snr }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 65 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_afbff1b815faa7c55a2a91d23a4482e36}\label{classsipm_1_1_si_p_m_properties_afbff1b815faa7c55a2a91d23a4482e36}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setTauApFastComponent@{setTauApFastComponent}}
+\index{setTauApFastComponent@{setTauApFastComponent}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setTauApFastComponent()}{setTauApFastComponent()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Tau\+Ap\+Fast\+Component (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 69 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a2b7abf6b6414d421e751d2ba84e329fd}\label{classsipm_1_1_si_p_m_properties_a2b7abf6b6414d421e751d2ba84e329fd}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setTauApSlowComponent@{setTauApSlowComponent}}
+\index{setTauApSlowComponent@{setTauApSlowComponent}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setTauApSlowComponent()}{setTauApSlowComponent()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Tau\+Ap\+Slow\+Component (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 73 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a1061413e3685f67431a0fb63ffb78230}\label{classsipm_1_1_si_p_m_properties_a1061413e3685f67431a0fb63ffb78230}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setTauApSlowFraction@{setTauApSlowFraction}}
+\index{setTauApSlowFraction@{setTauApSlowFraction}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setTauApSlowFraction()}{setTauApSlowFraction()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Tau\+Ap\+Slow\+Fraction (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 77 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_aa3ad1f3f47b1505189952f0849958390}\label{classsipm_1_1_si_p_m_properties_aa3ad1f3f47b1505189952f0849958390}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setXt@{setXt}}
+\index{setXt@{setXt}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setXt()}{setXt()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Xt (\begin{DoxyParamCaption}\item[{const double}]{x }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 87 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a5b6090c5ea94cf26505a39c292927861}\label{classsipm_1_1_si_p_m_properties_a5b6090c5ea94cf26505a39c292927861}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!setXtOff@{setXtOff}}
+\index{setXtOff@{setXtOff}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{setXtOff()}{setXtOff()}}
+{\footnotesize\ttfamily void sipm\+::\+Si\+PMProperties\+::set\+Xt\+Off (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 97 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_ae97d35ed80018c26ff725655bdf5168b}\label{classsipm_1_1_si_p_m_properties_ae97d35ed80018c26ff725655bdf5168b}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!signalLength@{signalLength}}
+\index{signalLength@{signalLength}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{signalLength()}{signalLength()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::signal\+Length (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 27 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a44c64d7eb7debceb48370a0e19ea006f}\label{classsipm_1_1_si_p_m_properties_a44c64d7eb7debceb48370a0e19ea006f}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!slowComponentFraction@{slowComponentFraction}}
+\index{slowComponentFraction@{slowComponentFraction}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{slowComponentFraction()}{slowComponentFraction()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::slow\+Component\+Fraction (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 32 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_acda90b6ec5b2c2304c7092a6ff46d6d0}\label{classsipm_1_1_si_p_m_properties_acda90b6ec5b2c2304c7092a6ff46d6d0}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!snrdB@{snrdB}}
+\index{snrdB@{snrdB}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{snrdB()}{snrdB()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::snrdB (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 41 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a6cc4b7482749dea88cc086d1e5ed0c2c}\label{classsipm_1_1_si_p_m_properties_a6cc4b7482749dea88cc086d1e5ed0c2c}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!snrLinear@{snrLinear}}
+\index{snrLinear@{snrLinear}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{snrLinear()}{snrLinear()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::snr\+Linear (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+Definition at line 30 of file Si\+PMProperties.\+cpp.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a41d8345cc179146b8cda2f605bc40296}\label{classsipm_1_1_si_p_m_properties_a41d8345cc179146b8cda2f605bc40296}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!tauApFast@{tauApFast}}
+\index{tauApFast@{tauApFast}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{tauApFast()}{tauApFast()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::tau\+Ap\+Fast (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 37 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_a0496c07b5576be70009fdb75b70f6491}\label{classsipm_1_1_si_p_m_properties_a0496c07b5576be70009fdb75b70f6491}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!tauApSlow@{tauApSlow}}
+\index{tauApSlow@{tauApSlow}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{tauApSlow()}{tauApSlow()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::tau\+Ap\+Slow (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 38 of file Si\+PMProperties.\+h.
+
+\mbox{\Hypertarget{classsipm_1_1_si_p_m_properties_ae5eda7f4c3f01e5b7f47a294eb44828c}\label{classsipm_1_1_si_p_m_properties_ae5eda7f4c3f01e5b7f47a294eb44828c}} 
+\index{sipm::SiPMProperties@{sipm::SiPMProperties}!xt@{xt}}
+\index{xt@{xt}!sipm::SiPMProperties@{sipm::SiPMProperties}}
+\doxysubsubsection{\texorpdfstring{xt()}{xt()}}
+{\footnotesize\ttfamily const double sipm\+::\+Si\+PMProperties\+::xt (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition at line 35 of file Si\+PMProperties.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/edo/\+Ubuntu\+Data/\+Projects/\+Sim\+Si\+PM/\+Sim\+Si\+PM/\mbox{\hyperlink{_si_p_m_properties_8h}{Si\+PMProperties.\+h}}\item 
+/home/edo/\+Ubuntu\+Data/\+Projects/\+Sim\+Si\+PM/src/lib/\mbox{\hyperlink{_si_p_m_properties_8cpp}{Si\+PMProperties.\+cpp}}\end{DoxyCompactItemize}

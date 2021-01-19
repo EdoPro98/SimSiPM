@@ -1,0 +1,5 @@
+<map id="sipm::SiPMAdc" name="sipm::SiPMAdc">
+<area shape="rect" id="node1" title="Class that simulates the operation of an ADC converter." alt="" coords="53,184,164,211"/>
+<area shape="rect" id="node2" href="$classsipm_1_1SiPMRandom.html" title="Class for random number generation." alt="" coords="41,95,177,121"/>
+<area shape="rect" id="node3" href="$classsipm_1_1SiPMRng_1_1Xorshift256plus.html" title="Implementation of Xorshift256+ algorithm." alt="" coords="5,5,212,32"/>
+</map>
