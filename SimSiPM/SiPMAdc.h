@@ -24,10 +24,10 @@ public:
   /// @brief SiPMAdc contructor with given parameters
   SiPMAdc(const uint32_t, const double, const double);
 
-  const uint32_t nBits()const {return m_Nbits;}
-  const double range()const {return m_Range;}
-  const double gain()const {return m_Gain;}
-  const double jitter()const {return m_Jitter;}
+  const uint32_t nBits() const { return m_Nbits; }
+  const double range() const { return m_Range; }
+  const double gain() const { return m_Gain; }
+  const double jitter() const { return m_Jitter; }
 
   /// @brief Digitizes an analog signalt to a digital one
   SiPMDigitalSignal digitize(const SiPMAnalogSignal&) const;
@@ -43,11 +43,12 @@ public:
 
 private:
   /// @brief Quantizes a signal using a given number of bits
-  std::vector<int32_t> quantize(const std::vector<double>&, uint32_t, double, double) const
-    __attribute__((hot));
+  std::vector<int32_t> quantize(const std::vector<double>&, uint32_t, double,
+                                double) const __attribute__((hot));
   /// @brief Adds jitter to a signal
   /// @todo Maybe better to return by reference here
-  std::vector<double> addJitter(std::vector<double>&, const double) const __attribute__((hot));
+  std::vector<double> addJitter(std::vector<double>&, const double) const
+    __attribute__((hot));
 
   uint32_t m_Nbits;
   double m_Range;

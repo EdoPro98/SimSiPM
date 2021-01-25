@@ -8,21 +8,21 @@
 namespace sipm {
 
 namespace SiPMRng {
-  void Xorshift256plus::seed() {
-    std::random_device rd;
-    s[0] = rd();
-    s[1] = rd();
-    s[2] = rd();
-    s[3] = rd();
-    this->operator()();
-  }
+void Xorshift256plus::seed() {
+  std::random_device rd;
+  s[0] = rd();
+  s[1] = rd();
+  s[2] = rd();
+  s[3] = rd();
+  this->operator()();
+}
 
-  void Xorshift256plus::seed(uint64_t aseed) {
-    s[0] = aseed;
-    s[1] = aseed + 1;
-    s[2] = aseed + 2;
-    s[3] = aseed + 3;
-  }
+void Xorshift256plus::seed(uint64_t aseed) {
+  s[0] = aseed;
+  s[1] = aseed + 1;
+  s[2] = aseed + 2;
+  s[3] = aseed + 3;
+}
 
 void Xorshift256plus::jump() {
   static const uint64_t JUMP[] = {0x180ec6d33cfd0aba, 0xd5a61266f0c9392c,
@@ -124,6 +124,8 @@ std::vector<double> SiPMRandom::randGaussian(const double mu,
                                              const uint32_t n) {
   if (n == 0) { return {}; }
   std::vector<double> out(n);
+  std::vector<double> S(n / 2 + 1);
+  std::vector<double> U(n);
 
   for (uint32_t i = 0; i < n - 1; ++i) {
     double s, u, v;
@@ -132,13 +134,15 @@ std::vector<double> SiPMRandom::randGaussian(const double mu,
       v = Rand() * 2.0 - 1.0;
       s = u * u + v * v;
     } while (s >= 1 || s == 0.0);
-    s = sqrt(-2 * log(s) / s);
-    out[i] = u * s;
-    ++i;
-    out[i] = v * s;
+    S[i / 2] = log(s) / s;
+    U[i] = u;
+    i++;
+    U[i] = v;
   }
 
-  for (uint32_t i = 0; i < n; ++i) { out[i] = out[i] * sigma + mu; }
+  for (uint32_t i = 0; i < n; ++i) {
+    out[i] = sqrt(-2 * S[i / 2]) * U[i] * sigma + mu;
+  }
   return out;
 }
 

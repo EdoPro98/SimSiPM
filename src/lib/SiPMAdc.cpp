@@ -17,16 +17,18 @@ SiPMAdc::SiPMAdc(const uint32_t nbits, const double range, const double gain)
   : m_Nbits(nbits), m_Range(range), m_Gain(gain) {}
 
 /**
-* @param v Vector to quantize
-* @param nbits Number of bits to use for quantization
-* @param range Range to use for the quantization [-range,+range]
-* @param gain Gain in dB to apply before quantization
-* @return Quantized input vector
-*/
-std::vector<int32_t> SiPMAdc::quantize(const std::vector<double>& v, const uint32_t nbits, const double range, const double gain) const {
+ * @param v Vector to quantize
+ * @param nbits Number of bits to use for quantization
+ * @param range Range to use for the quantization [-range,+range]
+ * @param gain Gain in dB to apply before quantization
+ * @return Quantized input vector
+ */
+std::vector<int32_t> SiPMAdc::quantize(const std::vector<double>& v,
+                                       const uint32_t nbits, const double range,
+                                       const double gain) const {
   std::vector<int32_t> out(v.size());
 
-  const double qlevels = pow(2,nbits);
+  const double qlevels = pow(2, nbits);
   const double gainlinear = pow(10, (gain / 20));
   const double width = range / gainlinear / qlevels;
 
@@ -38,11 +40,12 @@ std::vector<int32_t> SiPMAdc::quantize(const std::vector<double>& v, const uint3
 }
 
 /**
-* @param signal Input signal to apply jitter to
-* @param jit Jitter value to apply
-* @return Signal with jitter applied
-*/
-std::vector<double> SiPMAdc::addJitter(std::vector<double>& signal, const double jit) const {
+ * @param signal Input signal to apply jitter to
+ * @param jit Jitter value to apply
+ * @return Signal with jitter applied
+ */
+std::vector<double> SiPMAdc::addJitter(std::vector<double>& signal,
+                                       const double jit) const {
   const uint32_t n = signal.size();
   std::vector<double> lsignalshift = signal; // Copy of signal
   double jitweight;
@@ -93,9 +96,9 @@ std::vector<double> SiPMAdc::addJitter(std::vector<double>& signal, const double
 }
 
 /**
-* @param signal Input signal to be digitized
-* @returns Digitized SiPMAnalogSignal
-*/
+ * @param signal Input signal to be digitized
+ * @returns Digitized SiPMAnalogSignal
+ */
 SiPMDigitalSignal SiPMAdc::digitize(const SiPMAnalogSignal& signal) const {
   // Local copy of analog signal
   std::vector<double> lsignal = signal.waveform();

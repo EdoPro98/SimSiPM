@@ -10,13 +10,14 @@
  *  @date 2020
  */
 
- /** @class sipm::SiPMRng::Xorshift256plus SimSiPM/src/components/SiPMRandom.h SiPMRandom.h
-  *
-  * @brief Implementation of Xorshift256+ algorithm
-  *
-  *  @author Edoardo Proserpio
-  *  @date 2020
-  */
+/** @class sipm::SiPMRng::Xorshift256plus SimSiPM/src/components/SiPMRandom.h
+ * SiPMRandom.h
+ *
+ * @brief Implementation of Xorshift256+ algorithm
+ *
+ *  @author Edoardo Proserpio
+ *  @date 2020
+ */
 #include <vector>
 
 #include <math.h>
@@ -38,9 +39,9 @@ public:
   inline uint64_t operator()() noexcept __attribute__((hot));
   /// @brief Jump function for the alghoritm.
   /** Usefull in case the same generator is used in multiple instancies. The
-  * jump function will make sure that pseud-random values generated from the
-  * different instancies are uncorrelated.
-  */
+   * jump function will make sure that pseud-random values generated from the
+   * different instancies are uncorrelated.
+   */
   void jump();
   /// @brief Sets a random seed generated with rand()
   void seed();

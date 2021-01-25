@@ -36,7 +36,8 @@ public:
    * Used to describe how photoelectrons are distributed on the SiPM surface
    */
   enum class HitDistribution {
-    kUniform ///< Photons uniformly distributed on the sensor surface
+    kUniform, ///< Photons uniformly distributed on the sensor surface
+    kCircle   ///< 95% of photons are uniformly distributed on a circle
   };
 
   /// @brief Used to read settings from a macro file
@@ -152,9 +153,7 @@ public:
 
   /// @brief Set falling time constant for the slow component of signal @sa
   /// SiPMSensor::signalShape
-  void setFallTimeSlow(const double x) {
-    m_FallTimeSlow = x;
-  }
+  void setFallTimeSlow(const double x) { m_FallTimeSlow = x; }
 
   /// @brief Set weigth of slow component in the signal
   void setSlowComponentFraction(const double x) { m_SlowComponentFraction = x; }
@@ -169,14 +168,10 @@ public:
   }
 
   /// @brief Set time constant for the delay of fast afterpulses
-  void setTauApFastComponent(const double x) {
-    m_TauApFastComponent = x;
-  }
+  void setTauApFastComponent(const double x) { m_TauApFastComponent = x; }
 
   /// @brief Set time constant for the delay of slow afterpulses
-  void setTauApSlowComponent(const double x) {
-    m_TauApFastComponent = x;
-  }
+  void setTauApSlowComponent(const double x) { m_TauApFastComponent = x; }
 
   /// @brief Set probability to have slow afterpulses over fast ones
   void setTauApSlowFraction(const double x) { m_ApSlowFraction = x; }
@@ -185,28 +180,19 @@ public:
   void setCcgv(const double x) { m_Ccgv = x; }
 
   /// @brief Set value for PDE (and sets @ref PdeType::kSimplePde)
-  void setPde(const double x) {
-    m_Pde = x;
-    m_HasPde = PdeType::kSimplePde;
-  }
+  void setPde(const double x) { m_Pde = x; }
 
   /// @brief Set dark counts rate
   /// @param aDcr Dark counts rate in Hz
-  void setDcr(const double aDcr) {
-    m_Dcr = aDcr;
-  }
+  void setDcr(const double aDcr) { m_Dcr = aDcr; }
 
   /// @brief Set optical crosstalk probability
   /// @param aXt optical crosstalk probability [0-1]
-  void setXt(const double aXt) {
-    m_Xt = aXt;
-  }
+  void setXt(const double aXt) { m_Xt = aXt; }
 
   /// @brief Set afterpulse probability
   /// @param aAp afterpulse probability [0-1]
-  void setAp(const double aAp) {
-    m_Ap = aAp;
-  }
+  void setAp(const double aAp) { m_Ap = aAp; }
 
   /// @brief Turn off dark counts
   void setDcrOff() { m_HasDcr = false; }
@@ -225,13 +211,17 @@ public:
   /// @brief Turns on slow component of the signal
   void setSlowComponentOn() { m_HasSlowComponent = true; }
   /// @brief Turn off PDE: set @ref PdeType::kNoPde
-  void setPdeOff() { m_HasPde = PdeType::kNoPde; }
+  void setPdeType(PdeType aPdeType) { m_HasPde = aPdeType; }
   /// @brief Set a spectral response of the SiPM and sets @ref
   /// PdeType::kSpectrumPde
   void setPdeSpectrum(const std::map<double, double>&);
   /// @brief Set a spectral response of the SiPM and sets @ref
   /// PdeType::kSpectrumPde
   void setPdeSpectrum(const std::vector<double>&, const std::vector<double>&);
+
+  void setHitDistribution(const HitDistribution aHitDistribution) {
+    m_HitDistribution = aHitDistribution;
+  }
 
 private:
   double m_Size = 1;

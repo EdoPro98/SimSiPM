@@ -101,7 +101,7 @@ const double SiPMSensor::evaluatePde(const double aWavelength) const {
     // If result in cache return it, else add to cache
     auto cache = c_EvaluatePde.upper_bound(aWavelength);
     if (cache != c_EvaluatePde.end() && cache->first - aWavelength < 1) {
-     return cache->second;
+      return cache->second;
     }
   }
 
@@ -134,22 +134,22 @@ const std::pair<int32_t, int32_t> SiPMSensor::hitCell() const {
 
   case (SiPMProperties::HitDistribution::kCircle):
     // Generate in circle
-    double x,y;
-    if(m_rng.Rand() < 0.95){
+    double x, y;
+    if (m_rng.Rand() < 0.95) {
       do {
-      x = m_rng.Rand()*2-1;
-      y = m_rng.Rand()*2-1;
-    } while (x*x+y*y > 0.9);
-      row = static_cast<int32_t>((x+1) * m_Properties.nSideCells()/2);
-      col = static_cast<int32_t>((y+1) * m_Properties.nSideCells()/2);
-    // Generate outside
+        x = m_rng.Rand() * 2 - 1;
+        y = m_rng.Rand() * 2 - 1;
+      } while (x * x + y * y > 0.9);
+      row = static_cast<int32_t>((x + 1) * m_Properties.nSideCells() / 2);
+      col = static_cast<int32_t>((y + 1) * m_Properties.nSideCells() / 2);
+      // Generate outside
     } else {
       do {
-      x = m_rng.Rand()*2-1;
-      y = m_rng.Rand()*2-1;
-    } while (x*x+y*y < 0.9);
-      row = static_cast<int32_t>((x+1) * m_Properties.nSideCells()/2);
-      col = static_cast<int32_t>((y+1) * m_Properties.nSideCells()/2);
+        x = m_rng.Rand() * 2 - 1;
+        y = m_rng.Rand() * 2 - 1;
+      } while (x * x + y * y < 0.9);
+      row = static_cast<int32_t>((x + 1) * m_Properties.nSideCells() / 2);
+      col = static_cast<int32_t>((y + 1) * m_Properties.nSideCells() / 2);
     }
   }
   return std::make_pair(row, col);

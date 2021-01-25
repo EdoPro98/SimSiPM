@@ -1,16 +1,15 @@
 /** @class sipm::SiPMHit SimSiPM/SimSiPM/SiPMHit.h SiPMHit.h
-*
-* @brief Class storing informations relative to a single SiPM hitted cell.
-*
-* This class is used mainly to store informations relative to a single hit on a
-* SiPM cell. Informations stored in thiss class will be used to generate the
-* signal for each SiPM cell.
-*
-*  @author Edoardo Proserpio
-*  @date 2020
-*/
+ *
+ * @brief Class storing informations relative to a single SiPM hitted cell.
+ *
+ * This class is used mainly to store informations relative to a single hit on a
+ * SiPM cell. Informations stored in thiss class will be used to generate the
+ * signal for each SiPM cell.
+ *
+ *  @author Edoardo Proserpio
+ *  @date 2020
+ */
 #include <stdint.h>
-
 
 #ifndef SIPM_SIPMHITS_H
 #define SIPM_SIPMHITS_H

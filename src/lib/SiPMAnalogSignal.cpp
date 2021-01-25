@@ -1,8 +1,8 @@
 #include "SiPMAnalogSignal.h"
 
 #include <algorithm>
-#include <numeric>
 #include <math.h>
+#include <numeric>
 
 namespace sipm {
 /**
@@ -107,12 +107,12 @@ const double SiPMAnalogSignal::top(const double intstart, const double intgate,
 }
 
 /**
-* @param signal Signal to filter
-* @param bw Bandwidth for the low-pass filter (-3dB cut-off)
-* @return Signal with filter applied
-*/
-SiPMAnalogSignal SiPMAnalogSignal::lowpass(const double bw)const {
-  SiPMAnalogSignal out = *this;
+ * @param signal Signal to filter
+ * @param bw Bandwidth for the low-pass filter (-3dB cut-off)
+ * @return Signal with filter applied
+ */
+SiPMAnalogSignal SiPMAnalogSignal::lowpass(const double bw) const {
+  std::vector<double> out = m_Waveform;
   const double rc = 1 / (2 * M_PI * bw);
   const double dt = 1e-9 * m_Sampling;
   const double alpha = dt / (rc + dt);
@@ -122,7 +122,7 @@ SiPMAnalogSignal SiPMAnalogSignal::lowpass(const double bw)const {
   for (uint32_t i = 1; i < out.size(); ++i) {
     out[i] = alpha * (out[i] - out[i - 1]) + out[i - 1];
   }
-  return out;
+  return SiPMAnalogSignal(out, m_Sampling);
 }
 
 } // namespace sipm
