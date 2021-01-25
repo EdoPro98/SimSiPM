@@ -64,6 +64,7 @@ void SiPMSensor::resetState() {
   m_Hits.clear();
   m_PhotonTimes.clear();
   m_PhotonWavelengths.clear();
+  m_Signal.clear();
 }
 
 const std::vector<double> SiPMSensor::signalShape() const {
@@ -95,16 +96,25 @@ const std::vector<double> SiPMSensor::signalShape() const {
   return lSignalShape;
 }
 
-const double SiPMSensor::evaluatePde(const double aPhotonWavelength) const {
+const double SiPMSensor::evaluatePde(const double aWavelength) const {
+  {
+    // If result in cache return it, else add to cache
+    auto cache = c_EvaluatePde.upper_bound(aWavelength);
+    if (cache != c_EvaluatePde.end() && cache->first - aWavelength < 1) {
+     return cache->second;
+    }
+  }
+
   const std::map<double, double> pde = m_Properties.pdeSpectrum();
-  auto right = pde.upper_bound(aPhotonWavelength);
-  if (right == pde.end()) { --right; }
-  if (right == pde.begin()) { ++right; }
-  auto left = right;
-  --left;
-  const double delta =
-    (aPhotonWavelength - left->first) / (right->first - left->first);
-  return delta * right->second + (1 - delta) * left->second;
+  auto p1 = pde.upper_bound(aWavelength);
+  if (p1 == pde.end()) { --p1; }
+  if (p1 == pde.begin()) { ++p1; }
+  auto p0 = p1--;
+  const double delta = (aWavelength - p0->first) / (p1->first - p0->first);
+  const double pdeResult = delta * (p1->second - p0->second) + p0->second;
+
+  c_EvaluatePde[aWavelength] = pdeResult;
+  return pdeResult;
 }
 
 const bool SiPMSensor::isInSensor(const int32_t r, const int32_t c) const {
@@ -122,11 +132,26 @@ const std::pair<int32_t, int32_t> SiPMSensor::hitCell() const {
     col = m_rng.randInteger(nSideCells);
     break;
 
-  default:
-    row = m_rng.randInteger(nSideCells);
-    col = m_rng.randInteger(nSideCells);
+  case (SiPMProperties::HitDistribution::kCircle):
+    // Generate in circle
+    double x,y;
+    if(m_rng.Rand() < 0.95){
+      do {
+      x = m_rng.Rand()*2-1;
+      y = m_rng.Rand()*2-1;
+    } while (x*x+y*y > 0.9);
+      row = static_cast<int32_t>((x+1) * m_Properties.nSideCells()/2);
+      col = static_cast<int32_t>((y+1) * m_Properties.nSideCells()/2);
+    // Generate outside
+    } else {
+      do {
+      x = m_rng.Rand()*2-1;
+      y = m_rng.Rand()*2-1;
+    } while (x*x+y*y < 0.9);
+      row = static_cast<int32_t>((x+1) * m_Properties.nSideCells()/2);
+      col = static_cast<int32_t>((y+1) * m_Properties.nSideCells()/2);
+    }
   }
-
   return std::make_pair(row, col);
 }
 
@@ -328,10 +353,10 @@ void SiPMSensor::generateSignal() {
     uint32_t i;
     const __m256d __amplitude = _mm256_set1_pd(amplitude);
     for (i = time; i < nSignalPoints - 4; i += 4) {
-      __m256d __signal = _mm256_loadu_pd(&m_Signal[i]);            // Load s
-      __m256d __shape = _mm256_loadu_pd(&m_SignalShape[i - time]); // Load sh
-      __signal = _mm256_fmadd_pd(__shape, __amplitude, __signal); // s += sh * a
-      _mm256_storeu_pd(&m_Signal[i], __signal);                   // Save signal
+      __m256d __signal = _mm256_loadu_pd(&m_Signal[i]);
+      __m256d __shape = _mm256_loadu_pd(&m_SignalShape[i - time]);
+      __signal = _mm256_fmadd_pd(__shape, __amplitude, __signal);
+      _mm256_storeu_pd(&m_Signal[i], __signal);
     }
     while (i < nSignalPoints) {
       m_Signal[i] += m_SignalShape[i - time] * amplitude;
