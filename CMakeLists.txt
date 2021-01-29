@@ -1,13 +1,6 @@
 cmake_minimum_required(VERSION 3.9)
-project(SimSiPM VERSION 1.0.0 DESCRIPTION "Library for SiPM simulation" LANGUAGES CXX)
+project(SimSiPM VERSION 1 DESCRIPTION "Library for SiPM simulation" LANGUAGES CXX)
 include(GNUInstallDirs)
-
-# CXX standard
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD 11 CACHE STRING "C++ standard to be used")
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 
 if(NOT CMAKE_BUILD_TYPE)
 	message(STATUS "No default build type specified: setting CMAKE_BUILD_TYPE=Release")
@@ -23,22 +16,25 @@ else(NOT CMAKE_BUILD_TYPE)
 	endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif(NOT CMAKE_BUILD_TYPE)
 
+file(GLOB_RECURSE sipm_src "src/*.cpp")
+file(GLOB_RECURSE sipm_head "src/*.h")
+
+file(GLOB_RECURSE sipm_public_headers "SiMSiPM/*.h")
+file(GLOB_RECURSE sipm_private_headers "src/components/*.h")
 
 # Library
 add_library(sipm SHARED
-  src/components/SiPMRandom.cpp
-  src/lib/SiPMHit.cpp
-  src/lib/SiPMProperties.cpp
-  src/lib/SiPMAnalogSignal.cpp
-  src/lib/SiPMDigitalSignal.cpp
-  src/lib/SiPMSensor.cpp
-  src/lib/SiPMAdc.cpp
+	${sipm_src}
+	${sipm_head}
 )
 
+target_compile_features(sipm PUBLIC cxx_std_11)
 
-set_target_properties(sipm PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER SimSiPM/SiPM.h)
-set_target_properties(sipm PROPERTIES VERSION ${PROJECT_VERSION} PUBLIC_HEADER "SimSiPM/SiPM.h;SimSiPM/SiPMAdc.h;SimSiPM/SiPMAnalogSignal.h;SimSiPM/SiPMDigitalSignal.h;SimSiPM/SiPMDebugInfo.h;SimSiPM/SiPMHit.h;SimSiPM/SiPMProperties.h;SimSiPM/SiPMSensor.h")
-set_target_properties(sipm PROPERTIES VERSION ${PROJECT_VERSION} PRIVATE_HEADER "src/components/SiPMHelpers.h;src/components/SiPMRandom.h")
+set_property(TARGET sipm PROPERTY PUBLIC_HEADER SimSiPM/SiPM.h)
+set_property(TARGET sipm PROPERTY PUBLIC_HEADER "SimSiPM/SiPM.h;SimSiPM/SiPMAdc.h;SimSiPM/SiPMAnalogSignal.h;SimSiPM/SiPMDigitalSignal.h;SimSiPM/SiPMDebugInfo.h;SimSiPM/SiPMHit.h;SimSiPM/SiPMProperties.h;SimSiPM/SiPMSensor.h")
+set_property(TARGET sipm PROPERTY PRIVATE_HEADER "src/components/SiPMHelpers.h;src/components/SiPMRandom.h")
+set_property(TARGET sipm PROPERTY VERSION 1)
+
 
 # Include files
 target_include_directories(sipm PUBLIC SimSiPM/)

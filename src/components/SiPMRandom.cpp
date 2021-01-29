@@ -107,9 +107,11 @@ double SiPMRandom::randGaussian(const double mu, const double sigma) {
  */
 std::vector<double> SiPMRandom::Rand(const uint32_t n) {
   std::vector<double> out(n);
+  uint64_t temp[n];
 
+  for (uint32_t i = 0; i < n; ++i) { temp[i] = m_rng(); }
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = m_rng() / static_cast<double>(UINT64_MAX);
+    out[i] = temp[i] / static_cast<double>(UINT64_MAX);
   }
   return out;
 }
@@ -124,25 +126,20 @@ std::vector<double> SiPMRandom::randGaussian(const double mu,
                                              const uint32_t n) {
   if (n == 0) { return {}; }
   std::vector<double> out(n);
-  std::vector<double> S(n / 2 + 1);
-  std::vector<double> U(n);
 
-  for (uint32_t i = 0; i < n - 1; ++i) {
+  for (uint32_t i = 0; i < n - 1; i += 2) {
     double s, u, v;
     do {
       u = Rand() * 2.0 - 1.0;
       v = Rand() * 2.0 - 1.0;
       s = u * u + v * v;
-    } while (s >= 1 || s == 0.0);
-    S[i / 2] = log(s) / s;
-    U[i] = u;
-    i++;
-    U[i] = v;
+    } while (s >= 1.0 || s == 0.0);
+    s = sqrt(-2.0 * log(s) / s);
+    out[i] = s * v;
+    out[i + 1] = s * u;
   }
+  for (uint32_t i = 0; i < n; ++i) { out[i] = out[i] * sigma + mu; }
 
-  for (uint32_t i = 0; i < n; ++i) {
-    out[i] = sqrt(-2 * S[i / 2]) * U[i] * sigma + mu;
-  }
   return out;
 }
 

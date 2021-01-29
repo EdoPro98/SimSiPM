@@ -196,8 +196,6 @@ private:
   SiPMAnalogSignal m_Signal;
 
   PrecisionLevel m_PrecisionLevel = PrecisionLevel::kFull;
-
-  mutable std::map<double, double> c_EvaluatePde;
 };
 
 } // namespace sipm

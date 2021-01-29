@@ -23,6 +23,10 @@
 #include <math.h>
 #include <stdint.h>
 
+#ifdef __AVX2__
+#include <immintrin.h>
+#endif
+
 #ifndef SIPM_RANDOM_H
 #define SIPM_RANDOM_H
 

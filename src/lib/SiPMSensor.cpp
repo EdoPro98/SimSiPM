@@ -97,10 +97,11 @@ const std::vector<double> SiPMSensor::signalShape() const {
 }
 
 const double SiPMSensor::evaluatePde(const double aWavelength) const {
+  static std::map<double, double> s_Cache;
   {
     // If result in cache return it, else add to cache
-    auto cache = c_EvaluatePde.upper_bound(aWavelength);
-    if (cache != c_EvaluatePde.end() && cache->first - aWavelength < 1) {
+    auto cache = s_Cache.upper_bound(aWavelength);
+    if (cache != s_Cache.end() && cache->first - aWavelength < 1) {
       return cache->second;
     }
   }
@@ -113,7 +114,7 @@ const double SiPMSensor::evaluatePde(const double aWavelength) const {
   const double delta = (aWavelength - p0->first) / (p1->first - p0->first);
   const double pdeResult = delta * (p1->second - p0->second) + p0->second;
 
-  c_EvaluatePde[aWavelength] = pdeResult;
+  s_Cache[aWavelength] = pdeResult;
   return pdeResult;
 }
 
@@ -140,16 +141,16 @@ const std::pair<int32_t, int32_t> SiPMSensor::hitCell() const {
         x = m_rng.Rand() * 2 - 1;
         y = m_rng.Rand() * 2 - 1;
       } while (x * x + y * y > 0.9);
-      row = static_cast<int32_t>((x + 1) * m_Properties.nSideCells() / 2);
-      col = static_cast<int32_t>((y + 1) * m_Properties.nSideCells() / 2);
+      row = ((x + 1) * m_Properties.nSideCells() / 2);
+      col = ((y + 1) * m_Properties.nSideCells() / 2);
       // Generate outside
     } else {
       do {
         x = m_rng.Rand() * 2 - 1;
         y = m_rng.Rand() * 2 - 1;
       } while (x * x + y * y < 0.9);
-      row = static_cast<int32_t>((x + 1) * m_Properties.nSideCells() / 2);
-      col = static_cast<int32_t>((y + 1) * m_Properties.nSideCells() / 2);
+      row = ((x + 1) * m_Properties.nSideCells() / 2);
+      col = ((y + 1) * m_Properties.nSideCells() / 2);
     }
   }
   return std::make_pair(row, col);

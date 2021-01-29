@@ -106,6 +106,10 @@ void SiPMProperties::dumpSettings() const {
     std::cout << "Hit distribution: "
               << "Uniform"
               << "\n";
+  case (HitDistribution::kCircle):
+    std::cout << "Hit distribution: "
+              << "Circle"
+              << "\n";
   }
   std::cout << "Cell recovery time: " << m_RecoveryTime << " nm\n";
   if (m_HasDcr) {
