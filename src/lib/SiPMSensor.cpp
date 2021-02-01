@@ -3,6 +3,7 @@
 #include <immintrin.h>
 #endif
 #include <algorithm>
+#include <math.h>
 
 #include "SiPMProperties.h"
 
@@ -22,35 +23,34 @@ void SiPMSensor::setProperty(const std::string& prop, const double val) {
 
 void SiPMSensor::setProperties(const SiPMProperties& x) { m_Properties = x; }
 
-void SiPMSensor::setPrecisionLevel(const PrecisionLevel x) {
-  m_PrecisionLevel = x;
-}
+void SiPMSensor::setPrecisionLevel(const PrecisionLevel x) { m_PrecisionLevel = x; }
 
-void SiPMSensor::addPhoton(const double aTime) {
-  m_PhotonTimes.emplace_back(aTime);
-}
+void SiPMSensor::addPhoton(const double aTime) { m_PhotonTimes.emplace_back(aTime); }
 
 void SiPMSensor::addPhoton(const double aTime, const double aWavelength) {
   m_PhotonTimes.emplace_back(aTime);
   m_PhotonWavelengths.emplace_back(aWavelength);
 }
 
-void SiPMSensor::addPhotons(const std::vector<double>& aTimes) {
-  m_PhotonTimes = aTimes;
-}
+void SiPMSensor::addPhotons(const std::vector<double>& aTimes) { m_PhotonTimes = aTimes; }
 
-void SiPMSensor::addPhotons(const std::vector<double>& aTimes,
-                            const std::vector<double>& aWavelengths) {
+void SiPMSensor::addPhotons(const std::vector<double>& aTimes, const std::vector<double>& aWavelengths) {
   m_PhotonTimes = aTimes;
   m_PhotonWavelengths = aWavelengths;
 }
 
 void SiPMSensor::runEvent() {
-  if (m_Properties.hasDcr()) { addDcrEvents(); }
+  if (m_Properties.hasDcr()) {
+    addDcrEvents();
+  }
   addPhotoelectrons();
-  if (m_Properties.hasXt()) { addXtEvents(); }
+  if (m_Properties.hasXt()) {
+    addXtEvents();
+  }
   calculateSignalAmplitudes();
-  if (m_Properties.hasAp()) { addApEvents(); }
+  if (m_Properties.hasAp()) {
+    addApEvents();
+  }
   generateSignal();
 }
 
@@ -79,8 +79,7 @@ const std::vector<double> SiPMSensor::signalShape() const {
     const double slf = m_Properties.slowComponentFraction();
 
     for (int32_t i = 0; i < nSignalPoints; ++i) {
-      lSignalShape[i] =
-        (1 - slf) * exp(-i / tff) + slf * exp(-i / tfs) - exp(-i / tr);
+      lSignalShape[i] = (1 - slf) * exp(-i / tff) + slf * exp(-i / tfs) - exp(-i / tr);
     }
   } else {
     for (int32_t i = 0; i < nSignalPoints; ++i) {
@@ -88,10 +87,11 @@ const std::vector<double> SiPMSensor::signalShape() const {
     }
   }
 
-  const double peak =
-    *std::max_element(lSignalShape.begin(), lSignalShape.end());
+  const double peak = *std::max_element(lSignalShape.begin(), lSignalShape.end());
 
-  for (uint32_t i = 0; i < nSignalPoints; ++i) { lSignalShape[i] /= peak; }
+  for (uint32_t i = 0; i < nSignalPoints; ++i) {
+    lSignalShape[i] /= peak;
+  }
 
   return lSignalShape;
 }
@@ -108,8 +108,12 @@ const double SiPMSensor::evaluatePde(const double aWavelength) const {
 
   const std::map<double, double> pde = m_Properties.pdeSpectrum();
   auto p1 = pde.upper_bound(aWavelength);
-  if (p1 == pde.end()) { --p1; }
-  if (p1 == pde.begin()) { ++p1; }
+  if (p1 == pde.end()) {
+    --p1;
+  }
+  if (p1 == pde.begin()) {
+    ++p1;
+  }
   auto p0 = p1--;
   const double delta = (aWavelength - p0->first) / (p1->first - p0->first);
   const double pdeResult = delta * (p1->second - p0->second) + p0->second;
@@ -138,17 +142,17 @@ const std::pair<int32_t, int32_t> SiPMSensor::hitCell() const {
     double x, y;
     if (m_rng.Rand() < 0.95) {
       do {
-        x = m_rng.Rand() * 2 - 1;
-        y = m_rng.Rand() * 2 - 1;
-      } while (x * x + y * y > 0.9);
+        x = fma(m_rng.Rand(), 2, -1);
+        y = fma(m_rng.Rand(), 2, -1);
+      } while (x * x + y * y > 1);
       row = ((x + 1) * m_Properties.nSideCells() / 2);
       col = ((y + 1) * m_Properties.nSideCells() / 2);
       // Generate outside
     } else {
       do {
-        x = m_rng.Rand() * 2 - 1;
-        y = m_rng.Rand() * 2 - 1;
-      } while (x * x + y * y < 0.9);
+        x = fma(m_rng.Rand(), 2, -1);
+        y = fma(m_rng.Rand(), 2, -1);
+      } while (x * x + y * y < 1);
       row = ((x + 1) * m_Properties.nSideCells() / 2);
       col = ((y + 1) * m_Properties.nSideCells() / 2);
     }
@@ -198,8 +202,7 @@ void SiPMSensor::addPhotoelectrons() {
     for (uint32_t i = 0; i < nPhotons; ++i) {
       std::pair<int32_t, int32_t> position = hitCell();
 
-      m_Hits.emplace_back(m_PhotonTimes[i], 1, position.first, position.second,
-                          SiPMHit::HitType::kPhotoelectron);
+      m_Hits.emplace_back(m_PhotonTimes[i], 1, position.first, position.second, SiPMHit::HitType::kPhotoelectron);
 
       m_nTotalHits++;
       m_nPe++;
@@ -212,8 +215,7 @@ void SiPMSensor::addPhotoelectrons() {
       if (isDetected(pde)) {
         std::pair<int32_t, int32_t> position = hitCell();
 
-        m_Hits.emplace_back(m_PhotonTimes[i], 1, position.first,
-                            position.second, SiPMHit::HitType::kPhotoelectron);
+        m_Hits.emplace_back(m_PhotonTimes[i], 1, position.first, position.second, SiPMHit::HitType::kPhotoelectron);
 
         m_nTotalHits++;
         m_nPe++;
@@ -227,8 +229,7 @@ void SiPMSensor::addPhotoelectrons() {
       if (isDetected(evaluatePde(m_PhotonWavelengths[i]))) {
         std::pair<int32_t, int32_t> position = hitCell();
 
-        m_Hits.emplace_back(m_PhotonTimes[i], 1, position.first,
-                            position.second, SiPMHit::HitType::kPhotoelectron);
+        m_Hits.emplace_back(m_PhotonTimes[i], 1, position.first, position.second, SiPMHit::HitType::kPhotoelectron);
 
         m_nTotalHits++;
         m_nPe++;
@@ -247,7 +248,9 @@ void SiPMSensor::addXtEvents() {
     currentCellIdx++;
     uint32_t nxt = m_rng.randPoisson(xt);
 
-    if (nxt == 0) { continue; }
+    if (nxt == 0) {
+      continue;
+    }
     int32_t xtGeneratorRow = hit->row();
     int32_t xtGeneratorCol = hit->col();
     double xtTime = hit->time();
@@ -262,8 +265,7 @@ void SiPMSensor::addXtEvents() {
       int32_t xtCol = xtGeneratorCol + colAdd;
 
       if (isInSensor(xtRow, xtCol)) {
-        m_Hits.emplace_back(xtTime, 1, xtRow, xtCol,
-                            SiPMHit::HitType::kOpticalCrosstalk);
+        m_Hits.emplace_back(xtTime, 1, xtRow, xtCol, SiPMHit::HitType::kOpticalCrosstalk);
         ++m_nTotalHits;
         ++m_nXt;
       }
@@ -287,7 +289,9 @@ void SiPMSensor::addApEvents() {
 
     uint32_t nap = m_rng.randPoisson(ap);
 
-    if (nap == 0) { continue; }
+    if (nap == 0) {
+      continue;
+    }
     double apGeneratorTime = hit->time();
 
     // Choose fast or slow ap
@@ -301,11 +305,10 @@ void SiPMSensor::addApEvents() {
 
       // If ap event is in signal window
       if (apGeneratorTime + apDelay < signalLength) {
-        double apAmplitude =
-          hit->amplitude() * (1 - exp(-apDelay / recoveryTime));
+        double apAmplitude = hit->amplitude() * (1 - exp(-apDelay / recoveryTime));
 
-        m_Hits.emplace_back(apGeneratorTime + apDelay, apAmplitude, hit->row(),
-                            hit->col(), SiPMHit::HitType::kAfterPulse);
+        m_Hits.emplace_back(apGeneratorTime + apDelay, apAmplitude, hit->row(), hit->col(),
+                            SiPMHit::HitType::kAfterPulse);
 
         m_nTotalHits++;
         m_nAp++;
@@ -339,6 +342,7 @@ void SiPMSensor::calculateSignalAmplitudes() {
   }
 }
 
+#ifdef __AVX2__
 void SiPMSensor::generateSignal() {
   const uint32_t nSignalPoints = m_Properties.nSignalPoints();
   const double sampling = m_Properties.sampling();
@@ -347,28 +351,37 @@ void SiPMSensor::generateSignal() {
 
   for (auto hit = m_Hits.begin(); hit != m_Hits.end(); ++hit) {
     const int32_t time = hit->time() / sampling;
-    const double amplitude =
-      hit->amplitude() * m_rng.randGaussian(1, m_Properties.ccgv());
+    const double amplitude = hit->amplitude() * m_rng.randGaussian(1, m_Properties.ccgv());
 
-#ifdef __AVX2__
-    uint32_t i;
     const __m256d __amplitude = _mm256_set1_pd(amplitude);
-    for (i = time; i < nSignalPoints - 4; i += 4) {
+    uint32_t i = time;
+    for (i; i < nSignalPoints - 4; i += 4) {
       __m256d __signal = _mm256_loadu_pd(&m_Signal[i]);
       __m256d __shape = _mm256_loadu_pd(&m_SignalShape[i - time]);
       __signal = _mm256_fmadd_pd(__shape, __amplitude, __signal);
       _mm256_storeu_pd(&m_Signal[i], __signal);
     }
-    while (i < nSignalPoints) {
-      m_Signal[i] += m_SignalShape[i - time] * amplitude;
-      ++i;
-    }
-#else
-    for (uint32_t i = time; i < nSignalPoints; ++i) {
+    for (i; i < nSignalPoints; ++i) {
       m_Signal[i] += m_SignalShape[i - time] * amplitude;
     }
-#endif
   }
 }
+#else
+void SiPMSensor::generateSignal() {
+  const uint32_t nSignalPoints = m_Properties.nSignalPoints();
+  const double sampling = m_Properties.sampling();
 
-} // namespace sipm
+  m_Signal = m_rng.randGaussian(0, m_Properties.snrLinear(), nSignalPoints);
+
+  for (auto hit = m_Hits.begin(); hit != m_Hits.end(); ++hit) {
+    const int32_t time = hit->time() / sampling;
+    const double amplitude = hit->amplitude() * m_rng.randGaussian(1, m_Properties.ccgv());
+
+    for (uint32_t i = time; i < nSignalPoints; ++i) {
+      m_Signal[i] = fma(m_SignalShape[i - time], amplitude, m_Signal[i]);
+    }
+  }
+}
+#endif
+
+}  // namespace sipm

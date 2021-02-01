@@ -65,9 +65,7 @@ public:
   /// @brief Returns a @ref SiPMDebugInfo
   /** @sa SiPMDebugInfo
    */
-  SiPMDebugInfo debug() {
-    return SiPMDebugInfo(m_PhotonTimes.size(), m_nPe, m_nDcr, m_nXt, m_nAp);
-  }
+  SiPMDebugInfo debug() { return SiPMDebugInfo(m_PhotonTimes.size(), m_nPe, m_nDcr, m_nXt, m_nAp); }
 
   /// @brief Sets a property from its name
   /** Sets a SiPM property using its name. For a list of available SiPM
@@ -198,5 +196,5 @@ private:
   PrecisionLevel m_PrecisionLevel = PrecisionLevel::kFull;
 };
 
-} // namespace sipm
+}  // namespace sipm
 #endif /* SIPM_SIPMSENSOR_H */

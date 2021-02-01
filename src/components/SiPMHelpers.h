@@ -27,4 +27,4 @@ inline double Timer::Time() noexcept {
   chrono::duration<double> duration = end - start;
   return duration.count() * 1e6;
 }
-} // namespace sipm
+}  // namespace sipm

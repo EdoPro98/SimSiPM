@@ -18,9 +18,15 @@ int main(int argc, char const* argv[]) {
 
   while (i > 0) {
     double x = rng.randGaussian(0, 1);
-    if (abs(x) < 1) { one_sigma++; }
-    if (abs(x) < 2) { two_sigma++; }
-    if (abs(x) < 3) { three_sigma++; }
+    if (abs(x) < 1) {
+      one_sigma++;
+    }
+    if (abs(x) < 2) {
+      two_sigma++;
+    }
+    if (abs(x) < 3) {
+      three_sigma++;
+    }
     --i;
   }
 

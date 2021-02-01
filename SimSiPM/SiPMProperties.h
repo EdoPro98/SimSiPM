@@ -28,20 +28,20 @@ public:
    * @brief Used to set different methods to evaluate PDE for each photon.
    */
   enum class PdeType {
-    kNoPde,      ///< No PDE applied, all photons will turn in photoelectrons
-    kSimplePde,  ///< Same PDE value used for all photons
-    kSpectrumPde ///< PDE calculated considering the wavelength of each photon
+    kNoPde,       ///< No PDE applied, all photons will turn in photoelectrons
+    kSimplePde,   ///< Same PDE value used for all photons
+    kSpectrumPde  ///< PDE calculated considering the wavelength of each photon
   };
   /** @enum HitDistribution
    * Used to describe how photoelectrons are distributed on the SiPM surface
    */
   enum class HitDistribution {
-    kUniform, ///< Photons uniformly distributed on the sensor surface
-    kCircle   ///< 95% of photons are uniformly distributed on a circle
+    kUniform,  ///< Photons uniformly distributed on the sensor surface
+    kCircle    ///< 95% of photons are uniformly distributed on a circle
   };
 
   /// @brief Used to read settings from a macro file
-  void readSettings(std::string&); ///< @todo Still to implement
+  void readSettings(std::string&);  ///< @todo Still to implement
 
   /// @brief Prints current settings of the sensor
   void dumpSettings() const;
@@ -219,9 +219,7 @@ public:
   /// PdeType::kSpectrumPde
   void setPdeSpectrum(const std::vector<double>&, const std::vector<double>&);
 
-  void setHitDistribution(const HitDistribution aHitDistribution) {
-    m_HitDistribution = aHitDistribution;
-  }
+  void setHitDistribution(const HitDistribution aHitDistribution) { m_HitDistribution = aHitDistribution; }
 
 private:
   double m_Size = 1;
@@ -259,5 +257,5 @@ private:
   bool m_HasSlowComponent = false;
 };
 
-} // namespace sipm
+}  // namespace sipm
 #endif /* SIPM_SIPMPROPERTIES_H  */

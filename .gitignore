@@ -4,3 +4,4 @@ build/*
 install
 *.s
 *.o
+.ccls-cache

@@ -13,11 +13,15 @@ int main(int argc, char const* argv[]) {
   s = 1000;
   while (k > 0) {
     uint64_t temp[s];
-    for (int j = 0; j < s; ++j) { temp[j] = rand(); }
+    for (int j = 0; j < s; ++j) {
+      temp[j] = rand();
+    }
 
     for (int i = 0; i < s; ++i) {
       for (int j = 0; j < s; ++j) {
-        if (i != j) { assert(temp[i] != temp[j]); }
+        if (i != j) {
+          assert(temp[i] != temp[j]);
+        }
       }
     }
     --k;
@@ -27,11 +31,15 @@ int main(int argc, char const* argv[]) {
   s = 10000;
   while (k > 0) {
     uint64_t temp[s];
-    for (int j = 0; j < s; ++j) { temp[j] = rng(); }
+    for (int j = 0; j < s; ++j) {
+      temp[j] = rng();
+    }
 
     for (int i = 0; i < s; ++i) {
       for (int j = 0; j < s; ++j) {
-        if (i != j) { assert(temp[i] != temp[j]); }
+        if (i != j) {
+          assert(temp[i] != temp[j]);
+        }
       }
     }
     --k;

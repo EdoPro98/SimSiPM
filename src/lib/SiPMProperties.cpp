@@ -23,22 +23,23 @@ const uint32_t SiPMProperties::nSideCells() const {
 }
 
 const uint32_t SiPMProperties::nSignalPoints() const {
-  if (m_SignalPoints == 0) { m_SignalPoints = m_SignalLength / m_Sampling; }
+  if (m_SignalPoints == 0) {
+    m_SignalPoints = m_SignalLength / m_Sampling;
+  }
   return m_SignalPoints;
 }
 
 const double SiPMProperties::snrLinear() const {
-  if (m_SnrLinear == 0) { m_SnrLinear = pow(10, -m_SnrdB / 20); }
+  if (m_SnrLinear == 0) {
+    m_SnrLinear = pow(10, -m_SnrdB / 20);
+  }
   return m_SnrLinear;
 }
 
-const std::map<double, double> SiPMProperties::pdeSpectrum() const {
-  return m_PdeSpectrum;
-}
+const std::map<double, double> SiPMProperties::pdeSpectrum() const { return m_PdeSpectrum; }
 
 // Setters
-void SiPMProperties::setProperty(const std::string& aProp,
-                                 const double aPropValue) {
+void SiPMProperties::setProperty(const std::string& aProp, const double aPropValue) {
   if (aProp == "Size") {
     setSize(aPropValue);
   } else if (aProp == "Pitch") {
@@ -90,9 +91,10 @@ void SiPMProperties::setPdeSpectrum(const std::map<double, double>& x) {
   m_HasPde = PdeType::kSpectrumPde;
 }
 
-void SiPMProperties::setPdeSpectrum(const std::vector<double>& wav,
-                                    const std::vector<double>& pde) {
-  for (uint32_t i = 0; i < wav.size(); ++i) { m_PdeSpectrum[wav[i]] = pde[i]; }
+void SiPMProperties::setPdeSpectrum(const std::vector<double>& wav, const std::vector<double>& pde) {
+  for (uint32_t i = 0; i < wav.size(); ++i) {
+    m_PdeSpectrum[wav[i]] = pde[i];
+  }
   m_HasPde = PdeType::kSpectrumPde;
 }
 
@@ -142,12 +144,11 @@ void SiPMProperties::dumpSettings() const {
   std::cout << "Falling time of signal (fast): " << m_FallTimeFast << " ns\n";
   if (m_HasSlowComponent) {
     std::cout << "Falling time of signal (slow): " << m_FallTimeSlow << " ns\n";
-    std::cout << "Slow component fraction: " << m_SlowComponentFraction * 100
-              << " %\n";
+    std::cout << "Slow component fraction: " << m_SlowComponentFraction * 100 << " %\n";
   }
   std::cout << "Signal length: " << m_SignalLength << " ns\n";
   std::cout << "Sampling time: " << m_Sampling << " ns\n";
   std::cout << "==> End of SiPM Settings <===" << '\n';
 }
 
-} // namespace sipm
+}  // namespace sipm

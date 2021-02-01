@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <math.h>
+#include <vector>
 
 #ifdef __AVX2__
 #include <immintrin.h>
@@ -14,7 +15,7 @@
 namespace sipm {
 
 SiPMAdc::SiPMAdc(const uint32_t nbits, const double range, const double gain)
-  : m_Nbits(nbits), m_Range(range), m_Gain(gain) {}
+    : m_Nbits(nbits), m_Range(range), m_Gain(gain) {}
 
 /**
  * @param v Vector to quantize
@@ -23,8 +24,7 @@ SiPMAdc::SiPMAdc(const uint32_t nbits, const double range, const double gain)
  * @param gain Gain in dB to apply before quantization
  * @return Quantized input vector
  */
-std::vector<int32_t> SiPMAdc::quantize(const std::vector<double>& v,
-                                       const uint32_t nbits, const double range,
+std::vector<int32_t> SiPMAdc::quantize(const std::vector<double>& v, const uint32_t nbits, const double range,
                                        const double gain) const {
   std::vector<int32_t> out(v.size());
 
@@ -32,10 +32,11 @@ std::vector<int32_t> SiPMAdc::quantize(const std::vector<double>& v,
   const double gainlinear = pow(10, (gain / 20));
   const double width = range / gainlinear / qlevels;
 
-  for (uint32_t i = 0; i < v.size(); ++i) { out[i] = v[i] / width; }
+  for (uint32_t i = 0; i < v.size(); ++i) {
+    out[i] = v[i] / width;
+  }
   std::replace_if(
-    out.begin(), out.end(), [qlevels](int32_t x) { return x > qlevels; },
-    qlevels);
+      out.begin(), out.end(), [qlevels](int32_t x) { return x > qlevels; }, qlevels);
   return out;
 }
 
@@ -44,10 +45,9 @@ std::vector<int32_t> SiPMAdc::quantize(const std::vector<double>& v,
  * @param jit Jitter value to apply
  * @return Signal with jitter applied
  */
-std::vector<double> SiPMAdc::addJitter(std::vector<double>& signal,
-                                       const double jit) const {
+std::vector<double> SiPMAdc::addJitter(std::vector<double>& signal, const double jit) const {
   const uint32_t n = signal.size();
-  std::vector<double> lsignalshift = signal; // Copy of signal
+  std::vector<double> lsignalshift = signal;  // Copy of signal
   double jitweight;
 
   // Right shift (jitter is positive -> need to move signal "to right")
@@ -56,8 +56,7 @@ std::vector<double> SiPMAdc::addJitter(std::vector<double>& signal,
     jitweight = jit - jitidx;
     std::rotate(signal.rbegin(), signal.rbegin() + jitidx, signal.rend());
     // Signal shifted by 1 idx to right
-    std::rotate(lsignalshift.rbegin(), lsignalshift.rbegin() + 1,
-                lsignalshift.rend());
+    std::rotate(lsignalshift.rbegin(), lsignalshift.rbegin() + 1, lsignalshift.rend());
   }
   // Left shift (jitter is negative -> need to move signal "to left")
   else {
@@ -65,8 +64,7 @@ std::vector<double> SiPMAdc::addJitter(std::vector<double>& signal,
     jitweight = -jit - jitidx;
     std::rotate(signal.begin(), signal.begin() + jitidx, signal.end());
     // Signal shifted by 1 to left
-    std::rotate(lsignalshift.begin(), lsignalshift.begin() + 1,
-                lsignalshift.end());
+    std::rotate(lsignalshift.begin(), lsignalshift.begin() + 1, lsignalshift.end());
   }
 
   // In this part i take into account of a signal shift smaller thant 1 idx.
@@ -79,8 +77,7 @@ std::vector<double> SiPMAdc::addJitter(std::vector<double>& signal,
   for (uint32_t i = 0; i < last; i += 4) {
     __signal = _mm256_loadu_pd(&signal[i]);
     __signalshift = _mm256_loadu_pd(&lsignalshift[i]);
-    __signal = _mm256_fmadd_pd(
-      __jitweight, _mm256_sub_pd(__signalshift, __signal), __signal);
+    __signal = _mm256_fmadd_pd(__jitweight, _mm256_sub_pd(__signalshift, __signal), __signal);
     _mm256_storeu_pd(&signal[i], __signal);
   }
   for (uint32_t i = last; i < n; ++i) {
@@ -118,4 +115,4 @@ SiPMDigitalSignal SiPMAdc::digitize(const SiPMAnalogSignal& signal) const {
   return dsignal;
 }
 
-} // namespace sipm
+}  // namespace sipm
