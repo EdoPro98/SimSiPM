@@ -1,9 +1,7 @@
 #include "SiPMRandom.h"
 #include <random>
 
-#ifdef __AVX2__
-#include <immintrin.h>
-#endif
+#include "fmath.h"
 
 namespace sipm {
 
@@ -25,16 +23,12 @@ void Xorshift256plus::seed(uint64_t aseed) {
 }
 
 void Xorshift256plus::jump() {
-  static const uint64_t JUMP[] = {0x180ec6d33cfd0aba, 0xd5a61266f0c9392c,
-                                  0xa9582618e03fc9aa, 0x39abdc4529b1661c};
-  uint64_t s0 = 0;
-  uint64_t s1 = 0;
-  uint64_t s2 = 0;
-  uint64_t s3 = 0;
+  static const uint64_t JUMP[] = {0x180ec6d33cfd0aba, 0xd5a61266f0c9392c, 0xa9582618e03fc9aa, 0x39abdc4529b1661c};
+  uint64_t s0 = 0, s1 = 0, s2 = 0, s3 = 0;
 
   for (int i = 0; i < 4; ++i)
-    for (int b = 0; b < 64; b++) {
-      if (JUMP[i] & UINT64_C(1) << b) {
+    for (int b = 0; b < 64; ++b) {
+      if (JUMP[i] & 1UL << b) {
         s0 ^= s[0];
         s1 ^= s[1];
         s2 ^= s[2];
@@ -49,13 +43,15 @@ void Xorshift256plus::jump() {
   s[3] = s3;
 }
 
-} // namespace SiPMRng
+}  // namespace SiPMRng
 
 /** @brief Returns a value from a poisson distribution given its mean value.
  * @param mu Mean value of the poisson distribution
  */
 uint32_t SiPMRandom::randPoisson(const double mu) {
-  if (mu == 0) { return 0; }
+  if (mu == 0) {
+    return 0;
+  }
   const double q = exp(-mu);
   double p = 1;
   int32_t out = -1;
@@ -70,9 +66,7 @@ uint32_t SiPMRandom::randPoisson(const double mu) {
 /** @brief Returns a value from a exponential distribution given its mean value.
  * @param mu Mean value of the exponential distribution
  */
-double SiPMRandom::randExponential(const double mu) {
-  return -log(Rand()) * mu;
-}
+double SiPMRandom::randExponential(const double mu) { return -log(Rand()) * mu; }
 
 /** @brief Returns a value from a gaussian distribution given its mean value and
  * sigma.
@@ -87,18 +81,18 @@ double SiPMRandom::randGaussian(const double mu, const double sigma) {
 
   if (hasSpare) {
     hasSpare = false;
-    return spare * sigma + mu;
+    return fma(spare, sigma, mu);
   } else {
     double u, v, s;
     do {
-      u = Rand() * 2.0 - 1.0;
-      v = Rand() * 2.0 - 1.0;
+      u = fma(Rand(), 2.0, -1.0);
+      v = fma(Rand(), 2.0, -1.0);
       s = u * u + v * v;
     } while (s >= 1.0 || s == 0.0);
-    s = sqrt(-2.0 * log(s) / s);
+    s = math::fsqrt(-2.0 * log(s)) * math::rsqrt(s);
     spare = v * s;
     hasSpare = true;
-    return u * s * sigma + mu;
+    return fma(u * s, sigma, mu);
   }
 }
 
@@ -107,11 +101,13 @@ double SiPMRandom::randGaussian(const double mu, const double sigma) {
  */
 std::vector<double> SiPMRandom::Rand(const uint32_t n) {
   std::vector<double> out(n);
-  uint64_t temp[n];
+  alignas(64) uint64_t temp[n];
 
-  for (uint32_t i = 0; i < n; ++i) { temp[i] = m_rng(); }
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = temp[i] / static_cast<double>(UINT64_MAX);
+    temp[i] = m_rng();
+  }
+  for (uint32_t i = 0; i < n; ++i) {
+    out[i] = temp[i] * M_UINT64_MAX_RCP;
   }
   return out;
 }
@@ -121,39 +117,44 @@ std::vector<double> SiPMRandom::Rand(const uint32_t n) {
  * @param sigma Standard deviation value of the gaussuan
  * @param n Number of values to generate
  */
-std::vector<double> SiPMRandom::randGaussian(const double mu,
-                                             const double sigma,
-                                             const uint32_t n) {
-  if (n == 0) { return {}; }
-  std::vector<double> out(n);
+std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma, const uint32_t n) {
+  if (n == 0) {
+    return {};
+  }
+  alignas(64) double out[n];
+  alignas(64) double ss[n];
+  alignas(64) double uu[n];
 
-  for (uint32_t i = 0; i < n - 1; i += 2) {
+  for (uint32_t i = 0; i < n-1 ; i += 2) {
     double s, u, v;
     do {
-      u = Rand() * 2.0 - 1.0;
-      v = Rand() * 2.0 - 1.0;
+      u = fma(Rand(), 2.0, -1.0);
+      v = fma(Rand(), 2.0, -1.0);
       s = u * u + v * v;
     } while (s >= 1.0 || s == 0.0);
-    s = sqrt(-2.0 * log(s) / s);
-    out[i] = s * v;
-    out[i + 1] = s * u;
+    ss[i] = math::fsqrt(-2.0 * log(s)) * math::rsqrt(s);
+    ss[i+1] = ss[i];
+    uu[i] = u;
+    uu[i + 1] = v;
   }
-  for (uint32_t i = 0; i < n; ++i) { out[i] = out[i] * sigma + mu; }
-
-  return out;
+  for(uint32_t i =0; i<n;++i){
+    out[i] = ss[i] * uu[i] * sigma + mu;
+  }
+  std::vector<double> res(out,out+n);
+  return res;
 }
 
 /**
  * @param max Max value to generate
  * @param n Number of values to generate
  */
-std::vector<uint32_t> SiPMRandom::randInteger(const uint32_t max,
-                                              const uint32_t n) {
-  std::vector<uint32_t> out(n);
+std::vector<uint32_t> SiPMRandom::randInteger(const uint32_t max, const uint32_t n) {
+  alignas(64) uint32_t temp[n];
 
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = static_cast<uint32_t>(Rand() * (max + 1));
+    temp[i] = static_cast<uint32_t>(Rand() * (max + 1));
   }
+  std::vector<uint32_t> out(temp,temp+n);
   return out;
 }
-} // namespace sipm
+}  // namespace sipm
