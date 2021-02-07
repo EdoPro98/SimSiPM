@@ -21,7 +21,11 @@ void SiPMSensor::setProperty(const std::string& prop, const double val) {
   m_Signal.setSampling(m_Properties.sampling());
 }
 
-void SiPMSensor::setProperties(const SiPMProperties& x) { m_Properties = x; }
+void SiPMSensor::setProperties(const SiPMProperties& x) {
+  m_Properties = x;
+  m_SignalShape = signalShape();
+  m_Signal.setSampling(m_Properties.sampling());
+}
 
 void SiPMSensor::setPrecisionLevel(const PrecisionLevel x) { m_PrecisionLevel = x; }
 
