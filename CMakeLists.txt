@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.9)
 project(SimSiPM VERSION 1 DESCRIPTION "Library for SiPM simulation" LANGUAGES CXX)
 include(GNUInstallDirs)
 
+set(CMAKE_INSTALL_PREFIX /usr CACHE STRING
+	"Install path prefix, prepended onto install directories."
+	FORCE)
+
+
 if(NOT CMAKE_BUILD_TYPE)
 	message(STATUS "No default build type specified: setting CMAKE_BUILD_TYPE=Release")
 	set(CMAKE_BUILD_TYPE Release CACHE STRING
@@ -16,29 +21,30 @@ else(NOT CMAKE_BUILD_TYPE)
 	endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif(NOT CMAKE_BUILD_TYPE)
 
-file(GLOB_RECURSE sipm_src "src/*.cpp")
-file(GLOB_RECURSE sipm_head "src/*.h")
+file(GLOB_RECURSE sources "src/*.cpp")
+file(GLOB_RECURSE headers "src/*.h")
 
-file(GLOB_RECURSE sipm_public_headers "SiMSiPM/*.h")
-file(GLOB_RECURSE sipm_private_headers "src/components/*.h")
+file(GLOB_RECURSE public_headers "SimSiPM/*.h")
+file(GLOB_RECURSE private_headers "src/*.h")
 
 # Library
 add_library(sipm SHARED
-	${sipm_src}
-	${sipm_head}
+	${sources}
+	${headers}
 )
-
-target_compile_features(sipm PUBLIC cxx_std_11)
-
-set_property(TARGET sipm PROPERTY PUBLIC_HEADER SimSiPM/SiPM.h)
-set_property(TARGET sipm PROPERTY PUBLIC_HEADER "SimSiPM/SiPM.h;SimSiPM/SiPMAdc.h;SimSiPM/SiPMAnalogSignal.h;SimSiPM/SiPMDigitalSignal.h;SimSiPM/SiPMDebugInfo.h;SimSiPM/SiPMHit.h;SimSiPM/SiPMProperties.h;SimSiPM/SiPMSensor.h")
-set_property(TARGET sipm PROPERTY PRIVATE_HEADER "src/components/SiPMHelpers.h;src/components/SiPMRandom.h")
-set_property(TARGET sipm PROPERTY VERSION 1)
-
 
 # Include files
 target_include_directories(sipm PUBLIC SimSiPM/)
 target_include_directories(sipm PRIVATE src/components/)
+
+target_compile_features(sipm PUBLIC cxx_std_11)
+
+set_property(TARGET sipm PROPERTY PUBLIC_HEADER SimSiPM/SiPM.h)
+set_property(TARGET sipm PROPERTY PUBLIC_HEADER ${public_headers})
+set_property(TARGET sipm PROPERTY PRIVATE_HEADER ${private_headers})
+set_property(TARGET sipm PROPERTY VERSION 1)
+
+
 
 # Install
 install(TARGETS sipm
@@ -46,14 +52,3 @@ install(TARGETS sipm
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
-
-add_subdirectory(tests)
-enable_testing()
-
-
-add_test(Uniform tests/Rand)
-add_test(Exponential tests/Exp)
-add_test(Integer tests/Integer)
-add_test(Gaussian tests/Gaussian)
-add_test(Poisson tests/Poisson)
-add_test(Xorshift256 tests/Xorshift256)
