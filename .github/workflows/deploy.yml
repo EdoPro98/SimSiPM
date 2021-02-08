@@ -1,4 +1,4 @@
-name: Build and upload to TestPyPI
+name: Build and upload to PyPI
 
 on:
   release:
