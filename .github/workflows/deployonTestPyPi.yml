@@ -8,9 +8,10 @@ jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
-        python-version: ["2.7", "3.5", "3.8", "3.9"]
+        python-version: ["3.5", "3.8", "3.9"]
         
     runs-on: ${{ matrix.os }}
     
@@ -25,10 +26,6 @@ jobs:
       - name: Install pybind11
         run: python -m pip install pybind11
 
-      - name: Install Visual C++ for Python 2.7
-        if: matrix.python-version == 2.7 && runner.os == 'Windows'
-        run: choco install vcpython27 -f -y
-
       - name: Build wheels
         uses: joerick/cibuildwheel@v1.9.0
 
@@ -40,9 +37,10 @@ jobs:
     name: Build source distribution on ${{ matrix.os }}
     
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
-        python-version: ["2.7", "3.5", "3.8", "3.9"]
+        python-version: ["3.5", "3.8", "3.9"]
     
     runs-on: ${{ matrix.os }}
     
