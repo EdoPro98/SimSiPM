@@ -78,7 +78,7 @@ public:
    */
   void setProperties(const SiPMProperties&);
 
-  void addPhoton();
+  void addPhoton(){}
   /// @brief Adds a single photon to the list of photons to be simulated.
   void addPhoton(const double);
   /// @brief Adds a single photon to the list of photons to be simulated.

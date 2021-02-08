@@ -72,7 +72,7 @@ void SiPMSensor::resetState() {
 }
 
 const std::vector<double> SiPMSensor::signalShape() const {
-  const uint32_t nSignalPoints = m_Properties.nSignalPoints();
+  const int32_t nSignalPoints = m_Properties.nSignalPoints();
   const double sampling = m_Properties.sampling();
   const double tr = m_Properties.risingTime() / sampling;
   const double tff = m_Properties.fallingTimeFast() / sampling;
@@ -93,7 +93,7 @@ const std::vector<double> SiPMSensor::signalShape() const {
 
   const double peak = *std::max_element(lSignalShape.begin(), lSignalShape.end());
 
-  for (uint32_t i = 0; i < nSignalPoints; ++i) {
+  for (int32_t i = 0; i < nSignalPoints; ++i) {
     lSignalShape[i] /= peak;
   }
 
@@ -101,15 +101,6 @@ const std::vector<double> SiPMSensor::signalShape() const {
 }
 
 const double SiPMSensor::evaluatePde(const double aWavelength) const {
-  static std::map<double, double> s_Cache;
-  {
-    // If result in cache return it, else add to cache
-    auto cache = s_Cache.upper_bound(aWavelength);
-    if (cache != s_Cache.end() && cache->first - aWavelength < 1) {
-      return cache->second;
-    }
-  }
-
   const std::map<double, double> pde = m_Properties.pdeSpectrum();
   auto p1 = pde.upper_bound(aWavelength);
   if (p1 == pde.end()) {
@@ -122,7 +113,6 @@ const double SiPMSensor::evaluatePde(const double aWavelength) const {
   const double delta = (aWavelength - p0->first) / (p1->first - p0->first);
   const double pdeResult = delta * (p1->second - p0->second) + p0->second;
 
-  s_Cache[aWavelength] = pdeResult;
   return pdeResult;
 }
 
@@ -139,7 +129,7 @@ const std::pair<int32_t, int32_t> SiPMSensor::hitCell() const {
   case (SiPMProperties::HitDistribution::kUniform):
     row = m_rng.randInteger(nSideCells);
     col = m_rng.randInteger(nSideCells);
-    break;
+    return std::make_pair(row, col);
 
   case (SiPMProperties::HitDistribution::kCircle):
     // Generate in circle
@@ -160,8 +150,13 @@ const std::pair<int32_t, int32_t> SiPMSensor::hitCell() const {
       row = ((x + 1) * m_Properties.nSideCells() / 2);
       col = ((y + 1) * m_Properties.nSideCells() / 2);
     }
+    return std::make_pair(row, col);
+
+  default:
+    row = m_rng.randInteger(nSideCells);
+    col = m_rng.randInteger(nSideCells);
+    return std::make_pair(row, col);
   }
-  return std::make_pair(row, col);
 }
 
 const std::vector<uint32_t> SiPMSensor::getCellIds() const {
@@ -246,20 +241,19 @@ void SiPMSensor::addPhotoelectrons() {
 void SiPMSensor::addXtEvents() {
   const double xt = m_Properties.xt();
 
+  // Use while becouse number of hits increases in loop
   uint32_t currentCellIdx = 0;
   while (currentCellIdx < m_nTotalHits) {
     SiPMHit* hit = &m_Hits[currentCellIdx];
     currentCellIdx++;
-    uint32_t nxt = m_rng.randPoisson(xt);
 
-    if (nxt == 0) {
-      continue;
-    }
-    int32_t xtGeneratorRow = hit->row();
-    int32_t xtGeneratorCol = hit->col();
-    double xtTime = hit->time();
+    double test = m_rng.Rand();
+    // Poisson process algorithm
+    while (test > exp(-xt)){
+      int32_t xtGeneratorRow = hit->row();
+      int32_t xtGeneratorCol = hit->col();
+      double xtTime = hit->time();
 
-    for (uint32_t j = 0; j < nxt; ++j) {
       int32_t rowAdd, colAdd;
       do {
         rowAdd = m_rng.randInteger(2) - 1;
@@ -273,7 +267,8 @@ void SiPMSensor::addXtEvents() {
         ++m_nTotalHits;
         ++m_nXt;
       }
-    } /* FOR XT */
+      test *= m_rng.Rand();
+    } /* WHILE TEST < XT */
   }   /* WHILE HIT */
 }
 
@@ -285,21 +280,16 @@ void SiPMSensor::addApEvents() {
   const double recoveryTime = m_Properties.recoveryTime();
   const double slowFraction = m_Properties.apSlowFraction();
 
-  // Cannot use iterator based loop becouse of reallocation
+  // Use while becouse number of hits increases in loop
   uint32_t currentCellIdx = 0;
   while (currentCellIdx < m_nTotalHits) {
     SiPMHit* hit = &m_Hits[currentCellIdx];
     currentCellIdx++;
 
-    uint32_t nap = m_rng.randPoisson(ap);
-
-    if (nap == 0) {
-      continue;
-    }
+    double test = m_rng.Rand();
     double apGeneratorTime = hit->time();
-
-    // Choose fast or slow ap
-    for (uint32_t j = 0; j < nap; ++j) {
+    // Poisson process algorithm
+    while (test > exp(-ap)){
       double apDelay;
       if (m_rng.Rand() < slowFraction) {
         apDelay = m_rng.randExponential(tauApSlow);
@@ -317,7 +307,8 @@ void SiPMSensor::addApEvents() {
         m_nTotalHits++;
         m_nAp++;
       }
-    } /* FOR AP */
+      test = m_rng.Rand();
+    } /* WHILE TEST < AP */
   }   /* WHILE HIT */
 }
 
@@ -359,13 +350,13 @@ void SiPMSensor::generateSignal() {
 
     const __m256d __amplitude = _mm256_set1_pd(amplitude);
     uint32_t i = time;
-    for (i; i < nSignalPoints - 4; i += 4) {
+    for (; i < nSignalPoints - 4; i += 4) {
       __m256d __signal = _mm256_loadu_pd(&m_Signal[i]);
       __m256d __shape = _mm256_loadu_pd(&m_SignalShape[i - time]);
       __signal = _mm256_fmadd_pd(__shape, __amplitude, __signal);
       _mm256_storeu_pd(&m_Signal[i], __signal);
     }
-    for (i; i < nSignalPoints; ++i) {
+    for (; i < nSignalPoints; ++i) {
       m_Signal[i] += m_SignalShape[i - time] * amplitude;
     }
   }

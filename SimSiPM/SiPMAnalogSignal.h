@@ -74,6 +74,7 @@ public:
 private:
   std::vector<double> m_Waveform;
   double m_Sampling;
+
 } /* SiPMAnalogSignal */;
 } /* namespace sipm */
 #endif /* SIPM_SIPMSIGNAL_H */
