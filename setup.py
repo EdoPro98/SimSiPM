@@ -40,6 +40,6 @@ setup(
     license="MIT",
     classifiers = ["Development Status :: 4 - Beta",
                    "License :: OSI Approved :: MIT License",
-                   "Topic :: Scientific/Engineering :: Physics"
+                   "Topic :: Scientific/Engineering :: Physics",
                    "Programming Language :: Python :: 3"]
 )
