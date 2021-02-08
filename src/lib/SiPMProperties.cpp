@@ -42,14 +42,20 @@ const std::map<double, double> SiPMProperties::pdeSpectrum() const { return m_Pd
 void SiPMProperties::setProperty(const std::string& aProp, const double aPropValue) {
   if (aProp == "Size") {
     setSize(aPropValue);
+    m_SideCells = 1000 * m_Size / m_Pitch;
+    m_Ncells = m_SideCells * m_SideCells;
   } else if (aProp == "Pitch") {
     setPitch(aPropValue);
+    m_SideCells = 1000 * m_Size / m_Pitch;
+    m_Ncells = m_SideCells * m_SideCells;
   } else if (aProp == "Sampling") {
     setSampling(aPropValue);
+    m_SignalPoints = m_SignalLength / m_Sampling;
   } else if (aProp == "CellRecovery") {
     setRecoveryTime(aPropValue);
   } else if (aProp == "SignalLength") {
     setSignalLength(aPropValue);
+    m_SignalPoints = m_SignalLength / m_Sampling;
   } else if (aProp == "RiseTime") {
     setRiseTime(aPropValue);
   } else if (aProp == "FallTimeFast") {
@@ -68,6 +74,7 @@ void SiPMProperties::setProperty(const std::string& aProp, const double aPropVal
     setCcgv(aPropValue);
   } else if (aProp == "Snr") {
     setSnr(aPropValue);
+    m_SnrLinear = pow(10, -m_SnrdB / 20);
   } else if (aProp == "Pde") {
     setPde(aPropValue);
   } else if (aProp == "Dcr") {
