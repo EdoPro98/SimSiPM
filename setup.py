@@ -5,8 +5,8 @@ from glob import glob
 from pybind11.setup_helpers import Pybind11Extension, build_ext
 
 
-__version__ = "1"
-extra_compile_args = ["-DNDEBUG", "-O3", "-march=native"]
+__version__ = "1.0.0-alpha"
+extra_compile_args = ["-DNDEBUG", "-O3", "-mavx2"]
 
 
 sources = []
