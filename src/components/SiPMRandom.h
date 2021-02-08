@@ -83,7 +83,7 @@ public:
   /** @brief Sets a seed for the rng.
    * @param aSeed Seed used to initialize the rng algorithm
    */
-  void seed(uint64_t aSeed) { m_rng.seed(aSeed); }
+  void seed(const uint64_t aSeed) { m_rng.seed(aSeed); }
   /** @brief Sets a seed for the rng obtained from rand().*/
   void seed() { m_rng.seed(); }
   /** @brief This is the jump function for the generator. It is equivalent

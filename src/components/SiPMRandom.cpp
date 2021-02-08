@@ -15,7 +15,7 @@ void Xorshift256plus::seed() {
   this->operator()();
 }
 
-void Xorshift256plus::seed(uint64_t aseed) {
+void Xorshift256plus::seed(const uint64_t aseed) {
   s[0] = aseed;
   s[1] = aseed + 1;
   s[2] = aseed + 2;
