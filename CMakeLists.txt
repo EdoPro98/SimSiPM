@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.9)
 project(SimSiPM VERSION 1 DESCRIPTION "Library for SiPM simulation" LANGUAGES CXX)
 include(GNUInstallDirs)
 
-set(CMAKE_CXX_STANDARD 11 CACHE STRING "Set C++ standard")
+set(CMAKE_CXX_STANDARD 14 CACHE STRING "Set C++ standard")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CXX_EXTENSIONS OFF)
 
@@ -41,23 +41,13 @@ add_library(sipm SHARED
 
 
 # Include files
-target_include_directories(sipm PUBLIC SimSiPM/)
-target_include_directories(sipm PRIVATE src/components/)
+target_include_directories(sipm PUBLIC "SimSiPM/")
+target_include_directories(sipm PRIVATE "src/components/")
 
 set_property(TARGET sipm PROPERTY PUBLIC_HEADER SimSiPM/SiPM.h)
 set_property(TARGET sipm PROPERTY PUBLIC_HEADER ${public_headers})
 set_property(TARGET sipm PROPERTY PRIVATE_HEADER ${private_headers})
 set_property(TARGET sipm PROPERTY VERSION 1)
-
-set(INSTALL_PYTHON_BINDINGS OFF CACHE BOOL "Install python bindings")
-
-if(INSTALL_PYTHON_BINDINGS)
-	set(CMAKE_CXX_STANDARD 14)
-	find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
-	find_package(pybind11 CONFIG REQUIRED)
-	include_directories("SimSiPM/" "src/components")
-	pybind11_add_module(SiPM SHARED ${pythonsources} ${sources})
-endif(INSTALL_PYTHON_BINDINGS)
 
 # Install
 install(TARGETS sipm
@@ -65,3 +55,21 @@ install(TARGETS sipm
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
+
+set(INSTALL_PYTHON_BINDINGS OFF CACHE BOOL "Install python bindings")
+
+if (INSTALL_PYTHON_BINDINGS)
+	find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+	find_package(pybind11 CONFIG REQUIRED)
+	pybind11_add_module(SiPM SHARED ${pythonsources} ${sources})
+	target_include_directories(SiPM PRIVATE "SimSiPM/" "src/components")
+
+	execute_process(
+  COMMAND "${PYTHON_EXECUTABLE}" -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
+  OUTPUT_VARIABLE PYTHON_INSTALL_SITE
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+	install(TARGETS SiPM
+	LIBRARY DESTINATION ${Python3_SITEARCH}
+	)
+endif(INSTALL_PYTHON_BINDINGS)
