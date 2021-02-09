@@ -7,7 +7,7 @@ from pybind11.setup_helpers import ParallelCompile
 ParallelCompile("NPY_NUM_BUILD_JOBS").install()
 
 
-__version__ = "1.0.2-alpha"
+__version__ = "1.0.1-alpha"
 extra_compile_args = ["-DNDEBUG", "-O3"]
 
 
