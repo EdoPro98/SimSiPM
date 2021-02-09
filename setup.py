@@ -5,7 +5,7 @@ from glob import glob
 from pybind11.setup_helpers import Pybind11Extension, build_ext
 
 
-__version__ = "1.0.0-alpha"
+__version__ = "1.0.1-alpha"
 extra_compile_args = ["-DNDEBUG", "-O3"]
 
 
