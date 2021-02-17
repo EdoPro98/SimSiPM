@@ -8,7 +8,6 @@ using namespace sipm;
 void SiPMAnalogSignalPy(py::module &m){
 py::class_<SiPMAnalogSignal> SiPMAnalogSignal(m,"SiPMAnalogSignal");
   SiPMAnalogSignal.def("size",&SiPMAnalogSignal::size)
-  .def("clear",&SiPMAnalogSignal::clear)
   .def("sampling",&SiPMAnalogSignal::sampling)
   .def("waveform",&SiPMAnalogSignal::waveform)
   .def("integral",&SiPMAnalogSignal::integral)
@@ -16,7 +15,6 @@ py::class_<SiPMAnalogSignal> SiPMAnalogSignal(m,"SiPMAnalogSignal");
   .def("tot",&SiPMAnalogSignal::tot)
   .def("toa",&SiPMAnalogSignal::toa)
   .def("top",&SiPMAnalogSignal::top)
-  .def("setSampling",&SiPMAnalogSignal::setSampling)
   .def("lowpass",&SiPMAnalogSignal::lowpass)
   .def("__len__",&SiPMAnalogSignal::size);
 }

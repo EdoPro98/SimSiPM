@@ -1,4 +1,5 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 #include "SiPMProperties.h"
 
 namespace py = pybind11;
@@ -67,7 +68,7 @@ void SiPMPropertiesPy(py::module &m){
     .def("setSlowComponentOn",&SiPMProperties::setSlowComponentOn)
     .def("setPdeType",&SiPMProperties::setPdeType)
     .def("setPdeSpectrum",static_cast<void (SiPMProperties::*)(const map<double, double>&)>(&SiPMProperties::setPdeSpectrum))
-    .def("setPdeSpectrum",static_cast<void (SiPMProperties::*)(const map<double, double>&)>(&SiPMProperties::setPdeSpectrum))
+    .def("setPdeSpectrum",static_cast<void (SiPMProperties::*)(const vector<double>&,const vector<double>&)>(&SiPMProperties::setPdeSpectrum))
     .def("setHitDistribution",&SiPMProperties::setHitDistribution);
 
   py::enum_<SiPMProperties::PdeType>(SiPMProperties, "PdeType")

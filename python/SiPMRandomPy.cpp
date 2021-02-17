@@ -10,7 +10,7 @@ py::class_<SiPMRandom> SiPMRandom(m,"SiPMRandom");
   SiPMRandom.def(py::init<>())
   .def(py::init<const uint64_t>())
   .def("seed",py::overload_cast<>(&SiPMRandom::seed))
-  .def("seed",py::overload_cast<>(&SiPMRandom::seed))
+  .def("seed",py::overload_cast<uint64_t>(&SiPMRandom::seed))
   .def("jump",&SiPMRandom::jump)
   .def("Rand",py::overload_cast<>(&SiPMRandom::Rand))
   .def("randInteger",py::overload_cast<const uint32_t>(&SiPMRandom::randInteger))
