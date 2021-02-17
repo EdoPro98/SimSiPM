@@ -1,8 +1,6 @@
 #include "SiPMRandom.h"
 #include <random>
 
-#include "fmath.h"
-
 namespace sipm {
 
 namespace SiPMRng {
@@ -89,7 +87,7 @@ double SiPMRandom::randGaussian(const double mu, const double sigma) {
       v = fma(Rand(), 2.0, -1.0);
       s = u * u + v * v;
     } while (s >= 1.0 || s == 0.0);
-    s = math::fsqrt(-2.0 * log(s)) * math::rsqrt(s);
+    s = sqrt(-2.0 * log(s)/s);
     spare = v * s;
     hasSpare = true;
     return fma(u * s, sigma, mu);
@@ -132,7 +130,7 @@ std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma
       v = fma(Rand(), 2.0, -1.0);
       s = u * u + v * v;
     } while (s >= 1.0 || s == 0.0);
-    ss[i] = math::fsqrt(-2.0 * log(s)) * math::rsqrt(s);
+    ss[i] = sqrt(-2.0 * log(s)/s);
     ss[i+1] = ss[i];
     uu[i] = u;
     uu[i + 1] = v;
