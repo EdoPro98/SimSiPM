@@ -250,7 +250,7 @@ void SiPMSensor::addXtEvents() {
 
     double test = m_rng.Rand();
     // Poisson process algorithm
-    while (test > exp(-xt)){
+    while (test > exp(-xt)) {
       int32_t xtGeneratorRow = hit->row();
       int32_t xtGeneratorCol = hit->col();
       double xtTime = hit->time();
@@ -290,7 +290,7 @@ void SiPMSensor::addApEvents() {
     double test = m_rng.Rand();
     double apGeneratorTime = hit->time();
     // Poisson process algorithm
-    while (test > exp(-ap)){
+    while (test > exp(-ap)) {
       double apDelay;
       if (m_rng.Rand() < slowFraction) {
         apDelay = m_rng.randExponential(tauApSlow);

@@ -1,5 +1,20 @@
 var files_dup =
 [
-    [ "SimSiPM", "dir_52b9189cc3df2563ca8b7b7f0d6793ef.html", "dir_52b9189cc3df2563ca8b7b7f0d6793ef" ],
-    [ "src", "dir_68267d1309a1af8e8297ef4c3efbcdba.html", "dir_68267d1309a1af8e8297ef4c3efbcdba" ]
+    [ "SiPM.h", "a00002_source.html", null ],
+    [ "SiPMAdc.cpp", "a00035_source.html", null ],
+    [ "SiPMAdc.h", "a00005_source.html", null ],
+    [ "SiPMAnalogSignal.cpp", "a00038_source.html", null ],
+    [ "SiPMAnalogSignal.h", "a00008_source.html", null ],
+    [ "SiPMDebugInfo.h", "a00011_source.html", null ],
+    [ "SiPMDigitalSignal.cpp", "a00041_source.html", null ],
+    [ "SiPMDigitalSignal.h", "a00014_source.html", null ],
+    [ "SiPMHelpers.h", "a00026_source.html", null ],
+    [ "SiPMHit.cpp", "a00044_source.html", null ],
+    [ "SiPMHit.h", "a00017_source.html", null ],
+    [ "SiPMProperties.cpp", "a00047_source.html", null ],
+    [ "SiPMProperties.h", "a00020_source.html", null ],
+    [ "SiPMRandom.cpp", "a00029_source.html", null ],
+    [ "SiPMRandom.h", "a00032_source.html", null ],
+    [ "SiPMSensor.cpp", "a00050_source.html", null ],
+    [ "SiPMSensor.h", "a00023_source.html", null ]
 ];

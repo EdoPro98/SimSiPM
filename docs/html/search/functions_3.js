@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['evaluatepde_167',['evaluatePde',['../classsipm_1_1SiPMSensor.html#a57be65f888cc5a9b38d516d00e1fe7fb',1,'sipm::SiPMSensor']]]
+  ['fallingtimefast_148',['fallingTimeFast',['../a00892.html#a940f9e292d925cd221567f0bc9caeded',1,'sipm::SiPMProperties']]],
+  ['fallingtimeslow_149',['fallingTimeSlow',['../a00892.html#a9c9af4d8454e0a15fa53075717b30085',1,'sipm::SiPMProperties']]]
 ];

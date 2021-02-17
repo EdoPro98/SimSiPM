@@ -25,7 +25,7 @@
 var NAVTREE =
 [
   [ "SimSipm", "index.html", [
-    [ "Todo List", "todo.html", null ],
+    [ "Todo List", "a00053.html", null ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
@@ -44,7 +44,7 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"SiPMAdc_8cpp_source.html"
+"a00002_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

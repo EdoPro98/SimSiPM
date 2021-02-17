@@ -1,7 +1,12 @@
 var searchData=
 [
-  ['id_31',['id',['../classsipm_1_1SiPMHit.html#ab9c14b4739e560914dbd94c70d6019e0',1,'sipm::SiPMHit']]],
-  ['integral_32',['integral',['../classsipm_1_1SiPMAnalogSignal.html#aac617da9d5d2b5aca63a53cebc737563',1,'sipm::SiPMAnalogSignal::integral()'],['../classsipm_1_1SiPMDigitalSignal.html#a93e73d4e5ad5baa2e277a0021c9dc261',1,'sipm::SiPMDigitalSignal::integral()']]],
-  ['isdetected_33',['isDetected',['../classsipm_1_1SiPMSensor.html#a2a543273eb363534f99f4bac51155f0e',1,'sipm::SiPMSensor']]],
-  ['isinsensor_34',['isInSensor',['../classsipm_1_1SiPMSensor.html#abbc785ca43ec1670632d1f9741db6295',1,'sipm::SiPMSensor']]]
+  ['kafterpulse_25',['kAfterPulse',['../a00888.html#a6bd3b40e862e6b02042f2dd5c0636ad2acaf47475e32a3c0934dec394a33d9e56',1,'sipm::SiPMHit']]],
+  ['kcircle_26',['kCircle',['../a00892.html#ae898f0a2faccc08ccb33e094c2a5906dab64649c0868f16dbd568590263b21af2',1,'sipm::SiPMProperties']]],
+  ['kdarkcount_27',['kDarkCount',['../a00888.html#a6bd3b40e862e6b02042f2dd5c0636ad2ac08ad8bd98f74091d38661041e53286c',1,'sipm::SiPMHit']]],
+  ['knopde_28',['kNoPde',['../a00892.html#a96a03b8df7eeaad55505aa202450e715adb5415d27a148383706ccec3282e3622',1,'sipm::SiPMProperties']]],
+  ['kopticalcrosstalk_29',['kOpticalCrosstalk',['../a00888.html#a6bd3b40e862e6b02042f2dd5c0636ad2afec5e1b8afdfa5485209456b33743e10',1,'sipm::SiPMHit']]],
+  ['kphotoelectron_30',['kPhotoelectron',['../a00888.html#a6bd3b40e862e6b02042f2dd5c0636ad2a5c6d57f362ef214fc65661f9c8de6635',1,'sipm::SiPMHit']]],
+  ['ksimplepde_31',['kSimplePde',['../a00892.html#a96a03b8df7eeaad55505aa202450e715adcc8bef75976224fb6f8148fbab478b7',1,'sipm::SiPMProperties']]],
+  ['kspectrumpde_32',['kSpectrumPde',['../a00892.html#a96a03b8df7eeaad55505aa202450e715a64dac3c526a347b78896382e7018add1',1,'sipm::SiPMProperties']]],
+  ['kuniform_33',['kUniform',['../a00892.html#ae898f0a2faccc08ccb33e094c2a5906da3ea9f7aca87fd7b64469a0d1119f0b50',1,'sipm::SiPMProperties']]]
 ];

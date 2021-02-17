@@ -2,15 +2,15 @@ var annotated_dup =
 [
     [ "sipm", null, [
       [ "SiPMRng", null, [
-        [ "Xorshift256plus", "classsipm_1_1SiPMRng_1_1Xorshift256plus.html", "classsipm_1_1SiPMRng_1_1Xorshift256plus" ]
+        [ "Xorshift256plus", "a00904.html", "a00904" ]
       ] ],
-      [ "SiPMAdc", "classsipm_1_1SiPMAdc.html", "classsipm_1_1SiPMAdc" ],
-      [ "SiPMAnalogSignal", "classsipm_1_1SiPMAnalogSignal.html", "classsipm_1_1SiPMAnalogSignal" ],
-      [ "SiPMDebugInfo", "structsipm_1_1SiPMDebugInfo.html", "structsipm_1_1SiPMDebugInfo" ],
-      [ "SiPMDigitalSignal", "classsipm_1_1SiPMDigitalSignal.html", "classsipm_1_1SiPMDigitalSignal" ],
-      [ "SiPMHit", "classsipm_1_1SiPMHit.html", "classsipm_1_1SiPMHit" ],
-      [ "SiPMProperties", "classsipm_1_1SiPMProperties.html", "classsipm_1_1SiPMProperties" ],
-      [ "SiPMSensor", "classsipm_1_1SiPMSensor.html", "classsipm_1_1SiPMSensor" ],
-      [ "SiPMRandom", "classsipm_1_1SiPMRandom.html", "classsipm_1_1SiPMRandom" ]
+      [ "SiPMAdc", "a00872.html", "a00872" ],
+      [ "SiPMAnalogSignal", "a00876.html", "a00876" ],
+      [ "SiPMDebugInfo", "a00880.html", "a00880" ],
+      [ "SiPMDigitalSignal", "a00884.html", "a00884" ],
+      [ "SiPMHit", "a00888.html", "a00888" ],
+      [ "SiPMProperties", "a00892.html", "a00892" ],
+      [ "SiPMRandom", "a00908.html", "a00908" ],
+      [ "SiPMSensor", "a00896.html", "a00896" ]
     ] ]
 ];

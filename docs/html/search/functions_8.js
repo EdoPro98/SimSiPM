@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['jump_183',['jump',['../classsipm_1_1SiPMRng_1_1Xorshift256plus.html#a057f606c7b5cbf7b9e528875dd482eb9',1,'sipm::SiPMRng::Xorshift256plus::jump()'],['../classsipm_1_1SiPMRandom.html#aed41ec5f6e72dabcc1d58eb789120cc1',1,'sipm::SiPMRandom::jump()']]]
+  ['ncells_160',['nCells',['../a00892.html#a1537ab8ce564db2e19d6082f4c393f4c',1,'sipm::SiPMProperties']]],
+  ['nsidecells_161',['nSideCells',['../a00892.html#aa4aeb39489ec93d987ba3ea07da810c6',1,'sipm::SiPMProperties']]],
+  ['nsignalpoints_162',['nSignalPoints',['../a00892.html#a7f01e48f07ca0540bdc7bb812325b144',1,'sipm::SiPMProperties']]]
 ];

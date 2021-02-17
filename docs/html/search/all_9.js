@@ -1,11 +1,11 @@
 var searchData=
 [
-  ['kafterpulse_36',['kAfterPulse',['../classsipm_1_1SiPMHit.html#a6bd3b40e862e6b02042f2dd5c0636ad2acaf47475e32a3c0934dec394a33d9e56',1,'sipm::SiPMHit']]],
-  ['kdarkcount_37',['kDarkCount',['../classsipm_1_1SiPMHit.html#a6bd3b40e862e6b02042f2dd5c0636ad2ac08ad8bd98f74091d38661041e53286c',1,'sipm::SiPMHit']]],
-  ['knopde_38',['kNoPde',['../classsipm_1_1SiPMProperties.html#a96a03b8df7eeaad55505aa202450e715adb5415d27a148383706ccec3282e3622',1,'sipm::SiPMProperties']]],
-  ['kopticalcrosstalk_39',['kOpticalCrosstalk',['../classsipm_1_1SiPMHit.html#a6bd3b40e862e6b02042f2dd5c0636ad2afec5e1b8afdfa5485209456b33743e10',1,'sipm::SiPMHit']]],
-  ['kphotoelectron_40',['kPhotoelectron',['../classsipm_1_1SiPMHit.html#a6bd3b40e862e6b02042f2dd5c0636ad2a5c6d57f362ef214fc65661f9c8de6635',1,'sipm::SiPMHit']]],
-  ['ksimplepde_41',['kSimplePde',['../classsipm_1_1SiPMProperties.html#a96a03b8df7eeaad55505aa202450e715adcc8bef75976224fb6f8148fbab478b7',1,'sipm::SiPMProperties']]],
-  ['kspectrumpde_42',['kSpectrumPde',['../classsipm_1_1SiPMProperties.html#a96a03b8df7eeaad55505aa202450e715a64dac3c526a347b78896382e7018add1',1,'sipm::SiPMProperties']]],
-  ['kuniform_43',['kUniform',['../classsipm_1_1SiPMProperties.html#ae898f0a2faccc08ccb33e094c2a5906da3ea9f7aca87fd7b64469a0d1119f0b50',1,'sipm::SiPMProperties']]]
+  ['nap_35',['nAp',['../a00880.html#a326809969414aea56c79f7c6caca1ad1',1,'sipm::SiPMDebugInfo']]],
+  ['ncells_36',['nCells',['../a00892.html#a1537ab8ce564db2e19d6082f4c393f4c',1,'sipm::SiPMProperties']]],
+  ['ndcr_37',['nDcr',['../a00880.html#ae45dfa10f1bafe2eddb806c6f0ad4636',1,'sipm::SiPMDebugInfo']]],
+  ['nphotoelectrons_38',['nPhotoelectrons',['../a00880.html#a8bf569f7e0d589535acacc14a14d89f4',1,'sipm::SiPMDebugInfo']]],
+  ['nphotons_39',['nPhotons',['../a00880.html#ab4b6a42cb796bd0220068609fbdaebf5',1,'sipm::SiPMDebugInfo']]],
+  ['nsidecells_40',['nSideCells',['../a00892.html#aa4aeb39489ec93d987ba3ea07da810c6',1,'sipm::SiPMProperties']]],
+  ['nsignalpoints_41',['nSignalPoints',['../a00892.html#a7f01e48f07ca0540bdc7bb812325b144',1,'sipm::SiPMProperties']]],
+  ['nxt_42',['nXt',['../a00880.html#acf7665dda717929d759540ebbfad862f',1,'sipm::SiPMDebugInfo']]]
 ];

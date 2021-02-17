@@ -1,11 +1,15 @@
 var searchData=
 [
-  ['nap_46',['nAp',['../structsipm_1_1SiPMDebugInfo.html#a326809969414aea56c79f7c6caca1ad1',1,'sipm::SiPMDebugInfo']]],
-  ['ncells_47',['nCells',['../classsipm_1_1SiPMProperties.html#a1537ab8ce564db2e19d6082f4c393f4c',1,'sipm::SiPMProperties']]],
-  ['ndcr_48',['nDcr',['../structsipm_1_1SiPMDebugInfo.html#ae45dfa10f1bafe2eddb806c6f0ad4636',1,'sipm::SiPMDebugInfo']]],
-  ['nphotoelectrons_49',['nPhotoelectrons',['../structsipm_1_1SiPMDebugInfo.html#a8bf569f7e0d589535acacc14a14d89f4',1,'sipm::SiPMDebugInfo']]],
-  ['nphotons_50',['nPhotons',['../structsipm_1_1SiPMDebugInfo.html#ab4b6a42cb796bd0220068609fbdaebf5',1,'sipm::SiPMDebugInfo']]],
-  ['nsidecells_51',['nSideCells',['../classsipm_1_1SiPMProperties.html#aa4aeb39489ec93d987ba3ea07da810c6',1,'sipm::SiPMProperties']]],
-  ['nsignalpoints_52',['nSignalPoints',['../classsipm_1_1SiPMProperties.html#a7f01e48f07ca0540bdc7bb812325b144',1,'sipm::SiPMProperties']]],
-  ['nxt_53',['nXt',['../structsipm_1_1SiPMDebugInfo.html#acf7665dda717929d759540ebbfad862f',1,'sipm::SiPMDebugInfo']]]
+  ['rand_54',['Rand',['../a00908.html#a4bfc0cdeed727bbc2bc1ee94a14febdb',1,'sipm::SiPMRandom::Rand()'],['../a00908.html#a23c75e1952f8571a2c48be8ba659777d',1,'sipm::SiPMRandom::Rand(const uint32_t)']]],
+  ['randexponential_55',['randExponential',['../a00908.html#a51c0ba9e2f2525b6414d786b54733d14',1,'sipm::SiPMRandom']]],
+  ['randgaussian_56',['randGaussian',['../a00908.html#a36ec48f8e698fdac4078bfc56cd19dc6',1,'sipm::SiPMRandom::randGaussian(const double, const double)'],['../a00908.html#a1464d52fe022f036a0558330160776bb',1,'sipm::SiPMRandom::randGaussian(const double, const double, const uint32_t)']]],
+  ['randinteger_57',['randInteger',['../a00908.html#a58f24df45b0c27bfcf44f75b871cb2bf',1,'sipm::SiPMRandom::randInteger(const uint32_t)'],['../a00908.html#af26fcb3345cf97a3451c551770737c05',1,'sipm::SiPMRandom::randInteger(const uint32_t max, const uint32_t n)']]],
+  ['randpoisson_58',['randPoisson',['../a00908.html#a8a7312c51fc4bf57903c24de66349f83',1,'sipm::SiPMRandom']]],
+  ['readsettings_59',['readSettings',['../a00892.html#af9cafc158bff29f8aaa65841b20e7514',1,'sipm::SiPMProperties']]],
+  ['recoverytime_60',['recoveryTime',['../a00892.html#a9daafd67e5b5721868409b4fcde70c98',1,'sipm::SiPMProperties']]],
+  ['resetstate_61',['resetState',['../a00896.html#a9b7a167c33a16181401d9aae616ff391',1,'sipm::SiPMSensor']]],
+  ['risingtime_62',['risingTime',['../a00892.html#ac46f271f003476b6411d470918234bdd',1,'sipm::SiPMProperties']]],
+  ['rng_63',['rng',['../a00896.html#affe9842b2eb9b07bb803f55ce009213a',1,'sipm::SiPMSensor::rng() const'],['../a00896.html#a74ed3199ae8154d4b91e52207bd52b49',1,'sipm::SiPMSensor::rng()']]],
+  ['row_64',['row',['../a00888.html#a5c3f5a0ae01e4550c3801b112a71a99d',1,'sipm::SiPMHit']]],
+  ['runevent_65',['runEvent',['../a00896.html#af4bdf8329376777dadf2bb17704e3925',1,'sipm::SiPMSensor']]]
 ];

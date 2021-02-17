@@ -1,4 +1,0 @@
-<map id="sipm::SiPMRandom" name="sipm::SiPMRandom">
-<area shape="rect" id="node1" title="Class for random number generation." alt="" coords="41,95,177,121"/>
-<area shape="rect" id="node2" href="$classsipm_1_1SiPMRng_1_1Xorshift256plus.html" title="Implementation of Xorshift256+ algorithm." alt="" coords="5,5,212,32"/>
-</map>

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['calculatesignalamplitudes_160',['calculateSignalAmplitudes',['../classsipm_1_1SiPMSensor.html#a0a22179886c03fdd13ad82e87baca945',1,'sipm::SiPMSensor']]],
-  ['ccgv_161',['ccgv',['../classsipm_1_1SiPMProperties.html#ab89f11944192c057ec4c48f87398d5b5',1,'sipm::SiPMProperties']]],
-  ['col_162',['col',['../classsipm_1_1SiPMHit.html#a21d090b2d77df7ee222defcb00a5cc1d',1,'sipm::SiPMHit']]]
+  ['ccgv_141',['ccgv',['../a00892.html#ab89f11944192c057ec4c48f87398d5b5',1,'sipm::SiPMProperties']]],
+  ['clear_142',['clear',['../a00876.html#aa61ac44b7eec74873ccceec9fdd3ccf8',1,'sipm::SiPMAnalogSignal::clear()'],['../a00884.html#a1b70a367704a619fa3c0b54c84e0520a',1,'sipm::SiPMDigitalSignal::clear()']]],
+  ['col_143',['col',['../a00888.html#a21d090b2d77df7ee222defcb00a5cc1d',1,'sipm::SiPMHit']]]
 ];

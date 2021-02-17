@@ -66,14 +66,13 @@ inline uint64_t Xorshift256plus::operator()() noexcept {
   s[1] ^= s[2];
   s[0] ^= s[3];
 
-  s[2]^= t;
+  s[2] ^= t;
 
   s[3] = (s[3] << 45U) | (s[3] >> (64U - 45U));
   return result;
 }
 
 }  // namespace SiPMRng
-
 
 class SiPMRandom {
 public:
@@ -134,7 +133,6 @@ and related and neighboring rights to this software to the public domain
 worldwide. This software is distributed without any warranty.
 
 See <http://creativecommons.org/publicdomain/zero/1.0/>. */
-
 
 /* This is xoshiro256++ 1.0, one of our all-purpose, rock-solid generators.
    It has excellent (sub-ns) speed, a state (256 bits) that is large

@@ -38,7 +38,7 @@ public:
   /// @brief Default SiPMSensor contructor.
   /** Instantiates a SiPMSensor with default settings.
    */
-  SiPMSensor()=default;
+  SiPMSensor() = default;
 
   /// @brief Returns a const reference to the @ref SiPMProperties object
   /** used to setup ths SiPMSensor.
@@ -78,7 +78,7 @@ public:
    */
   void setProperties(const SiPMProperties&);
 
-  void addPhoton(){}
+  void addPhoton() {}
   /// @brief Adds a single photon to the list of photons to be simulated.
   void addPhoton(const double);
   /// @brief Adds a single photon to the list of photons to be simulated.
@@ -100,7 +100,6 @@ public:
   /** Still to implement
    */
   void setPrecisionLevel(const PrecisionLevel);
-
 
 private:
   /// @brief Returns the shape of the signal generated.

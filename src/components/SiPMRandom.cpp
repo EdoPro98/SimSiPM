@@ -87,7 +87,7 @@ double SiPMRandom::randGaussian(const double mu, const double sigma) {
       v = fma(Rand(), 2.0, -1.0);
       s = u * u + v * v;
     } while (s >= 1.0 || s == 0.0);
-    s = sqrt(-2.0 * log(s)/s);
+    s = sqrt(-2.0 * log(s) / s);
     spare = v * s;
     hasSpare = true;
     return fma(u * s, sigma, mu);
@@ -123,22 +123,22 @@ std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma
   alignas(64) double ss[n];
   alignas(64) double uu[n];
 
-  for (uint32_t i = 0; i < n-1 ; i += 2) {
+  for (uint32_t i = 0; i < n - 1; i += 2) {
     double s, u, v;
     do {
       u = fma(Rand(), 2.0, -1.0);
       v = fma(Rand(), 2.0, -1.0);
       s = u * u + v * v;
     } while (s >= 1.0 || s == 0.0);
-    ss[i] = sqrt(-2.0 * log(s)/s);
-    ss[i+1] = ss[i];
+    ss[i] = sqrt(-2.0 * log(s) / s);
+    ss[i + 1] = ss[i];
     uu[i] = u;
     uu[i + 1] = v;
   }
-  for(uint32_t i =0; i<n;++i){
+  for (uint32_t i = 0; i < n; ++i) {
     out[i] = ss[i] * uu[i] * sigma + mu;
   }
-  std::vector<double> res(out,out+n);
+  std::vector<double> res(out, out + n);
   return res;
 }
 
@@ -152,7 +152,7 @@ std::vector<uint32_t> SiPMRandom::randInteger(const uint32_t max, const uint32_t
   for (uint32_t i = 0; i < n; ++i) {
     temp[i] = static_cast<uint32_t>(Rand() * (max + 1));
   }
-  std::vector<uint32_t> out(temp,temp+n);
+  std::vector<uint32_t> out(temp, temp + n);
   return out;
 }
 }  // namespace sipm

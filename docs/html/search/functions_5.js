@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['generatesignal_170',['generateSignal',['../classsipm_1_1SiPMSensor.html#a8295f65002d08f88c05f1dcc655b4aeb',1,'sipm::SiPMSensor']]],
-  ['getcellids_171',['getCellIds',['../classsipm_1_1SiPMSensor.html#aeb67e27f3bf8a72d3935b9f4cd769c69',1,'sipm::SiPMSensor']]]
+  ['id_156',['id',['../a00888.html#ab9c14b4739e560914dbd94c70d6019e0',1,'sipm::SiPMHit']]],
+  ['integral_157',['integral',['../a00876.html#aac617da9d5d2b5aca63a53cebc737563',1,'sipm::SiPMAnalogSignal::integral()'],['../a00884.html#a93e73d4e5ad5baa2e277a0021c9dc261',1,'sipm::SiPMDigitalSignal::integral()']]]
 ];
