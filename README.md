@@ -52,7 +52,7 @@ SimSiPM can be installed using the standard CMake workflow:
 # In SimSiPM directory
 cmake -B build -S .
 make -C build
-make -C install
+make -C build install
 ```
 Installation directory can be specified with `-DCMAKE_INSTALL_PREFIX` variable.  
 Python bindings can be installed in the default python site-packages path by adding the variable `-DCOMPILE_PYTHON_BINDINGS=ON` but this requires Pybind11 to be installed.
@@ -180,8 +180,20 @@ mySignal = mySensor.signal()
 integral = mySignal.integral(10,250,0.5)
 ```
 
-## Contibute
-SimSiPM is being developed in the contest of FCCSW and IDEA Dual-Readout Calorimeter Software. [I](#contacts) am the main responsible for developement and maintainment of this project, and if you have an
+## Contributing
+SimSiPM is being developed in the contest of FCCSW and IDEA Dual-Readout Calorimeter Software. [I am](#contacts) the main responsible for developement and maintainment of this project. If you have a problem, find a BUG or have any suggestion feel free to open a GitHub Issue or to contact me.
+
+## Cite
+Even thou SimSiPM has been used in simulations related to published articles, there is not yet an article about SimSiPM only. So when citing SimSiPM please use:
+```
+@manual{,
+title = {{SimSiPM: a library for SiPM simulation}},
+author = {Edoardo, Proserpio},
+address = {Como, Italy},
+year = 2021,
+url = {https://github.com/EdoPro98/SimSiPM}
+}
+```
 
 ## <a name="contacts"></a>Contacts
 Author: Edoardo Proserpio  
