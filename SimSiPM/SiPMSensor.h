@@ -38,7 +38,7 @@ public:
   /// @brief Default SiPMSensor contructor.
   /** Instantiates a SiPMSensor with default settings.
    */
-  SiPMSensor() = default;
+  SiPMSensor()=default;
 
   /// @brief Returns a const reference to the @ref SiPMProperties object
   /** used to setup ths SiPMSensor.
@@ -100,6 +100,7 @@ public:
   /** Still to implement
    */
   void setPrecisionLevel(const PrecisionLevel);
+
 
 private:
   /// @brief Returns the shape of the signal generated.
@@ -180,6 +181,8 @@ private:
   SiPMProperties m_Properties;
   mutable SiPMRandom m_rng;
 
+  std::vector<double> m_SignalShape;
+
   uint32_t m_nTotalHits = 0;
   uint32_t m_nPe = 0;
   uint32_t m_nDcr = 0;
@@ -190,7 +193,6 @@ private:
   std::vector<double> m_PhotonWavelengths;
   std::vector<SiPMHit> m_Hits;
 
-  std::vector<double> m_SignalShape;
   SiPMAnalogSignal m_Signal;
 
   PrecisionLevel m_PrecisionLevel = PrecisionLevel::kFull;

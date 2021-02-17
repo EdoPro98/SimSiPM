@@ -11,20 +11,20 @@ namespace sipm {
 
 SiPMSensor::SiPMSensor(const SiPMProperties& aProperty) noexcept {
   m_Properties = aProperty;
-  m_SignalShape = signalShape();
   m_Signal.setSampling(m_Properties.sampling());
+  m_SignalShape = signalShape();
 }
 
 void SiPMSensor::setProperty(const std::string& prop, const double val) {
   m_Properties.setProperty(prop, val);
-  m_SignalShape = signalShape();
   m_Signal.setSampling(m_Properties.sampling());
+  m_SignalShape = signalShape();
 }
 
 void SiPMSensor::setProperties(const SiPMProperties& x) {
   m_Properties = x;
-  m_SignalShape = signalShape();
   m_Signal.setSampling(m_Properties.sampling());
+  m_SignalShape = signalShape();
 }
 
 void SiPMSensor::setPrecisionLevel(const PrecisionLevel x) { m_PrecisionLevel = x; }
@@ -174,6 +174,7 @@ void SiPMSensor::addDcrEvents() {
   const double meanDcr = 1e9 / m_Properties.dcr();
   const int32_t nSideCells = m_Properties.nSideCells() - 1;
 
+  // Start generation "before" the signal window
   double last = -100;
 
   while (last < signalLength) {
@@ -373,7 +374,7 @@ void SiPMSensor::generateSignal() {
     const double amplitude = hit->amplitude() * m_rng.randGaussian(1, m_Properties.ccgv());
 
     for (uint32_t i = time; i < nSignalPoints; ++i) {
-      m_Signal[i] = fma(m_SignalShape[i - time], amplitude, m_Signal[i]);
+      m_Signal[i] += m_SignalShape[i - time] * amplitude;
     }
   }
 }

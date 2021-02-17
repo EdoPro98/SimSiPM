@@ -94,7 +94,6 @@ const double SiPMAnalogSignal::top(const double intstart, const double intgate, 
 }
 
 /**
- * @param signal Signal to filter
  * @param bw Bandwidth for the low-pass filter (-3dB cut-off)
  * @return Signal with filter applied
  */

@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 14 CACHE STRING "Set C++ standard")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CXX_EXTENSIONS OFF)
 
+set(COMPILE_PYTHON_BINDINGS OFF CACHE BOOL "Compile python bindings")
+
 # Optimizations
 if(NOT CMAKE_BUILD_TYPE)
 	message(STATUS "No default build type specified: setting CMAKE_BUILD_TYPE=Release")
@@ -56,9 +58,8 @@ install(TARGETS sipm
     PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-set(INSTALL_PYTHON_BINDINGS OFF CACHE BOOL "Install python bindings")
 
-if (INSTALL_PYTHON_BINDINGS)
+if (COMPILE_PYTHON_BINDINGS)
 	find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 	find_package(pybind11 CONFIG REQUIRED)
 	pybind11_add_module(SiPM SHARED ${pythonsources} ${sources})
@@ -72,4 +73,4 @@ if (INSTALL_PYTHON_BINDINGS)
 	install(TARGETS SiPM
 	LIBRARY DESTINATION ${Python3_SITEARCH}
 	)
-endif(INSTALL_PYTHON_BINDINGS)
+endif (COMPILE_PYTHON_BINDINGS)
