@@ -14,13 +14,14 @@
 1. [Introduction](#introduction)  
 2. [Features](#features)  
 3. [Installation](#installation)
-  1. [C++](#c++install)
-  2. [Python](#pyinstall)
+  - [C++](#c++install)
+  - [Python](#pyinstall)
 4. [C++ Basic use](#c++_basic_bsage)  
 5. [Python Basic use](#python_basic_usage)  
 6. [Advanced use](#advanced_use)  
-  1. [Pde](#pde)
-  2. [Hit distribution](#hit)
+  - [Pde](#pde)
+  - [Hit distribution](#hit)
+7. [Contributing](#contrib)
 
 ## <a name="introduction"></a>Introduction
 SimSiPM is a C++ library providing a set of object-oriented tools with all the functionality needed to describe and simulate Silicon PhotonMultipliers (SiPM) sensors.
@@ -63,7 +64,7 @@ It is also possible to install only the python version via pip but performance m
 pip install SiPM
 ```
 
-## <a name="C++_basic_bsage"></a>C++ basic use
+## <a name="C++_basic_usage"></a>C++ basic use
 
 ### SiPMProperties
 SiPMProperties object stores SiPM parameters
@@ -179,8 +180,75 @@ mySensor.runEvent()
 mySignal = mySensor.signal()
 integral = mySignal.integral(10,250,0.5)
 ```
+## <a name="adv"></a>Advanced use
+### <a name="pde"></a>PDE
+#### No Pde
+Tracking a large number of photons is a very heavy task and since most of photons will not be detected due to photon detection efficiency (PDE) it would be a waste of time.
 
-## Contributing
+By default SiPM sensors have PDE set to 100% so every photon is converted to a photoelectron and is detected. In this way it is possible to calculate photon statistic ahead and track only the photons that will be detected.
+
+#### Simple PDE
+It is possible to account for PDE in the simulation using a fixed value of PDE for all photons. In this case the probability to detect a photon is proportional to PDE.
+```cpp
+// Set in SiPMProperties
+myProperties.setPdeType(sipm::SiPMProperties::PdeType::kSimplePde);
+myProperties.setPde(0.27);
+
+// Change setting of a sensor
+mySensor.properties().setPdeType(sipm::SiPMProperties::PdeType::kSimplePde);
+mySensor.setProperty("Pde",0.27); // or mySensor.properties().setPde(0.27);
+```
+To revert back at default setting of 100% PDE use `setPdeType(sipm::SiPMProperties::PdeType::kSimplePde)`
+
+#### Spectral PDE
+In most SiPM sensors PDE strongly depends on photon wavelength. In some cases it might be necessary to consider the spectral response of the SiPM for a more accurate simulation.
+This can be done by feeding the SiPM settings with two arrays containing photon wavelengths and corresponding PDEs.
+
+In this case it is also necessary to input photon wavelength along with its time.
+```cpp
+std::vector<double> wlen = {300, 400, 500, 600, 700, 800};
+std::vector<double> pde  = {0.01, 0.20, 0.33, 0.27, 0.15, 0.05};
+
+myProperties.setPdeType(sipm::SiPMProperties::PdeType::kSpectrumPde);
+myProperties.setPdeSpectrum(wlen,pde);
+
+// or using a std::map
+// std::map<double,double> wlen_pde = {{300, 0.01}, {400, 0.20}, {500, 0.33}, ...};
+// myProperties.setPdeSpectrum(wlen_pde);
+
+// Adding photons to the sensor
+mySensor.addPhoton(photonTime, photonWlen);
+// or mySensor.addPhotons(photonTimes, photonWlens);
+```
+<center><img src="/images/pde.png" width=500></center>
+
+The values inserted by the user are linearly interpolated to calculate the PDE for each wavelength so it is better to add a reasonable number of values.
+
+### <a name="hit"></a>Hit distribution
+By default photoelectrons are distributed uniformly on the surface of the SiPM. In most cases this assumption resembles what happens in a typical setup but sometimes the geometry and optical characteristics of the setup lead to an unheaven distribution of the light on the sensor's surface.
+#### Uniform hit distribution
+This is the default setting. Each SiPM cell has the same probability to be hitted.
+```cpp
+myPropertie.setHitDistribution(sipm::SiPMProperties::HitDistribution::kUniform);
+```
+
+#### Circular hit distribution
+In this case 95% of photons are placed in a circle centered in the sensor and with a diameter that is the same as the sensor's side lenght. The remaining 5% is distributed uniformly on the sensor.
+<center><img src="/images/circleHits.png" width=250></center>
+
+```cpp
+myPropertie.setHitDistribution(sipm::SiPMProperties::HitDistribution::kCircle);
+```
+
+#### Gaussian hit distribution
+In this case 95% of the photons are distributed following a gaussian distribution centered in the sensor. The remaining 5% is distributed uniformly on the sensor.  
+<center><img src="/images/gaussianHits.png" width=250></center>
+
+```cpp
+myPropertie.setHitDistribution(sipm::SiPMProperties::HitDistribution::kGaussian);
+```
+
+## <a name="contrib"></a>Contributing
 SimSiPM is being developed in the contest of FCCSW and IDEA Dual-Readout Calorimeter Software. [I am](#contacts) the main responsible for developement and maintainment of this project. If you have a problem, find a BUG or have any suggestion feel free to open a GitHub Issue or to contact me.
 
 ## Cite
