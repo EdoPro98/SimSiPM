@@ -66,6 +66,31 @@ uint32_t SiPMRandom::randPoisson(const double mu) {
  */
 double SiPMRandom::randExponential(const double mu) { return -log(Rand()) * mu; }
 
+/** @brief Returns a value from a gaussian distribution with mean 0 and sigma 1.
+ *
+ * This function is based on Ziggurat algorithm for random gaussian generation.
+ */
+double SiPMRandom::randNormal() {
+  static double spare;
+  static bool hasSpare = false;
+
+  if (hasSpare) {
+    hasSpare = false;
+    return spare;
+  } else {
+    double u, v, s;
+    do {
+      u = fma(Rand(), 2.0, -1.0);
+      v = fma(Rand(), 2.0, -1.0);
+      s = u * u + v * v;
+    } while (s >= 1.0 || s == 0.0);
+    s = sqrt(-2.0 * log(s) / s);
+    spare = v * s;
+    hasSpare = true;
+    return u * s;
+  }
+}
+
 /** @brief Returns a value from a gaussian distribution given its mean value and
  * sigma.
  *

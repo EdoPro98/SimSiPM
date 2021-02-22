@@ -37,7 +37,8 @@ public:
    */
   enum class HitDistribution {
     kUniform,  ///< Photons uniformly distributed on the sensor surface
-    kCircle    ///< 95% of photons are uniformly distributed on a circle
+    kCircle,   ///< 95% of photons are uniformly distributed on a circle
+    kGaussian  ///< 95% of photons have a gaussian distribution
   };
 
   /// @brief Used to read settings from a macro file

@@ -123,40 +123,48 @@ const bool SiPMSensor::isInSensor(const int32_t r, const int32_t c) const {
 
 const std::pair<int32_t, int32_t> SiPMSensor::hitCell() const {
   int32_t row, col;
+  double x, y;
   const int32_t nSideCells = m_Properties.nSideCells() - 1;
 
   switch (m_Properties.hitDistribution()) {
-  case (SiPMProperties::HitDistribution::kUniform):
-    row = m_rng.randInteger(nSideCells);
-    col = m_rng.randInteger(nSideCells);
-    return std::make_pair(row, col);
 
-  case (SiPMProperties::HitDistribution::kCircle):
-    // Generate in circle
-    double x, y;
-    if (m_rng.Rand() < 0.95) {
-      do {
-        x = fma(m_rng.Rand(), 2, -1);
-        y = fma(m_rng.Rand(), 2, -1);
-      } while (x * x + y * y > 1);
-      row = ((x + 1) * m_Properties.nSideCells() / 2);
-      col = ((y + 1) * m_Properties.nSideCells() / 2);
-      // Generate outside
-    } else {
-      do {
-        x = fma(m_rng.Rand(), 2, -1);
-        y = fma(m_rng.Rand(), 2, -1);
-      } while (x * x + y * y < 1);
-      row = ((x + 1) * m_Properties.nSideCells() / 2);
-      col = ((y + 1) * m_Properties.nSideCells() / 2);
+    case (SiPMProperties::HitDistribution::kUniform):
+      row = m_rng.randInteger(nSideCells);
+      col = m_rng.randInteger(nSideCells);
+      return std::make_pair(row, col);
+
+    case (SiPMProperties::HitDistribution::kCircle):
+      if (m_rng.Rand() < 0.95) {  // In circle
+        do {
+          x = fma(m_rng.Rand(), 2, -1); // x in [-1,1]
+          y = fma(m_rng.Rand(), 2, -1); // y in [-1,1]
+        } while (x * x + y * y > 1);    // if in unitary circle
+        row = (x + 1) * m_Properties.nSideCells() / 2;
+        col = (y + 1) * m_Properties.nSideCells() / 2;
+      } else {  // Uniform
+        row = m_rng.randInteger(nSideCells);
+        col = m_rng.randInteger(nSideCells);
+      }
+      return std::make_pair(row, col);
+
+    case (SiPMProperties::HitDistribution::kGaussian):
+      x = m_rng.randNormal();
+      y = m_rng.randNormal();
+
+      if (x < 3 && y < 3){  // 95% of samples
+        row = (x/3 + 1) * m_Properties.nSideCells() / 2;
+        col = (y/3 + 1) * m_Properties.nSideCells() / 2;
+      } else {
+        row = m_rng.randInteger(nSideCells);
+        col = m_rng.randInteger(nSideCells);
+      }
+      return std::make_pair(row,col);
+
+    default:
+      row = m_rng.randInteger(nSideCells);
+      col = m_rng.randInteger(nSideCells);
+      return std::make_pair(row, col);
     }
-    return std::make_pair(row, col);
-
-  default:
-    row = m_rng.randInteger(nSideCells);
-    col = m_rng.randInteger(nSideCells);
-    return std::make_pair(row, col);
-  }
 }
 
 const std::vector<uint32_t> SiPMSensor::getCellIds() const {
