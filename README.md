@@ -8,7 +8,8 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/EdoPro98/SimSiPM)
 [![GitHub license](https://img.shields.io/github/license/EdoPro98/SimSiPM)](https://github.com/EdoPro98/SimSiPM/blob/master/LICENSE)
 
-![PyPI - Downloads](https://img.shields.io/pypi/dd/SiPM)
+[![Downloads](https://pepy.tech/badge/sipm)](https://pepy.tech/project/sipm)
+[![Downloads](https://pepy.tech/badge/sipm/week)](https://pepy.tech/project/sipm)
 
 ## Table of contents
 1. [Introduction](#introduction)  
