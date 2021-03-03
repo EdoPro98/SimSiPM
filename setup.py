@@ -7,8 +7,12 @@ from pybind11.setup_helpers import ParallelCompile
 ParallelCompile("NPY_NUM_BUILD_JOBS").install()
 
 
-__version__ = "1.0.2-alpha"
-extra_compile_args = ["-DNDEBUG", "-O3"]
+__version__ = "1.0.3-alpha"
+extra_compile_args = ["-DNDEBUG",
+                      "-O3",
+                      "-fomit-frame-pointer",
+                      "-ftree-vectorize"
+                      ]
 
 
 sources = []
@@ -34,7 +38,8 @@ setup(
     maintainer_email="edoardo.proserpio@gmail.com",
     url="https://github.com/EdoPro98/SimSiPM",
     description="Library for Silicon Photomultipliers simulation.",
-    long_description="Library for Silicon Photomultipliers simulation. Developed for high energy physics and particle phisics simulations.",
+    long_description="""Library for Silicon Photomultipliers simulation.
+                        Developed for high energy physics and particle phisics simulations.""",
     ext_modules=ext_modules,
     include_dirs=include_dirs,
     cmdclass={"build_ext": build_ext},
