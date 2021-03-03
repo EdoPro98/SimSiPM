@@ -1,6 +1,7 @@
 #include "SiPMProperties.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/iostream.h>
 
 namespace py = pybind11;
 using namespace sipm;
@@ -12,7 +13,7 @@ void SiPMPropertiesPy(py::module& m) {
   SiPMProperties
       .def(py::init<>())
       // .def("readSettings",&SiPMProperties::readSettings)
-      .def("dumpSettings", &SiPMProperties::dumpSettings)
+      .def("dumpSettings", &SiPMProperties::dumpSettings, py::call_guard<py::scoped_ostream_redirect, py::scoped_estream_redirect>())
       .def("nCells", &SiPMProperties::nCells)
       .def("nSideCells", &SiPMProperties::nSideCells)
       .def("nSignalPoints", &SiPMProperties::nSignalPoints)
@@ -82,5 +83,6 @@ void SiPMPropertiesPy(py::module& m) {
 
   py::enum_<SiPMProperties::HitDistribution>(SiPMProperties, "HitDistribution")
       .value("kUniform", SiPMProperties::HitDistribution::kUniform)
+      .value("kGaussian", SiPMProperties::HitDistribution::kGaussian)
       .value("kCircle", SiPMProperties::HitDistribution::kCircle);
 }
