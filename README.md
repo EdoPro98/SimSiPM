@@ -221,7 +221,7 @@ myProperties.setPdeSpectrum(wlen,pde);
 mySensor.addPhoton(photonTime, photonWlen);
 // or mySensor.addPhotons(photonTimes, photonWlens);
 ```
-<center><img src="/images/pde.png" width=500></center>
+<p align="center"><img src="/images/pde.png" width=500></p>
 
 The values inserted by the user are linearly interpolated to calculate the PDE for each wavelength so it is better to add a reasonable number of values.
 
@@ -235,7 +235,7 @@ myPropertie.setHitDistribution(sipm::SiPMProperties::HitDistribution::kUniform);
 
 #### Circular hit distribution
 In this case 95% of photons are placed in a circle centered in the sensor and with a diameter that is the same as the sensor's side lenght. The remaining 5% is distributed uniformly on the sensor.
-<center><img src="/images/circleHits.png" width=250></center>
+<p align="center"><img src="/images/circleHits.png" width=250></p>
 
 ```cpp
 myPropertie.setHitDistribution(sipm::SiPMProperties::HitDistribution::kCircle);
@@ -243,7 +243,7 @@ myPropertie.setHitDistribution(sipm::SiPMProperties::HitDistribution::kCircle);
 
 #### Gaussian hit distribution
 In this case 95% of the photons are distributed following a gaussian distribution centered in the sensor. The remaining 5% is distributed uniformly on the sensor.  
-<center><img src="/images/gaussianHits.png" width=250></center>
+<p align="center"><img src="/images/gaussianHits.png" width=250></p>
 
 ```cpp
 myPropertie.setHitDistribution(sipm::SiPMProperties::HitDistribution::kGaussian);
