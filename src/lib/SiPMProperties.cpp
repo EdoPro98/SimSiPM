@@ -111,15 +111,19 @@ void SiPMProperties::dumpSettings() const {
   std::cout << "Pitch: " << m_Pitch << " um\n";
   std::cout << "Number of cells: " << nCells() << "\n";
   switch (m_HitDistribution) {
-  case (HitDistribution::kUniform):
-    std::cout << "Hit distribution: "
-              << "Uniform"
-              << "\n";
-  case (HitDistribution::kCircle):
-    std::cout << "Hit distribution: "
-              << "Circle"
-              << "\n";
-  }
+    case (HitDistribution::kUniform):
+      std::cout << "Hit distribution: "
+                << "Uniform"
+                << "\n";
+    case (HitDistribution::kCircle):
+      std::cout << "Hit distribution: "
+                << "Circle"
+                << "\n";
+    case (HitDistribution::kGaussian):
+      std::cout << "Hit distribution: "
+                << "Gaussian"
+                << "\n";
+    }
   std::cout << "Cell recovery time: " << m_RecoveryTime << " nm\n";
   if (m_HasDcr) {
     std::cout << "Dark count rate: " << m_Dcr / 1e3 << " kHz\n";
@@ -138,7 +142,7 @@ void SiPMProperties::dumpSettings() const {
   } else {
     std::cout << "Afterpulse probability: Off\n";
   }
-  std::cout << "Cell-to-cell gain variation: " << m_Ccgv << " %\n";
+  std::cout << "Cell-to-cell gain variation: " << m_Ccgv*100 << " %\n";
   std::cout << "SNR: " << m_SnrdB << " dB\n";
   if (m_HasPde == PdeType::kSimplePde) {
     std::cout << "Photon detection efficiency: " << m_Pde * 100 << " %\n";

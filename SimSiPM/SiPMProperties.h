@@ -41,7 +41,7 @@ public:
     kGaussian  ///< 95% of photons have a gaussian distribution
   };
 
-  /// @brief Used to read settings from a macro file
+  /// @brief Used to read settings from a json file
   void readSettings(std::string&);  ///< @todo Still to implement
 
   /// @brief Prints current settings of the sensor
