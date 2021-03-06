@@ -11,14 +11,15 @@ __version__ = "1.0.3-alpha"
 extra_compile_args = ["-DNDEBUG",
                       "-O3",
                       "-fomit-frame-pointer",
-                      "-ftree-vectorize"
+                      "-ftree-vectorize",
+                      "-ffast-math"
                       ]
 
 
 sources = []
-sources.extend(glob("src/**/*.cpp"))
+sources.extend(glob("src/*.cpp"))
 sources.extend(glob("python/*.cpp"))
-include_dirs = ["SimSiPM/", "src/components/"]
+include_dirs = ["include/"]
 
 ext_modules = [
     Pybind11Extension("SiPM",
