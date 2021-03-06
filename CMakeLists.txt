@@ -2,10 +2,6 @@ cmake_minimum_required(VERSION 3.9)
 project(SimSiPM VERSION 1 DESCRIPTION "Library for SiPM simulation" LANGUAGES CXX)
 include(GNUInstallDirs)
 
-set(CMAKE_CXX_STANDARD 14 CACHE STRING "Set C++ standard")
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CXX_EXTENSIONS OFF)
-
 set(COMPILE_PYTHON_BINDINGS OFF CACHE BOOL "Compile python bindings")
 
 # Optimizations
@@ -23,33 +19,22 @@ else(NOT CMAKE_BUILD_TYPE)
 	endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif(NOT CMAKE_BUILD_TYPE)
 
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE CACHE BOOL "Turn on interprocedural optimizations")
-
 
 # Get files
-file(GLOB_RECURSE sources "src/*.cpp")
-file(GLOB_RECURSE headers "src/*.h")
-file(GLOB_RECURSE pythonsources "python/*.cpp")
-
-file(GLOB_RECURSE public_headers "SimSiPM/*.h")
-file(GLOB_RECURSE private_headers "src/*.h")
-
+file(GLOB_RECURSE src "src/*.cpp")
+file(GLOB_RECURSE include "src/*.h")
+file(GLOB_RECURSE pysrc "python/*.cpp")
 
 # Library
 add_library(sipm SHARED
-	${sources}
-	${headers}
+	${src}
+	${include}
 )
 
-
 # Include files
-target_include_directories(sipm PUBLIC "SimSiPM/")
-target_include_directories(sipm PRIVATE "src/components/")
-
-set_property(TARGET sipm PROPERTY PUBLIC_HEADER SimSiPM/SiPM.h)
-set_property(TARGET sipm PROPERTY PUBLIC_HEADER ${public_headers})
-set_property(TARGET sipm PROPERTY PRIVATE_HEADER ${private_headers})
+target_include_directories(sipm PUBLIC "include/")
 set_property(TARGET sipm PROPERTY VERSION 1)
+set_property(TARGET sipm PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 # Install
 install(TARGETS sipm
@@ -58,12 +43,13 @@ install(TARGETS sipm
     PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-
 if (COMPILE_PYTHON_BINDINGS)
 	find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 	find_package(pybind11 CONFIG REQUIRED)
-	pybind11_add_module(SiPM SHARED ${pythonsources} ${sources})
-	target_include_directories(SiPM PRIVATE "SimSiPM/" "src/components")
+	pybind11_add_module(SiPM SHARED ${pysrc} ${src})
+	target_include_directories(SiPM PRIVATE "include")
+	set_property(TARGET SiPM PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+
 
 	execute_process(
   COMMAND "${PYTHON_EXECUTABLE}" -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"

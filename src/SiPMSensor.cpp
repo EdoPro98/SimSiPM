@@ -148,8 +148,8 @@ const std::pair<int32_t, int32_t> SiPMSensor::hitCell() const {
       return std::make_pair(row, col);
 
     case (SiPMProperties::HitDistribution::kGaussian):
-      x = m_rng.randNormal();
-      y = m_rng.randNormal();
+      x = m_rng.randGaussian(0,1);
+      y = m_rng.randGaussian(0,1);
 
       if (x < 3 && y < 3){  // 95% of samples
         row = (x/3 + 1) * m_Properties.nSideCells() / 2;

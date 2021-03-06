@@ -97,8 +97,6 @@ public:
   inline uint32_t randInteger(const uint32_t) __attribute__((hot));
   // Random gaussian given mean and sigma
   double randGaussian(const double, const double) __attribute__((hot));
-  // Random gaussian given mean and sigma
-  double randNormal() __attribute__((hot));
   // Random exponential given mean
   double randExponential(const double) __attribute__((hot));
   // Random poisson given mean
