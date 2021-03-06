@@ -35,6 +35,7 @@ add_library(sipm SHARED
 target_include_directories(sipm PUBLIC "include/")
 set_property(TARGET sipm PROPERTY VERSION 1)
 set_property(TARGET sipm PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+set_property(TARGET sipm PROPERTY CXX_STANDARD 17)
 
 # Install
 install(TARGETS sipm
@@ -48,7 +49,7 @@ if (COMPILE_PYTHON_BINDINGS)
 	find_package(pybind11 CONFIG REQUIRED)
 	pybind11_add_module(SiPM SHARED ${pysrc} ${src})
 	target_include_directories(SiPM PRIVATE "include")
-	set_property(TARGET SiPM PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+	set_property(TARGET SiPM PROPERTY CXX_STANDARD 17)
 
 
 	execute_process(
