@@ -1,6 +1,8 @@
 # SimSiPM
 ![GitHub release](https://img.shields.io/github/v/release/EdoPro98/SimSiPM?include_prereleases)
 
+<p align="center"><img src="/images/signals.svg" width=500></p>
+
 ![GCC](https://github.com/EdoPro98/SimSiPM/workflows/GCC/badge.svg?branch=master&event=push)
 ![AppleClang](https://github.com/EdoPro98/SimSiPM/workflows/AppleClang/badge.svg?branch=master&event=push)
 
@@ -8,8 +10,8 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/EdoPro98/SimSiPM)
 [![GitHub license](https://img.shields.io/github/license/EdoPro98/SimSiPM)](https://github.com/EdoPro98/SimSiPM/blob/master/LICENSE)
 
-[![Downloads](https://pepy.tech/badge/sipm)](https://pepy.tech/project/sipm)
-[![Downloads](https://pepy.tech/badge/sipm/week)](https://pepy.tech/project/sipm)
+[![Downloads](https://static.pepy.tech/personalized-badge/sipm?period=total&units=international_system&left_color=grey&right_color=blue&left_text=PyPi%20Downloads)](https://pepy.tech/project/sipm)
+[![Downloads](https://static.pepy.tech/personalized-badge/sipm?period=week&units=international_system&left_color=grey&right_color=blue&left_text=PyPi%20Downloads%20/%20Week)](https://pepy.tech/project/sipm)
 
 ## Table of contents
 1. [Introduction](#introduction)  
@@ -112,7 +114,7 @@ It is also possible to add all photons at once
 ```cpp
 std::vector<double> times = {13.12, 25.45, 33.68};
 mySensor.resetState();
-mySensor.addPhoton(times);    // Sets photon times (times are in ns) (not appending)
+mySensor.addPhotons(times);    // Sets photon times (times are in ns) (not appending)
 mySensor.runEvent();          // Runs the simulation
 ```
 
