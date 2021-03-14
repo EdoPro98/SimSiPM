@@ -325,7 +325,7 @@ void SiPMSensor::calculateSignalAmplitudes() {
   sortHits();
   const std::vector<uint32_t> cellId = getCellIds();
   const std::unordered_set<uint32_t> uniqueCellId(cellId.begin(), cellId.end());
-  const double cellRecovery = m_Properties.recoveryTime();
+  const double tauRecovery = 1 / m_Properties.recoveryTime();
 
   for (auto itr = uniqueCellId.begin(); itr != uniqueCellId.end(); ++itr) {
     // If cell hitted more than once
@@ -337,7 +337,7 @@ void SiPMSensor::calculateSignalAmplitudes() {
             previousHitTime = hit->time();
           } else {
             double delay = hit->time() - previousHitTime;
-            hit->amplitude() = 1 - exp(-delay / cellRecovery);
+            hit->amplitude() = 1 - exp(-delay * tauRecovery);
             previousHitTime = hit->time();
           }
         }
@@ -358,14 +358,14 @@ void SiPMSensor::generateSignal() {
     const double amplitude = hit->amplitude() * m_rng.randGaussian(1, m_Properties.ccgv());
 
     const __m256d __amplitude = _mm256_set1_pd(amplitude);
-    uint32_t i = time;
-    for (; i < nSignalPoints - 4; i += 4) {
+
+    for (uint32_t i = time; i < nSignalPoints - 4; i += 4) {
       __m256d __signal = _mm256_loadu_pd(&m_Signal[i]);
       __m256d __shape = _mm256_loadu_pd(&m_SignalShape[i - time]);
       __signal = _mm256_fmadd_pd(__shape, __amplitude, __signal);
       _mm256_storeu_pd(&m_Signal[i], __signal);
     }
-    for (; i < nSignalPoints; ++i) {
+    for (uint32_t i = nSignalPoints; i < nSignalPoints; ++i) {
       m_Signal[i] += m_SignalShape[i - time] * amplitude;
     }
   }
