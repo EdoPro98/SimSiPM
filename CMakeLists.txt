@@ -22,7 +22,7 @@ endif(NOT CMAKE_BUILD_TYPE)
 
 # Get files
 file(GLOB_RECURSE src "src/*.cpp")
-file(GLOB_RECURSE include "src/*.h")
+file(GLOB_RECURSE include "include/*.h")
 file(GLOB_RECURSE pysrc "python/*.cpp")
 
 # Library
@@ -32,23 +32,23 @@ add_library(sipm SHARED
 )
 
 # Include files
-target_include_directories(sipm PUBLIC "include/")
+target_include_directories(sipm PUBLIC "include")
 set_property(TARGET sipm PROPERTY VERSION 1)
 set_property(TARGET sipm PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 set_property(TARGET sipm PROPERTY CXX_STANDARD 17)
+set_target_properties(sipm PROPERTIES PUBLIC_HEADER "${include}")
 
 # Install
 install(TARGETS sipm
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 if (COMPILE_PYTHON_BINDINGS)
 	find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 	find_package(pybind11 CONFIG REQUIRED)
 	pybind11_add_module(SiPM SHARED ${pysrc} ${src})
-	target_include_directories(SiPM PRIVATE "include")
+	target_include_directories(SiPM PRIVATE "include/")
 	set_property(TARGET SiPM PROPERTY CXX_STANDARD 17)
 
 
