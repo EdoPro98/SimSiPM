@@ -48,88 +48,88 @@ public:
   void dumpSettings() const;
 
   /// @brief Returns total number of cells in the sensor
-  const uint32_t nCells() const;
+  uint32_t nCells() const;
 
   /// @brief Returns number of cells in the side of the sensor
-  const uint32_t nSideCells() const;
+  uint32_t nSideCells() const;
 
   /// @brief Returns total number of points in the signal
-  const uint32_t nSignalPoints() const;
+  uint32_t nSignalPoints() const;
 
   /// @brief Returns @ref HitDistribution type of the sensor
-  const HitDistribution hitDistribution() const { return m_HitDistribution; }
+  HitDistribution hitDistribution() const { return m_HitDistribution; }
 
   /// @brief Returns total signal length in ns
-  const double signalLength() const { return m_SignalLength; }
+  double signalLength() const { return m_SignalLength; }
 
   /// @brief Returns sampling time considered by the sensor in ns
-  const double sampling() const { return m_Sampling; }
+  double sampling() const { return m_Sampling; }
 
   /// @brief Returns rising time constant @sa SiPMSensor::signalShape
-  const double risingTime() const { return m_RiseTime; }
+  double risingTime() const { return m_RiseTime; }
 
   /// @brief Returns falling time constant @sa SiPMSensor::signalShape
-  const double fallingTimeFast() const { return m_FallTimeFast; }
+  double fallingTimeFast() const { return m_FallTimeFast; }
 
   /// @brief Returns falling time constant of slow component @sa
   /// SiPMSensor::signalShape
-  const double fallingTimeSlow() const { return m_FallTimeSlow; }
+  double fallingTimeSlow() const { return m_FallTimeSlow; }
 
   /// @brief Returns weight of slow component of the signal @sa
   /// SiPMSensor::signalShape.
-  const double slowComponentFraction() const { return m_SlowComponentFraction; }
+  double slowComponentFraction() const { return m_SlowComponentFraction; }
 
   /// @brief Returns recovery time of SiPM cells.
-  const double recoveryTime() const { return m_RecoveryTime; }
+  double recoveryTime() const { return m_RecoveryTime; }
 
   /// @brief Returns DCR value.
-  const double dcr() const { return m_Dcr; }
+  double dcr() const { return m_Dcr; }
 
   /// @brief Returns XT value.
-  const double xt() const { return m_Xt; }
+  double xt() const { return m_Xt; }
 
   /// @brief Returns AP value.
-  const double ap() const { return m_Ap; }
+  double ap() const { return m_Ap; }
 
   /// @brief Returns fast time constant for AP.
-  const double tauApFast() const { return m_TauApFastComponent; }
+  double tauApFast() const { return m_TauApFastComponent; }
 
   /// @brief Returns slow time constant for AP.
-  const double tauApSlow() const { return m_TauApSlowComponent; }
+  double tauApSlow() const { return m_TauApSlowComponent; }
 
   /// @brief Returns fraction of AP generated as slow.
-  const double apSlowFraction() const { return m_ApSlowFraction; }
+  double apSlowFraction() const { return m_ApSlowFraction; }
 
   /// @brief Returns value of cell-to-cell gain variation.
-  const double ccgv() const { return m_Ccgv; }
+  double ccgv() const { return m_Ccgv; }
 
   /// @brief Returns SNR in dB.
-  const double snrdB() const { return m_SnrdB; }
+  double snrdB() const { return m_SnrdB; }
 
   /// @brief Returns RMS of the noise.
-  const double snrLinear() const;
+  double snrLinear() const;
 
   /// @brief Returns value of PDE if PdeType::kSimplePde is set.
-  const double pde() const { return m_Pde; }
+  double pde() const { return m_Pde; }
 
   /// @brief Returns wavelength-PDE values if PdeType::kSpectrumPde is set
-  const std::map<double, double> pdeSpectrum() const;
+  std::map<double, double> pdeSpectrum() const;
 
   /// @brief Returns type of PDE calculation used.
-  const PdeType pdeType() { return m_HasPde; }
+  PdeType pdeType() { return m_HasPde; }
 
   /// @brief Returns true if DCR is considered.
-  const bool hasDcr() const { return m_HasDcr; }
+  bool hasDcr() const { return m_HasDcr; }
 
   /// @brief Returns true if XT is considered.
-  const bool hasXt() const { return m_HasXt; }
+  bool hasXt() const { return m_HasXt; }
 
   /// @brief Returns true if AP is considered.
-  const bool hasAp() const { return m_HasAp; }
+  bool hasAp() const { return m_HasAp; }
 
   /// @brief Returns true if slow component of the signal is considered.
   /// @sa SiPMSensor::signalShape
-  const bool hasSlowComponent() const { return m_HasSlowComponent; }
+  bool hasSlowComponent() const { return m_HasSlowComponent; }
 
   /// @brief Sets a property using its name
   void setProperty(const std::string&, const double);

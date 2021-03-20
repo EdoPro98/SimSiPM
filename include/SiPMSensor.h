@@ -113,27 +113,27 @@ private:
    * The three exponential model adds another falling exponential term with a
    * given weight.
    */
-  const std::vector<double> signalShape() const;
+  std::vector<double> signalShape() const;
   /// @brief Returns the PDE value corresponding to the given wavelength.
   /** Uses the user defined spectral response to evaluate the PDE of photons
    * gien theyr wavelength. PDE values are calculated by linearly interpolating
    * the values stored in @ref SiPMProperties::m_PdeSpectrum.
    */
-  const double evaluatePde(const double) const;
+  double evaluatePde(const double) const;
   /// @brief Return wether the photon is detected given a PDE value.
-  const bool isDetected(const double aPde) const { return m_rng.Rand() < aPde; }
+  bool isDetected(const double aPde) const { return m_rng.Rand() < aPde; }
   /** @brief Return wether the generated SiPMHit coordinates are allowed on the
    * sensor's surface.
    */
-  const bool isInSensor(const int32_t, const int32_t) const;
+  bool isInSensor(const int32_t, const int32_t) const;
   /// @brief Generates coordinates for a new hit.
   /** This metod associates a photoelectron with a sipm cell. The coordinates of
    * the hitted cell are generated randomly and  accordingly to
    * @ref SiPMProperties::HitDistribution.
    */
-  const std::pair<int32_t, int32_t> hitCell() const;
+  std::pair<int32_t, int32_t> hitCell() const;
   /// @brief Returns the id's of all hitted cells.
-  const std::vector<uint32_t> getCellIds() const;
+  std::vector<uint32_t> getCellIds() const;
   /// @brief Inplace sorting of hitted cells.
   void sortHits() { std::sort(m_Hits.begin(), m_Hits.end()); }
 

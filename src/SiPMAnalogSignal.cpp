@@ -13,7 +13,7 @@ namespace sipm {
 @param intgate    Length of the integration gate
 @param threshold  Threshold to use for one-suppression
 */
-const double SiPMAnalogSignal::integral(const double intstart, const double intgate, const double threshold) const {
+double SiPMAnalogSignal::integral(const double intstart, const double intgate, const double threshold) const {
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
@@ -29,7 +29,7 @@ const double SiPMAnalogSignal::integral(const double intstart, const double intg
 @param intgate    Length of the integration gate
 @param threshold  Threshold to use for one-suppression
 */
-const double SiPMAnalogSignal::peak(const double intstart, const double intgate, const double threshold) const {
+double SiPMAnalogSignal::peak(const double intstart, const double intgate, const double threshold) const {
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
@@ -45,7 +45,7 @@ const double SiPMAnalogSignal::peak(const double intstart, const double intgate,
 @param intgate    Length of the integration gate
 @param threshold  Threshold to use for one-suppression
 */
-const double SiPMAnalogSignal::tot(const double intstart, const double intgate, const double threshold) const {
+double SiPMAnalogSignal::tot(const double intstart, const double intgate, const double threshold) const {
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
@@ -63,7 +63,7 @@ const double SiPMAnalogSignal::tot(const double intstart, const double intgate, 
 @param intgate    Length of the integration gate
 @param threshold  Threshold to use for one-suppression
 */
-const double SiPMAnalogSignal::toa(const double intstart, const double intgate, const double threshold) const {
+double SiPMAnalogSignal::toa(const double intstart, const double intgate, const double threshold) const {
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
@@ -85,7 +85,7 @@ const double SiPMAnalogSignal::toa(const double intstart, const double intgate, 
 @param intgate    Length of the integration gate
 @param threshold  Threshold to use for one-suppression
 */
-const double SiPMAnalogSignal::top(const double intstart, const double intgate, const double threshold) const {
+double SiPMAnalogSignal::top(const double intstart, const double intgate, const double threshold) const {
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);

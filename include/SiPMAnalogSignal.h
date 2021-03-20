@@ -43,27 +43,27 @@ public:
   /// @brief Used to access signal elements as if it is a std::vector
   double& operator[](const uint32_t i) noexcept { return m_Waveform[i]; }
   /// @brief Used to access signal elements as if it is a std::vector
-  const double& operator[](const uint32_t i) const noexcept { return m_Waveform[i]; }
+  const double operator[](const uint32_t i) const noexcept { return m_Waveform[i]; }
 
   /// @brief Returns the size of the vector containing the signal
-  const uint32_t size() const { return m_Waveform.size(); }
+  uint32_t size() const { return m_Waveform.size(); }
   /// @brief Clears all elements of the vector containing the signal
-  const void clear() { return m_Waveform.clear(); }
+  void clear() { return m_Waveform.clear(); }
   /// @brief Returns the sampling time of the signal in ns
-  const double sampling() const { return m_Sampling; }
+  double sampling() const { return m_Sampling; }
   /// @brief Returns a std::vector containing the sampled waveform
   const std::vector<double>& waveform() const { return m_Waveform; }
 
   /// @brief Returns integral of the signal
-  const double integral(const double, const double, const double) const;
+  double integral(const double, const double, const double) const;
   /// @brief Returns peak of the signal
-  const double peak(const double, const double, const double) const;
+  double peak(const double, const double, const double) const;
   /// @brief Returns time over threshold of the signal
-  const double tot(const double, const double, const double) const;
+  double tot(const double, const double, const double) const;
   /// @brief Returns time of arrival of the signal
-  const double toa(const double, const double, const double) const;
+  double toa(const double, const double, const double) const;
   /// @brief Returns time of peak
-  const double top(const double, const double, const double) const;
+  double top(const double, const double, const double) const;
 
   /// @brief Sets the sampligng time of the signal
   void setSampling(const double x) { m_Sampling = x; }

@@ -48,7 +48,7 @@ if (COMPILE_PYTHON_BINDINGS)
 	find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 	find_package(pybind11 CONFIG REQUIRED)
 	pybind11_add_module(SiPM SHARED ${pysrc} ${src})
-	target_include_directories(SiPM PRIVATE "include/")
+	target_include_directories(SiPM PUBLIC "include/")
 	set_property(TARGET SiPM PROPERTY CXX_STANDARD 17)
 
 

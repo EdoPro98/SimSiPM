@@ -41,22 +41,22 @@ public:
    * Hits are sorted based on theyr time parameter:
    * @f[Hit_1 < Hit_2 \Leftrightarrow Hit_1.time < Hit_2.time @f]
    */
-  const bool operator<(const SiPMHit& aHit) const noexcept { return m_Time < aHit.m_Time; }
+  bool operator<(const SiPMHit& aHit) const noexcept { return m_Time < aHit.m_Time; }
 
   /// @brief Returns hit time
-  const double time() const { return m_Time; }
+  double time() const { return m_Time; }
   /// @brief Returns row of hitted cell
-  const uint32_t row() const { return m_Row; }
+  uint32_t row() const { return m_Row; }
   /// @brief Returns column of hitted cell
-  const uint32_t col() const { return m_Col; }
+  uint32_t col() const { return m_Col; }
   /// @brief Returns a unique id to identify a hitted cell
-  const uint32_t id() const { return m_Id; }
+  uint32_t id() const { return m_Id; }
   /// @brief Returns amplitude of the signal produced by the hit
-  const double amplitude() const { return m_Amplitude; }
+  double amplitude() const { return m_Amplitude; }
   /// @brief Used to modify the amplitude if needed
   double& amplitude() { return m_Amplitude; }
   /// @brief Returns hit type to identify the hits
-  const HitType& hitType() const { return m_HitType; }
+  HitType hitType() const { return m_HitType; }
 
 private:
   /// @brief Creates an unique id from two integers (based on Cantor pairing

@@ -24,10 +24,10 @@ public:
   /// @brief SiPMAdc contructor with given parameters
   SiPMAdc(const uint32_t, const double, const double);
 
-  const uint32_t nBits() const { return m_Nbits; }
-  const double range() const { return m_Range; }
-  const double gain() const { return m_Gain; }
-  const double jitter() const { return m_Jitter; }
+  uint32_t nBits() const { return m_Nbits; }
+  double range() const { return m_Range; }
+  double gain() const { return m_Gain; }
+  double jitter() const { return m_Jitter; }
 
   /// @brief Digitizes an analog signalt to a digital one
   SiPMDigitalSignal digitize(const SiPMAnalogSignal&) const;

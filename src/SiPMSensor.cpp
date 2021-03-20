@@ -71,7 +71,7 @@ void SiPMSensor::resetState() {
   m_Signal.clear();
 }
 
-const std::vector<double> SiPMSensor::signalShape() const {
+std::vector<double> SiPMSensor::signalShape() const {
   const int32_t nSignalPoints = m_Properties.nSignalPoints();
   const double sampling = m_Properties.sampling();
   const double tr = m_Properties.risingTime() / sampling;
@@ -100,7 +100,7 @@ const std::vector<double> SiPMSensor::signalShape() const {
   return lSignalShape;
 }
 
-const double SiPMSensor::evaluatePde(const double aWavelength) const {
+double SiPMSensor::evaluatePde(const double aWavelength) const {
   const std::map<double, double> pde = m_Properties.pdeSpectrum();
   auto p1 = pde.upper_bound(aWavelength);
   if (p1 == pde.end()) {
@@ -116,12 +116,12 @@ const double SiPMSensor::evaluatePde(const double aWavelength) const {
   return pdeResult;
 }
 
-const bool SiPMSensor::isInSensor(const int32_t r, const int32_t c) const {
+bool SiPMSensor::isInSensor(const int32_t r, const int32_t c) const {
   const int32_t nSideCells = m_Properties.nSideCells() - 1;
   return (r >= 0) && (c >= 0) && (r < nSideCells) && (c < nSideCells);
 }
 
-const std::pair<int32_t, int32_t> SiPMSensor::hitCell() const {
+std::pair<int32_t, int32_t> SiPMSensor::hitCell() const {
   int32_t row, col;
   double x, y;
   const int32_t nSideCells = m_Properties.nSideCells() - 1;
@@ -167,7 +167,7 @@ const std::pair<int32_t, int32_t> SiPMSensor::hitCell() const {
     }
 }
 
-const std::vector<uint32_t> SiPMSensor::getCellIds() const {
+std::vector<uint32_t> SiPMSensor::getCellIds() const {
   std::vector<uint32_t> cellId;
   cellId.reserve(m_Hits.size());
   for (auto hit = m_Hits.begin(); hit != m_Hits.end(); ++hit) {

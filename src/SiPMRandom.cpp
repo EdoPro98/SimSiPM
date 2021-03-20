@@ -47,9 +47,7 @@ void Xorshift256plus::jump() {
  * @param mu Mean value of the poisson distribution
  */
 uint32_t SiPMRandom::randPoisson(const double mu) {
-  if (mu == 0) {
-    return 0;
-  }
+  if (mu == 0) { return 0; }
   const double q = exp(-mu);
   double p = 1;
   int32_t out = -1;
@@ -86,9 +84,9 @@ double SiPMRandom::randGaussian(const double mu, const double sigma) {
     do {
       u = fma(Rand(), 2.0, -1.0);
       v = fma(Rand(), 2.0, -1.0);
-      s = u * u + v * v;
+      s = (u * u) + (v * v);
     } while (s >= 1.0 || s == 0.0);
-    s = sqrt(-2.0 * log(s) / s);
+    s = sqrt(log(s) * (-2./s));
     spare = v * s;
     hasSpare = true;
     return fma(u * s, sigma, mu);
@@ -99,14 +97,14 @@ double SiPMRandom::randGaussian(const double mu, const double sigma) {
  * @param n Number of values to generate
  */
 std::vector<double> SiPMRandom::Rand(const uint32_t n) {
-  std::vector<double> out(n);
-  alignas(64) uint64_t temp[n];
+  std::vector<double> out;
+  out.reserve(n);
 
   for (uint32_t i = 0; i < n; ++i) {
-    temp[i] = m_rng();
+    out[i] = m_rng();
   }
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = temp[i] * M_UINT64_MAX_RCP;
+    out[i] *= M_UINT64_MAX_RCP;
   }
   return out;
 }
@@ -117,9 +115,7 @@ std::vector<double> SiPMRandom::Rand(const uint32_t n) {
  * @param n Number of values to generate
  */
 std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma, const uint32_t n) {
-  if (n == 0) {
-    return {};
-  }
+  if (n == 0){ return {}; }
   alignas(64) double out[n];
   alignas(64) double ss[n];
   alignas(64) double uu[n];
@@ -129,9 +125,9 @@ std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma
     do {
       u = fma(Rand(), 2.0, -1.0);
       v = fma(Rand(), 2.0, -1.0);
-      s = u * u + v * v;
+      s = (u * u) + (v * v);
     } while (s >= 1.0 || s == 0.0);
-    ss[i] = sqrt(-2.0 * log(s) / s);
+    ss[i] = sqrt(log(s) * (-2./s));
     ss[i + 1] = ss[i];
     uu[i] = u;
     uu[i + 1] = v;
@@ -143,17 +139,22 @@ std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma
   return res;
 }
 
+/** @brief Returns a random integer in range [0,max]
+ * @param max Maximum value of integer to generate
+ */
+uint32_t SiPMRandom::randInteger(const uint32_t max) { return static_cast<uint32_t>(Rand() * (max + 1)); }
+
 /**
  * @param max Max value to generate
  * @param n Number of values to generate
  */
 std::vector<uint32_t> SiPMRandom::randInteger(const uint32_t max, const uint32_t n) {
-  alignas(64) uint32_t temp[n];
+  std::vector<uint32_t> out;
+  out.reserve(n);
 
   for (uint32_t i = 0; i < n; ++i) {
-    temp[i] = static_cast<uint32_t>(Rand() * (max + 1));
+    out[i] = static_cast<uint32_t>(Rand() * (max + 1));
   }
-  std::vector<uint32_t> out(temp, temp + n);
   return out;
 }
 }  // namespace sipm

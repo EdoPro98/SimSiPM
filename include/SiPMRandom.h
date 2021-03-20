@@ -53,7 +53,7 @@ public:
   void seed(uint64_t);
 
 private:
-  uint64_t s[4];
+  alignas(64) uint64_t s[4];
 };
 
 inline uint64_t Xorshift256plus::operator()() noexcept {
@@ -94,7 +94,7 @@ public:
   inline double Rand() __attribute__((hot));
 
   // Uniform integer in range [0-max]
-  inline uint32_t randInteger(const uint32_t) __attribute__((hot));
+  uint32_t randInteger(const uint32_t) __attribute__((hot));
   // Random gaussian given mean and sigma
   double randGaussian(const double, const double) __attribute__((hot));
   // Random exponential given mean
@@ -116,11 +116,6 @@ private:
 
 /** Returns a uniform random in range [0,1] */
 inline double SiPMRandom::Rand() { return m_rng() * M_UINT64_MAX_RCP; }
-
-/** @brief Returns a random integer in range [0,max]
- * @param max Maximum value of integer to generate
- */
-inline uint32_t SiPMRandom::randInteger(const uint32_t max) { return static_cast<uint32_t>(Rand() * (max + 1)); }
 
 }  // namespace sipm
 #endif /* SIPM_RANDOM_H */

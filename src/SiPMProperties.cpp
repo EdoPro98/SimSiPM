@@ -6,7 +6,7 @@
 namespace sipm {
 
 // Getters
-const uint32_t SiPMProperties::nCells() const {
+uint32_t SiPMProperties::nCells() const {
   if ((m_SideCells == 0) || (m_Ncells == 0)) {
     m_SideCells = 1000 * m_Size / m_Pitch;
     m_Ncells = m_SideCells * m_SideCells;
@@ -14,7 +14,7 @@ const uint32_t SiPMProperties::nCells() const {
   return m_Ncells;
 }
 
-const uint32_t SiPMProperties::nSideCells() const {
+uint32_t SiPMProperties::nSideCells() const {
   if ((m_SideCells == 0) || (m_Ncells == 0)) {
     m_SideCells = 1000 * m_Size / m_Pitch;
     m_Ncells = m_SideCells * m_SideCells;
@@ -22,21 +22,21 @@ const uint32_t SiPMProperties::nSideCells() const {
   return m_SideCells;
 }
 
-const uint32_t SiPMProperties::nSignalPoints() const {
+uint32_t SiPMProperties::nSignalPoints() const {
   if (m_SignalPoints == 0) {
     m_SignalPoints = m_SignalLength / m_Sampling;
   }
   return m_SignalPoints;
 }
 
-const double SiPMProperties::snrLinear() const {
+double SiPMProperties::snrLinear() const {
   if (m_SnrLinear == 0) {
     m_SnrLinear = pow(10, -m_SnrdB / 20);
   }
   return m_SnrLinear;
 }
 
-const std::map<double, double> SiPMProperties::pdeSpectrum() const { return m_PdeSpectrum; }
+std::map<double, double> SiPMProperties::pdeSpectrum() const { return m_PdeSpectrum; }
 
 // Setters
 void SiPMProperties::setProperty(const std::string& aProp, const double aPropValue) {

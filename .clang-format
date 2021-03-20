@@ -1,7 +1,7 @@
 ---
 # FCCSW Clang Format YAML configuration
 Language:        Cpp
-Standard: 		 Cpp11
+Standard: 		 Cpp17
 AccessModifierOffset: -2
 ConstructorInitializerIndentWidth: 4
 AlignAfterOpenBracket: true
@@ -37,7 +37,7 @@ PenaltyReturnTypeOnItsOwnLine: 60
 PointerBindsToType: true
 SpacesBeforeTrailingComments: 2
 Cpp11BracedListStyle: true
-Standard:        Cpp11
+Standard:        Cpp17
 IndentWidth:     2
 TabWidth:        2
 UseTab:          Never
