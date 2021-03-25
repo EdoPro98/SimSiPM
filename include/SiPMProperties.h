@@ -16,6 +16,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <fstream>
 
 #ifndef SIPM_SIPMPROPERTIES_H
 #define SIPM_SIPMPROPERTIES_H

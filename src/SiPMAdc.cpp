@@ -2,15 +2,12 @@
 
 #include <algorithm>
 #include <math.h>
-#include <vector>
-
 #ifdef __AVX2__
 #include <immintrin.h>
 #endif
 
 #include "SiPMRandom.h"
 
-#include <iostream>
 
 namespace sipm {
 

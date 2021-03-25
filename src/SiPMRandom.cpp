@@ -59,6 +59,8 @@ uint32_t SiPMRandom::randPoisson(const double mu) {
   return out;
 }
 
+// SCALAR //
+
 /** @brief Returns a value from a exponential distribution given its mean value.
  * @param mu Mean value of the exponential distribution
  */
@@ -78,27 +80,34 @@ double SiPMRandom::randGaussian(const double mu, const double sigma) {
 
   if (hasSpare) {
     hasSpare = false;
-    return fma(spare, sigma, mu);
+    return spare * sigma + mu;
   } else {
     double u, v, s;
     do {
-      u = fma(Rand(), 2.0, -1.0);
-      v = fma(Rand(), 2.0, -1.0);
+      u = Rand() * 2.0 - 1.0;
+      v = Rand() * 2.0 - 1.0;
       s = (u * u) + (v * v);
     } while (s >= 1.0 || s == 0.0);
     s = sqrt(log(s) * (-2./s));
     spare = v * s;
     hasSpare = true;
-    return fma(u * s, sigma, mu);
+    return u * s * sigma + mu;
   }
 }
 
+
+/** @brief Returns a random integer in range [0,max]
+ * @param max Maximum value of integer to generate
+ */
+uint32_t SiPMRandom::randInteger(const uint32_t max) { return static_cast<uint32_t>(Rand() * (max + 1)); }
+
+
+// VECTORS //
 /**
  * @param n Number of values to generate
  */
 std::vector<double> SiPMRandom::Rand(const uint32_t n) {
-  std::vector<double> out;
-  out.reserve(n);
+  std::vector<double> out(n);
 
   for (uint32_t i = 0; i < n; ++i) {
     out[i] = m_rng();
@@ -108,6 +117,7 @@ std::vector<double> SiPMRandom::Rand(const uint32_t n) {
   }
   return out;
 }
+
 
 /**
  * @param mu Mean value of the gaussuan
@@ -123,10 +133,11 @@ std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma
   for (uint32_t i = 0; i < n - 1; i += 2) {
     double s, u, v;
     do {
-      u = fma(Rand(), 2.0, -1.0);
-      v = fma(Rand(), 2.0, -1.0);
+      u = Rand() * 2.0 - 1.0;
+      v = Rand() * 2.0 - 1.0;
       s = (u * u) + (v * v);
     } while (s >= 1.0 || s == 0.0);
+
     ss[i] = sqrt(log(s) * (-2./s));
     ss[i + 1] = ss[i];
     uu[i] = u;
@@ -139,18 +150,13 @@ std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma
   return res;
 }
 
-/** @brief Returns a random integer in range [0,max]
- * @param max Maximum value of integer to generate
- */
-uint32_t SiPMRandom::randInteger(const uint32_t max) { return static_cast<uint32_t>(Rand() * (max + 1)); }
 
 /**
  * @param max Max value to generate
  * @param n Number of values to generate
  */
 std::vector<uint32_t> SiPMRandom::randInteger(const uint32_t max, const uint32_t n) {
-  std::vector<uint32_t> out;
-  out.reserve(n);
+  std::vector<uint32_t> out(n);
 
   for (uint32_t i = 0; i < n; ++i) {
     out[i] = static_cast<uint32_t>(Rand() * (max + 1));

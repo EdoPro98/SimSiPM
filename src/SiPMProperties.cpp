@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <math.h>
+#include <algorithm>
+#include <ctype.h>
 
 namespace sipm {
 
@@ -103,6 +105,26 @@ void SiPMProperties::setPdeSpectrum(const std::vector<double>& wav, const std::v
     m_PdeSpectrum[wav[i]] = pde[i];
   }
   m_HasPde = PdeType::kSpectrumPde;
+}
+
+
+void SiPMProperties::readSettings(std::string & fname){
+  std::ifstream cFile (fname);
+    if(cFile.is_open()){
+        std::string line;
+        while(getline(cFile, line)){
+            line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end());
+            if(line[0] == '#' || line.empty()){ continue; }
+            auto delimiterPos = line.find("=");
+            auto varName = line.substr(0, delimiterPos);
+            auto varValue = line.substr(delimiterPos + 1);
+
+            setProperty(varName, std::stod(varValue));
+        }
+    }
+    else {
+        std::cerr << "Could not open config file for reading.\n";
+    }
 }
 
 void SiPMProperties::dumpSettings() const {

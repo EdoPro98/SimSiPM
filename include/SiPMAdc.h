@@ -9,9 +9,11 @@
  *  @author Edoardo Proserpio
  *  @date 2020
  */
-#include "SiPMAnalogSignal.h"
 #include "SiPMDigitalSignal.h"
+#include "SiPMAnalogSignal.h"
 #include "SiPMRandom.h"
+
+#include <vector>
 
 #ifndef SIPM_SIPMADC_H
 #define SIPM_SIPMADC_H
@@ -40,6 +42,8 @@ public:
   void setGain(const double gn) { m_Gain = gn; }
   /// @brief Sets number of bits
   void setBits(const double bts) { m_Nbits = bts; }
+  // @ Turns off jitter effect
+  void setJitterOff() { m_Jitter = 0; }
 
 private:
   /// @brief Quantizes a signal using a given number of bits

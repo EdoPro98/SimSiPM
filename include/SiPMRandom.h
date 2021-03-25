@@ -31,8 +31,8 @@
 #define SIPM_RANDOM_H
 
 namespace sipm {
-
 namespace SiPMRng {
+
 class Xorshift256plus {
 public:
   /// @brief Default contructor for Xorshift256plus
@@ -90,6 +90,8 @@ public:
    non-overlapping subsequences for parallel computations.*/
   void jump() { m_rng.jump(); }
 
+  inline uint64_t operator()(){ return m_rng(); }
+
   // Uniform random in [0-1]
   inline double Rand() __attribute__((hot));
 
@@ -114,9 +116,9 @@ private:
   static constexpr double M_UINT64_MAX_RCP = 1 / static_cast<double>(UINT64_MAX);
 };
 
+
 /** Returns a uniform random in range [0,1] */
 inline double SiPMRandom::Rand() { return m_rng() * M_UINT64_MAX_RCP; }
-
 }  // namespace sipm
 #endif /* SIPM_RANDOM_H */
 
