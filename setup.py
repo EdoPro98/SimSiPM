@@ -1,34 +1,63 @@
 from setuptools import setup
 from glob import glob
-
-# Available at setup time due to pyproject.toml
 from pybind11.setup_helpers import Pybind11Extension, build_ext
 from pybind11.setup_helpers import ParallelCompile
+import os
+
 ParallelCompile("NPY_NUM_BUILD_JOBS").install()
 
-
 __version__ = "1.0.3-alpha"
-extra_compile_args = ["-DNDEBUG",
-                      "-O3",
-                      "-fomit-frame-pointer",
-                      "-ftree-vectorize",
-                      "-ffast-math"
-                      ]
+extra_compile_args = ["-DNDEBUG", "-O3", "-ffast-math", "-funsafe-math-optimizations"]
+extra_link_args = []
+use_native = os.environ.get("SIPMNATIVE")
+use_omp = os.environ.get("SIPMOPENMP")
 
+use_native = True if use_native in {"1", "true", "yes"} else False
+use_omp = True if use_omp in {"1", "true", "yes"} else False
+
+if use_native:
+    extra_compile_args.append("-march=native")
+if use_omp:
+    extra_compile_args.append("-fopenmp")
+    extra_link_args.append("-lgomp")
 
 sources = []
 sources.extend(glob("src/*.cpp"))
 sources.extend(glob("python/*.cpp"))
 include_dirs = ["include/"]
 
+
+class get_pybind_include(object):
+    """Helper class to determine the pybind11 include path
+    The purpose of this class is to postpone importing pybind11
+    until it is actually installed, so that the ``get_include()``
+    method can be invoked."""
+
+    def __init__(self, user=False):
+        self.user = user
+
+    def __str__(self):
+        import pybind11
+
+        return pybind11.get_include(self.user)
+
+
 ext_modules = [
-    Pybind11Extension("SiPM",
-                      sources=sources,
-                      define_macros=[('VERSION_INFO', __version__)],
-                      extra_compile_args=extra_compile_args,
-                      language="c++"
-                      )
-                      ]
+    Pybind11Extension(
+        "SiPM",
+        sources=sources,
+        include_dirs=[
+            include_dirs,
+            get_pybind_include(),
+            get_pybind_include(user=True),
+        ],
+        define_macros=[("VERSION_INFO", __version__)],
+        extra_compile_args=extra_compile_args,
+        extra_link_args=extra_link_args,
+        language="c++",
+    ),
+]
+
 
 setup(
     name="SiPM",
@@ -46,8 +75,10 @@ setup(
     cmdclass={"build_ext": build_ext},
     zip_safe=False,
     license="MIT",
-    classifiers=["Development Status :: 4 - Beta",
-                 "License :: OSI Approved :: MIT License",
-                 "Topic :: Scientific/Engineering :: Physics",
-                 "Programming Language :: Python :: 3"]
-                 )
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "License :: OSI Approved :: MIT License",
+        "Topic :: Scientific/Engineering :: Physics",
+        "Programming Language :: Python :: 3",
+    ],
+)

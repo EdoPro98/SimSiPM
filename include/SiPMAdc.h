@@ -57,7 +57,6 @@ private:
   double m_Gain;
 
   double m_Jitter = 0;
-  double m_RC;
 
   mutable SiPMRandom rng;
 }; /* SiPMAdc */

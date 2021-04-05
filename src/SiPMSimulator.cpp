@@ -1,6 +1,7 @@
 #include "SiPMSimulator.h"
 #include "SiPMAnalogSignal.h"
 #include "SiPMDebugInfo.h"
+#include <stdint.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -42,12 +43,12 @@ void SiPMSimulator::clear() {
 }
 
 #ifdef _OPENMP
-void SiPMSimulator::runSimulaion() {
+void SiPMSimulator::runSimulation() {
   uint32_t nThreads = omp_get_max_threads();
   omp_set_num_threads(nThreads);
 
   SiPMSensor p_Sensors[nThreads];
-  for (int i = 0; i < nThreads; ++i) {
+  for (uint32_t i = 0; i < nThreads; ++i) {
     p_Sensors[i].setProperties(m_Sensor->properties());
   }
 
@@ -61,15 +62,14 @@ void SiPMSimulator::runSimulaion() {
   }
 
   if (needWlen == false) {
-    SiPMSensor l_Sensor = SiPMSensor(m_Sensor->properties());
 #pragma omp parallel for
-    for (int i = 0; i < m_Nevents; ++i) {
-      p_Sensors[omp_get_thread_num()].resetState();
-      p_Sensors[omp_get_thread_num()].addPhotons(m_Times[i]);
-      p_Sensors[omp_get_thread_num()].runEvent();
+    for (uint32_t i = 0; i < m_Nevents; ++i) {
+      const uint32_t n_thread = omp_get_thread_num();
+      p_Sensors[n_thread].resetState();
+      p_Sensors[n_thread].addPhotons(m_Times[i]);
+      p_Sensors[n_thread].runEvent();
 
-      SiPMAnalogSignal l_Signal = p_Sensors[omp_get_thread_num()].signal();
-      SiPMDebugInfo l_Debug = p_Sensors[omp_get_thread_num()].debug();
+      SiPMAnalogSignal l_Signal = p_Sensors[n_thread].signal();
       SiPMResult l_Result;
 
       l_Result.times = m_Times[i];
@@ -84,13 +84,12 @@ void SiPMSimulator::runSimulaion() {
     }
   }
   if (needWlen == true && hasWlen == true) {
-    for (int i = 0; i < m_Nevents; ++i) {
+    for (uint32_t i = 0; i < m_Nevents; ++i) {
       m_Sensor->resetState();
       m_Sensor->addPhotons(m_Times[i], m_Wavelengths[i]);
       m_Sensor->runEvent();
 
       SiPMAnalogSignal l_Signal = m_Sensor->signal();
-      SiPMDebugInfo l_Debug = m_Sensor->debug();
       SiPMResult l_Result;
 
       l_Result.times = m_Times[i];
@@ -107,13 +106,12 @@ void SiPMSimulator::runSimulaion() {
   if (needWlen == true && hasWlen == false) {
     m_Sensor->properties().setPdeType(SiPMProperties::PdeType::kNoPde);
     std::cerr << "Running simulation without PDE! Missing wavelengths..." << std::endl;
-    for (int i = 0; i < m_Nevents; ++i) {
+    for (uint32_t i = 0; i < m_Nevents; ++i) {
       m_Sensor->resetState();
       m_Sensor->addPhotons(m_Times[i]);
       m_Sensor->runEvent();
 
       SiPMAnalogSignal l_Signal = m_Sensor->signal();
-      SiPMDebugInfo l_Debug = m_Sensor->debug();
       SiPMResult l_Result;
 
       l_Result.times = m_Times[i];
@@ -128,7 +126,7 @@ void SiPMSimulator::runSimulaion() {
   }
 }
 #else
-void SiPMSimulator::runSimulaion() {
+void SiPMSimulator::runSimulation() {
   bool needWlen = false;
   bool hasWlen = false;
   if (m_Sensor->properties().pdeType() == SiPMProperties::PdeType::kSpectrumPde) {
@@ -139,14 +137,12 @@ void SiPMSimulator::runSimulaion() {
   }
 
   if (needWlen == false) {
-    SiPMSensor l_Sensor = SiPMSensor(m_Sensor->properties());
-    for (int i = 0; i < m_Nevents; ++i) {
+    for (uint32_t i = 0; i < m_Nevents; ++i) {
       m_Sensor->resetState();
       m_Sensor->addPhotons(m_Times[i]);
       m_Sensor->runEvent();
 
       SiPMAnalogSignal l_Signal = m_Sensor->signal();
-      SiPMDebugInfo l_Debug = m_Sensor->debug();
       SiPMResult l_Result;
 
       l_Result.times = m_Times[i];
@@ -160,13 +156,12 @@ void SiPMSimulator::runSimulaion() {
     }
   }
   if (needWlen == true && hasWlen == true) {
-    for (int i = 0; i < m_Nevents; ++i) {
+    for (uint32_t i = 0; i < m_Nevents; ++i) {
       m_Sensor->resetState();
       m_Sensor->addPhotons(m_Times[i], m_Wavelengths[i]);
       m_Sensor->runEvent();
 
       SiPMAnalogSignal l_Signal = m_Sensor->signal();
-      SiPMDebugInfo l_Debug = m_Sensor->debug();
       SiPMResult l_Result;
 
       l_Result.times = m_Times[i];
@@ -183,13 +178,12 @@ void SiPMSimulator::runSimulaion() {
   if (needWlen == true && hasWlen == false) {
     m_Sensor->properties().setPdeType(SiPMProperties::PdeType::kNoPde);
     std::cerr << "Running simulation without PDE! Missing wavelengths..." << std::endl;
-    for (int i = 0; i < m_Nevents; ++i) {
+    for (uint32_t i = 0; i < m_Nevents; ++i) {
       m_Sensor->resetState();
       m_Sensor->addPhotons(m_Times[i]);
       m_Sensor->runEvent();
 
       SiPMAnalogSignal l_Signal = m_Sensor->signal();
-      SiPMDebugInfo l_Debug = m_Sensor->debug();
       SiPMResult l_Result;
 
       l_Result.times = m_Times[i];

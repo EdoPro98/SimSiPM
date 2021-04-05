@@ -32,7 +32,7 @@ public:
 
   /** @brief Constructor of SiPMHit */
   SiPMHit(const double time, const double amp, const uint32_t r, const uint32_t c, const HitType type) noexcept
-    : m_Time(time), m_Amplitude(amp), m_Row(r), m_Col(c), m_Id(makePair(r, c)), m_HitType(type) {}
+    : m_Time(time), m_Amplitude(amp), m_Row(r), m_Col(c), m_HitType(type), m_Id(makePair(r, c)) {}
   /// @brief Operator used to sort hits
   /**
    * Hits are sorted based on theyr time parameter:

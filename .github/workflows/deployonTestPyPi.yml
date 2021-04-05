@@ -3,7 +3,7 @@ name: Build and upload to TestPyPI
 on:
   push:
     branches: [master]
-    
+
   workflow_dispatch:
 
 jobs:
@@ -13,7 +13,7 @@ jobs:
       max-parallel: 4
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-10.15, ubuntu-20.04]
 
     runs-on: ${{ matrix.os }}
 

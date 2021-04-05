@@ -39,7 +39,7 @@ public:
   const SiPMSensor* sensor() const { return m_Sensor; }
   SiPMSensor* sensor() { return m_Sensor; }
 
-  void runSimulaion();
+  void runSimulation();
   std::vector<SiPMResult> getResults() { return m_Results; }
   SiPMResult getResult(uint32_t i) { return m_Results[i]; }
 

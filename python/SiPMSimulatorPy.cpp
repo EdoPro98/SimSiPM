@@ -22,7 +22,7 @@ void SiPMSimulatorPy(py::module& m) {
     .def("clear", &SiPMSimulator::clear)
     .def("sensor", static_cast<const SiPMSensor* (SiPMSimulator::*)() const>(&SiPMSimulator::sensor))
     .def("sensor", static_cast<SiPMSensor* (SiPMSimulator::*)()>(&SiPMSimulator::sensor))
-    .def("runSimulaion", &SiPMSimulator::runSimulaion)
+    .def("runSimulation", &SiPMSimulator::runSimulation)
     .def("getResults", &SiPMSimulator::getResults)
     .def("getResult", &SiPMSimulator::getResult);
 

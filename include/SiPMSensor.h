@@ -40,6 +40,8 @@ public:
    */
   SiPMSensor() = default;
 
+  virtual ~SiPMSensor() = default;
+
   /// @brief Returns a const reference to the @ref SiPMProperties object
   /** used to setup ths SiPMSensor.
    * Used to access the SiPMSensor properties and settings
