@@ -44,32 +44,23 @@ void SiPMSimulator::clear() {
 
 #ifdef _OPENMP
 void SiPMSimulator::runSimulation() {
-  uint32_t nThreads = omp_get_max_threads();
-  omp_set_num_threads(nThreads);
 
-  SiPMSensor p_Sensors[nThreads];
-  for (uint32_t i = 0; i < nThreads; ++i) {
-    p_Sensors[i].setProperties(m_Sensor->properties());
-  }
+  SiPMSensor l_Sensor;
+  l_Sensor.setProperties(m_Sensor->properties());
 
   bool needWlen = false;
   bool hasWlen = false;
-  if (m_Sensor->properties().pdeType() == SiPMProperties::PdeType::kSpectrumPde) {
-    needWlen = true;
-  }
-  if (m_Wavelengths.size() != 0) {
-    hasWlen = true;
-  }
+  if (m_Sensor->properties().pdeType() == SiPMProperties::PdeType::kSpectrumPde) { needWlen = true; }
+  if (m_Wavelengths.size() != 0) { hasWlen = true; }
 
   if (needWlen == false) {
-#pragma omp parallel for
+    #pragma omp parallel for firstprivate(l_Sensor)
     for (uint32_t i = 0; i < m_Nevents; ++i) {
-      const uint32_t n_thread = omp_get_thread_num();
-      p_Sensors[n_thread].resetState();
-      p_Sensors[n_thread].addPhotons(m_Times[i]);
-      p_Sensors[n_thread].runEvent();
+      l_Sensor.resetState();
+      l_Sensor.addPhotons(m_Times[i]);
+      l_Sensor.runEvent();
 
-      SiPMAnalogSignal l_Signal = p_Sensors[n_thread].signal();
+      SiPMAnalogSignal l_Signal = l_Sensor.signal();
       SiPMResult l_Result;
 
       l_Result.times = m_Times[i];
@@ -84,12 +75,13 @@ void SiPMSimulator::runSimulation() {
     }
   }
   if (needWlen == true && hasWlen == true) {
+    #pragma omp parallel for firstprivate(l_Sensor)
     for (uint32_t i = 0; i < m_Nevents; ++i) {
-      m_Sensor->resetState();
-      m_Sensor->addPhotons(m_Times[i], m_Wavelengths[i]);
-      m_Sensor->runEvent();
+      l_Sensor.resetState();
+      l_Sensor.addPhotons(m_Times[i], m_Wavelengths[i]);
+      l_Sensor.runEvent();
 
-      SiPMAnalogSignal l_Signal = m_Sensor->signal();
+      SiPMAnalogSignal l_Signal = l_Sensor.signal();
       SiPMResult l_Result;
 
       l_Result.times = m_Times[i];
@@ -106,12 +98,13 @@ void SiPMSimulator::runSimulation() {
   if (needWlen == true && hasWlen == false) {
     m_Sensor->properties().setPdeType(SiPMProperties::PdeType::kNoPde);
     std::cerr << "Running simulation without PDE! Missing wavelengths..." << std::endl;
+    #pragma omp parallel for firstprivate(l_Sensor)
     for (uint32_t i = 0; i < m_Nevents; ++i) {
-      m_Sensor->resetState();
-      m_Sensor->addPhotons(m_Times[i]);
-      m_Sensor->runEvent();
+      l_Sensor.resetState();
+      l_Sensor.addPhotons(m_Times[i]);
+      l_Sensor.runEvent();
 
-      SiPMAnalogSignal l_Signal = m_Sensor->signal();
+      SiPMAnalogSignal l_Signal = l_Sensor.signal();
       SiPMResult l_Result;
 
       l_Result.times = m_Times[i];
