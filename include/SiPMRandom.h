@@ -90,7 +90,7 @@ public:
    non-overlapping subsequences for parallel computations.*/
   void jump() { m_rng.jump(); }
 
-  inline uint64_t operator()(){ return m_rng(); }
+  inline uint64_t operator()() { return m_rng(); }
 
   // Uniform random in [0-1]
   inline double Rand() __attribute__((hot));
@@ -110,7 +110,8 @@ public:
   std::vector<double> randGaussian(const double, const double, const uint32_t) __attribute__((hot));
   /** @brief Vector of random integers in range [0-max] */
   std::vector<uint32_t> randInteger(const uint32_t max, const uint32_t n) __attribute__((hot));
-
+  // Vector of random exponential given mean
+  std::vector<double> randExponential(const double, const uint32_t) __attribute__((hot));
 private:
   SiPMRng::Xorshift256plus m_rng;
   static constexpr double M_UINT64_MAX_RCP = 1 / static_cast<double>(UINT64_MAX);
