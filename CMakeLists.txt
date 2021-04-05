@@ -3,6 +3,7 @@ project(SimSiPM VERSION 1 DESCRIPTION "Library for SiPM simulation" LANGUAGES CX
 include(GNUInstallDirs)
 
 set(COMPILE_PYTHON_BINDINGS OFF CACHE BOOL "Compile python bindings")
+set(USE_OPENMP OFF CACHE BOOL "Add OpenMP code for parallel execution")
 
 # Optimizations
 if(NOT CMAKE_BUILD_TYPE)
@@ -31,12 +32,17 @@ add_library(sipm SHARED
 	${include}
 )
 
+
 # Include files
 target_include_directories(sipm PUBLIC "include")
 set_property(TARGET sipm PROPERTY VERSION 1)
 set_property(TARGET sipm PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 set_property(TARGET sipm PROPERTY CXX_STANDARD 17)
 set_target_properties(sipm PROPERTIES PUBLIC_HEADER "${include}")
+if (USE_OPENMP)
+	find_package(OpenMP REQUIRED)
+	target_link_libraries(sipm PRIVATE OpenMP::OpenMP_CXX)
+endif(USE_OPENMP)
 
 # Install
 install(TARGETS sipm
@@ -49,7 +55,12 @@ if (COMPILE_PYTHON_BINDINGS)
 	find_package(pybind11 CONFIG REQUIRED)
 	pybind11_add_module(SiPM SHARED ${pysrc} ${src})
 	target_include_directories(SiPM PUBLIC "include/")
+	if (USE_OPENMP)
+		find_package(OpenMP REQUIRED)
+		target_link_libraries(SiPM PRIVATE OpenMP::OpenMP_CXX)
+	endif(USE_OPENMP)
 	set_property(TARGET SiPM PROPERTY CXX_STANDARD 17)
+
 
 
 	execute_process(

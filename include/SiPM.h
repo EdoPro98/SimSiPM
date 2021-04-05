@@ -9,4 +9,5 @@
 #include "SiPMProperties.h"
 #include "SiPMRandom.h"
 #include "SiPMSensor.h"
+#include "SiPMSimulator.h"
 #endif
