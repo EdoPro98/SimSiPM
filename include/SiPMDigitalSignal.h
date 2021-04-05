@@ -26,7 +26,7 @@ public:
 
   /// @brief SiPMDigitalSignal constructor from a std::vector
   SiPMDigitalSignal(const std::vector<int32_t>& wav, const double sampling) noexcept
-      : m_Waveform(wav), m_Sampling(sampling){};
+    : m_Waveform(wav), m_Sampling(sampling){};
 
   /// @brief Move assignement operator from a std::vector
   SiPMDigitalSignal& operator=(const std::vector<int32_t>&& aVect) noexcept {

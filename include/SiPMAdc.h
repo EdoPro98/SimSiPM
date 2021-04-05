@@ -9,8 +9,8 @@
  *  @author Edoardo Proserpio
  *  @date 2020
  */
-#include "SiPMDigitalSignal.h"
 #include "SiPMAnalogSignal.h"
+#include "SiPMDigitalSignal.h"
 #include "SiPMRandom.h"
 
 #include <vector>

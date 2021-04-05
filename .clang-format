@@ -1,12 +1,12 @@
 ---
 # FCCSW Clang Format YAML configuration
 Language:        Cpp
-Standard: 		 Cpp17
+Standard: 		 Cpp11
 AccessModifierOffset: -2
-ConstructorInitializerIndentWidth: 4
+ConstructorInitializerIndentWidth: 2
 AlignAfterOpenBracket: true
 AlignEscapedNewlinesLeft: true
-AlignOperands: false
+AlignOperands: true
 AlignTrailingComments: true
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowShortIfStatementsOnASingleLine: true
@@ -23,8 +23,8 @@ ColumnLimit:     120
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 DerivePointerBinding: false
 ExperimentalAutoDetectBinPacking: true
-IndentCaseLabels: false
-MaxEmptyLinesToKeep: 1
+IndentCaseLabels: true
+MaxEmptyLinesToKeep: 2
 NamespaceIndentation: None
 ObjCSpaceAfterProperty: false
 ObjCSpaceBeforeProtocolList: true
@@ -37,7 +37,7 @@ PenaltyReturnTypeOnItsOwnLine: 60
 PointerBindsToType: true
 SpacesBeforeTrailingComments: 2
 Cpp11BracedListStyle: true
-Standard:        Cpp17
+Standard:        Cpp11
 IndentWidth:     2
 TabWidth:        2
 UseTab:          Never
@@ -48,7 +48,7 @@ SpaceInEmptyParentheses: false
 SpacesInCStyleCastParentheses: false
 SpacesInContainerLiterals: true
 SpaceBeforeAssignmentOperators: true
-ContinuationIndentWidth: 4
+ContinuationIndentWidth: 2
 CommentPragmas:  '^ IWYU pragma:'
 SpaceBeforeParens: ControlStatements
 DerivePointerAlignment: false

@@ -1,9 +1,9 @@
 #include "SiPMProperties.h"
 
-#include <iostream>
-#include <math.h>
 #include <algorithm>
 #include <ctype.h>
+#include <iostream>
+#include <math.h>
 
 namespace sipm {
 
@@ -16,6 +16,7 @@ uint32_t SiPMProperties::nCells() const {
   return m_Ncells;
 }
 
+
 uint32_t SiPMProperties::nSideCells() const {
   if ((m_SideCells == 0) || (m_Ncells == 0)) {
     m_SideCells = 1000 * m_Size / m_Pitch;
@@ -24,12 +25,14 @@ uint32_t SiPMProperties::nSideCells() const {
   return m_SideCells;
 }
 
+
 uint32_t SiPMProperties::nSignalPoints() const {
   if (m_SignalPoints == 0) {
     m_SignalPoints = m_SignalLength / m_Sampling;
   }
   return m_SignalPoints;
 }
+
 
 double SiPMProperties::snrLinear() const {
   if (m_SnrLinear == 0) {
@@ -38,7 +41,6 @@ double SiPMProperties::snrLinear() const {
   return m_SnrLinear;
 }
 
-std::map<double, double> SiPMProperties::pdeSpectrum() const { return m_PdeSpectrum; }
 
 // Setters
 void SiPMProperties::setProperty(const std::string& aProp, const double aPropValue) {
@@ -90,15 +92,18 @@ void SiPMProperties::setProperty(const std::string& aProp, const double aPropVal
   }
 }
 
+
 void SiPMProperties::setSampling(const double aSampling) {
   m_Sampling = aSampling;
   m_SignalPoints = static_cast<uint32_t>(m_SignalLength / aSampling);
 }
 
+
 void SiPMProperties::setPdeSpectrum(const std::map<double, double>& x) {
   m_PdeSpectrum = x;
   m_HasPde = PdeType::kSpectrumPde;
 }
+
 
 void SiPMProperties::setPdeSpectrum(const std::vector<double>& wav, const std::vector<double>& pde) {
   for (uint32_t i = 0; i < wav.size(); ++i) {
@@ -108,24 +113,26 @@ void SiPMProperties::setPdeSpectrum(const std::vector<double>& wav, const std::v
 }
 
 
-void SiPMProperties::readSettings(std::string & fname){
-  std::ifstream cFile (fname);
-    if(cFile.is_open()){
-        std::string line;
-        while(getline(cFile, line)){
-            line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end());
-            if(line[0] == '#' || line.empty()){ continue; }
-            auto delimiterPos = line.find("=");
-            auto varName = line.substr(0, delimiterPos);
-            auto varValue = line.substr(delimiterPos + 1);
+void SiPMProperties::readSettings(std::string& fname) {
+  std::ifstream cFile(fname);
+  if (cFile.is_open()) {
+    std::string line;
+    while (getline(cFile, line)) {
+      line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end());
+      if (line[0] == '#' || line.empty()) {
+        continue;
+      }
+      auto delimiterPos = line.find("=");
+      auto varName = line.substr(0, delimiterPos);
+      auto varValue = line.substr(delimiterPos + 1);
 
-            setProperty(varName, std::stod(varValue));
-        }
+      setProperty(varName, std::stod(varValue));
     }
-    else {
-        std::cerr << "Could not open config file for reading.\n";
-    }
+  } else {
+    std::cerr << "Could not open config file for reading.\n";
+  }
 }
+
 
 void SiPMProperties::dumpSettings() const {
   std::cout << "===> SiPM Settings <===" << '\n';
@@ -137,18 +144,18 @@ void SiPMProperties::dumpSettings() const {
       std::cout << "Hit distribution: "
                 << "Uniform"
                 << "\n";
-                break;
+      break;
     case (HitDistribution::kCircle):
       std::cout << "Hit distribution: "
                 << "Circle"
                 << "\n";
-                break;
+      break;
     case (HitDistribution::kGaussian):
       std::cout << "Hit distribution: "
                 << "Gaussian"
                 << "\n";
-                break;
-    }
+      break;
+  }
   std::cout << "Cell recovery time: " << m_RecoveryTime << " nm\n";
   if (m_HasDcr) {
     std::cout << "Dark count rate: " << m_Dcr / 1e3 << " kHz\n";
@@ -167,7 +174,7 @@ void SiPMProperties::dumpSettings() const {
   } else {
     std::cout << "Afterpulse probability: Off\n";
   }
-  std::cout << "Cell-to-cell gain variation: " << m_Ccgv*100 << " %\n";
+  std::cout << "Cell-to-cell gain variation: " << m_Ccgv * 100 << " %\n";
   std::cout << "SNR: " << m_SnrdB << " dB\n";
   if (m_HasPde == PdeType::kSimplePde) {
     std::cout << "Photon detection efficiency: " << m_Pde * 100 << " %\n";
@@ -186,5 +193,4 @@ void SiPMProperties::dumpSettings() const {
   std::cout << "Sampling time: " << m_Sampling << " ns\n";
   std::cout << "==> End of SiPM Settings <===" << '\n';
 }
-
 }  // namespace sipm

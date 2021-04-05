@@ -26,7 +26,7 @@ public:
 
   /// @brief SiPMAnalogSignal constructor from a std::vector
   SiPMAnalogSignal(const std::vector<double>& wav, const double sampling) noexcept
-      : m_Waveform(wav), m_Sampling(sampling){};
+    : m_Waveform(wav), m_Sampling(sampling){};
 
   /// @brief Move assignement operator from a std::vector
   SiPMAnalogSignal& operator=(const std::vector<double>&& aVect) noexcept {

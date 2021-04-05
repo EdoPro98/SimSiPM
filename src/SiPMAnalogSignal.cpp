@@ -17,9 +17,13 @@ double SiPMAnalogSignal::integral(const double intstart, const double intgate, c
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-
+  const double peak = *std::max_element(start, end);
+  if (peak < threshold) {
+    return 0;
+  }
   return std::accumulate(start, end, 0.0) * m_Sampling;
 }
+
 
 /**
 * Peak of the signal defined as sample with maximum amplitude in the integration
@@ -33,9 +37,13 @@ double SiPMAnalogSignal::peak(const double intstart, const double intgate, const
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-
-  return *std::max_element(start, end);
+  const double peak = *std::max_element(start, end);
+  if (peak < threshold) {
+    return 0;
+  }
+  return peak;
 }
+
 
 /**
 * Time over threshold of the signal in the integration gate defined as the
@@ -49,11 +57,20 @@ double SiPMAnalogSignal::tot(const double intstart, const double intgate, const 
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
+  const double peak = *std::max_element(start, end);
+  if (peak < threshold) {
+    return 0;
+  }
 
-  static const auto ifOver = [threshold](const double v) { return v > threshold; };
-
-  return std::count_if(start, end, ifOver) * m_Sampling;
+  double tot = 0;
+  for (auto itr = start; itr != end; ++itr) {
+    if (*itr > threshold) {
+      ++tot;
+    }
+  }
+  return tot * m_Sampling;
 }
+
 
 /**
 * Arriving time of the signal defined as the time in ns of the first sample
@@ -65,18 +82,22 @@ double SiPMAnalogSignal::tot(const double intstart, const double intgate, const 
 */
 double SiPMAnalogSignal::toa(const double intstart, const double intgate, const double threshold) const {
 
-  const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
+  auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  double toa = -1;
-
-  for (auto it = start; it < end; ++it) {
-    if (*it > threshold) {
-      toa = (it - start);
-      break;
-    }
+  const double peak = *std::max_element(start, end);
+  if (peak < threshold) {
+    return -1;
   }
+
+  double toa = 0;
+  while (*start < threshold && start != end) {
+    ++toa;
+    ++start;
+  }
+
   return toa * m_Sampling;
 }
+
 
 /**
 * Time in ns of the sample in the peak
@@ -89,9 +110,14 @@ double SiPMAnalogSignal::top(const double intstart, const double intgate, const 
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
+  const double peak = *std::max_element(start, end);
+  if (peak < threshold) {
+    return 0;
+  }
 
   return (std::max_element(start, end) - start) * m_Sampling;
 }
+
 
 /**
  * @param bw Bandwidth for the low-pass filter (-3dB cut-off)
@@ -110,5 +136,4 @@ SiPMAnalogSignal SiPMAnalogSignal::lowpass(const double bw) const {
   }
   return SiPMAnalogSignal(out, m_Sampling);
 }
-
 }  // namespace sipm

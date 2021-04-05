@@ -112,6 +112,7 @@ public:
   std::vector<uint32_t> randInteger(const uint32_t max, const uint32_t n) __attribute__((hot));
   // Vector of random exponential given mean
   std::vector<double> randExponential(const double, const uint32_t) __attribute__((hot));
+
 private:
   SiPMRng::Xorshift256plus m_rng;
   static constexpr double M_UINT64_MAX_RCP = 1 / static_cast<double>(UINT64_MAX);

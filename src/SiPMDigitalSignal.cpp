@@ -16,13 +16,14 @@ int32_t SiPMDigitalSignal::integral(const double intstart, const double intgate,
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-
-  if (*std::max_element(start, end) > threshold) {
-    return std::accumulate(start, end, static_cast<int32_t>(0)) * m_Sampling;
-  } else {
-    return -1;
+  const double peak = *std::max_element(start, end);
+  if (peak < threshold) {
+    return 0;
   }
+
+  return std::accumulate(start, end, static_cast<int32_t>(0)) * m_Sampling;
 }
+
 
 /**
 * Peak of the signal defined as sample with maximum amplitude in the integration
@@ -36,14 +37,13 @@ int32_t SiPMDigitalSignal::peak(const double intstart, const double intgate, con
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-
-  const int32_t peak = *std::max_element(start, end);
-  if (peak > threshold) {
-    return peak;
-  } else {
-    return -1;
+  const double peak = *std::max_element(start, end);
+  if (peak < threshold) {
+    return 0;
   }
+  return peak;
 }
+
 
 /**
 * Time over threshold of the signal in the integration gate defined as the
@@ -57,13 +57,21 @@ double SiPMDigitalSignal::tot(const double intstart, const double intgate, const
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-
-  if (*std::max_element(start, end) > threshold) {
-    return std::count_if(start, end, [threshold](const double v) { return v > threshold; }) * m_Sampling;
-  } else {
-    return -1;
+  const double peak = *std::max_element(start, end);
+  if (peak < threshold) {
+    return 0;
   }
+
+  double tot = 0;
+  for (auto itr = start; itr != end; ++itr) {
+    if (*itr > threshold) {
+      ++tot;
+    }
+  }
+
+  return tot * m_Sampling;
 }
+
 
 /**
 * Arriving time of the signal defined as the time in ns of the first sample
@@ -75,18 +83,22 @@ double SiPMDigitalSignal::tot(const double intstart, const double intgate, const
 */
 double SiPMDigitalSignal::toa(const double intstart, const double intgate, const int32_t threshold) const {
 
-  const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
+  auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  double toa = -1;
-
-  for (auto it = start; it < end; ++it) {
-    if (*it > threshold) {
-      toa = (it - start) * m_Sampling;
-      break;
-    }
+  const double peak = *std::max_element(start, end);
+  if (peak < threshold) {
+    return -1;
   }
-  return toa;
+
+  double toa = 0;
+  while (*start < threshold || start != end) {
+    ++toa;
+    ++start;
+  }
+
+  return toa * m_Sampling;
 }
+
 
 /**
 * Time in ns of the sample in the peak
@@ -99,12 +111,11 @@ double SiPMDigitalSignal::top(const double intstart, const double intgate, const
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-
-  if (*std::max_element(start, end) > threshold) {
-    return (std::max_element(start, end) - start) * m_Sampling;
-  } else {
-    return -1;
+  const double peak = *std::max_element(start, end);
+  if (peak < threshold) {
+    return 0;
   }
-}
 
+  return (std::max_element(start, end) - start) * m_Sampling;
+}
 }  // namespace sipm

@@ -176,7 +176,7 @@ std::vector<uint32_t> SiPMRandom::randInteger(const uint32_t max, const uint32_t
  */
 std::vector<double> SiPMRandom::randExponential(const double mu, const uint32_t n) {
   std::vector<double> out(n);
-  for (uint32_t i = 0; i < n; ++i){
+  for (uint32_t i = 0; i < n; ++i) {
     out[i] = -log(Rand()) * mu;
   }
   return out;

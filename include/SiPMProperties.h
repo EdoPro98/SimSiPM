@@ -13,10 +13,10 @@
 #include <math.h>
 #include <stdint.h>
 
+#include <fstream>
 #include <map>
 #include <string>
 #include <vector>
-#include <fstream>
 
 #ifndef SIPM_SIPMPROPERTIES_H
 #define SIPM_SIPMPROPERTIES_H
@@ -47,6 +47,7 @@ public:
 
   /// @brief Prints current settings of the sensor
   void dumpSettings() const;
+
 
   /// @brief Returns total number of cells in the sensor
   uint32_t nCells() const;
@@ -104,6 +105,9 @@ public:
   /// @brief Returns value of cell-to-cell gain variation.
   double ccgv() const { return m_Ccgv; }
 
+  /// @brief Returns relative gain.
+  double gain() const { return m_Gain; }
+
   /// @brief Returns SNR in dB.
   double snrdB() const { return m_SnrdB; }
 
@@ -114,7 +118,7 @@ public:
   double pde() const { return m_Pde; }
 
   /// @brief Returns wavelength-PDE values if PdeType::kSpectrumPde is set
-  std::map<double, double> pdeSpectrum() const;
+  std::map<double, double> pdeSpectrum() const { return m_PdeSpectrum; }
 
   /// @brief Returns type of PDE calculation used.
   PdeType pdeType() { return m_HasPde; }
@@ -247,6 +251,7 @@ private:
   double m_ApSlowFraction = 0.8;
   double m_Ccgv = 0.05;
   double m_SnrdB = 30;
+  double m_Gain = 1.0;
   mutable double m_SnrLinear = 0;
 
   double m_Pde;

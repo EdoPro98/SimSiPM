@@ -12,7 +12,8 @@
 namespace sipm {
 
 SiPMAdc::SiPMAdc(const uint32_t nbits, const double range, const double gain)
-    : m_Nbits(nbits), m_Range(range), m_Gain(gain) {}
+  : m_Nbits(nbits), m_Range(range), m_Gain(gain) {}
+
 
 /**
  * @param v Vector to quantize
@@ -27,15 +28,16 @@ std::vector<int32_t> SiPMAdc::quantize(const std::vector<double>& v, const uint3
 
   const double qlevels = pow(2, nbits);
   const double gainlinear = pow(10, (gain / 20));
-  const double width = range / gainlinear / qlevels;
+  const double reciprocal_width = 1 / (range / gainlinear / qlevels);
 
   for (uint32_t i = 0; i < v.size(); ++i) {
-    out[i] = v[i] / width;
+    out[i] = v[i] * reciprocal_width;
   }
   std::replace_if(
-      out.begin(), out.end(), [qlevels](int32_t x) { return x > qlevels; }, qlevels);
+    out.begin(), out.end(), [qlevels](int32_t x) { return x > qlevels; }, qlevels);
   return out;
 }
+
 
 /**
  * @param signal Input signal to apply jitter to
@@ -89,13 +91,13 @@ std::vector<double> SiPMAdc::addJitter(std::vector<double>& signal, const double
   return signal;
 }
 
+
 /**
  * @param signal Input signal to be digitized
  * @returns Digitized SiPMAnalogSignal
  */
 SiPMDigitalSignal SiPMAdc::digitize(const SiPMAnalogSignal& signal) const {
-  // Local copy of analog signal
-  std::vector<double> lsignal = signal.waveform();
+  std::vector<double> lsignal = signal.waveform();  // Local copy of analog signal
   const double sampling = signal.sampling();
 
   if (m_Jitter > 0) {
@@ -111,5 +113,4 @@ SiPMDigitalSignal SiPMAdc::digitize(const SiPMAnalogSignal& signal) const {
 
   return dsignal;
 }
-
 }  // namespace sipm
