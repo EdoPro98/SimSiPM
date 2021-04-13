@@ -24,7 +24,6 @@ int32_t SiPMDigitalSignal::integral(const double intstart, const double intgate,
   return std::accumulate(start, end, static_cast<int32_t>(0)) * m_Sampling;
 }
 
-
 /**
 * Peak of the signal defined as sample with maximum amplitude in the integration
 * gate.
@@ -43,7 +42,6 @@ int32_t SiPMDigitalSignal::peak(const double intstart, const double intgate, con
   }
   return peak;
 }
-
 
 /**
 * Time over threshold of the signal in the integration gate defined as the
@@ -72,7 +70,6 @@ double SiPMDigitalSignal::tot(const double intstart, const double intgate, const
   return tot * m_Sampling;
 }
 
-
 /**
 * Arriving time of the signal defined as the time in ns of the first sample
 * above the threshold.
@@ -99,7 +96,6 @@ double SiPMDigitalSignal::toa(const double intstart, const double intgate, const
   return toa * m_Sampling;
 }
 
-
 /**
 * Time in ns of the sample in the peak
 * If the signal is below the threshold the output is set to -1.
@@ -118,4 +114,4 @@ double SiPMDigitalSignal::top(const double intstart, const double intgate, const
 
   return (std::max_element(start, end) - start) * m_Sampling;
 }
-}  // namespace sipm
+} // namespace sipm

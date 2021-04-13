@@ -24,7 +24,6 @@ double SiPMAnalogSignal::integral(const double intstart, const double intgate, c
   return std::accumulate(start, end, 0.0) * m_Sampling;
 }
 
-
 /**
 * Peak of the signal defined as sample with maximum amplitude in the integration
 * gate.
@@ -43,7 +42,6 @@ double SiPMAnalogSignal::peak(const double intstart, const double intgate, const
   }
   return peak;
 }
-
 
 /**
 * Time over threshold of the signal in the integration gate defined as the
@@ -71,7 +69,6 @@ double SiPMAnalogSignal::tot(const double intstart, const double intgate, const 
   return tot * m_Sampling;
 }
 
-
 /**
 * Arriving time of the signal defined as the time in ns of the first sample
 * above the threshold.
@@ -98,7 +95,6 @@ double SiPMAnalogSignal::toa(const double intstart, const double intgate, const 
   return toa * m_Sampling;
 }
 
-
 /**
 * Time in ns of the sample in the peak
 * If the signal is below the threshold the output is set to -1.
@@ -118,7 +114,6 @@ double SiPMAnalogSignal::top(const double intstart, const double intgate, const 
   return (std::max_element(start, end) - start) * m_Sampling;
 }
 
-
 /**
  * @param bw Bandwidth for the low-pass filter (-3dB cut-off)
  * @return Signal with filter applied
@@ -136,4 +131,4 @@ SiPMAnalogSignal SiPMAnalogSignal::lowpass(const double bw) const {
   }
   return SiPMAnalogSignal(out, m_Sampling);
 }
-}  // namespace sipm
+} // namespace sipm

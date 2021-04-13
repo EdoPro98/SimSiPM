@@ -16,7 +16,6 @@ uint32_t SiPMProperties::nCells() const {
   return m_Ncells;
 }
 
-
 uint32_t SiPMProperties::nSideCells() const {
   if ((m_SideCells == 0) || (m_Ncells == 0)) {
     m_SideCells = 1000 * m_Size / m_Pitch;
@@ -25,14 +24,12 @@ uint32_t SiPMProperties::nSideCells() const {
   return m_SideCells;
 }
 
-
 uint32_t SiPMProperties::nSignalPoints() const {
   if (m_SignalPoints == 0) {
     m_SignalPoints = m_SignalLength / m_Sampling;
   }
   return m_SignalPoints;
 }
-
 
 double SiPMProperties::snrLinear() const {
   if (m_SnrLinear == 0) {
@@ -41,9 +38,8 @@ double SiPMProperties::snrLinear() const {
   return m_SnrLinear;
 }
 
-
 // Setters
-void SiPMProperties::setProperty(const std::string& aProp, const double aPropValue) {
+void SiPMProperties::setProperty(const std::string &aProp, const double aPropValue) {
   if (aProp == "Size") {
     setSize(aPropValue);
     m_SideCells = 1000 * m_Size / m_Pitch;
@@ -92,28 +88,24 @@ void SiPMProperties::setProperty(const std::string& aProp, const double aPropVal
   }
 }
 
-
 void SiPMProperties::setSampling(const double aSampling) {
   m_Sampling = aSampling;
   m_SignalPoints = static_cast<uint32_t>(m_SignalLength / aSampling);
 }
 
-
-void SiPMProperties::setPdeSpectrum(const std::map<double, double>& x) {
+void SiPMProperties::setPdeSpectrum(const std::map<double, double> &x) {
   m_PdeSpectrum = x;
   m_HasPde = PdeType::kSpectrumPde;
 }
 
-
-void SiPMProperties::setPdeSpectrum(const std::vector<double>& wav, const std::vector<double>& pde) {
+void SiPMProperties::setPdeSpectrum(const std::vector<double> &wav, const std::vector<double> &pde) {
   for (uint32_t i = 0; i < wav.size(); ++i) {
     m_PdeSpectrum[wav[i]] = pde[i];
   }
   m_HasPde = PdeType::kSpectrumPde;
 }
 
-
-void SiPMProperties::readSettings(std::string& fname) {
+void SiPMProperties::readSettings(std::string &fname) {
   std::ifstream cFile(fname);
   if (cFile.is_open()) {
     std::string line;
@@ -132,7 +124,6 @@ void SiPMProperties::readSettings(std::string& fname) {
     std::cerr << "Could not open config file for reading.\n";
   }
 }
-
 
 void SiPMProperties::dumpSettings() const {
   std::cout << "===> SiPM Settings <===" << '\n';
@@ -193,4 +184,4 @@ void SiPMProperties::dumpSettings() const {
   std::cout << "Sampling time: " << m_Sampling << " ns\n";
   std::cout << "==> End of SiPM Settings <===" << '\n';
 }
-}  // namespace sipm
+} // namespace sipm

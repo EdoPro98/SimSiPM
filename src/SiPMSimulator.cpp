@@ -9,31 +9,27 @@
 #include <iostream>
 
 namespace sipm {
-void SiPMSimulator::addEvents(const std::vector<std::vector<double>>& t) {
+void SiPMSimulator::addEvents(const std::vector<std::vector<double>> &t) {
   m_Times = t;
   m_Nevents = t.size();
 }
 
-
-void SiPMSimulator::addEvents(const std::vector<std::vector<double>>& t, const std::vector<std::vector<double>>& w) {
+void SiPMSimulator::addEvents(const std::vector<std::vector<double>> &t, const std::vector<std::vector<double>> &w) {
   m_Times = t;
   m_Wavelengths = w;
   m_Nevents = t.size();
 }
 
-
-void SiPMSimulator::push_back(const std::vector<double>& t) {
+void SiPMSimulator::push_back(const std::vector<double> &t) {
   m_Times.emplace_back(t);
   m_Nevents++;
 }
 
-
-void SiPMSimulator::push_back(const std::vector<double>& t, const std::vector<double>& w) {
+void SiPMSimulator::push_back(const std::vector<double> &t, const std::vector<double> &w) {
   m_Times.emplace_back(t);
   m_Wavelengths.emplace_back(w);
   m_Nevents++;
 }
-
 
 void SiPMSimulator::clear() {
   m_Times.clear();
@@ -50,11 +46,15 @@ void SiPMSimulator::runSimulation() {
 
   bool needWlen = false;
   bool hasWlen = false;
-  if (m_Sensor->properties().pdeType() == SiPMProperties::PdeType::kSpectrumPde) { needWlen = true; }
-  if (m_Wavelengths.size() != 0) { hasWlen = true; }
+  if (m_Sensor->properties().pdeType() == SiPMProperties::PdeType::kSpectrumPde) {
+    needWlen = true;
+  }
+  if (m_Wavelengths.size() != 0) {
+    hasWlen = true;
+  }
 
   if (needWlen == false) {
-    #pragma omp parallel for firstprivate(l_Sensor)
+#pragma omp parallel for firstprivate(l_Sensor)
     for (uint32_t i = 0; i < m_Nevents; ++i) {
       l_Sensor.resetState();
       l_Sensor.addPhotons(m_Times[i]);
@@ -75,7 +75,7 @@ void SiPMSimulator::runSimulation() {
     }
   }
   if (needWlen == true && hasWlen == true) {
-    #pragma omp parallel for firstprivate(l_Sensor)
+#pragma omp parallel for firstprivate(l_Sensor)
     for (uint32_t i = 0; i < m_Nevents; ++i) {
       l_Sensor.resetState();
       l_Sensor.addPhotons(m_Times[i], m_Wavelengths[i]);
@@ -98,7 +98,7 @@ void SiPMSimulator::runSimulation() {
   if (needWlen == true && hasWlen == false) {
     m_Sensor->properties().setPdeType(SiPMProperties::PdeType::kNoPde);
     std::cerr << "Running simulation without PDE! Missing wavelengths..." << std::endl;
-    #pragma omp parallel for firstprivate(l_Sensor)
+#pragma omp parallel for firstprivate(l_Sensor)
     for (uint32_t i = 0; i < m_Nevents; ++i) {
       l_Sensor.resetState();
       l_Sensor.addPhotons(m_Times[i]);
@@ -192,5 +192,4 @@ void SiPMSimulator::runSimulation() {
 }
 #endif
 
-
-}  // namespace sipm
+} // namespace sipm

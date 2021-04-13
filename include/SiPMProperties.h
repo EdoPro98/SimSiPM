@@ -29,25 +29,24 @@ public:
    * @brief Used to set different methods to evaluate PDE for each photon.
    */
   enum class PdeType {
-    kNoPde,       ///< No PDE applied, all photons will turn in photoelectrons
-    kSimplePde,   ///< Same PDE value used for all photons
-    kSpectrumPde  ///< PDE calculated considering the wavelength of each photon
+    kNoPde,      ///< No PDE applied, all photons will turn in photoelectrons
+    kSimplePde,  ///< Same PDE value used for all photons
+    kSpectrumPde ///< PDE calculated considering the wavelength of each photon
   };
   /** @enum HitDistribution
    * Used to describe how photoelectrons are distributed on the SiPM surface
    */
   enum class HitDistribution {
-    kUniform,  ///< Photons uniformly distributed on the sensor surface
-    kCircle,   ///< 95% of photons are uniformly distributed on a circle
-    kGaussian  ///< 95% of photons have a gaussian distribution
+    kUniform, ///< Photons uniformly distributed on the sensor surface
+    kCircle,  ///< 95% of photons are uniformly distributed on a circle
+    kGaussian ///< 95% of photons have a gaussian distribution
   };
 
   /// @brief Used to read settings from a json file
-  void readSettings(std::string&);  ///< @todo Still to implement
+  void readSettings(std::string &); ///< @todo Still to implement
 
   /// @brief Prints current settings of the sensor
   void dumpSettings() const;
-
 
   /// @brief Returns total number of cells in the sensor
   uint32_t nCells() const;
@@ -137,7 +136,7 @@ public:
   bool hasSlowComponent() const { return m_HasSlowComponent; }
 
   /// @brief Sets a property using its name
-  void setProperty(const std::string&, const double);
+  void setProperty(const std::string &, const double);
 
   /// @brief Set size of SiPM sensitive area (side in mm)
   void setSize(const double x) { m_Size = x; }
@@ -220,10 +219,10 @@ public:
   void setPdeType(PdeType aPdeType) { m_HasPde = aPdeType; }
   /// @brief Set a spectral response of the SiPM and sets @ref
   /// PdeType::kSpectrumPde
-  void setPdeSpectrum(const std::map<double, double>&);
+  void setPdeSpectrum(const std::map<double, double> &);
   /// @brief Set a spectral response of the SiPM and sets @ref
   /// PdeType::kSpectrumPde
-  void setPdeSpectrum(const std::vector<double>&, const std::vector<double>&);
+  void setPdeSpectrum(const std::vector<double> &, const std::vector<double> &);
 
   void setHitDistribution(const HitDistribution aHitDistribution) { m_HitDistribution = aHitDistribution; }
 
@@ -264,5 +263,5 @@ private:
   bool m_HasSlowComponent = false;
 };
 
-}  // namespace sipm
+} // namespace sipm
 #endif /* SIPM_SIPMPROPERTIES_H  */

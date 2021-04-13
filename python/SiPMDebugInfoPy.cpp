@@ -5,7 +5,7 @@
 namespace py = pybind11;
 using namespace sipm;
 
-void SiPMDebugInfoPy(py::module& m) {
+void SiPMDebugInfoPy(py::module &m) {
   py::class_<SiPMDebugInfo> SiPMDebugInfo(m, "SiPMDebugInfo");
   SiPMDebugInfo.def_readonly("nPhotons", &SiPMDebugInfo::nPhotons)
     .def_readonly("nPhotoelectrons", &SiPMDebugInfo::nPhotoelectrons)

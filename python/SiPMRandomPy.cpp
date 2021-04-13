@@ -5,7 +5,7 @@
 namespace py = pybind11;
 using namespace sipm;
 
-void SiPMRandomPy(py::module& m) {
+void SiPMRandomPy(py::module &m) {
   py::class_<SiPMRandom> SiPMRandom(m, "SiPMRandom");
   SiPMRandom.def(py::init<>())
     .def(py::init<const uint64_t>())

@@ -72,7 +72,7 @@ inline uint64_t Xorshift256plus::operator()() noexcept {
   return result;
 }
 
-}  // namespace SiPMRng
+} // namespace SiPMRng
 
 class SiPMRandom {
 public:
@@ -118,10 +118,9 @@ private:
   static constexpr double M_UINT64_MAX_RCP = 1 / static_cast<double>(UINT64_MAX);
 };
 
-
 /** Returns a uniform random in range [0,1] */
 inline double SiPMRandom::Rand() { return m_rng() * M_UINT64_MAX_RCP; }
-}  // namespace sipm
+} // namespace sipm
 #endif /* SIPM_RANDOM_H */
 
 // ABOUT XOROSHIRO256+

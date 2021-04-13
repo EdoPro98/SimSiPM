@@ -34,7 +34,7 @@ public:
   /// @brief SiPMSensor constructor from a @ref SiPMProperties instance.
   /** Instantiates a SiPMSensor with parameter specified in the SiPMProperties.
    */
-  SiPMSensor(const SiPMProperties&) noexcept;
+  SiPMSensor(const SiPMProperties &) noexcept;
   /// @brief Default SiPMSensor contructor.
   /** Instantiates a SiPMSensor with default settings.
    */
@@ -44,24 +44,24 @@ public:
   /** used to setup ths SiPMSensor.
    * Used to access the SiPMSensor properties and settings
    */
-  const SiPMProperties& properties() const { return m_Properties; }
+  const SiPMProperties &properties() const { return m_Properties; }
   /// @brief Returns a reference to the @ref SiPMProperties object
   /** used to setup ths SiPMSensor.
    * Used to access and modify the SiPMSensor properties and settings
    */
-  SiPMProperties& properties() { return m_Properties; }
+  SiPMProperties &properties() { return m_Properties; }
   /// @brief Returns a reference to @ref SiPMAnalogSignal.
   /** Used to get the generated signal from the sensor. This method should be
    * run after @ref runEvent otherwise it will return only electronic noise.
    */
-  const SiPMAnalogSignal& signal() const { return m_Signal; }
+  const SiPMAnalogSignal &signal() const { return m_Signal; }
   /// @brief Returns a const reference to the @ref SiPMRandom.
-  const SiPMRandom& rng() const { return m_rng; }
+  const SiPMRandom &rng() const { return m_rng; }
   /// @brief Returns a reference to the @ref SiPMRandom.
   /** Used to access and re-seed the underlying SiPMRandom object used for
    * pseudo-random numbers generation.
    */
-  SiPMRandom& rng() { return m_rng; }
+  SiPMRandom &rng() { return m_rng; }
   /// @brief Returns a @ref SiPMDebugInfo
   /** @sa SiPMDebugInfo
    */
@@ -71,12 +71,12 @@ public:
   /** Sets a SiPM property using its name. For a list of available SiPM
    * properties names @sa SiPMProperties
    */
-  void setProperty(const std::string&, const double);
+  void setProperty(const std::string &, const double);
 
   /// @brief Sets a different SiPMProperties for the SiPMSensor.
   /** Changes the underlying SiPMProperties object with a new one.
    */
-  void setProperties(const SiPMProperties&);
+  void setProperties(const SiPMProperties &);
 
   void addPhoton() {}
   /// @brief Adds a single photon to the list of photons to be simulated.
@@ -84,9 +84,9 @@ public:
   /// @brief Adds a single photon to the list of photons to be simulated.
   void addPhoton(const double, const double);
   /// @brief Adds all photons to the list of photons to be simulated at once.
-  void addPhotons(const std::vector<double>&);
+  void addPhotons(const std::vector<double> &);
   /// @brief Adds all photons to the list of photons to be simulated at once.
-  void addPhotons(const std::vector<double>&, const std::vector<double>&);
+  void addPhotons(const std::vector<double> &, const std::vector<double> &);
 
   /// @brief Runs a complete SiPM event.
   void runEvent();
@@ -102,7 +102,7 @@ public:
   void setPrecisionLevel(const PrecisionLevel);
 
   // Go virtual ?
-  //virtual ~SiPMSensor() = default;
+  // virtual ~SiPMSensor() = default;
   // virtual std::vector<double> signalShape() const;
 
 private:
@@ -202,5 +202,5 @@ private:
   PrecisionLevel m_PrecisionLevel = PrecisionLevel::kFull;
 };
 
-}  // namespace sipm
+} // namespace sipm
 #endif /* SIPM_SIPMSENSOR_H */

@@ -8,12 +8,10 @@
 
 #include "SiPMRandom.h"
 
-
 namespace sipm {
 
 SiPMAdc::SiPMAdc(const uint32_t nbits, const double range, const double gain)
   : m_Nbits(nbits), m_Range(range), m_Gain(gain) {}
-
 
 /**
  * @param v Vector to quantize
@@ -22,7 +20,7 @@ SiPMAdc::SiPMAdc(const uint32_t nbits, const double range, const double gain)
  * @param gain Gain in dB to apply before quantization
  * @return Quantized input vector
  */
-std::vector<int32_t> SiPMAdc::quantize(const std::vector<double>& v, const uint32_t nbits, const double range,
+std::vector<int32_t> SiPMAdc::quantize(const std::vector<double> &v, const uint32_t nbits, const double range,
                                        const double gain) const {
   std::vector<int32_t> out(v.size());
 
@@ -38,15 +36,14 @@ std::vector<int32_t> SiPMAdc::quantize(const std::vector<double>& v, const uint3
   return out;
 }
 
-
 /**
  * @param signal Input signal to apply jitter to
  * @param jit Jitter value to apply
  * @return Signal with jitter applied
  */
-std::vector<double> SiPMAdc::addJitter(std::vector<double>& signal, const double jit) const {
+std::vector<double> SiPMAdc::addJitter(std::vector<double> &signal, const double jit) const {
   const uint32_t n = signal.size();
-  std::vector<double> lsignalshift = signal;  // Copy of signal
+  std::vector<double> lsignalshift = signal; // Copy of signal
   double jitweight;
 
   // Right shift (jitter is positive -> need to move signal "to right")
@@ -91,13 +88,12 @@ std::vector<double> SiPMAdc::addJitter(std::vector<double>& signal, const double
   return signal;
 }
 
-
 /**
  * @param signal Input signal to be digitized
  * @returns Digitized SiPMAnalogSignal
  */
-SiPMDigitalSignal SiPMAdc::digitize(const SiPMAnalogSignal& signal) const {
-  std::vector<double> lsignal = signal.waveform();  // Local copy of analog signal
+SiPMDigitalSignal SiPMAdc::digitize(const SiPMAnalogSignal &signal) const {
+  std::vector<double> lsignal = signal.waveform(); // Local copy of analog signal
   const double sampling = signal.sampling();
 
   if (m_Jitter > 0) {
@@ -113,4 +109,4 @@ SiPMDigitalSignal SiPMAdc::digitize(const SiPMAnalogSignal& signal) const {
 
   return dsignal;
 }
-}  // namespace sipm
+} // namespace sipm

@@ -7,21 +7,21 @@ namespace py = pybind11;
 using namespace sipm;
 using std::vector;
 
-void SiPMSimulatorPy(py::module& m) {
+void SiPMSimulatorPy(py::module &m) {
   py::class_<SiPMSimulator> SiPMSimulator(m, "SiPMSimulator");
   SiPMSimulator
-    .def(py::init<SiPMSensor*>())
+    .def(py::init<SiPMSensor *>())
     //.def("readConfiguration",&SiPMSimulator::readConfiguration)
-    .def("addEvents", py::overload_cast<const vector<vector<double>>&>(&SiPMSimulator::addEvents))
+    .def("addEvents", py::overload_cast<const vector<vector<double>> &>(&SiPMSimulator::addEvents))
     .def("addEvents",
-         py::overload_cast<const vector<vector<double>>&, const vector<vector<double>>&>(&SiPMSimulator::addEvents))
-    .def("push_back", py::overload_cast<const vector<double>&>(&SiPMSimulator::push_back))
-    .def("push_back", py::overload_cast<const vector<double>&, const vector<double>&>(&SiPMSimulator::push_back))
+         py::overload_cast<const vector<vector<double>> &, const vector<vector<double>> &>(&SiPMSimulator::addEvents))
+    .def("push_back", py::overload_cast<const vector<double> &>(&SiPMSimulator::push_back))
+    .def("push_back", py::overload_cast<const vector<double> &, const vector<double> &>(&SiPMSimulator::push_back))
     .def("setSensor", &SiPMSimulator::setSensor)
     .def("setIntegration", &SiPMSimulator::setIntegration)
     .def("clear", &SiPMSimulator::clear)
-    .def("sensor", static_cast<const SiPMSensor* (SiPMSimulator::*)() const>(&SiPMSimulator::sensor))
-    .def("sensor", static_cast<SiPMSensor* (SiPMSimulator::*)()>(&SiPMSimulator::sensor))
+    .def("sensor", static_cast<const SiPMSensor *(SiPMSimulator::*)() const>(&SiPMSimulator::sensor))
+    .def("sensor", static_cast<SiPMSensor *(SiPMSimulator::*)()>(&SiPMSimulator::sensor))
     .def("runSimulation", &SiPMSimulator::runSimulation)
     .def("getResults", &SiPMSimulator::getResults)
     .def("getResult", &SiPMSimulator::getResult);

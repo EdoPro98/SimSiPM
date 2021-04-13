@@ -14,11 +14,11 @@
 namespace sipm {
 struct SiPMDebugInfo {
   inline SiPMDebugInfo(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t) noexcept;
-  const uint32_t nPhotons;         ///< Number of photons given as input.
-  const uint32_t nPhotoelectrons;  ///< Number of photoelectrons (hitted cells).
-  const uint32_t nDcr;             ///< Number of DCR events generated.
-  const uint32_t nXt;              ///< Number of XT events generated.
-  const uint32_t nAp;              ///< Number of AP events generated.
+  const uint32_t nPhotons;        ///< Number of photons given as input.
+  const uint32_t nPhotoelectrons; ///< Number of photoelectrons (hitted cells).
+  const uint32_t nDcr;            ///< Number of DCR events generated.
+  const uint32_t nXt;             ///< Number of XT events generated.
+  const uint32_t nAp;             ///< Number of AP events generated.
 };
 
 /** @brief Constructor of SiPMDebugInfo */

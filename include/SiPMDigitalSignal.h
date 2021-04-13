@@ -25,22 +25,22 @@ public:
   SiPMDigitalSignal(const double sampling) noexcept : m_Sampling(sampling){};
 
   /// @brief SiPMDigitalSignal constructor from a std::vector
-  SiPMDigitalSignal(const std::vector<int32_t>& wav, const double sampling) noexcept
+  SiPMDigitalSignal(const std::vector<int32_t> &wav, const double sampling) noexcept
     : m_Waveform(wav), m_Sampling(sampling){};
 
   /// @brief Move assignement operator from a std::vector
-  SiPMDigitalSignal& operator=(const std::vector<int32_t>&& aVect) noexcept {
+  SiPMDigitalSignal &operator=(const std::vector<int32_t> &&aVect) noexcept {
     m_Waveform = std::move(aVect);
     return *this;
   };
   // Copy assignement from vector
-  SiPMDigitalSignal& operator=(const std::vector<int32_t>& aVect) noexcept {
+  SiPMDigitalSignal &operator=(const std::vector<int32_t> &aVect) noexcept {
     m_Waveform = aVect;
     return *this;
   };
 
   /// @brief Copy assignement operator from a std::vector
-  int32_t& operator[](const uint32_t i) noexcept { return m_Waveform[i]; }
+  int32_t &operator[](const uint32_t i) noexcept { return m_Waveform[i]; }
   const int32_t operator[](const uint32_t i) const noexcept { return m_Waveform[i]; }
 
   /// @brief Returns the size of the vector containing the signal
@@ -50,7 +50,7 @@ public:
   /// @brief Returns the sampling time of the signal in ns
   double sampling() const { return m_Sampling; }
   /// @brief Used to access signal elements as if it is a std::vector
-  const std::vector<int32_t>& waveform() const { return m_Waveform; }
+  const std::vector<int32_t> &waveform() const { return m_Waveform; }
 
   /// @brief Returns integral of the signal
   int32_t integral(const double, const double, const int32_t) const;
@@ -68,5 +68,5 @@ private:
   const double m_Sampling;
 };
 
-}  // namespace sipm
+} // namespace sipm
 #endif /* SIPM_SIPMSIGNAL_H */

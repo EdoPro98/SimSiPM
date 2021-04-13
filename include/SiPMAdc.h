@@ -32,7 +32,7 @@ public:
   double jitter() const { return m_Jitter; }
 
   /// @brief Digitizes an analog signalt to a digital one
-  SiPMDigitalSignal digitize(const SiPMAnalogSignal&) const;
+  SiPMDigitalSignal digitize(const SiPMAnalogSignal &) const;
 
   /// @brief Sets jitter parameter
   void setJitter(const double jit) { m_Jitter = jit; }
@@ -47,10 +47,10 @@ public:
 
 private:
   /// @brief Quantizes a signal using a given number of bits
-  std::vector<int32_t> quantize(const std::vector<double>&, uint32_t, double, double) const __attribute__((hot));
+  std::vector<int32_t> quantize(const std::vector<double> &, uint32_t, double, double) const __attribute__((hot));
   /// @brief Adds jitter to a signal
   /// @todo Maybe better to return by reference here
-  std::vector<double> addJitter(std::vector<double>&, const double) const __attribute__((hot));
+  std::vector<double> addJitter(std::vector<double> &, const double) const __attribute__((hot));
 
   uint32_t m_Nbits;
   double m_Range;
@@ -60,5 +60,5 @@ private:
 
   mutable SiPMRandom rng;
 }; /* SiPMAdc */
-}  // namespace sipm
+} // namespace sipm
 #endif /* SIPM_SIPMADC_H */

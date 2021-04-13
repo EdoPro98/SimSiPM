@@ -8,13 +8,12 @@ using namespace sipm;
 using std::map;
 using std::vector;
 
-void SiPMPropertiesPy(py::module& m) {
+void SiPMPropertiesPy(py::module &m) {
   py::class_<SiPMProperties> SiPMProperties(m, "SiPMProperties");
   SiPMProperties
     .def(py::init<>())
     // .def("readSettings",&SiPMProperties::readSettings)
-    .def("dumpSettings",
-         &SiPMProperties::dumpSettings,
+    .def("dumpSettings", &SiPMProperties::dumpSettings,
          py::call_guard<py::scoped_ostream_redirect, py::scoped_estream_redirect>())
     .def("nCells", &SiPMProperties::nCells)
     .def("nSideCells", &SiPMProperties::nSideCells)
@@ -72,10 +71,9 @@ void SiPMPropertiesPy(py::module& m) {
     .def("setSlowComponentOn", &SiPMProperties::setSlowComponentOn)
     .def("setPdeType", &SiPMProperties::setPdeType)
     .def("setPdeSpectrum",
-         static_cast<void (SiPMProperties::*)(const map<double, double>&)>(&SiPMProperties::setPdeSpectrum))
-    .def("setPdeSpectrum",
-         static_cast<void (SiPMProperties::*)(const vector<double>&, const vector<double>&)>(
-           &SiPMProperties::setPdeSpectrum))
+         static_cast<void (SiPMProperties::*)(const map<double, double> &)>(&SiPMProperties::setPdeSpectrum))
+    .def("setPdeSpectrum", static_cast<void (SiPMProperties::*)(const vector<double> &, const vector<double> &)>(
+                             &SiPMProperties::setPdeSpectrum))
     .def("setHitDistribution", &SiPMProperties::setHitDistribution);
 
   py::enum_<SiPMProperties::PdeType>(SiPMProperties, "PdeType")
