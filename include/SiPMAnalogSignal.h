@@ -26,19 +26,13 @@ public:
 
   /// @brief SiPMAnalogSignal constructor from a std::vector
   SiPMAnalogSignal(const std::vector<double> &wav, const double sampling) noexcept
-    : m_Waveform(wav), m_Sampling(sampling){};
+    : m_Waveform(wav), m_Sampling(sampling){};  /// @brief Move assignement operator from a std::vector
 
   /// @brief Move assignement operator from a std::vector
   SiPMAnalogSignal &operator=(const std::vector<double> &&aVect) noexcept {
     m_Waveform = std::move(aVect);
     return *this;
-  };
-
-  /// @brief Copy assignement operator from a std::vector
-  SiPMAnalogSignal &operator=(const std::vector<double> &aVect) noexcept {
-    m_Waveform = aVect;
-    return *this;
-  };
+  }
 
   /// @brief Used to access signal elements as if it is a std::vector
   double &operator[](const uint32_t i) noexcept { return m_Waveform[i]; }
@@ -52,7 +46,7 @@ public:
   /// @brief Returns the sampling time of the signal in ns
   double sampling() const { return m_Sampling; }
   /// @brief Returns a std::vector containing the sampled waveform
-  const std::vector<double> &waveform() const { return m_Waveform; }
+  std::vector<double> waveform() const { return m_Waveform; }
 
   /// @brief Returns integral of the signal
   double integral(const double, const double, const double) const;
