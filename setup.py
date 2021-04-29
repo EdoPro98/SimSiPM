@@ -10,7 +10,7 @@ import os
 
 ParallelCompile("NPY_NUM_BUILD_JOBS").install()
 
-__version__ = "1.0.3-alpha"
+__version__ = "1.1.3-alpha"
 extra_compile_args = [
     "-DNDEBUG",
     "-O3",
