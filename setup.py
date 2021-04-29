@@ -27,7 +27,7 @@ if os.environ.get("SIPM_OMP"):
     extra_link_args.append("-lgomp")
 
 if not platform.system() == "Linux":
-    extra_compiler_args.append("-fno-aligned-allocation")
+    extra_compile_args.append("-fno-aligned-allocation")
 
 sources = []
 sources.extend(glob("src/*.cpp"))
