@@ -48,6 +48,12 @@ public:
   /// @brief Prints current settings of the sensor
   void dumpSettings() const;
 
+  /// @brief Returns size of sensor in mm
+  uint32_t size() const {return m_Size;}
+
+  /// @brief Returns pitch of cell in um
+  uint32_t pitch() const {return m_Pitch;}
+
   /// @brief Returns total number of cells in the sensor
   uint32_t nCells() const;
 

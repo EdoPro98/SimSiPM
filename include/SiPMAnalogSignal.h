@@ -35,9 +35,9 @@ public:
   }
 
   /// @brief Used to access signal elements as if it is a std::vector
-  double &operator[](const uint32_t i) noexcept { return m_Waveform[i]; }
+  inline double &operator[](const uint32_t i) noexcept { return m_Waveform[i]; }
   /// @brief Used to access signal elements as if it is a std::vector
-  const double operator[](const uint32_t i) const noexcept { return m_Waveform[i]; }
+  inline const double operator[](const uint32_t i) const noexcept { return m_Waveform[i]; }
 
   /// @brief Returns the size of the vector containing the signal
   uint32_t size() const { return m_Waveform.size(); }
