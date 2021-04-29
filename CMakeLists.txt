@@ -2,17 +2,27 @@ cmake_minimum_required(VERSION 3.9)
 project(SimSiPM VERSION 1 DESCRIPTION "Library for SiPM simulation" LANGUAGES CXX)
 include(GNUInstallDirs)
 
-set(COMPILE_PYTHON_BINDINGS OFF CACHE BOOL "Compile python bindings")
-set(USE_OPENMP OFF CACHE BOOL "Add OpenMP code for parallel execution")
+set(SIPM_BUILD_PYTHON OFF CACHE BOOL "Compile python bindings for SiPM simulation library")
+set(SIPM_ENABLE_OPENMP OFF CACHE BOOL "Use OpenMP in some parts of SiPM simulation library")
+set(SIPM_ENABLE_TEST OFF CACHE BOOL "Build tests for SiPM simulation library")
+set(SIPM_ENABLE_LTO OFF CACHE BOOL "Build SiPM with link time optimizations enabled")
 
-if(COMPILE_PYTHON_BINDINGS)
+if(SIPM_BUILD_PYTHON)
 	find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 	find_package(pybind11 CONFIG REQUIRED)
-endif(COMPILE_PYTHON_BINDINGS)
+endif(SIPM_BUILD_PYTHON)
 
-if (USE_OPENMP)
+if (SIPM_ENABLE_OPENMP)
 	find_package(OpenMP REQUIRED)
-endif(USE_OPENMP)
+endif(SIPM_ENABLE_OPENMP)
+
+if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+	if(SIPM_ENABLE_TEST)
+	    enable_testing()
+	    include(GoogleTest)
+	    add_subdirectory(tests)
+	endif(SIPM_ENABLE_TEST)
+endif ()
 
 # Optimizations
 if(NOT CMAKE_BUILD_TYPE)
@@ -45,12 +55,15 @@ add_library(sipm SHARED
 # Include files
 target_include_directories(sipm PUBLIC "include")
 set_property(TARGET sipm PROPERTY VERSION 1)
-set_property(TARGET sipm PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+if (SIPM_ENABLE_LTO)
+	set_property(TARGET sipm PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif (SIPM_ENABLE_LTO)
 set_property(TARGET sipm PROPERTY CXX_STANDARD 17)
 set_target_properties(sipm PROPERTIES PUBLIC_HEADER "${include}")
-if (USE_OPENMP)
+if (SIPM_ENABLE_OPENMP)
 	target_link_libraries(sipm PRIVATE OpenMP::OpenMP_CXX)
-endif(USE_OPENMP)
+endif(SIPM_ENABLE_OPENMP)
+set_target_properties(sipm PROPERTIES OUTPUT_NAME sipm)
 
 # Install
 install(TARGETS sipm
@@ -58,17 +71,15 @@ install(TARGETS sipm
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-if (COMPILE_PYTHON_BINDINGS)
+if (SIPM_BUILD_PYTHON)
 	find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 	find_package(pybind11 CONFIG REQUIRED)
 	pybind11_add_module(SiPM SHARED ${pysrc} ${src})
 	target_include_directories(SiPM PUBLIC "include/")
-	if (USE_OPENMP)
+	if (SIPM_ENABLE_OPENMP)
 		target_link_libraries(SiPM PRIVATE OpenMP::OpenMP_CXX)
-	endif(USE_OPENMP)
+	endif(SIPM_ENABLE_OPENMP)
 	set_property(TARGET SiPM PROPERTY CXX_STANDARD 17)
-
-
 
 	execute_process(
   COMMAND "${PYTHON_EXECUTABLE}" -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
@@ -78,4 +89,4 @@ if (COMPILE_PYTHON_BINDINGS)
 	install(TARGETS SiPM
 	LIBRARY DESTINATION ${Python3_SITEARCH}
 	)
-endif (COMPILE_PYTHON_BINDINGS)
+endif (SIPM_BUILD_PYTHON)
