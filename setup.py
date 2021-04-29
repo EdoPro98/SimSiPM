@@ -1,25 +1,38 @@
-from setuptools import setup
+try:
+    from skbuild import setup
+except ImportError:
+    from setuptools import setup
 from glob import glob
 from pybind11.setup_helpers import Pybind11Extension, build_ext
 from pybind11.setup_helpers import ParallelCompile
+import platform
+import cpufeature
 import os
 
 ParallelCompile("NPY_NUM_BUILD_JOBS").install()
 
+cpu_feature_dict = cpufeature.CPUFeature
+
 __version__ = "1.0.3-alpha"
 extra_compile_args = ["-DNDEBUG", "-O3", "-ffast-math", "-funsafe-math-optimizations"]
 extra_link_args = []
-use_native = os.environ.get("SIPMNATIVE")
-use_omp = os.environ.get("SIPMOPENMP")
 
-use_native = True if use_native in {"1", "true", "yes"} else False
-use_omp = True if use_omp in {"1", "true", "yes"} else False
+if cpu_feature_dict["AVX2"] and cpu_feature_dict["FMA3"]:
+    print("Detected AVX2 instruction set with FMA")
+    extra_compile_args.append("-mavx2")
+    extra_compile_args.append("-mfma")
 
-if use_native:
-    extra_compile_args.append("-march=native")
-if use_omp:
+if cpu_feature_dict["AVX"]:
+    print("Detected AVX instruction set")
+    extra_compile_args.append("-mavx")
+
+if os.environ.get("SIPM_OMP"):
+    print("Using OpenMP")
     extra_compile_args.append("-fopenmp")
     extra_link_args.append("-lgomp")
+
+if not platform.system() == "Linux":
+    extra_compiler_args.append("-fno-aligned-allocation")
 
 sources = []
 sources.extend(glob("src/*.cpp"))
