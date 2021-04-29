@@ -9,6 +9,12 @@
 
 namespace sipm {
 
+SiPMSensor::SiPMSensor() noexcept {
+  m_Properties = SiPMProperties();
+  m_Signal.setSampling(m_Properties.sampling());
+  m_SignalShape = signalShape();
+}
+
 SiPMSensor::SiPMSensor(const SiPMProperties &aProperty) noexcept {
   m_Properties = aProperty;
   m_Signal.setSampling(m_Properties.sampling());
@@ -175,16 +181,6 @@ std::pair<int32_t, int32_t> SiPMSensor::hitCell() const {
   }
 }
 
-std::vector<uint32_t> SiPMSensor::getCellIds() const {
-  std::vector<uint32_t> cellId;
-  cellId.reserve(m_Hits.size());
-  for (auto hit = m_Hits.begin(); hit != m_Hits.end(); ++hit) {
-    cellId.emplace_back(hit->id());
-  }
-
-  return cellId;
-}
-
 void SiPMSensor::addDcrEvents() {
   const double signalLength = m_Properties.signalLength();
   const double meanDcr = 1e9 / m_Properties.dcr();
@@ -255,22 +251,22 @@ void SiPMSensor::addPhotoelectrons() {
 void SiPMSensor::addXtEvents() {
   const double xt = m_Properties.xt();
 
-  // Use while becouse number of hits increases in loop
+  // Use while becouse number of hits increases in loop and iterator gets invalidated
   uint32_t currentCellIdx = 0;
   while (currentCellIdx < m_nTotalHits) {
     SiPMHit *hit = &m_Hits[currentCellIdx];
     double xtTime = hit->time();
+    int32_t xtGeneratorRow = hit->row();
+    int32_t xtGeneratorCol = hit->col();
 
     // Poisson process algorithm
     double test = m_rng.Rand();
     while (test > exp(-xt)) {
-      int32_t xtGeneratorRow = hit->row();
-      int32_t xtGeneratorCol = hit->col();
 
       int32_t rowAdd, colAdd;
       do {
-        rowAdd = m_rng.randInteger(2) - 1;
-        colAdd = m_rng.randInteger(2) - 1;
+        rowAdd = m_rng.randInteger(2) - 1;  // [-1,0,1]
+        colAdd = m_rng.randInteger(2) - 1;  // [-1,0,1]
       } while (rowAdd == 0 && colAdd == 0); // Do not add same cell
       int32_t xtRow = xtGeneratorRow + rowAdd;
       int32_t xtCol = xtGeneratorCol + colAdd;
@@ -294,7 +290,7 @@ void SiPMSensor::addApEvents() {
   const double recoveryTime = m_Properties.recoveryTime();
   const double slowFraction = m_Properties.apSlowFraction();
 
-  // Use while becouse number of hits increases in loop
+  // Use while becouse number of hits increases in loop and iterator gets invalidated
   uint32_t currentCellIdx = 0;
   while (currentCellIdx < m_nTotalHits) {
     SiPMHit *hit = &m_Hits[currentCellIdx];
@@ -327,36 +323,38 @@ void SiPMSensor::addApEvents() {
 }
 
 void SiPMSensor::calculateSignalAmplitudes() {
-  sortHits();
-  const std::vector<uint32_t> cellId = getCellIds();
-  const std::unordered_set<uint32_t> uniqueCellId(cellId.begin(), cellId.end());
+  // Hits are sorted inplace such that thay have increasing times
+  std::sort(m_Hits.begin(), m_Hits.end());
   const double tauRecovery = 1 / m_Properties.recoveryTime();
 
-  for (auto itr = uniqueCellId.begin(); itr != uniqueCellId.end(); ++itr) {
-    // If cell hitted more than once
-    if (std::count(cellId.begin(), cellId.end(), *itr) > 1) {
+  for (auto hit = m_Hits.begin(); hit != m_Hits.end(); ++hit) {
+    // Check if hit is fired more than once
+    if (std::count(m_Hits.begin(), m_Hits.end(), *hit) > 1){
+      // If so check which hits are in same cell
       double previousHitTime = 0;
-      for (auto hit = m_Hits.begin(); hit != m_Hits.end(); ++hit) {
-        if (hit->id() == *itr) {
-          if (previousHitTime == 0) {
-            previousHitTime = hit->time();
-          } else {
-            double delay = hit->time() - previousHitTime;
-            hit->amplitude() *= 1 - exp(-delay * tauRecovery);
-            previousHitTime = hit->time();
-          }
+      for (auto test = m_Hits.begin(); test != m_Hits.end(); ++test) {
+        if (*test == *hit){
+          // Branchless equivalent of if/else
+          // In first occurence prevHitTime is 0 so amplitude wille be 1.
+          // Else if prevHitTime is not 0 the exp term will be considered
+          double delay = hit->time() - previousHitTime;
+          hit->amplitude() = 1 - exp(-delay * tauRecovery)*(int)(previousHitTime != 0);
+          previousHitTime = hit->time();
         }
       }
     }
   }
 }
 
-#ifdef __AVX2__
+// GCC does not optimally vectorize this part very well
+// Use AVX2 intrinic to perform signal generation
+#if( defined __AVX2__ && ! defined __clang__)
 void SiPMSensor::generateSignal() {
   const uint32_t nSignalPoints = m_Properties.nSignalPoints();
   const double sampling = m_Properties.sampling();
 
   m_Signal = m_rng.randGaussian(0, m_Properties.snrLinear(), nSignalPoints);
+  if(m_Hits.size() == 0){return;}
 
   for (auto hit = m_Hits.begin(); hit != m_Hits.end(); ++hit) {
     const int32_t time = hit->time() / sampling;
@@ -376,18 +374,27 @@ void SiPMSensor::generateSignal() {
   }
 }
 #else
+// Clang on the other hand is pretty good at vectorization and unrolling
 void SiPMSensor::generateSignal() {
+  const uint32_t nHits = m_Hits.size();
   const uint32_t nSignalPoints = m_Properties.nSignalPoints();
   const double sampling = m_Properties.sampling();
 
   m_Signal = m_rng.randGaussian(0, m_Properties.snrLinear(), nSignalPoints);
+  if(nHits == 0){return;}
 
-  for (auto hit = m_Hits.begin(); hit != m_Hits.end(); ++hit) {
-    const int32_t time = hit->time() / sampling;
-    const double amplitude = hit->amplitude() * m_rng.randGaussian(1, m_Properties.ccgv());
+  // Temp storage in array for vectorization
+  uint32_t times[nHits];
+  double amplitudes[nHits];
+  for (uint32_t i=0; i < nHits; ++i) {
+    times[i] = m_Hits[i].time() / sampling;
+    amplitudes[i] = m_Hits[i].amplitude() * m_rng.randGaussian(1, m_Properties.ccgv());
+  }
 
-    for (uint32_t i = time; i < nSignalPoints; ++i) {
-      m_Signal[i] += m_SignalShape[i - time] * amplitude;
+  // This loop should be vectorized and unrolled by compiler
+  for (uint32_t i = 0; i < nHits; ++i) {
+    for (uint32_t j = times[i]; j < nSignalPoints; ++j) {
+      m_Signal[j] += m_SignalShape[j - times[i]] * amplitudes[i];
     }
   }
 }

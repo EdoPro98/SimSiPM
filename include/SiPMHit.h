@@ -9,9 +9,8 @@
  *  @author Edoardo Proserpio
  *  @date 2020
  */
-#include <mutex>
 #include <stdint.h>
-#include <thread>
+#include <algorithm>
 
 #ifndef SIPM_SIPMHITS_H
 #define SIPM_SIPMHITS_H
@@ -32,13 +31,22 @@ public:
 
   /** @brief Constructor of SiPMHit */
   SiPMHit(const double time, const double amp, const uint32_t r, const uint32_t c, const HitType type) noexcept
-    : m_Time(time), m_Amplitude(amp), m_Row(r), m_Col(c), m_HitType(type), m_Id(makePair(r, c)) {}
+    : m_Time(time), m_Amplitude(amp), m_Row(r), m_Col(c), m_HitType(type) {}
+
   /// @brief Operator used to sort hits
   /**
    * Hits are sorted based on theyr time parameter:
    * @f[Hit_1 < Hit_2 \Leftrightarrow Hit_1.time < Hit_2.time @f]
    */
-  bool operator<(const SiPMHit &aHit) const noexcept { return m_Time < aHit.m_Time; }
+  inline bool operator<(const SiPMHit &rhs) const noexcept { return m_Time < rhs.m_Time; }
+  inline bool operator>(const SiPMHit &rhs) const noexcept { return m_Time > rhs.m_Time; }
+
+  /// @brief Operator used to check if the hit is in the same cell
+  /**
+   * Hits are considered equal if they have same row and column
+   */
+  inline bool operator==(const SiPMHit &rhs) const noexcept { return ((m_Row == rhs.m_Row) && (m_Col == rhs.m_Col)); }
+  inline bool operator!=(const SiPMHit &rhs) const noexcept { return ((m_Row != rhs.m_Row) || (m_Col != rhs.m_Col)); }
 
   /// @brief Returns hit time
   double time() const { return m_Time; }
@@ -46,26 +54,18 @@ public:
   uint32_t row() const { return m_Row; }
   /// @brief Returns column of hitted cell
   uint32_t col() const { return m_Col; }
-  /// @brief Returns a unique id to identify a hitted cell
-  uint32_t id() const { return m_Id; }
   /// @brief Returns amplitude of the signal produced by the hit
   double amplitude() const { return m_Amplitude; }
   /// @brief Used to modify the amplitude if needed
   double &amplitude() { return m_Amplitude; }
   /// @brief Returns hit type to identify the hits
   HitType hitType() const { return m_HitType; }
-
 private:
-  /// @brief Creates an unique id from two integers (based on Cantor pairing
-  /// function)
-  static const uint32_t makePair(const uint32_t x, const uint32_t y) { return ((x + y + 1) * (x + y) << 1) + y; }
-
   double m_Time;
   double m_Amplitude;
   uint32_t m_Row;
   uint32_t m_Col;
   HitType m_HitType;
-  uint32_t m_Id;
 };
 
 } // namespace sipm
