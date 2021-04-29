@@ -10,8 +10,6 @@ import os
 
 ParallelCompile("NPY_NUM_BUILD_JOBS").install()
 
-cpu_feature_dict = cpufeature.CPUFeature
-
 __version__ = "1.0.3-alpha"
 extra_compile_args = [
     "-DNDEBUG",
