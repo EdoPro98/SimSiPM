@@ -6,7 +6,6 @@ from glob import glob
 from pybind11.setup_helpers import Pybind11Extension, build_ext
 from pybind11.setup_helpers import ParallelCompile
 import platform
-import cpufeature
 import os
 
 ParallelCompile("NPY_NUM_BUILD_JOBS").install()
