@@ -66,13 +66,26 @@ uint32_t SiPMRandom::randPoisson(const double mu) {
  */
 double SiPMRandom::randExponential(const double mu) { return -log(Rand()) * mu; }
 
-/** @brief Returns a value from a gaussian distribution given its mean value and
- * sigma.
- *
- * This function is based on Box-Muller algorithm for random gaussian generation.
- * @param mu Mean value of the gaussian distribution
- * @param sigma Standard deviation of the gaussian distribution
- */
+/**
+*   @brief Samples a random number from the standard Normal (Gaussian) Distribution with the given mean and sigma.
+*
+* Uses the Acceptance-complement ratio from W. Hoermann and G. Derflinger
+* This is one of the fastest existing method for generating normal random variables.
+* It is a factor 2/3 faster than the polar (Box-Muller) method used in the previous
+* version of TRandom::Gaus. The speed is comparable to the Ziggurat method (from Marsaglia)
+* implemented for example in GSL and available in the MathMore library.
+*
+* REFERENCE:  - W. Hoermann and G. Derflinger (1990):
+*              The ACR Method for generating normal random variables,
+*              OR Spektrum 12 (1990), 181-185.
+*
+* Implementation taken from
+* UNURAN (c) 2000  W. Hoermann & J. Leydold, Institut f. Statistik, WU Wien
+
+* @param mu Mean value of the gaussian distribution
+* @param sigma Standard deviation of the gaussian distribution
+* @return Double value from gaussian distribution
+*/
 double SiPMRandom::randGaussian(const double mu, const double sigma) {
   constexpr double kC1 = 1.448242853;
   constexpr double kC2 = 3.307147487;
@@ -196,21 +209,22 @@ std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma
     return {};
   }
   std::vector<double> out(n);
+  double s[n];
 
   for (uint32_t i = 0; i < n - 1; i += 2) {
-    double s, u, v;
+    double z, u, v;
     do {
       u = Rand() * 2.0 - 1.0;
       v = Rand() * 2.0 - 1.0;
-      s = (u * u) + (v * v);
-    } while (s > 1.0 || s == 0.0);
-
-    s = sqrt(log(s) * (-2. / s));
-    out[i] = s * u;
-    out[i + 1] = s * v;
+      z = (u * u) + (v * v);
+    } while (z > 1.0 || z == 0.0);
+    s[i] = log(z) * (-2. / z);
+    s[i + 1] = s[i];
+    out[i] = u;
+    out[i + 1] = v;
   }
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = out[i] * sigma + mu;
+    out[i] = sqrt(s[i]) * out[i] * sigma + mu;
   }
   return out;
 }
