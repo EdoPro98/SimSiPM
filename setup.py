@@ -21,13 +21,18 @@ extra_compile_args = [
 ]
 extra_link_args = []
 
-if os.environ.get("SIPM_OMP"):
+if platform.system() == "Darwin":
+    # On MacOS
+    extra_compile_args.append("-fno-aligned-allocation")
+
+if platform.system() == "Windows":
+    # On Windows
+    extra_compile_args = ["/O2", "/arch:AVX2", "/fp:fast"]
+
+if os.environ.get("SIPM_OMP") and platform.system() != "Windows":
     print("Using OpenMP")
     extra_compile_args.append("-fopenmp")
     extra_link_args.append("-lgomp")
-
-if not platform.system() == "Linux":
-    extra_compile_args.append("-fno-aligned-allocation")
 
 sources = []
 sources.extend(glob("src/*.cpp"))

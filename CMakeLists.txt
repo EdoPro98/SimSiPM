@@ -52,8 +52,6 @@ add_library(sipm SHARED
 )
 
 
-# Include files
-target_include_directories(sipm PUBLIC "include")
 set_property(TARGET sipm PROPERTY VERSION 1)
 if (SIPM_ENABLE_LTO)
 	set_property(TARGET sipm PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
