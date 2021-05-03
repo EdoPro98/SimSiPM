@@ -13,7 +13,7 @@ jobs:
       max-parallel: 4
       fail-fast: false
       matrix:
-        os: [macos-10.15, ubuntu-20.04]
+        os: [macos-10.15, ubuntu-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -22,17 +22,19 @@ jobs:
         with:
           fetch-depth: 1
 
+      - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         name: Install Python
         with:
           python-version: 3.9
 
       - name: Build wheels
-        uses: joerick/cibuildwheel@v1.9.0
+        uses: joerick/cibuildwheel@v1.11.0
         env:
           CIBW_SKIP: cp27-* pp* *-manylinux_i686
           CIBW_BUILD: cp3*
           CIBW_BEFORE_BUILD: pip install -U pip && pip install pybind11
+          CIBW_ARCHS_MACOS: x86_64 universal2
 
       - uses: actions/upload-artifact@v2
         with:
@@ -45,7 +47,7 @@ jobs:
       max-parallel: 4
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
 
