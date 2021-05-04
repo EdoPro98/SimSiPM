@@ -1,7 +1,7 @@
 # SimSiPM
 ![GitHub release](https://img.shields.io/github/v/release/EdoPro98/SimSiPM?include_prereleases)
 
-<p align="center"><img src="/images/signals.svg" width=500></p>
+<p align="center"><img src="https://raw.githubusercontent.com/EdoPro98/SimSiPM/master/images/signals.svg" width=500></p>
 
 ![GCC](https://github.com/EdoPro98/SimSiPM/workflows/GCC/badge.svg?branch=master&event=push)
 ![AppleClang](https://github.com/EdoPro98/SimSiPM/workflows/AppleClang/badge.svg?branch=master&event=push)
@@ -223,7 +223,7 @@ myProperties.setPdeSpectrum(wlen,pde);
 mySensor.addPhoton(photonTime, photonWlen);
 // or mySensor.addPhotons(photonTimes, photonWlens);
 ```
-<p align="center"><img src="/images/pde.png" width=500></p>
+<p align="center"><img src="https://raw.githubusercontent.com/EdoPro98/SimSiPM/master/images/pde.png" width=500></p>
 
 The values inserted by the user are linearly interpolated to calculate the PDE for each wavelength so it is better to add a reasonable number of values.
 
@@ -237,7 +237,7 @@ myPropertie.setHitDistribution(sipm::SiPMProperties::HitDistribution::kUniform);
 
 #### Circular hit distribution
 In this case 95% of photons are placed in a circle centered in the sensor and with a diameter that is the same as the sensor's side lenght. The remaining 5% is distributed uniformly on the sensor.
-<p align="center"><img src="/images/circleHits.png" width=250></p>
+<p align="center"><img src="https://raw.githubusercontent.com/EdoPro98/SimSiPM/master/images/circleHits.png" width=250></p>
 
 ```cpp
 myPropertie.setHitDistribution(sipm::SiPMProperties::HitDistribution::kCircle);
@@ -245,7 +245,7 @@ myPropertie.setHitDistribution(sipm::SiPMProperties::HitDistribution::kCircle);
 
 #### Gaussian hit distribution
 In this case 95% of the photons are distributed following a gaussian distribution centered in the sensor. The remaining 5% is distributed uniformly on the sensor.  
-<p align="center"><img src="/images/gaussianHits.png" width=250></p>
+<p align="center"><img src="https://raw.githubusercontent.com/EdoPro98/SimSiPM/master/images/gaussianHits.png" width=250></p>
 
 ```cpp
 myPropertie.setHitDistribution(sipm::SiPMProperties::HitDistribution::kGaussian);

@@ -1,14 +1,28 @@
-try:
-    from skbuild import setup
-except ImportError:
-    from setuptools import setup
+#!/usr/bin/env python
+###################################################################
+#  SiPM - Silicon Photomultipliers simulation toolkit. Developed for high energy physics and particle phisics simulations.
+#
+#      License: MIT
+#      Author:  Edoardo Proserpio
+#
+####################################################################
+from setuptools import setup
 from glob import glob
-from pybind11.setup_helpers import Pybind11Extension, build_ext
-from pybind11.setup_helpers import ParallelCompile
-import platform
-import os
+from pybind11.setup_helpers import (
+    Pybind11Extension,
+    build_ext,
+    ParallelCompile,
+    naive_recompile,
+)
+import os, platform
 
-ParallelCompile("NPY_NUM_BUILD_JOBS").install()
+with open("README.md", encoding="utf-8") as f:
+    LONG_DESCRIPTION = f.read()
+
+if os.environ.get("NPY_NUM_BUILD_JOBS"):
+    ParallelCompile("NPY_NUM_BUILD_JOBS", needs_recompile=naive_recompile).install()
+else:
+    ParallelCompile(needs_recompile=naive_recompile).install()
 
 __version__ = "1.1.3-alpha"
 extra_compile_args = [
@@ -25,11 +39,7 @@ if platform.system() == "Darwin":
     # On MacOS
     extra_compile_args.append("-fno-aligned-allocation")
 
-if platform.system() == "Windows":
-    # On Windows
-    extra_compile_args = ["/O2", "/arch:AVX2", "/fp:fast"]
-
-if os.environ.get("SIPM_OMP") and platform.system() != "Windows":
+if os.environ.get("SIPM_OMP"):
     print("Using OpenMP")
     extra_compile_args.append("-fopenmp")
     extra_link_args.append("-lgomp")
@@ -58,7 +68,7 @@ class get_pybind_include(object):
 ext_modules = [
     Pybind11Extension(
         "SiPM",
-        sources=sources,
+        sources=sorted(sources),
         include_dirs=[
             include_dirs,
             get_pybind_include(),
@@ -81,8 +91,7 @@ setup(
     maintainer_email="edoardo.proserpio@gmail.com",
     url="https://github.com/EdoPro98/SimSiPM",
     description="Library for Silicon Photomultipliers simulation.",
-    long_description="""Library for Silicon Photomultipliers simulation.
-                        Developed for high energy physics and particle phisics simulations.""",
+    long_description=LONG_DESCRIPTION,
     ext_modules=ext_modules,
     include_dirs=include_dirs,
     cmdclass={"build_ext": build_ext},
