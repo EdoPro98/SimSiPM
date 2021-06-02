@@ -45,11 +45,25 @@ namespace SiPMRng {
 class Xorshift256plus {
 public:
   /// @brief Default contructor for Xorshift256plus
-  Xorshift256plus() noexcept { seed(); }
+  Xorshift256plus() { seed(); }
   /// @brief Contructor for Xorshift256plus given a seed value
-  Xorshift256plus(uint64_t aseed) noexcept { seed(aseed); }
+  explicit Xorshift256plus(uint64_t aseed) { seed(aseed); }
   /// @brief Returns a pseud-random 64-bits intger
-  inline uint64_t operator()() noexcept __attribute__((hot));
+  inline uint64_t operator()() noexcept {
+    const uint64_t result = s[0] + s[3];
+
+    const uint64_t t = s[1] << 17;
+
+    s[2] ^= s[0];
+    s[3] ^= s[1];
+    s[1] ^= s[2];
+    s[0] ^= s[3];
+
+    s[2] ^= t;
+
+    s[3] = (s[3] << 45U) | (s[3] >> (64U - 45U));
+    return result;
+  }__attribute__((hot))
   /// @brief Jump function for the alghoritm.
   /** Usefull in case the same generator is used in multiple instancies. The
    * jump function will make sure that pseudo-random values generated from the
@@ -64,22 +78,6 @@ public:
 private:
   alignas(64) uint64_t s[4];
 };
-
-inline uint64_t Xorshift256plus::operator()() noexcept {
-  const uint64_t result = s[0] + s[3];
-
-  const uint64_t t = s[1] << 17;
-
-  s[2] ^= s[0];
-  s[3] ^= s[1];
-  s[1] ^= s[2];
-  s[0] ^= s[3];
-
-  s[2] ^= t;
-
-  s[3] = (s[3] << 45U) | (s[3] >> (64U - 45U));
-  return result;
-}
 
 } // namespace SiPMRng
 
@@ -133,7 +131,7 @@ private:
 * to double
 */
 inline double SiPMRandom::Rand() {
-  uint64_t u = (m_rng() >> 12) | 0x3FF0000000000000;
-  return *(double*)&u;}
+  uint64_t u = (m_rng() >> 11) | 0x3FF0000000000000;
+  return *(double*)&u-1;}
 } // namespace sipm
 #endif /* SIPM_RANDOM_H */

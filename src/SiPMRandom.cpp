@@ -5,12 +5,10 @@ namespace sipm {
 
 namespace SiPMRng {
 void Xorshift256plus::seed() {
-  std::random_device rd;
-  s[0] = rd();
-  s[1] = rd();
-  s[2] = rd();
-  s[3] = rd();
-  this->operator()();
+  s[0] = std::random_device{}();
+  s[1] = std::random_device{}();
+  s[2] = std::random_device{}();
+  s[3] = std::random_device{}();
 }
 
 void Xorshift256plus::seed(const uint64_t aseed) {
@@ -219,13 +217,17 @@ std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma
       v = Rand() * 2.0 - 1.0;
       z = (u * u) + (v * v);
     } while (z > 1.0 || z == 0.0);
-    s[i] = -2 * log(z) / z;
+    s[i] = -2 * (log(z) / z);
     s[i + 1] = s[i];
     out[i] = u;
     out[i + 1] = v;
   }
   for (uint32_t i = 0; i < n; ++i) {
     out[i] = sqrt(s[i]) * out[i] * sigma + mu;
+  }
+  // If n is odd we miss last value
+  if(n&1){
+    out[n-1] = randGaussian(mu,sigma);
   }
   return out;
 }
