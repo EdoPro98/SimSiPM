@@ -21,7 +21,11 @@ int32_t SiPMDigitalSignal::integral(const double intstart, const double intgate,
     return 0;
   }
 
-  return std::accumulate(start, end, static_cast<int32_t>(0)) * m_Sampling;
+  int32_t integral = 0;
+  for(auto itr=start; itr!=end; ++itr){
+    integral += *itr;
+  }
+  return integral * m_Sampling;
 }
 
 /**
@@ -36,7 +40,7 @@ int32_t SiPMDigitalSignal::peak(const double intstart, const double intgate, con
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  const double peak = *std::max_element(start, end);
+  const int32_t peak = *std::max_element(start, end);
   if (peak < threshold) {
     return 0;
   }
@@ -88,7 +92,7 @@ double SiPMDigitalSignal::toa(const double intstart, const double intgate, const
   }
 
   double toa = 0;
-  while (*start < threshold || start != end) {
+  while (*start < threshold && start != end) {
     ++toa;
     ++start;
   }

@@ -21,7 +21,11 @@ double SiPMAnalogSignal::integral(const double intstart, const double intgate, c
   if (peak < threshold) {
     return 0;
   }
-  return std::accumulate(start, end, 0.0) * m_Sampling;
+  double integral = 0;
+  for(auto itr=start; itr!=end; ++itr){
+    integral += *itr;
+  }
+  return integral * m_Sampling;
 }
 
 /**
@@ -60,7 +64,7 @@ double SiPMAnalogSignal::tot(const double intstart, const double intgate, const 
     return 0;
   }
 
-  double tot = 0;
+  uint32_t tot = 0;
   for (auto itr = start; itr != end; ++itr) {
     if (*itr > threshold) {
       ++tot;
@@ -86,7 +90,7 @@ double SiPMAnalogSignal::toa(const double intstart, const double intgate, const 
     return -1;
   }
 
-  double toa = 0;
+  uint32_t toa = 0;
   while (*start < threshold && start != end) {
     ++toa;
     ++start;

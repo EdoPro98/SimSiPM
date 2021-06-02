@@ -63,20 +63,19 @@ std::vector<double> SiPMAdc::addJitter(std::vector<double> &signal, const double
     std::rotate(lsignalshift.begin(), lsignalshift.begin() + 1, lsignalshift.end());
   }
 
-  // In this part i take into account of a signal shift smaller thant 1 idx.
+  // In this part I take into account of a signal shift smaller thant 1 idx.
   // In this case the resulting signal is the wighted sum of the original signal
   // and the signal shiftedby one.
 #ifdef __AVX2__
-  const uint32_t last = n - n % 4;
   const __m256d __jitweight = _mm256_set1_pd(jitweight);
   __m256d __signal, __signalshift;
-  for (uint32_t i = 0; i < last; i += 4) {
+  for (uint32_t i = 0; i < n - 4; i += 4) {
     __signal = _mm256_loadu_pd(&signal[i]);
     __signalshift = _mm256_loadu_pd(&lsignalshift[i]);
     __signal = _mm256_fmadd_pd(__jitweight, _mm256_sub_pd(__signalshift, __signal), __signal);
     _mm256_storeu_pd(&signal[i], __signal);
   }
-  for (uint32_t i = last; i < n; ++i) {
+  for (uint32_t i = n - 4; i < n; ++i) {
     signal[i] += jitweight * (lsignalshift[i] - signal[i]);
   }
 #else

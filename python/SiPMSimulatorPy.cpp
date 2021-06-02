@@ -33,5 +33,6 @@ void SiPMSimulatorPy(py::module &m) {
     .def_readonly("Peak", &SiPMSimulator::SiPMResult::peak)
     .def_readonly("Toa", &SiPMSimulator::SiPMResult::toa)
     .def_readonly("Tot", &SiPMSimulator::SiPMResult::tot)
-    .def_readonly("Top", &SiPMSimulator::SiPMResult::top);
+    .def_readonly("Top", &SiPMSimulator::SiPMResult::top)
+    .def_readonly("Debug", &SiPMSimulator::SiPMResult::debug);
 }
