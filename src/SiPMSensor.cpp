@@ -15,19 +15,19 @@ SiPMSensor::SiPMSensor() noexcept {
   m_SignalShape = signalShape();
 }
 
-SiPMSensor::SiPMSensor(const SiPMProperties &aProperty) noexcept {
+SiPMSensor::SiPMSensor(const SiPMProperties& aProperty) noexcept {
   m_Properties = aProperty;
   m_Signal.setSampling(m_Properties.sampling());
   m_SignalShape = signalShape();
 }
 
-void SiPMSensor::setProperty(const std::string &prop, const double val) {
+void SiPMSensor::setProperty(const std::string& prop, const double val) {
   m_Properties.setProperty(prop, val);
   m_Signal.setSampling(m_Properties.sampling());
   m_SignalShape = signalShape();
 }
 
-void SiPMSensor::setProperties(const SiPMProperties &x) {
+void SiPMSensor::setProperties(const SiPMProperties& x) {
   m_Properties = x;
   m_Signal.setSampling(m_Properties.sampling());
   m_SignalShape = signalShape();
@@ -42,9 +42,9 @@ void SiPMSensor::addPhoton(const double aTime, const double aWavelength) {
   m_PhotonWavelengths.emplace_back(aWavelength);
 }
 
-void SiPMSensor::addPhotons(const std::vector<double> &aTimes) { m_PhotonTimes = aTimes; }
+void SiPMSensor::addPhotons(const std::vector<double>& aTimes) { m_PhotonTimes = aTimes; }
 
-void SiPMSensor::addPhotons(const std::vector<double> &aTimes, const std::vector<double> &aWavelengths) {
+void SiPMSensor::addPhotons(const std::vector<double>& aTimes, const std::vector<double>& aWavelengths) {
   m_PhotonTimes = aTimes;
   m_PhotonWavelengths = aWavelengths;
 }
@@ -86,7 +86,7 @@ double* SiPMSensor::signalShape() const {
   const double tff = m_Properties.fallingTimeFast() / sampling;
   const double gain = m_Properties.gain();
   const uint32_t to_alloc = (((double)nSignalPoints / 256) + 1) * 256;
-  double* lSignalShape = new(std::align_val_t(256)) double[nSignalPoints];
+  double* lSignalShape = new (std::align_val_t(256)) double[nSignalPoints];
 
   if (m_Properties.hasSlowComponent()) {
     const double tfs = m_Properties.fallingTimeSlow() / sampling;
@@ -256,7 +256,7 @@ void SiPMSensor::addXtEvents() {
   // Use while becouse number of hits increases in loop and iterator gets invalidated
   uint32_t currentCellIdx = 0;
   while (currentCellIdx < m_nTotalHits) {
-    SiPMHit *hit = &m_Hits[currentCellIdx];
+    SiPMHit* hit = &m_Hits[currentCellIdx];
     double xtTime = hit->time();
     int32_t xtGeneratorRow = hit->row();
     int32_t xtGeneratorCol = hit->col();
@@ -295,7 +295,7 @@ void SiPMSensor::addApEvents() {
   // Use while becouse number of hits increases in loop and iterator gets invalidated
   uint32_t currentCellIdx = 0;
   while (currentCellIdx < m_nTotalHits) {
-    SiPMHit *hit = &m_Hits[currentCellIdx];
+    SiPMHit* hit = &m_Hits[currentCellIdx];
     currentCellIdx++;
     double apGeneratorTime = hit->time();
 
@@ -331,16 +331,16 @@ void SiPMSensor::calculateSignalAmplitudes() {
 
   for (auto hit = m_Hits.begin(); hit != m_Hits.end(); ++hit) {
     // Check if hit is fired more than once
-    if (std::count(m_Hits.begin(), m_Hits.end(), *hit) > 1){
+    if (std::count(m_Hits.begin(), m_Hits.end(), *hit) > 1) {
       // If so check which hits are in same cell
       double previousHitTime = 0;
       for (auto test = m_Hits.begin(); test != m_Hits.end(); ++test) {
-        if (*test == *hit){
+        if (*test == *hit) {
           // Branchless equivalent of if/else
           // In first occurence prevHitTime is 0 so amplitude wille be 1.
           // Else if prevHitTime is not 0 the exp term will be considered
           double delay = hit->time() - previousHitTime;
-          hit->amplitude() = 1 - exp(-delay * tauRecovery)*(int)(previousHitTime != 0);
+          hit->amplitude() = 1 - exp(-delay * tauRecovery) * (int)(previousHitTime != 0);
           previousHitTime = hit->time();
         }
       }
@@ -350,13 +350,15 @@ void SiPMSensor::calculateSignalAmplitudes() {
 
 // GCC does not vectorize this part very well
 // Use AVX2 intrinic to perform signal generation
-#if( defined __AVX2__ && ! defined __clang__)
+#if (defined __AVX2__ && !defined __clang__)
 void SiPMSensor::generateSignal() {
   const uint32_t nSignalPoints = m_Properties.nSignalPoints();
   const double sampling = m_Properties.sampling();
 
   m_Signal = m_rng.randGaussian(0, m_Properties.snrLinear(), nSignalPoints);
-  if(m_Hits.size() == 0){return;}
+  if (m_Hits.size() == 0) {
+    return;
+  }
 
   for (auto hit = m_Hits.begin(); hit != m_Hits.end(); ++hit) {
     const int32_t time = hit->time() / sampling;
@@ -366,20 +368,20 @@ void SiPMSensor::generateSignal() {
 
     for (uint32_t i = time; i < nSignalPoints - 16; i += 16) {
       __m256d __signal1 = _mm256_loadu_pd(&m_Signal[i]);
-      __m256d __signal2 = _mm256_loadu_pd(&m_Signal[i+4]);
-      __m256d __signal3 = _mm256_loadu_pd(&m_Signal[i+8]);
-      __m256d __signal4 = _mm256_loadu_pd(&m_Signal[i+12]);
+      __m256d __signal2 = _mm256_loadu_pd(&m_Signal[i + 4]);
+      __m256d __signal3 = _mm256_loadu_pd(&m_Signal[i + 8]);
+      __m256d __signal4 = _mm256_loadu_pd(&m_Signal[i + 12]);
       __m256d __shape1 = _mm256_load_pd(&m_SignalShape[i - time]);
-      __m256d __shape2 = _mm256_load_pd(&m_SignalShape[i - time+4]);
-      __m256d __shape3 = _mm256_load_pd(&m_SignalShape[i - time+8]);
-      __m256d __shape4 = _mm256_load_pd(&m_SignalShape[i - time+12]);
+      __m256d __shape2 = _mm256_load_pd(&m_SignalShape[i - time + 4]);
+      __m256d __shape3 = _mm256_load_pd(&m_SignalShape[i - time + 8]);
+      __m256d __shape4 = _mm256_load_pd(&m_SignalShape[i - time + 12]);
       __signal1 = _mm256_fmadd_pd(__shape1, __amplitude, __signal1);
       __signal2 = _mm256_fmadd_pd(__shape2, __amplitude, __signal2);
       __signal4 = _mm256_fmadd_pd(__shape4, __amplitude, __signal4);
       _mm256_storeu_pd(&m_Signal[i], __signal1);
-      _mm256_storeu_pd(&m_Signal[i+4], __signal2);
-      _mm256_storeu_pd(&m_Signal[i+8], __signal3);
-      _mm256_storeu_pd(&m_Signal[i+12], __signal4);
+      _mm256_storeu_pd(&m_Signal[i + 4], __signal2);
+      _mm256_storeu_pd(&m_Signal[i + 8], __signal3);
+      _mm256_storeu_pd(&m_Signal[i + 12], __signal4);
     }
   }
 }
@@ -391,12 +393,14 @@ void SiPMSensor::generateSignal() {
   const double sampling = m_Properties.sampling();
 
   m_Signal = m_rng.randGaussian(0, m_Properties.snrLinear(), nSignalPoints);
-  if(nHits == 0){return;}
+  if (nHits == 0) {
+    return;
+  }
 
   // Temp storage in array for vectorization
   uint32_t times[nHits];
   double amplitudes[nHits];
-  for (uint32_t i=0; i < nHits; ++i) {
+  for (uint32_t i = 0; i < nHits; ++i) {
     times[i] = m_Hits[i].time() / sampling;
     amplitudes[i] = m_Hits[i].amplitude() * m_rng.randGaussian(1, m_Properties.ccgv());
   }

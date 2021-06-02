@@ -9,8 +9,8 @@
  *  @author Edoardo Proserpio
  *  @date 2020
  */
-#include <stdint.h>
 #include <algorithm>
+#include <stdint.h>
 
 #ifndef SIPM_SIPMHITS_H
 #define SIPM_SIPMHITS_H
@@ -38,15 +38,15 @@ public:
    * Hits are sorted based on theyr time parameter:
    * @f[Hit_1 < Hit_2 \Leftrightarrow Hit_1.time < Hit_2.time @f]
    */
-  inline bool operator<(const SiPMHit &rhs) const noexcept { return m_Time < rhs.m_Time; }
-  inline bool operator>(const SiPMHit &rhs) const noexcept { return m_Time > rhs.m_Time; }
+  inline bool operator<(const SiPMHit& rhs) const noexcept { return m_Time < rhs.m_Time; }
+  inline bool operator>(const SiPMHit& rhs) const noexcept { return m_Time > rhs.m_Time; }
 
   /// @brief Operator used to check if the hit is in the same cell
   /**
    * Hits are considered equal if they have same row and column
    */
-  inline bool operator==(const SiPMHit &rhs) const noexcept { return ((m_Row == rhs.m_Row) && (m_Col == rhs.m_Col)); }
-  inline bool operator!=(const SiPMHit &rhs) const noexcept { return ((m_Row != rhs.m_Row) || (m_Col != rhs.m_Col)); }
+  inline bool operator==(const SiPMHit& rhs) const noexcept { return ((m_Row == rhs.m_Row) && (m_Col == rhs.m_Col)); }
+  inline bool operator!=(const SiPMHit& rhs) const noexcept { return ((m_Row != rhs.m_Row) || (m_Col != rhs.m_Col)); }
 
   /// @brief Returns hit time
   double time() const { return m_Time; }
@@ -57,9 +57,10 @@ public:
   /// @brief Returns amplitude of the signal produced by the hit
   double amplitude() const { return m_Amplitude; }
   /// @brief Used to modify the amplitude if needed
-  double &amplitude() { return m_Amplitude; }
+  double& amplitude() { return m_Amplitude; }
   /// @brief Returns hit type to identify the hits
   HitType hitType() const { return m_HitType; }
+
 private:
   double m_Time;
   double m_Amplitude;

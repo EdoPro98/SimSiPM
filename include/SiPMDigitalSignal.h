@@ -25,17 +25,17 @@ public:
   SiPMDigitalSignal(const double sampling) noexcept : m_Sampling(sampling){};
 
   /// @brief SiPMDigitalSignal constructor from a std::vector
-  SiPMDigitalSignal(const std::vector<int32_t> &wav, const double sampling) noexcept
+  SiPMDigitalSignal(const std::vector<int32_t>& wav, const double sampling) noexcept
     : m_Waveform(wav), m_Sampling(sampling){};
 
   /// @brief Move assignement operator from a std::vector
-  SiPMDigitalSignal &operator=(const std::vector<int32_t> &&aVect) noexcept {
+  SiPMDigitalSignal& operator=(const std::vector<int32_t>&& aVect) noexcept {
     m_Waveform = std::move(aVect);
     return *this;
   };
 
   /// @brief Copy assignement operator from a std::vector
-  inline int32_t &operator[](const uint32_t i) noexcept { return m_Waveform[i]; }
+  inline int32_t& operator[](const uint32_t i) noexcept { return m_Waveform[i]; }
   inline const int32_t operator[](const uint32_t i) const noexcept { return m_Waveform[i]; }
 
   /// @brief Returns the size of the vector containing the signal

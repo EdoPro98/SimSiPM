@@ -9,23 +9,23 @@
 #include <iostream>
 
 namespace sipm {
-void SiPMSimulator::addEvents(const std::vector<std::vector<double>> &t) {
+void SiPMSimulator::addEvents(const std::vector<std::vector<double>>& t) {
   m_Times = t;
   m_Nevents = t.size();
 }
 
-void SiPMSimulator::addEvents(const std::vector<std::vector<double>> &t, const std::vector<std::vector<double>> &w) {
+void SiPMSimulator::addEvents(const std::vector<std::vector<double>>& t, const std::vector<std::vector<double>>& w) {
   m_Times = t;
   m_Wavelengths = w;
   m_Nevents = t.size();
 }
 
-void SiPMSimulator::push_back(const std::vector<double> &t) {
+void SiPMSimulator::push_back(const std::vector<double>& t) {
   m_Times.emplace_back(t);
   m_Nevents++;
 }
 
-void SiPMSimulator::push_back(const std::vector<double> &t, const std::vector<double> &w) {
+void SiPMSimulator::push_back(const std::vector<double>& t, const std::vector<double>& w) {
   m_Times.emplace_back(t);
   m_Wavelengths.emplace_back(w);
   m_Nevents++;

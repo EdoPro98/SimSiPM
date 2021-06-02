@@ -25,17 +25,17 @@ public:
   SiPMAnalogSignal() = default;
 
   /// @brief SiPMAnalogSignal constructor from a std::vector
-  SiPMAnalogSignal(const std::vector<double> &wav, const double sampling) noexcept
-    : m_Waveform(wav), m_Sampling(sampling){};  /// @brief Move assignement operator from a std::vector
+  SiPMAnalogSignal(const std::vector<double>& wav, const double sampling) noexcept
+    : m_Waveform(wav), m_Sampling(sampling){}; /// @brief Move assignement operator from a std::vector
 
   /// @brief Move assignement operator from a std::vector
-  SiPMAnalogSignal &operator=(const std::vector<double> &&aVect) noexcept {
+  SiPMAnalogSignal& operator=(const std::vector<double>&& aVect) noexcept {
     m_Waveform = std::move(aVect);
     return *this;
   }
 
   /// @brief Used to access signal elements as if it is a std::vector
-  inline double &operator[](const uint32_t i) noexcept { return m_Waveform[i]; }
+  inline double& operator[](const uint32_t i) noexcept { return m_Waveform[i]; }
   /// @brief Used to access signal elements as if it is a std::vector
   inline const double operator[](const uint32_t i) const noexcept { return m_Waveform[i]; }
 

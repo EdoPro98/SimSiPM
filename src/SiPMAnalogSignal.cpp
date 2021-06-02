@@ -22,7 +22,7 @@ double SiPMAnalogSignal::integral(const double intstart, const double intgate, c
     return 0;
   }
   double integral = 0;
-  for(auto itr=start; itr!=end; ++itr){
+  for (auto itr = start; itr != end; ++itr) {
     integral += *itr;
   }
   return integral * m_Sampling;

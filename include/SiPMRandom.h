@@ -63,13 +63,15 @@ public:
 
     s[3] = (s[3] << 45U) | (s[3] >> (64U - 45U));
     return result;
-  }__attribute__((hot))
+  }
+  __attribute__((hot))
   /// @brief Jump function for the alghoritm.
   /** Usefull in case the same generator is used in multiple instancies. The
    * jump function will make sure that pseudo-random values generated from the
    * different instancies are uncorrelated.
    */
-  void jump();
+  void
+  jump();
   /// @brief Sets a random seed generated with rand()
   void seed();
   /// @brief Sets a new seed
@@ -126,12 +128,13 @@ private:
 };
 
 /** Returns a uniform random in range (0,1)
-* Using getting highest 53 bits from a unit64 for the mantissa,
-* setting the exponent to get values in range (0-1) and type punning
-* to double
-*/
+ * Using getting highest 53 bits from a unit64 for the mantissa,
+ * setting the exponent to get values in range (0-1) and type punning
+ * to double
+ */
 inline double SiPMRandom::Rand() {
   uint64_t u = (m_rng() >> 11) | 0x3FF0000000000000;
-  return *(double*)&u-1;}
+  return *(double*)&u - 1;
+}
 } // namespace sipm
 #endif /* SIPM_RANDOM_H */

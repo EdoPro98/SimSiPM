@@ -43,16 +43,16 @@ public:
   };
 
   /// @brief Used to read settings from a json file
-  void readSettings(std::string &); ///< @todo Still to implement
+  void readSettings(std::string&); ///< @todo Still to implement
 
   /// @brief Prints current settings of the sensor
   void dumpSettings() const;
 
   /// @brief Returns size of sensor in mm
-  uint32_t size() const {return m_Size;}
+  uint32_t size() const { return m_Size; }
 
   /// @brief Returns pitch of cell in um
-  uint32_t pitch() const {return m_Pitch;}
+  uint32_t pitch() const { return m_Pitch; }
 
   /// @brief Returns total number of cells in the sensor
   uint32_t nCells() const;
@@ -142,7 +142,7 @@ public:
   bool hasSlowComponent() const { return m_HasSlowComponent; }
 
   /// @brief Sets a property using its name
-  void setProperty(const std::string &, const double);
+  void setProperty(const std::string&, const double);
 
   /// @brief Set size of SiPM sensitive area (side in mm)
   void setSize(const double x) { m_Size = x; }
@@ -225,10 +225,10 @@ public:
   void setPdeType(PdeType aPdeType) { m_HasPde = aPdeType; }
   /// @brief Set a spectral response of the SiPM and sets @ref
   /// PdeType::kSpectrumPde
-  void setPdeSpectrum(const std::map<double, double> &);
+  void setPdeSpectrum(const std::map<double, double>&);
   /// @brief Set a spectral response of the SiPM and sets @ref
   /// PdeType::kSpectrumPde
-  void setPdeSpectrum(const std::vector<double> &, const std::vector<double> &);
+  void setPdeSpectrum(const std::vector<double>&, const std::vector<double>&);
 
   void setHitDistribution(const HitDistribution aHitDistribution) { m_HitDistribution = aHitDistribution; }
 

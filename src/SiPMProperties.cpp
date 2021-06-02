@@ -39,7 +39,7 @@ double SiPMProperties::snrLinear() const {
 }
 
 // Setters
-void SiPMProperties::setProperty(const std::string &aProp, const double aPropValue) {
+void SiPMProperties::setProperty(const std::string& aProp, const double aPropValue) {
   if (aProp == "Size") {
     setSize(aPropValue);
     m_SideCells = 1000 * m_Size / m_Pitch;
@@ -93,19 +93,19 @@ void SiPMProperties::setSampling(const double aSampling) {
   m_SignalPoints = static_cast<uint32_t>(m_SignalLength / aSampling);
 }
 
-void SiPMProperties::setPdeSpectrum(const std::map<double, double> &x) {
+void SiPMProperties::setPdeSpectrum(const std::map<double, double>& x) {
   m_PdeSpectrum = x;
   m_HasPde = PdeType::kSpectrumPde;
 }
 
-void SiPMProperties::setPdeSpectrum(const std::vector<double> &wav, const std::vector<double> &pde) {
+void SiPMProperties::setPdeSpectrum(const std::vector<double>& wav, const std::vector<double>& pde) {
   for (uint32_t i = 0; i < wav.size(); ++i) {
     m_PdeSpectrum[wav[i]] = pde[i];
   }
   m_HasPde = PdeType::kSpectrumPde;
 }
 
-void SiPMProperties::readSettings(std::string &fname) {
+void SiPMProperties::readSettings(std::string& fname) {
   std::ifstream cFile(fname);
   if (cFile.is_open()) {
     std::string line;
