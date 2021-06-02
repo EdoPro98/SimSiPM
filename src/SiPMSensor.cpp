@@ -57,10 +57,12 @@ void SiPMSensor::runEvent() {
   if (m_Properties.hasXt()) {
     addXtEvents();
   }
+
   calculateSignalAmplitudes();
   if (m_Properties.hasAp()) {
     addApEvents();
   }
+
   generateSignal();
 }
 
@@ -77,13 +79,14 @@ void SiPMSensor::resetState() {
   m_Signal.clear();
 }
 
-std::vector<double> SiPMSensor::signalShape() const {
+double* SiPMSensor::signalShape() const {
   const int32_t nSignalPoints = m_Properties.nSignalPoints();
   const double sampling = m_Properties.sampling();
   const double tr = m_Properties.risingTime() / sampling;
   const double tff = m_Properties.fallingTimeFast() / sampling;
   const double gain = m_Properties.gain();
-  std::vector<double> lSignalShape(nSignalPoints);
+  const uint32_t to_alloc = (((double)nSignalPoints / 256) + 1) * 256;
+  double* lSignalShape = new(std::align_val_t(256)) double[nSignalPoints];
 
   if (m_Properties.hasSlowComponent()) {
     const double tfs = m_Properties.fallingTimeSlow() / sampling;
@@ -98,7 +101,7 @@ std::vector<double> SiPMSensor::signalShape() const {
     }
   }
 
-  const double peak = *std::max_element(lSignalShape.begin(), lSignalShape.end());
+  const double peak = *std::max_element(lSignalShape, lSignalShape + nSignalPoints);
 
   for (int32_t i = 0; i < nSignalPoints; ++i) {
     lSignalShape[i] = lSignalShape[i] / peak * gain;
@@ -196,7 +199,6 @@ void SiPMSensor::addDcrEvents() {
       int32_t col = m_rng.randInteger(nSideCells);
 
       m_Hits.emplace_back(last, 1, row, col, SiPMHit::HitType::kDarkCount);
-
       ++m_nTotalHits;
       ++m_nDcr;
     }
@@ -346,7 +348,7 @@ void SiPMSensor::calculateSignalAmplitudes() {
   }
 }
 
-// GCC does not optimally vectorize this part very well
+// GCC does not vectorize this part very well
 // Use AVX2 intrinic to perform signal generation
 #if( defined __AVX2__ && ! defined __clang__)
 void SiPMSensor::generateSignal() {
@@ -362,14 +364,22 @@ void SiPMSensor::generateSignal() {
 
     const __m256d __amplitude = _mm256_set1_pd(amplitude);
 
-    for (uint32_t i = time; i < nSignalPoints - 4; i += 4) {
-      __m256d __signal = _mm256_loadu_pd(&m_Signal[i]);
-      __m256d __shape = _mm256_loadu_pd(&m_SignalShape[i - time]);
-      __signal = _mm256_fmadd_pd(__shape, __amplitude, __signal);
-      _mm256_storeu_pd(&m_Signal[i], __signal);
-    }
-    for (uint32_t i = nSignalPoints; i < nSignalPoints; ++i) {
-      m_Signal[i] += m_SignalShape[i - time] * amplitude;
+    for (uint32_t i = time; i < nSignalPoints - 16; i += 16) {
+      __m256d __signal1 = _mm256_loadu_pd(&m_Signal[i]);
+      __m256d __signal2 = _mm256_loadu_pd(&m_Signal[i+4]);
+      __m256d __signal3 = _mm256_loadu_pd(&m_Signal[i+8]);
+      __m256d __signal4 = _mm256_loadu_pd(&m_Signal[i+12]);
+      __m256d __shape1 = _mm256_load_pd(&m_SignalShape[i - time]);
+      __m256d __shape2 = _mm256_load_pd(&m_SignalShape[i - time+4]);
+      __m256d __shape3 = _mm256_load_pd(&m_SignalShape[i - time+8]);
+      __m256d __shape4 = _mm256_load_pd(&m_SignalShape[i - time+12]);
+      __signal1 = _mm256_fmadd_pd(__shape1, __amplitude, __signal1);
+      __signal2 = _mm256_fmadd_pd(__shape2, __amplitude, __signal2);
+      __signal4 = _mm256_fmadd_pd(__shape4, __amplitude, __signal4);
+      _mm256_storeu_pd(&m_Signal[i], __signal1);
+      _mm256_storeu_pd(&m_Signal[i+4], __signal2);
+      _mm256_storeu_pd(&m_Signal[i+8], __signal3);
+      _mm256_storeu_pd(&m_Signal[i+12], __signal4);
     }
   }
 }

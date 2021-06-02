@@ -10,9 +10,6 @@
 #include "SiPMProperties.h"
 
 #include <algorithm>
-#include <array>
-#include <unordered_map>
-#include <unordered_set>
 
 #include "SiPMAnalogSignal.h"
 #include "SiPMDebugInfo.h"
@@ -138,7 +135,7 @@ private:
    * The three exponential model adds another falling exponential term with a
    * given weight.
    */
-  std::vector<double> signalShape() const;
+  double* signalShape() const;
 
   /// @brief Generated DCR events.
   /** Dark counts events are generated as poisson processes and directly added
@@ -183,7 +180,7 @@ private:
   SiPMProperties m_Properties;
   mutable SiPMRandom m_rng;
 
-  std::vector<double> m_SignalShape;
+  double* m_SignalShape;
 
   uint32_t m_nTotalHits = 0;
   uint32_t m_nPe = 0;
