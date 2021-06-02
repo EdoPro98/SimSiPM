@@ -10,14 +10,6 @@
  *  @date 2020
  */
 
-/** @class sipm::SiPMRng::Xorshift256plus SimSiPM/src/components/SiPMRandom.h
- * SiPMRandom.h
- *
- * @brief Implementation of Xorshift256+ algorithm
- *
- *  @author Edoardo Proserpio
- *  @date 2020
- */
 #include <vector>
 
 #include <math.h>
@@ -33,6 +25,23 @@
 namespace sipm {
 namespace SiPMRng {
 
+/// @brief Implementation of xoshiro256++ 1.0 PRNG algorithm
+/** Written in 2019 by David Blackman and Sebastiano Vigna (vigna@acm.org)
+ *
+ * To the extent possible under law, the author has dedicated all copyright
+ * and related and neighboring rights to this software to the public domain
+ * worldwide. This software is distributed without any warranty.
+ *
+ * See <http://creativecommons.org/publicdomain/zero/1.0/>.
+ * This is xoshiro256++ 1.0, one of our all-purpose, rock-solid generators.
+ * It has excellent (sub-ns) speed, a state (256 bits) that is large
+ * enough for any parallel application, and it passes all tests we are
+ * aware of.
+ *
+ * For generating just floating-point numbers, xoshiro256+ is even faster.
+ * The state must be seeded so that it is not everywhere zero. If you have
+ * a 64-bit seed, we suggest to seed a splitmix64 generator and use its
+ * output to fill s. */
 class Xorshift256plus {
 public:
   /// @brief Default contructor for Xorshift256plus
@@ -86,8 +95,8 @@ public:
   /** @brief Sets a seed for the rng obtained from rand().*/
   void seed() { m_rng.seed(); }
   /** @brief This is the jump function for the generator. It is equivalent
-   to 2^128 calls to next(); it can be used to generate 2^128
-   non-overlapping subsequences for parallel computations.*/
+   * to 2^128 calls to next(); it can be used to generate 2^128
+   * non-overlapping subsequences for parallel computations.*/
   void jump() { m_rng.jump(); }
 
   inline uint64_t operator()() { return m_rng(); }
@@ -118,27 +127,13 @@ private:
   static constexpr double M_UINT64_MAX_RCP = 1 / static_cast<double>(UINT64_MAX);
 };
 
-/** Returns a uniform random in range [0,1] */
-inline double SiPMRandom::Rand() { return m_rng() * M_UINT64_MAX_RCP; }
+/** Returns a uniform random in range (0,1)
+* Using getting highest 53 bits from a unit64 for the mantissa,
+* setting the exponent to get values in range (0-1) and type punning
+* to double
+*/
+inline double SiPMRandom::Rand() {
+  uint64_t u = (m_rng() >> 12) | 0x3FF0000000000000;
+  return *(double*)&u;}
 } // namespace sipm
 #endif /* SIPM_RANDOM_H */
-
-// ABOUT XOROSHIRO256+
-/*  Written in 2019 by David Blackman and Sebastiano Vigna (vigna@acm.org)
-
-To the extent possible under law, the author has dedicated all copyright
-and related and neighboring rights to this software to the public domain
-worldwide. This software is distributed without any warranty.
-
-See <http://creativecommons.org/publicdomain/zero/1.0/>. */
-
-/* This is xoshiro256++ 1.0, one of our all-purpose, rock-solid generators.
-   It has excellent (sub-ns) speed, a state (256 bits) that is large
-   enough for any parallel application, and it passes all tests we are
-   aware of.
-
-   For generating just floating-point numbers, xoshiro256+ is even faster.
-
-   The state must be seeded so that it is not everywhere zero. If you have
-   a 64-bit seed, we suggest to seed a splitmix64 generator and use its
-   output to fill s. */

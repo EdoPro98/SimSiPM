@@ -2,6 +2,7 @@
 #include <random>
 
 namespace sipm {
+
 namespace SiPMRng {
 void Xorshift256plus::seed() {
   std::random_device rd;
@@ -218,7 +219,7 @@ std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma
       v = Rand() * 2.0 - 1.0;
       z = (u * u) + (v * v);
     } while (z > 1.0 || z == 0.0);
-    s[i] = log(z) * (-2. / z);
+    s[i] = -2 * log(z) / z;
     s[i + 1] = s[i];
     out[i] = u;
     out[i + 1] = v;
