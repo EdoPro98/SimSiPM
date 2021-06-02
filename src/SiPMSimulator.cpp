@@ -65,11 +65,12 @@ void SiPMSimulator::runSimulation() {
 
       l_Result.times = m_Times[i];
       l_Result.idx = i;
-      l_Result.integral = l_Signal.integral(m_Intstart, m_Intgate, 0.5);
-      l_Result.peak = l_Signal.peak(m_Intstart, m_Intgate, 0.5);
-      l_Result.tot = l_Signal.tot(m_Intstart, m_Intgate, 0.5);
-      l_Result.toa = l_Signal.toa(m_Intstart, m_Intgate, 0.5);
-      l_Result.top = l_Signal.top(m_Intstart, m_Intgate, 0.5);
+      l_Result.integral = l_Signal.integral(m_Intstart, m_Intgate, m_Threshold);
+      l_Result.peak = l_Signal.peak(m_Intstart, m_Intgate, m_Threshold);
+      l_Result.tot = l_Signal.tot(m_Intstart, m_Intgate, m_Threshold);
+      l_Result.toa = l_Signal.toa(m_Intstart, m_Intgate, m_Threshold);
+      l_Result.top = l_Signal.top(m_Intstart, m_Intgate, m_Threshold);
+      l_Result.debug = l_Sensor.debug();
 #pragma omp critical
       { m_Results.push_back(l_Result); }
     }
@@ -92,6 +93,7 @@ void SiPMSimulator::runSimulation() {
       l_Result.tot = l_Signal.tot(m_Intstart, m_Intgate, 0.5);
       l_Result.toa = l_Signal.toa(m_Intstart, m_Intgate, 0.5);
       l_Result.top = l_Signal.top(m_Intstart, m_Intgate, 0.5);
+      l_Result.debug = l_Sensor.debug();
       m_Results.push_back(l_Result);
     }
   }
@@ -114,6 +116,7 @@ void SiPMSimulator::runSimulation() {
       l_Result.tot = l_Signal.tot(m_Intstart, m_Intgate, 0.5);
       l_Result.toa = l_Signal.toa(m_Intstart, m_Intgate, 0.5);
       l_Result.top = l_Signal.top(m_Intstart, m_Intgate, 0.5);
+      l_Result.debug = l_Sensor.debug();
       m_Results.push_back(l_Result);
     }
   }
@@ -145,6 +148,7 @@ void SiPMSimulator::runSimulation() {
       l_Result.tot = l_Signal.tot(m_Intstart, m_Intgate, 0.5);
       l_Result.toa = l_Signal.toa(m_Intstart, m_Intgate, 0.5);
       l_Result.top = l_Signal.top(m_Intstart, m_Intgate, 0.5);
+      l_Result.debug = m_Sensor->debug();
       m_Results.push_back(l_Result);
     }
   }
@@ -165,6 +169,7 @@ void SiPMSimulator::runSimulation() {
       l_Result.tot = l_Signal.tot(m_Intstart, m_Intgate, 0.5);
       l_Result.toa = l_Signal.toa(m_Intstart, m_Intgate, 0.5);
       l_Result.top = l_Signal.top(m_Intstart, m_Intgate, 0.5);
+      l_Result.debug = m_Sensor->debug();
       m_Results.push_back(l_Result);
     }
   }
@@ -186,6 +191,7 @@ void SiPMSimulator::runSimulation() {
       l_Result.tot = l_Signal.tot(m_Intstart, m_Intgate, 0.5);
       l_Result.toa = l_Signal.toa(m_Intstart, m_Intgate, 0.5);
       l_Result.top = l_Signal.top(m_Intstart, m_Intgate, 0.5);
+      l_Result.debug = m_Sensor->debug();
       m_Results.push_back(l_Result);
     }
   }

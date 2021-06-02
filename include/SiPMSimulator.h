@@ -1,5 +1,6 @@
 #include "SiPMProperties.h"
 #include "SiPMSensor.h"
+#include "SiPMDebugInfo.h"
 
 #include <stdint.h>
 #include <string>
@@ -15,6 +16,7 @@ public:
     uint32_t idx;
     double integral, peak, tot, toa, top;
     std::vector<double> times, wavelengths;
+    SiPMDebugInfo debug;
   };
 
   SiPMSimulator(SiPMSensor *s) : m_Sensor(s) {
@@ -30,9 +32,10 @@ public:
   void push_back(const std::vector<double> &, const std::vector<double> &);
 
   void setSensor(SiPMSensor *s) { m_Sensor = s; }
-  void setIntegration(double start, double gate) {
+  void setIntegration(double start, double gate, double threshold) {
     m_Intstart = start;
     m_Intgate = gate;
+    m_Threshold = threshold;
   }
   void clear();
 
@@ -49,7 +52,7 @@ private:
   std::vector<SiPMResult> m_Results;
   SiPMSensor *m_Sensor;
   uint32_t m_Nevents;
-  double m_Intstart, m_Intgate;
+  double m_Intstart, m_Intgate, m_Threshold;
 };
 
 } // namespace sipm
