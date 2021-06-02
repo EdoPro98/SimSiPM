@@ -92,6 +92,7 @@ setup(
     url="https://github.com/EdoPro98/SimSiPM",
     description="Library for Silicon Photomultipliers simulation.",
     long_description=LONG_DESCRIPTION,
+    long_description_content_type="text/markdown",
     ext_modules=ext_modules,
     include_dirs=include_dirs,
     cmdclass={"build_ext": build_ext},

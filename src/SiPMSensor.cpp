@@ -86,7 +86,7 @@ double* SiPMSensor::signalShape() const {
   const double tff = m_Properties.fallingTimeFast() / sampling;
   const double gain = m_Properties.gain();
   const uint32_t to_alloc = (((double)nSignalPoints / 256) + 1) * 256;
-  double* lSignalShape = new (std::align_val_t(256)) double[nSignalPoints];
+  double* lSignalShape = new (std::align_val_t(256)) double[to_alloc];
 
   if (m_Properties.hasSlowComponent()) {
     const double tfs = m_Properties.fallingTimeSlow() / sampling;
@@ -377,6 +377,7 @@ void SiPMSensor::generateSignal() {
       __m256d __shape4 = _mm256_load_pd(&m_SignalShape[i - time + 12]);
       __signal1 = _mm256_fmadd_pd(__shape1, __amplitude, __signal1);
       __signal2 = _mm256_fmadd_pd(__shape2, __amplitude, __signal2);
+      __signal3 = _mm256_fmadd_pd(__shape3, __amplitude, __signal3);
       __signal4 = _mm256_fmadd_pd(__shape4, __amplitude, __signal4);
       _mm256_storeu_pd(&m_Signal[i], __signal1);
       _mm256_storeu_pd(&m_Signal[i + 4], __signal2);
