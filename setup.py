@@ -24,7 +24,7 @@ if os.environ.get("NPY_NUM_BUILD_JOBS"):
 else:
     ParallelCompile(needs_recompile=naive_recompile).install()
 
-__version__ = "1.1.3-alpha"
+__version__ = "1.2.3-beta"
 extra_compile_args = [
     "-DNDEBUG",
     "-O3",
