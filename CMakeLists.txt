@@ -6,6 +6,7 @@ set(SIPM_BUILD_PYTHON OFF CACHE BOOL "Compile python bindings for SiPM simulatio
 set(SIPM_ENABLE_OPENMP OFF CACHE BOOL "Use OpenMP in some parts of SiPM simulation library")
 set(SIPM_ENABLE_TEST OFF CACHE BOOL "Build tests for SiPM simulation library")
 set(SIPM_ENABLE_LTO OFF CACHE BOOL "Build SiPM with link time optimizations enabled")
+set(SIPM_INCLUDE_DOCUMENTATION OFF CACHE BOOL "Create and install the HTML based API documentation (requires Doxygen)")
 
 if(SIPM_BUILD_PYTHON)
 	find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
@@ -23,6 +24,10 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	    add_subdirectory(tests)
 	endif(SIPM_ENABLE_TEST)
 endif ()
+
+if (SIPM_INCLUDE_DOCUMENTATION)
+	add_subdirectory(docs)
+endif (SIPM_INCLUDE_DOCUMENTATION)
 
 # Optimizations
 if(NOT CMAKE_BUILD_TYPE)
@@ -53,22 +58,35 @@ add_library(sipm SHARED
 
 
 # Include files
-target_include_directories(sipm PUBLIC "include")
+target_include_directories(sipm PUBLIC  
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  
+    $<INSTALL_INTERFACE:include>
+)
+
 set_property(TARGET sipm PROPERTY VERSION 1)
+set_property(TARGET sipm PROPERTY CXX_STANDARD 17)
+set_property(TARGET sipm PROPERTY PUBLIC_HEADER "${include}")
+set_property(TARGET sipm PROPERTY OUTPUT_NAME sipm)
+
 if (SIPM_ENABLE_LTO)
 	set_property(TARGET sipm PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif (SIPM_ENABLE_LTO)
-set_property(TARGET sipm PROPERTY CXX_STANDARD 17)
-set_target_properties(sipm PROPERTIES PUBLIC_HEADER "${include}")
 if (SIPM_ENABLE_OPENMP)
 	target_link_libraries(sipm PRIVATE OpenMP::OpenMP_CXX)
 endif(SIPM_ENABLE_OPENMP)
-set_target_properties(sipm PROPERTIES OUTPUT_NAME sipm)
+
 
 # Install
-install(TARGETS sipm
+install(TARGETS sipm EXPORT sipm-config
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(EXPORT sipm-config
+	FILE sipm-config.cmake 
+	DESTINATION "${CMAKE_INSTALL_DATADIR}/sipm/cmake"
+	NAMESPACE sipm::
 )
 
 if (SIPM_BUILD_PYTHON)
