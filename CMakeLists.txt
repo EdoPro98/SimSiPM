@@ -6,7 +6,6 @@ set(SIPM_BUILD_PYTHON OFF CACHE BOOL "Compile python bindings for SiPM simulatio
 set(SIPM_ENABLE_OPENMP OFF CACHE BOOL "Use OpenMP in some parts of SiPM simulation library")
 set(SIPM_ENABLE_TEST OFF CACHE BOOL "Build tests for SiPM simulation library")
 set(SIPM_ENABLE_LTO OFF CACHE BOOL "Build SiPM with link time optimizations enabled")
-set(SIPM_INCLUDE_DOCUMENTATION OFF CACHE BOOL "Create and install the HTML based API documentation (requires Doxygen)")
 
 if(SIPM_BUILD_PYTHON)
 	find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
@@ -24,10 +23,6 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	    add_subdirectory(tests)
 	endif(SIPM_ENABLE_TEST)
 endif ()
-
-if (SIPM_INCLUDE_DOCUMENTATION)
-	add_subdirectory(docs)
-endif (SIPM_INCLUDE_DOCUMENTATION)
 
 # Optimizations
 if(NOT CMAKE_BUILD_TYPE)
@@ -58,8 +53,8 @@ add_library(sipm SHARED
 
 
 # Include files
-target_include_directories(sipm PUBLIC  
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  
+target_include_directories(sipm PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
 
@@ -75,7 +70,6 @@ if (SIPM_ENABLE_OPENMP)
 	target_link_libraries(sipm PRIVATE OpenMP::OpenMP_CXX)
 endif(SIPM_ENABLE_OPENMP)
 
-
 # Install
 install(TARGETS sipm EXPORT sipm-config
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -84,14 +78,12 @@ install(TARGETS sipm EXPORT sipm-config
 )
 
 install(EXPORT sipm-config
-	FILE sipm-config.cmake 
+	FILE sipm-config.cmake
 	DESTINATION "${CMAKE_INSTALL_DATADIR}/sipm/cmake"
 	NAMESPACE sipm::
 )
 
 if (SIPM_BUILD_PYTHON)
-	find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
-	find_package(pybind11 CONFIG REQUIRED)
 	pybind11_add_module(SiPM SHARED ${pysrc} ${src})
 	target_include_directories(SiPM PUBLIC "include/")
 	if (SIPM_ENABLE_OPENMP)
