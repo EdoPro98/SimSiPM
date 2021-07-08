@@ -184,7 +184,7 @@ from SiPM import SiPMSensor, SiPMProperties
 
 myProperties = SiPMProperties()
 myProperties.setDcr(250e3)
-myProperties.seProperty("Xt",0.03)
+myProperties.setProperty("Xt",0.03)
 
 mySensor = SiPMSensor(myProperties)
 
