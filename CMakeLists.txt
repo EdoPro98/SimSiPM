@@ -84,6 +84,7 @@ install(EXPORT sipm-config
 )
 
 if (SIPM_BUILD_PYTHON)
+  find_package(Python)
 	pybind11_add_module(SiPM SHARED ${pysrc} ${src})
 	target_include_directories(SiPM PUBLIC "include/")
 	if (SIPM_ENABLE_OPENMP)
@@ -97,6 +98,6 @@ if (SIPM_BUILD_PYTHON)
   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 	install(TARGETS SiPM
-	LIBRARY DESTINATION ${Python3_SITEARCH}
+	LIBRARY DESTINATION lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages
 	)
 endif (SIPM_BUILD_PYTHON)
