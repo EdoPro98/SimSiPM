@@ -5,10 +5,9 @@
 using namespace sipm;
 
 struct TestSiPMRandom : public ::testing::Test {
-  static const int N = 1000000;
-  double muSmall = 0.001;
-  double muBig = 100;
-  double toll = 0.01;
+  static constexpr int N = 10000000;
+  static constexpr double muSmall = 0.001;
+  static constexpr double muBig = 100;
   SiPMRandom sut;
 };
 
@@ -87,28 +86,28 @@ TEST_F(TestSiPMRandom, RandAverage) {
     x += sut.Rand();
   }
   x = x / N;
-  EXPECT_GE(x, 0.5 * (1 - toll));
-  EXPECT_LE(x, 0.55 * (1 + toll));
+  EXPECT_GE(x, 0.5 * 0.95);
+  EXPECT_LE(x, 0.55 * 1.05);
 }
 
 TEST_F(TestSiPMRandom, IntegerAverageSmall) {
   double x = 0;
   for (int i = 0; i < N; ++i) {
-    x += sut.randInteger(10);
+    x += sut.randInteger(100);
   }
   x = x / N;
-  EXPECT_GE(x, 5 * (1 - toll));
-  EXPECT_LE(x, 5 * (1 + toll));
+  EXPECT_GE(x, (50-1) * 0.95);
+  EXPECT_LE(x, (50-1) * 1.05);
 }
 
 TEST_F(TestSiPMRandom, IntegerAverageBig) {
   double x = 0;
   for (int i = 0; i < N; ++i) {
-    x += sut.randInteger(1000);
+    x += sut.randInteger(10000);
   }
   x = x / N;
-  EXPECT_GE(x, 500 * (1 - toll));
-  EXPECT_LE(x, 500 * (1 + toll));
+  EXPECT_GE(x, (5000-1) * 0.95);
+  EXPECT_LE(x, (5000-1) * 1.05);
 }
 
 TEST_F(TestSiPMRandom, ExponentialAverageSmall) {
@@ -117,8 +116,8 @@ TEST_F(TestSiPMRandom, ExponentialAverageSmall) {
     x += sut.randExponential(muSmall);
   }
   x = x / N;
-  EXPECT_GE(x, muSmall * (1 - toll));
-  EXPECT_LE(x, muSmall * (1 + toll));
+  EXPECT_GE(x, muSmall * 0.95);
+  EXPECT_LE(x, muSmall * 1.05);
 }
 
 TEST_F(TestSiPMRandom, ExponentialAverageBig) {
@@ -128,8 +127,8 @@ TEST_F(TestSiPMRandom, ExponentialAverageBig) {
     x += sut.randExponential(muBig);
   }
   x = x / N;
-  EXPECT_GE(x, muBig * (1 - toll));
-  EXPECT_LE(x, muBig * (1 + toll));
+  EXPECT_GE(x, muBig * 0.95);
+  EXPECT_LE(x, muBig * 1.05);
 }
 
 TEST_F(TestSiPMRandom, PoissonAverageSmall) {
@@ -138,8 +137,8 @@ TEST_F(TestSiPMRandom, PoissonAverageSmall) {
     x += sut.randPoisson(muSmall);
   }
   x = x / N;
-  EXPECT_GE(x, muSmall * (1 - toll * 5));
-  EXPECT_LE(x, muSmall * (1 + toll * 5));
+  EXPECT_GE(x, muSmall * 0.95);
+  EXPECT_LE(x, muSmall * 1.05);
 }
 
 TEST_F(TestSiPMRandom, PoissonAverageBig) {
@@ -149,8 +148,8 @@ TEST_F(TestSiPMRandom, PoissonAverageBig) {
     x += sut.randPoisson(muBig);
   }
   x = x / N;
-  EXPECT_GE(x, muBig * (1 - toll));
-  EXPECT_LE(x, muBig * (1 + toll));
+  EXPECT_GE(x, muBig * 0.95);
+  EXPECT_LE(x, muBig * 1.05);
 }
 
 TEST_F(TestSiPMRandom, NormalAverageSmall) {
@@ -159,8 +158,8 @@ TEST_F(TestSiPMRandom, NormalAverageSmall) {
     x += sut.randGaussian(0, 1);
   }
   x = x / N;
-  EXPECT_GE(x, -toll);
-  EXPECT_LE(x, +toll);
+  EXPECT_GE(x, -0.95);
+  EXPECT_LE(x, 1.05);
 }
 
 TEST_F(TestSiPMRandom, NormalAverageBig) {
@@ -169,6 +168,6 @@ TEST_F(TestSiPMRandom, NormalAverageBig) {
     x += sut.randGaussian(0, 10);
   }
   x = x / N;
-  EXPECT_GE(x, -toll * 3);
-  EXPECT_LE(x, +toll * 3);
+  EXPECT_GE(x, -0.95);
+  EXPECT_LE(x, 1.05);
 }

@@ -24,7 +24,7 @@ TEST_F(TestSiPMProperties, Constructor) {
   EXPECT_DOUBLE_EQ(sut.ap(), 0.03);
   EXPECT_DOUBLE_EQ(sut.tauApFast(), 10);
   EXPECT_DOUBLE_EQ(sut.tauApSlow(), 80);
-  EXPECT_DOUBLE_EQ(sut.apSlowFraction(), 0.8);
+  EXPECT_DOUBLE_EQ(sut.apSlowFraction(), 0.5);
   EXPECT_DOUBLE_EQ(sut.ccgv(), 0.05);
   EXPECT_DOUBLE_EQ(sut.snrdB(), 30);
   EXPECT_DOUBLE_EQ(sut.gain(), 1);

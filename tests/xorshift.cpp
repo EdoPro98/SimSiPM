@@ -4,7 +4,7 @@
 using namespace sipm;
 
 struct TestSiPMXorshift256 : public ::testing::Test {
-  static const int N = 1000000;
+  static const int N = 5000000;
 
   SiPMRng::Xorshift256plus sut;
 };
@@ -32,8 +32,50 @@ TEST_F(TestSiPMXorshift256, AutomaticSeed) {
   }
 }
 
-TEST_F(TestSiPMXorshift256, Generation) {
-  const int n = 100;
+TEST_F(TestSiPMXorshift256, GenerationSmallWindowTest) {
+  const int n = 16;
+  uint64_t first_run[n];
+  uint64_t second_run[n];
+
+  for (int t = 0; t < N; ++t) {
+    uint64_t seed = rand(); // Generate a random seed
+    sut.seed(seed);         // Set seed
+    for (int i = 0; i < n; ++i) {
+      first_run[i] = sut();
+    }
+    sut.seed(seed); // Set same seed
+    for (int i = 0; i < n; ++i) {
+      second_run[i] = sut();
+    }
+    for (int i = 0; i < n; ++i) {
+      EXPECT_EQ(first_run[i], second_run[i]); // Check that values are equal
+    }
+  }
+}
+
+TEST_F(TestSiPMXorshift256, GenerationMediumWindowTest) {
+  const int n = 128;
+  uint64_t first_run[n];
+  uint64_t second_run[n];
+
+  for (int t = 0; t < N; ++t) {
+    uint64_t seed = rand(); // Generate a random seed
+    sut.seed(seed);         // Set seed
+    for (int i = 0; i < n; ++i) {
+      first_run[i] = sut();
+    }
+    sut.seed(seed); // Set same seed
+    for (int i = 0; i < n; ++i) {
+      second_run[i] = sut();
+    }
+    for (int i = 0; i < n; ++i) {
+      EXPECT_EQ(first_run[i], second_run[i]); // Check that values are equal
+    }
+  }
+}
+
+TEST_F(TestSiPMXorshift256, GenerationBigWindowTest) {
+  const int n = 1024;
   uint64_t first_run[n];
   uint64_t second_run[n];
 

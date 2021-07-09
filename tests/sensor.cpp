@@ -26,7 +26,8 @@ TEST_F(TestSiPMSensor, AddPhotons) {
   for (int i = 0; i < N; ++i) {
     sut.resetState();
     int n = rng.randInteger(100);
-    std::vector<double> t = rng.randGaussian(100, 0.2, n);
+    // n should be > 0
+    std::vector<double> t = rng.randGaussian(100, 0.2, n + 1);
     sut.addPhotons(t);
   }
 }
@@ -44,7 +45,8 @@ TEST_F(TestSiPMSensor, AddPhotonsWlen) {
   sut.resetState();
   for (int i = 0; i < N; ++i) {
     sut.resetState();
-    int n = rng.randInteger(100);
+    int n = rng.randInteger(100) + 1;
+    // n should be > 0
     std::vector<double> t = rng.randGaussian(100, 0.2, n);
     std::vector<double> w = rng.randGaussian(450, 20, n);
     sut.addPhotons(t, w);
@@ -52,9 +54,10 @@ TEST_F(TestSiPMSensor, AddPhotonsWlen) {
 }
 
 TEST_F(TestSiPMSensor, AddDcr) {
-  const int N = 500000;
+  const int N = 1000000;
   int ndcr = 0;
   SiPMSensor sensor;
+  sensor.rng().seed(1234567890);
   for (int i = 0; i < N; ++i) {
     sensor.resetState();
     sensor.runEvent();
@@ -66,10 +69,11 @@ TEST_F(TestSiPMSensor, AddDcr) {
 }
 
 TEST_F(TestSiPMSensor, AddXt) {
-  const int N = 500000;
+  const int N = 1000000;
   int nxt = 0;
   int npe = 0;
   SiPMSensor sensor;
+  sensor.rng().seed(1234567890);
   for (int i = 0; i < N; ++i) {
     sensor.resetState();
     sensor.runEvent();
@@ -82,10 +86,11 @@ TEST_F(TestSiPMSensor, AddXt) {
 }
 
 TEST_F(TestSiPMSensor, AddAp) {
-  const int N = 500000;
+  const int N = 1000000;
   int nap = 0;
   int npe = 0;
   SiPMSensor sensor;
+  sensor.rng().seed(1234567890);
   for (int i = 0; i < N; ++i) {
     sensor.resetState();
     sensor.runEvent();
@@ -98,17 +103,19 @@ TEST_F(TestSiPMSensor, AddAp) {
 }
 
 TEST_F(TestSiPMSensor, SignalGeneration) {
-  const int N = 10;
-  const int R = 1000;
-  SiPMSensor lsut = sut;
+  const int N = 25;
+  const int R = 10000;
+  SiPMSensor lsut = SiPMSensor();
   lsut.properties().setXtOff();
   lsut.properties().setDcrOff();
   lsut.properties().setApOff();
+  lsut.properties().setSnr(40);
 
-  for (int i = 0; i < N; ++i) {
+  for (int i = 1; i < N; ++i) {
     std::vector<double> t = rng.randGaussian(100, 0.1, i);
     double avg_max = 0;
     for (int j = 0; j < R; ++j) {
+      lsut.resetState();
       lsut.addPhotons(t);
       lsut.runEvent();
       SiPMAnalogSignal signal = lsut.signal();
@@ -119,10 +126,8 @@ TEST_F(TestSiPMSensor, SignalGeneration) {
         }
       }
       avg_max += max;
-      lsut.resetState();
     }
     avg_max /= R;
-    std::cerr << i << " " << avg_max << "\n";
     EXPECT_GE(avg_max + 0.5, i);
     EXPECT_LE(avg_max - 0.5, i);
   }
