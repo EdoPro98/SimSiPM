@@ -1,138 +1,93 @@
 import SiPM
-import numpy as np
+from tabulate import tabulate
 import matplotlib.pyplot as plt
 import mplhep
-from scipy.optimize import curve_fit as fit
+import numpy as np
+from iminuit.cost import ExtendedUnbinnedNLL
+from iminuit import Minuit
 
 plt.style.use(mplhep.style.ATLAS)
 
 
-def line(x, m, q):
-    return x * m + q
+def exp(x, a, b):
+    return a, a * np.exp(-x * b)
 
 
-def occupancy(npe, ncell):
-    return npe * np.exp(-npe / ncell)
+print("***********************************")
+print("* MC truth qualification of noise *")
+print("***********************************")
 
+N = 1000000
 
-N = 10000
 properties = SiPM.SiPMProperties()
-properties.dumpSettings()
-properties.setDcr(300e3)
-properties.setXt(0.05)
+properties.setDXtOn()
+
 sensor = SiPM.SiPMSensor(properties)
-simulator = SiPM.SiPMSimulator(sensor)
-intgate = 250
-simulator.setIntegration(10, intgate, 0.0)
-imgdir = "Results/"
 
-print("************************")
-print("***> Estimating DPP <***")
-print("************************")
-print()
-
-events = [[20] * np.random.randint(5, 25) for i in range(1000)]
-
-simulator.clear()
-simulator.addEvents(events)
-simulator.runSimulation()
-results = np.array(simulator.getResults())
-integral = np.array([x.Integral for x in results])
-npe = np.array([x.Debug.nPhotoelectrons for x in results])
-avg_integral = []
-std_integral = []
-avg_npe = []
-for n in range(np.max(npe)):
-    if np.any(npe == n):
-        avg_npe.append(n)
-        avg_integral.append(np.mean(integral[npe == n]))
-        std_integral.append(np.std(integral[npe == n]) / integral[npe == n].size ** 0.5)
-
-fit_dpp, cov_dpp = fit(line, avg_npe, avg_integral, sigma=np.array(std_integral), absolute_sigma=True)
-print(f"Dpp = {fit_dpp[0]:.2f} +/- {cov_dpp[0,0]**0.5:.2f}")
-DPP_INTEGRAL = fit_dpp[0]
-
-plt.figure()
-plt.title("Calibration of DPP")
-plt.errorbar(avg_npe, avg_integral, std_integral, fmt=".k", capsize=2, label="Data")
-plt.plot(avg_npe, line(np.array(avg_npe), *fit_dpp), "r", label="Fit")
-plt.xlabel("Number of photoelectrons")
-plt.ylabel("Integral [A.U.]")
-plt.legend()
-plt.savefig(imgdir + "dpp.png")
-
-print("*****************************")
-print("***> Start test on noise <***")
-print("*****************************")
-print()
-print(f"***> Generating {N:d} empty events <***")
-events = [[]] * N
-simulator.clear()
-simulator.addEvents(events)
-simulator.runSimulation()
-results = np.array(simulator.getResults())
-integral = np.array([x.Integral for x in results])
-ndcr = np.array([x.Debug.nDcr for x in results])
-nxt = np.array([x.Debug.nXt for x in results])
-pe = integral / DPP_INTEGRAL
-threshold = np.arange(0, pe.max(), 0.01)
-stair = np.empty_like(threshold)
-for i, t in enumerate(threshold):
-    stair[i] = np.count_nonzero(pe > t) / pe.size
-
-dcr = 1e6 * ndcr.mean() / properties.signalLength()
-dcr_sigma = 1e6 * ndcr.mean() ** 0.5 / ndcr.size / properties.signalLength()  # TEMP:
-xt = nxt.sum() / ndcr.sum()
-xt_sigma = ((ndcr.std() / ndcr.sum()) ** 2 + (nxt.std() / nxt.sum()) ** 2) ** 0.5  # TEMP:
-
-print(f"DCR = {dcr:.2f} +/- {dcr_sigma*100:.2f}kHz")
-print(f"Xt = {100*xt:.2f} +/- {100*xt_sigma:.2f}")
-
-plt.figure()
-plt.subplot(211)
-plt.hist(pe, 300, color="k", label="Integral")
-plt.xlim(-0.3, pe.max())
-plt.yscale("log")
-plt.xlabel("Number of photoelectrons")
-plt.legend()
-plt.subplot(212)
-plt.plot(threshold, 1e6 * stair / intgate, ".k", ms=4, label="Staircase")
-plt.hlines(properties.dcr() * 1e-3, 0, pe.max() / 3, "r", label="Expected DCR")
-plt.hlines(properties.dcr() * properties.xt() * 1e-3, 0, 2 * pe.max() / 3, "r", label="Expected Xt")
-plt.yscale("log")
-plt.xlim(-0.3, pe.max())
-plt.xlabel("Threshold [pe]")
-plt.ylabel("Counts over threshold [kHz]")
-plt.legend()
-plt.savefig(imgdir + "noise.png")
-
-
-print("*********************************")
-print("***> Start test on linearity <***")
-print("*********************************")
-print()
-
-events = []
+nDcr = 0
+nXt = 0
+nXtDel = 0
+nAp = 0
+nPe = 0
+dcrDelays = []
+dcrTimes = []
 for i in range(N):
-    events.append([20] * np.random.randint(1, properties.nCells()))
+    sensor.resetState()
+    sensor.runEvent()
+    debug = sensor.debug()
+    hits = sensor.hits()
 
-simulator.clear()
-simulator.addEvents(events)
-simulator.runSimulation()
-results = simulator.getResults()
+    for hit in hits:
+        if hit.hitType() == SiPM.SiPMHit.HitType.kDarkCount:
+            dcrDelays.append(hit.time() + i * sensor.properties().signalLength())
+            dcrTimes.append(hit.time())
+    nPe += debug.nPhotoelectrons
+    nDcr += debug.nDcr
+    nXt += debug.nXt
+    nXtDel += debug.nDXt
+    nAp += debug.nAp
 
-integral = np.empty(len(results))
-npe = np.empty_like(integral)
-for i, r in enumerate(results):
-    integral[i] = r.Integral / DPP_INTEGRAL
-    npe[i] = r.Debug.nPhotons
+dcrDelays = np.diff(dcrDelays)
 
-fit_occ, cov_occ = fit(occupancy, npe, integral)
-print(f"Ncell = {fit_occ[0]:.2f} +/- {cov_occ[0,0]**0.5:.2f}")
+dcr = nDcr / (1e-9 * N * sensor.properties().signalLength())
+xt = nXt / nPe
+delXtFrac = nXtDel / (nXt + nXtDel)
+ap = nAp / nPe
+
+tableData = {
+    "": ["MC", "Expected"],
+    "Dcr [kHz]": [dcr / 1e3, sensor.properties().dcr() / 1e3],
+    "Xt [%]": [100 * xt, 100 * sensor.properties().xt()],
+    "Delayed Xt [%]": [100 * delXtFrac, 100 * sensor.properties().dxt()],
+    "Ap [%]": [100 * ap, 100 * sensor.properties().ap()],
+}
+
+print(tabulate(tableData, headers="keys", floatfmt=".2f"))
+
+cost = ExtendedUnbinnedNLL(dcrDelays, exp)
+fit = Minuit(cost, a=sensor.properties().dcr(), b=sensor.properties().dcr())
+fit.migrad()
+fit.minos()
+
+print(fit)
 
 plt.figure()
-plt.scatter(npe, integral, s=2, c="k")
-plt.plot(np.sort(npe), occupancy(np.sort(npe), *fit_occ), "r")
-plt.xlabel("Occupancy")
-plt.ylabel("Relative response")
+h = np.histogram(
+    dcrTimes,
+    np.arange(
+        0,
+        sensor.properties().signalLength() + 10,
+        10,
+    ),
+)
+mplhep.histplot(h, label="Time distribution of DCR")
+plt.xlabel("Time [ns]")
+plt.legend(frameon=False)
 plt.show()
+
+tableData = {
+    "": ["MC", "Expected"],
+    "Avg Dcr time [ns]": np.mean(dcrTimes),
+    "Avg Dcr delay [ns]": np.mean(dcrDelays),
+    "Fit Dcr delay [ns]": 0,
+}

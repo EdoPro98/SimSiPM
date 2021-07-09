@@ -9,16 +9,19 @@
  *  @author Edoardo Proserpio
  *  @date 2020
  */
-#include "SiPMAnalogSignal.h"
-#include "SiPMDigitalSignal.h"
-#include "SiPMRandom.h"
-
-#include <vector>
 
 #ifndef SIPM_SIPMADC_H
 #define SIPM_SIPMADC_H
 
+#include <stdint.h>
+#include <vector>
+
+#include "SiPMAnalogSignal.h"
+#include "SiPMDigitalSignal.h"
+#include "SiPMRandom.h"
+
 namespace sipm {
+
 class SiPMAdc {
 public:
   /// @brief SiPMAdc default constructor

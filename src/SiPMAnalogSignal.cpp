@@ -1,9 +1,5 @@
 #include "SiPMAnalogSignal.h"
 
-#include <algorithm>
-#include <math.h>
-#include <numeric>
-
 namespace sipm {
 /**
 * Integral of the signal defined as the sum of all samples in the integration
@@ -120,19 +116,29 @@ double SiPMAnalogSignal::top(const double intstart, const double intgate, const 
 
 /**
  * @param bw Bandwidth for the low-pass filter (-3dB cut-off)
- * @return Signal with filter applied
+ * @return New signal with filter applied
  */
 SiPMAnalogSignal SiPMAnalogSignal::lowpass(const double bw) const {
   std::vector<double> out = m_Waveform;
+  const uint32_t nSignalPoints = m_Waveform.size();
   const double rc = 1 / (2 * M_PI * bw);
   const double dt = 1e-9 * m_Sampling;
   const double alpha = dt / (rc + dt);
 
   // Implementation of a first-order low-pass filter
   out[0] = alpha * out[0];
-  for (uint32_t i = 1; i < out.size(); ++i) {
+  for (uint32_t i = 1; i < nSignalPoints; ++i) {
     out[i] = alpha * (out[i] - out[i - 1]) + out[i - 1];
   }
   return SiPMAnalogSignal(out, m_Sampling);
+}
+
+std::ostream& operator<<(std::ostream& os, SiPMAnalogSignal const& x) {
+  os << "===> SiPM Analog Signal Start <===\n";
+  os << "Signal length is: " << x.size() / x.m_Sampling << " ns\n";
+  os << "Signal is sampled every: " << x.m_Sampling << " ns\n";
+  os << "Signal contains: " << x.size() << " points";
+  os << "===> SiPM Analog Signal End <===";
+  return os;
 }
 } // namespace sipm

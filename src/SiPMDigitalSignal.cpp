@@ -1,8 +1,5 @@
 #include "SiPMDigitalSignal.h"
 
-#include <algorithm>
-#include <numeric>
-
 namespace sipm {
 /**
 * Integral of the signal defined as the sum of all samples in the integration
@@ -118,4 +115,14 @@ double SiPMDigitalSignal::top(const double intstart, const double intgate, const
 
   return (std::max_element(start, end) - start) * m_Sampling;
 }
+
+std::ostream& operator<<(std::ostream& os, SiPMDigitalSignal const& x) {
+  os << "===> SiPM Digital Signal Start <===\n";
+  os << "Signal length is: " << x.size() / x.m_Sampling << " ns\n";
+  os << "Signal is sampled every: " << x.m_Sampling << " ns\n";
+  os << "Signal contains: " << x.size() << " points";
+  os << "===> SiPM Digital Signal End <===";
+  return os;
+}
+
 } // namespace sipm

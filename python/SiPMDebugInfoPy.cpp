@@ -11,5 +11,6 @@ void SiPMDebugInfoPy(py::module& m) {
     .def_readonly("nPhotoelectrons", &SiPMDebugInfo::nPhotoelectrons)
     .def_readonly("nDcr", &SiPMDebugInfo::nDcr)
     .def_readonly("nXt", &SiPMDebugInfo::nXt)
+    .def_readonly("nDXt", &SiPMDebugInfo::nDXt)
     .def_readonly("nAp", &SiPMDebugInfo::nAp);
 }

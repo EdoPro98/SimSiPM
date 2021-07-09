@@ -8,14 +8,22 @@
  *  It also has some methods that can be used to extract some simple features
  *  from the signal.
  *
+ *  The amplitude of the signal is scaled such that the signal from one photoelectron
+ *  has height equal to 1 (not considering noise). In this way all other values like
+ *  SNR and CCGV are scaled proportionally.
+ *
  *  @author Edoardo Proserpio
  *  @date 2020
  */
-#include <stdint.h>
-#include <vector>
 
 #ifndef SIPM_SIPMSIGNAL_H
 #define SIPM_SIPMSIGNAL_H
+
+#include <algorithm>
+#include <math.h>
+#include <ostream>
+#include <stdint.h>
+#include <vector>
 
 namespace sipm {
 
@@ -63,7 +71,9 @@ public:
   void setSampling(const double x) { m_Sampling = x; }
 
   /// @brief Applies a low-pass filter to the input vector
-  SiPMAnalogSignal lowpass(const double) const __attribute__((hot));
+  SiPMAnalogSignal lowpass(const double) const;
+
+  friend std::ostream& operator<<(std::ostream&, SiPMAnalogSignal const&);
 
 private:
   std::vector<double> m_Waveform;

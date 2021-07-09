@@ -12,6 +12,7 @@ void SiPMSensorPy(py::module& m) {
     .def(py::init<const SiPMProperties&>())
     .def("properties", static_cast<SiPMProperties& (SiPMSensor::*)()>(&SiPMSensor::properties))
     .def("properties", static_cast<const SiPMProperties& (SiPMSensor::*)() const>(&SiPMSensor::properties))
+    .def("hits",&SiPMSensor::hits)
     .def("signal", &SiPMSensor::signal)
     .def("rng", static_cast<SiPMRandom& (SiPMSensor::*)()>(&SiPMSensor::rng))
     .def("rng", static_cast<const SiPMRandom& (SiPMSensor::*)() const>(&SiPMSensor::rng))

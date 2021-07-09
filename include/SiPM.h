@@ -5,9 +5,11 @@
 #include "SiPMAnalogSignal.h"
 #include "SiPMDebugInfo.h"
 #include "SiPMDigitalSignal.h"
+#include "SiPMHelpers.h"
 #include "SiPMHit.h"
 #include "SiPMProperties.h"
 #include "SiPMRandom.h"
 #include "SiPMSensor.h"
 #include "SiPMSimulator.h"
+
 #endif

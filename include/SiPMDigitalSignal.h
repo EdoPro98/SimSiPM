@@ -11,6 +11,8 @@
  *  @author Edoardo Proserpio
  *  @date 2020
  */
+#include <algorithm>
+#include <ostream>
 #include <stdint.h>
 #include <vector>
 
@@ -57,6 +59,8 @@ public:
   double toa(const double, const double, const int32_t) const;
   /// @brief Returns time of peak
   double top(const double, const double, const int32_t) const;
+
+  friend std::ostream& operator<<(std::ostream&, SiPMDigitalSignal const&);
 
 private:
   std::vector<int32_t> m_Waveform;

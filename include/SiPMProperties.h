@@ -10,16 +10,20 @@
  *  @author Edoardo Proserpio
  *  @date 2020
  */
-#include <math.h>
-#include <stdint.h>
-
-#include <fstream>
-#include <map>
-#include <string>
-#include <vector>
 
 #ifndef SIPM_SIPMPROPERTIES_H
 #define SIPM_SIPMPROPERTIES_H
+
+#include <algorithm>
+#include <fstream>
+#include <iostream>
+#include <map>
+#include <math.h>
+#include <stdint.h>
+#include <string>
+#include <vector>
+
+#include "SiPMHelpers.h"
 
 namespace sipm {
 
@@ -95,6 +99,12 @@ public:
   /// @brief Returns XT value.
   double xt() const { return m_Xt; }
 
+  /// @brief Returns Delayed XT value.
+  double dxt() const { return m_DXt; }
+
+  /// @brief Returns Delayed XT tau.
+  double dxtTau() const { return m_DXtTau; }
+
   /// @brief Returns AP value.
   double ap() const { return m_Ap; }
 
@@ -133,6 +143,9 @@ public:
 
   /// @brief Returns true if XT is considered.
   bool hasXt() const { return m_HasXt; }
+
+  /// @brief Returns true if Delayes XT is considered.
+  bool hasDXt() const { return m_HasDXt; }
 
   /// @brief Returns true if AP is considered.
   bool hasAp() const { return m_HasAp; }
@@ -201,6 +214,14 @@ public:
   /// @param aXt optical crosstalk probability [0-1]
   void setXt(const double aXt) { m_Xt = aXt; }
 
+  /// @brief Set delayed optical crosstalk probability as a fraction of total xt probability
+  /// @param aDXt delayed optical crosstalk probability [0-1]
+  void setDXt(const double aDXt) { m_DXt = aDXt; }
+
+  /// @brief Set tau of delayed optical crosstalk in ns
+  /// @param aDXt tau of delayed optical crosstalk
+  void setDXtTau(const double aDXtTau) { m_DXtTau = aDXtTau; }
+
   /// @brief Set afterpulse probability
   /// @param aAp afterpulse probability [0-1]
   void setAp(const double aAp) { m_Ap = aAp; }
@@ -209,6 +230,8 @@ public:
   void setDcrOff() { m_HasDcr = false; }
   /// @brief Turn off optical crosstalk
   void setXtOff() { m_HasXt = false; }
+  /// @brief Turn off delayed optical crosstalk
+  void setDXtOff() { m_HasXt = false; }
   /// @brief Turn off afterpulses
   void setApOff() { m_HasAp = false; }
   /// @brief Turns off slow component of the signal
@@ -217,6 +240,8 @@ public:
   void setDcrOn() { m_HasDcr = true; }
   /// @brief Turn on optical crosstalk
   void setXtOn() { m_HasXt = true; }
+  /// @brief Turn on delayed optical crosstalk
+  void setDXtOn() { m_HasDXt = true; }
   /// @brief Turn on afterpulses
   void setApOn() { m_HasAp = true; }
   /// @brief Turns on slow component of the signal
@@ -231,6 +256,8 @@ public:
   void setPdeSpectrum(const std::vector<double>&, const std::vector<double>&);
 
   void setHitDistribution(const HitDistribution aHitDistribution) { m_HitDistribution = aHitDistribution; }
+
+  friend std::ostream& operator<<(std::ostream&, SiPMProperties const&);
 
 private:
   double m_Size = 1;
@@ -250,10 +277,12 @@ private:
 
   double m_Dcr = 200e3;
   double m_Xt = 0.05;
+  double m_DXt = 0.05;
+  double m_DXtTau = 15;
   double m_Ap = 0.03;
   double m_TauApFastComponent = 10;
   double m_TauApSlowComponent = 80;
-  double m_ApSlowFraction = 0.8;
+  double m_ApSlowFraction = 0.5;
   double m_Ccgv = 0.05;
   double m_SnrdB = 30;
   double m_Gain = 1.0;
@@ -265,6 +294,7 @@ private:
 
   bool m_HasDcr = true;
   bool m_HasXt = true;
+  bool m_HasDXt = false;
   bool m_HasAp = true;
   bool m_HasSlowComponent = false;
 };
