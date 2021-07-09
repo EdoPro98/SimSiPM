@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "SiPMDebugInfo.h"
 #include "SiPMProperties.h"
