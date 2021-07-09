@@ -28,7 +28,7 @@ void SiPMSimulatorPy(py::module& m) {
 
   py::class_<SiPMSimulator::SiPMResult> SiPMResult(SiPMSimulator, "SiPMResult");
   SiPMResult.def(py::init<>())
-    .def_readonly("ID", &SiPMSimulator::SiPMResult::idx)
+    .def_readonly("EventId", &SiPMSimulator::SiPMResult::eventId)
     .def_readonly("Integral", &SiPMSimulator::SiPMResult::integral)
     .def_readonly("Peak", &SiPMSimulator::SiPMResult::peak)
     .def_readonly("Toa", &SiPMSimulator::SiPMResult::toa)
