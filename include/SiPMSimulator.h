@@ -1,19 +1,19 @@
-#include "SiPMDebugInfo.h"
-#include "SiPMProperties.h"
-#include "SiPMSensor.h"
+#ifndef SIPM_SIPMSIMULATOR_H
+#define SIPM_SIPMSIMULATOR_H
 
 #include <stdint.h>
 #include <string>
 #include <vector>
 
-#ifndef SIPM_SIPMSIMULATOR_H
-#define SIPM_SIPMSIMULATOR_H
-
+#include "SiPMDebugInfo.h"
+#include "SiPMProperties.h"
+#include "SiPMSensor.h"
 namespace sipm {
+
 class SiPMSimulator {
 public:
   struct SiPMResult {
-    uint32_t idx;
+    uint32_t eventId;
     double integral, peak, tot, toa, top;
     std::vector<double> times, wavelengths;
     SiPMDebugInfo debug;
@@ -24,7 +24,7 @@ public:
     m_Intgate = s->properties().signalLength() - 1;
   }
 
-  // void readConfiguration(std::string&);
+  void readConfiguration(std::string&);
 
   void addEvents(const std::vector<std::vector<double>>&);
   void addEvents(const std::vector<std::vector<double>>&, const std::vector<std::vector<double>>&);

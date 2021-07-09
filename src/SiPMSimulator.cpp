@@ -1,12 +1,7 @@
 #include "SiPMSimulator.h"
+
 #include "SiPMAnalogSignal.h"
 #include "SiPMDebugInfo.h"
-#include <stdint.h>
-#ifdef _OPENMP
-#include <omp.h>
-#endif
-
-#include <iostream>
 
 namespace sipm {
 void SiPMSimulator::addEvents(const std::vector<std::vector<double>>& t) {
@@ -64,7 +59,7 @@ void SiPMSimulator::runSimulation() {
       SiPMResult l_Result;
 
       l_Result.times = m_Times[i];
-      l_Result.idx = i;
+      l_Result.eventId = i;
       l_Result.integral = l_Signal.integral(m_Intstart, m_Intgate, m_Threshold);
       l_Result.peak = l_Signal.peak(m_Intstart, m_Intgate, m_Threshold);
       l_Result.tot = l_Signal.tot(m_Intstart, m_Intgate, m_Threshold);
@@ -87,7 +82,7 @@ void SiPMSimulator::runSimulation() {
 
       l_Result.times = m_Times[i];
       l_Result.wavelengths = m_Wavelengths[i];
-      l_Result.idx = i;
+      l_Result.eventId = i;
       l_Result.integral = l_Signal.integral(m_Intstart, m_Intgate, 0.5);
       l_Result.peak = l_Signal.peak(m_Intstart, m_Intgate, 0.5);
       l_Result.tot = l_Signal.tot(m_Intstart, m_Intgate, 0.5);
@@ -111,7 +106,7 @@ void SiPMSimulator::runSimulation() {
 
       l_Result.times = m_Times[i];
       l_Result.integral = l_Signal.integral(m_Intstart, m_Intgate, 0.5);
-      l_Result.idx = i;
+      l_Result.eventId = i;
       l_Result.peak = l_Signal.peak(m_Intstart, m_Intgate, 0.5);
       l_Result.tot = l_Signal.tot(m_Intstart, m_Intgate, 0.5);
       l_Result.toa = l_Signal.toa(m_Intstart, m_Intgate, 0.5);
@@ -142,7 +137,7 @@ void SiPMSimulator::runSimulation() {
       SiPMResult l_Result;
 
       l_Result.times = m_Times[i];
-      l_Result.idx = i;
+      l_Result.eventId = i;
       l_Result.integral = l_Signal.integral(m_Intstart, m_Intgate, 0.5);
       l_Result.peak = l_Signal.peak(m_Intstart, m_Intgate, 0.5);
       l_Result.tot = l_Signal.tot(m_Intstart, m_Intgate, 0.5);
@@ -163,7 +158,7 @@ void SiPMSimulator::runSimulation() {
 
       l_Result.times = m_Times[i];
       l_Result.wavelengths = m_Wavelengths[i];
-      l_Result.idx = i;
+      l_Result.eventId = i;
       l_Result.integral = l_Signal.integral(m_Intstart, m_Intgate, 0.5);
       l_Result.peak = l_Signal.peak(m_Intstart, m_Intgate, 0.5);
       l_Result.tot = l_Signal.tot(m_Intstart, m_Intgate, 0.5);
@@ -185,7 +180,7 @@ void SiPMSimulator::runSimulation() {
       SiPMResult l_Result;
 
       l_Result.times = m_Times[i];
-      l_Result.idx = i;
+      l_Result.eventId = i;
       l_Result.integral = l_Signal.integral(m_Intstart, m_Intgate, 0.5);
       l_Result.peak = l_Signal.peak(m_Intstart, m_Intgate, 0.5);
       l_Result.tot = l_Signal.tot(m_Intstart, m_Intgate, 0.5);
