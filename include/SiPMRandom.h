@@ -10,19 +10,20 @@
  *  @date 2020
  */
 
-#include <vector>
+#ifndef SIPM_RANDOM_H
+#define SIPM_RANDOM_H
 
 #include <math.h>
+#include <random>
 #include <stdint.h>
+#include <vector>
 
 #ifdef __AVX2__
 #include <immintrin.h>
 #endif
 
-#ifndef SIPM_RANDOM_H
-#define SIPM_RANDOM_H
-
 namespace sipm {
+
 namespace SiPMRng {
 
 /// @brief Implementation of xoshiro256++ 1.0 PRNG algorithm
@@ -104,7 +105,7 @@ public:
   // Uniform random in [0-1]
   inline double Rand() __attribute__((hot));
 
-  // Uniform integer in range [0-max]
+  // Uniform integer in range [0-max)
   uint32_t randInteger(const uint32_t) __attribute__((hot));
   // Random gaussian given mean and sigma
   double randGaussian(const double, const double) __attribute__((hot));
@@ -117,7 +118,7 @@ public:
   std::vector<double> Rand(const uint32_t) __attribute__((hot));
   /** @brief Vector of random gaussian given mean an sigma */
   std::vector<double> randGaussian(const double, const double, const uint32_t) __attribute__((hot));
-  /** @brief Vector of random integers in range [0-max] */
+  /** @brief Vector of random integers in range [0-max) */
   std::vector<uint32_t> randInteger(const uint32_t max, const uint32_t n) __attribute__((hot));
   // Vector of random exponential given mean
   std::vector<double> randExponential(const double, const uint32_t) __attribute__((hot));
