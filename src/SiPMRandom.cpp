@@ -1,5 +1,4 @@
 #include "SiPMRandom.h"
-#include <random>
 
 namespace sipm {
 
@@ -176,10 +175,10 @@ double SiPMRandom::randGaussian(const double mu, const double sigma) {
   return mu + sigma * result;
 }
 
-/** @brief Returns a random integer in range [0,max]
+/** @brief Returns a random integer in range [0,max)
  * @param max Maximum value of integer to generate
  */
-uint32_t SiPMRandom::randInteger(const uint32_t max) { return static_cast<uint32_t>(Rand() * (max + 1)); }
+uint32_t SiPMRandom::randInteger(const uint32_t max) { return static_cast<uint32_t>(Rand() * max); }
 
 // VECTORS //
 
@@ -204,11 +203,9 @@ std::vector<double> SiPMRandom::Rand(const uint32_t n) {
  * @param n Number of values to generate
  */
 std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma, const uint32_t n) {
-  if (n == 0) {
-    return {};
-  }
+
   std::vector<double> out(n);
-  double s[n];
+  alignas(64) double s[n];
 
   for (uint32_t i = 0; i < n - 1; i += 2) {
     double z, u, v;
@@ -217,13 +214,13 @@ std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma
       v = Rand() * 2.0 - 1.0;
       z = (u * u) + (v * v);
     } while (z > 1.0 || z == 0.0);
-    s[i] = -2 * (log(z) / z);
-    s[i + 1] = s[i];
+    s[i] = log(z) / z;
     out[i] = u;
+    s[i + 1] = s[i];
     out[i + 1] = v;
   }
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = sqrt(s[i]) * out[i] * sigma + mu;
+    out[i] = sqrt(-2 * s[i]) * (out[i] * sigma) + mu;
   }
   // If n is odd we miss last value
   if (n & 1) {
@@ -240,7 +237,7 @@ std::vector<uint32_t> SiPMRandom::randInteger(const uint32_t max, const uint32_t
   std::vector<uint32_t> out(n);
 
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = static_cast<uint32_t>(Rand() * (max + 1));
+    out[i] = static_cast<uint32_t>(Rand() * max);
   }
   return out;
 }
