@@ -195,7 +195,7 @@ public:
   void setTauApFastComponent(const double x) { m_TauApFastComponent = x; }
 
   /// @brief Set time constant for the delay of slow afterpulses
-  void setTauApSlowComponent(const double x) { m_TauApFastComponent = x; }
+  void setTauApSlowComponent(const double x) { m_TauApSlowComponent = x; }
 
   /// @brief Set probability to have slow afterpulses over fast ones
   void setTauApSlowFraction(const double x) { m_ApSlowFraction = x; }
