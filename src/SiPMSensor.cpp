@@ -54,13 +54,10 @@ void SiPMSensor::runEvent() {
     addXtEvents();
   }
 
-  // TODO: Maybe it is better to generate AP with amplitude 1 and
-  // calculate signal amplitudes after AP generation.
-  // Still to discuss the physics behind.
-  calculateSignalAmplitudes();
   if (m_Properties.hasAp()) {
     addApEvents();
   }
+  calculateSignalAmplitudes();
 
   generateSignal();
 }
@@ -323,6 +320,7 @@ void SiPMSensor::addApEvents() {
 
     while (test > expap) {
       const bool isslow = m_rng.Rand() < slowFraction;
+
       double apDelay;
       if (isslow) {
         apDelay = m_rng.randExponential(tauApSlow);
@@ -332,14 +330,12 @@ void SiPMSensor::addApEvents() {
 
       // If ap event is in signal window
       if (apGeneratorTime + apDelay < signalLength) {
-        const double apAmplitude = currentHit.amplitude() * (1 - exp(-apDelay / recoveryTime));
-
         // Ap event is delayed but in same cell
         if(isslow){
-          m_Hits.emplace_back(apGeneratorTime + apDelay, apAmplitude, currentHit.row(), currentHit.col(),
+          m_Hits.emplace_back(apGeneratorTime + apDelay, 1, currentHit.row(), currentHit.col(),
           SiPMHit::HitType::kSlowAfterPulse, currentHit);
         } else {
-          m_Hits.emplace_back(apGeneratorTime + apDelay, apAmplitude, currentHit.row(), currentHit.col(),
+          m_Hits.emplace_back(apGeneratorTime + apDelay, 1, currentHit.row(), currentHit.col(),
           SiPMHit::HitType::kFastAfterPulse, currentHit);
 
         }
@@ -359,19 +355,14 @@ void SiPMSensor::calculateSignalAmplitudes() {
   std::sort(m_Hits.begin(), m_Hits.end());
   const double tauRecovery = 1 / m_Properties.recoveryTime();
 
-  for (auto hit = m_Hits.begin(); hit != m_Hits.end(); ++hit) {
-    // Check if cell is fired more than once
-    if (std::count(m_Hits.begin(), m_Hits.end(), *hit) > 1) {
-      // If so check which hits are in same cell
-      double previousHitTime = 0;
-      for (auto test = m_Hits.begin(); test != m_Hits.end(); ++test) {
-        if (*test == *hit) {
-          // Branchless equivalent of if/else previousHitTime != 0
-          // In first occurence prevHitTime is 0 so amplitude wille be 1.
-          // Else if prevHitTime is not 0 the exp term will be considered
-          double delay = hit->time() - previousHitTime;
-          hit->amplitude() = 1 - exp(-delay * tauRecovery) * (int)(previousHitTime != 0);
-          previousHitTime = hit->time();
+  for (uint32_t i=0; i<m_nTotalHits; ++i) {
+    // Check if cell is fired more than once (at previous time)
+    if (std::count(m_Hits.begin(), m_Hits.begin()+i, m_Hits[i]) > 0) {
+      // If so check which hits are in same cell (at previous times)
+      for (uint32_t j=0; j<i; ++j) {
+        if (m_Hits[i] == m_Hits[j]) {
+          const double delay = m_Hits[i].time() - m_Hits[j].time();
+          m_Hits[i].amplitude() = 1 - exp(-delay * tauRecovery);
         }
       }
     }
@@ -394,7 +385,6 @@ void SiPMSensor::generateSignal() {
   for (auto hit : m_Hits) {
     const int32_t time = hit->time() / sampling;
     const double amplitude = hit->amplitude() * m_rng.randGaussian(1, m_Properties.ccgv());
-
     const __m256d __amplitude = _mm256_set1_pd(amplitude);
 
     // Skipping tail of loop (no problem since it will be far from the signal (many taus)
