@@ -52,8 +52,6 @@ public:
    */
   inline bool operator<(const SiPMHit& rhs) const noexcept { return m_Time < rhs.m_Time; }
   inline bool operator<=(const SiPMHit& rhs) const noexcept { return m_Time <= rhs.m_Time; }
-  inline bool operator>(const SiPMHit& rhs) const noexcept { return m_Time > rhs.m_Time; }
-  inline bool operator>=(const SiPMHit& rhs) const noexcept { return m_Time >= rhs.m_Time; }
 
   /// @brief Operator used to check if the hit is in the same cell
   /**
