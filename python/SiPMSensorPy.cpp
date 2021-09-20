@@ -7,7 +7,7 @@ using namespace sipm;
 using std::vector;
 
 void SiPMSensorPy(py::module& m) {
-  py::class_<SiPMSensor> SiPMSensor(m, "SiPMSensor");
+  py::class_<SiPMSensor, std::shared_ptr<SiPMSensor>> SiPMSensor(m, "SiPMSensor");
   SiPMSensor.def(py::init<>())
     .def(py::init<const SiPMProperties&>())
     .def("properties", static_cast<SiPMProperties& (SiPMSensor::*)()>(&SiPMSensor::properties))

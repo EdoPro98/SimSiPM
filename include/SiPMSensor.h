@@ -25,15 +25,11 @@ namespace sipm {
 
 class SiPMSensor {
 public:
-  /** @enum PrecisionLevel
-   * Still unused
-   */
-  enum class PrecisionLevel { kFull, kFast };
-
   /// @brief SiPMSensor constructor from a @ref SiPMProperties instance.
   /** Instantiates a SiPMSensor with parameter specified in the SiPMProperties.
    */
   SiPMSensor(const SiPMProperties&) noexcept;
+
   /// @brief Default SiPMSensor contructor.
   /** Instantiates a SiPMSensor with default settings.
    */
@@ -44,35 +40,42 @@ public:
    * Used to access the SiPMSensor properties and settings
    */
   const SiPMProperties& properties() const { return m_Properties; }
-  /// @brief Returns a reference to the @ref SiPMProperties object
-  /** used to setup ths SiPMSensor.
+
+  /// @brief Returns a reference to the @ref SiPMProperties object used to setup ths SiPMSensor.
+  /**
    * Used to access and modify the SiPMSensor properties and settings
    */
   SiPMProperties& properties() { return m_Properties; }
+
   /// @brief Returns a reference to @ref SiPMAnalogSignal.
   /** Used to get the generated signal from the sensor. This method should be
    * run after @ref runEvent otherwise it will return only electronic noise.
    */
   const SiPMAnalogSignal& signal() const { return m_Signal; }
+
   /// @brief Returns vector containing all SiPMHits.
   /** Used for debug purposes only. In general SiPMHits should remain hidden
    * for the user of the library.
    */
   std::vector<SiPMHit> hits() const { return m_Hits; }
+
   /// @brief Returns a const reference to the @ref SiPMRandom.
   const SiPMRandom& rng() const { return m_rng; }
+
   /// @brief Returns a reference to the @ref SiPMRandom.
   /** Used to access and re-seed the underlying SiPMRandom object used for
    * pseudo-random numbers generation.
    */
   SiPMRandom& rng() { return m_rng; }
+
   /// @brief Returns a @ref SiPMDebugInfo
   /** @sa SiPMDebugInfo
    */
   SiPMDebugInfo debug() const { return SiPMDebugInfo(m_PhotonTimes.size(), m_nPe, m_nDcr, m_nXt, m_nDXt, m_nAp); }
 
   /// @brief Prints all informations about SiPMHits in SiPMSensor
-  void dumpHits();
+  void dumpHits() const;
+
   /// @brief Sets a property from its name
   /** Sets a SiPM property using its name. For a list of available SiPM
    * properties names @sa SiPMProperties
@@ -85,32 +88,32 @@ public:
   void setProperties(const SiPMProperties&);
 
   void addPhoton() {}
+
   /// @brief Adds a single photon to the list of photons to be simulated.
   void addPhoton(const double);
+
   /// @brief Adds a single photon to the list of photons to be simulated.
   void addPhoton(const double, const double);
+
   /// @brief Adds all photons to the list of photons to be simulated at once.
   void addPhotons(const std::vector<double>&);
+
   /// @brief Adds all photons to the list of photons to be simulated at once.
   void addPhotons(const std::vector<double>&, const std::vector<double>&);
 
   /// @brief Runs a complete SiPM event.
   void runEvent();
+
   /// @brief Resets internal state of the SiPMSensor.
   /** Resets the state of the SiPMSensor so it can be used again for a new
    * event.
    */
   void resetState();
 
-  /// @brief Used to specify different PrecisionLevel
-  /** Still to implement
-   */
-  void setPrecisionLevel(const PrecisionLevel);
-
   // Go virtual ?
   // virtual ~SiPMSensor() = default;
   // virtual std::vector<double> signalShape() const;
-  friend std::ostream& operator<<(std::ostream&, SiPMSensor const&);
+  friend std::ostream& operator<<(std::ostream&, const SiPMSensor&);
 
 private:
   /// @brief Returns the PDE value corresponding to the given wavelength.
@@ -120,7 +123,7 @@ private:
    */
   double evaluatePde(const double) const;
   /// @brief Return wether the photon is detected given a PDE value.
-  bool isDetected(const double aPde) const { return m_rng.Rand() < aPde; }
+  inline bool isDetected(const double aPde) const { return m_rng.Rand() < aPde; }
   /** @brief Return wether the generated SiPMHit coordinates are allowed on the
    * sensor's surface.
    */
@@ -150,6 +153,7 @@ private:
    * to the list of hitted cells.
    */
   void addDcrEvents();
+
   /// @brief Generates photoelectrons starting from the photons.
   /** Starting from the all the photons added to the sensor a list of
    * @ref SiPMHit is created considering the PDE type and values set by the user
@@ -157,27 +161,33 @@ private:
    * @ref SiPMProperties::HitDistribution specified
    */
   void addPhotoelectrons();
+
+  void addCorrelatedNoise();
+
   /// @brief Adds XT events.
   /** Adds optical crosstalk events to the already existing photoelectrons.
-   * Each hitted cell may trigger a poissonian number of adjacent cells with
-   * mean value given by the XT probability. XT events are added to the listo of
-   * hits with the same time of the generating hit and theyr position is choosen
-   * randomly between the 9 neighbouring cells.
-   */
-  void addXtEvents();
+  * Each hitted cell may trigger a poissonian number of adjacent cells with
+  * mean value given by the XT probability. XT events are added to the listo of
+  * hits with the same time of the generating hit and theyr position is choosen
+  * randomly between the 9 neighbouring cells.
+  */
+  SiPMHit generateXtHit(const SiPMHit&) const;
+
   /// @brief Add AP events.
   /** Adds afterpulse events. Each hit can produce a poissonian number of
-   * afterpulses. Each afterpulse is delayed from the generating signal
-   * following a slow/fast exponential distribution.
-   */
-  void addApEvents();
+  * afterpulses. Each afterpulse is delayed from the generating signal
+  * following a slow/fast exponential distribution.
+  */
+  SiPMHit generateApHit(const SiPMHit&) const;
+
   /// @brief Calculates signal amplitudes for all hits
   /** Each hit has a starting amplitude of 1 but if the same cell has been
-   * previously hitted the resulting amplitude will be calculated considering
-   * the cell as an RC circuit, hence:
-   * @f$ a = 1 - e^{-frac{\Delta_t}{\tau}} @f$
-   */
+  * previously hitted the resulting amplitude will be calculated considering
+  * the cell as an RC circuit, hence:
+  * @f$ a = 1 - e^{-frac{\Delta_t}{\tau}} @f$
+  */
   void calculateSignalAmplitudes();
+
   /// @brief Generates the SiPM signal
   /** The SiPM signal is generated considering the arriving time of each hit and
    * its amplitude. Signals are generated accorfingly to the signal produced by
@@ -202,8 +212,6 @@ private:
   std::vector<SiPMHit> m_Hits;
 
   SiPMAnalogSignal m_Signal;
-
-  PrecisionLevel m_PrecisionLevel = PrecisionLevel::kFull;
 };
 
 } // namespace sipm
