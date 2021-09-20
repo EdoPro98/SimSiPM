@@ -14,7 +14,6 @@ void SiPMDebugInfoPy(py::module&);
 void SiPMHitPy(py::module&);
 void SiPMSensorPy(py::module&);
 void SiPMRandomPy(py::module&);
-void SiPMSimulatorPy(py::module&);
 
 PYBIND11_MODULE(SiPM, m) {
   m.doc() = "Module for SiPM simulation";
@@ -26,5 +25,4 @@ PYBIND11_MODULE(SiPM, m) {
   SiPMHitPy(m);
   SiPMSensorPy(m);
   SiPMRandomPy(m);
-  SiPMSimulatorPy(m);
 }
