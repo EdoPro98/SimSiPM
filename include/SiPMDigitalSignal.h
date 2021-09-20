@@ -38,7 +38,7 @@ public:
 
   /// @brief Copy assignement operator from a std::vector
   inline int32_t& operator[](const uint32_t i) noexcept { return m_Waveform[i]; }
-  inline const int32_t operator[](const uint32_t i) const noexcept { return m_Waveform[i]; }
+  inline int32_t operator[](const uint32_t i) const noexcept { return m_Waveform[i]; }
 
   /// @brief Returns the size of the vector containing the signal
   uint32_t size() const { return m_Waveform.size(); }
