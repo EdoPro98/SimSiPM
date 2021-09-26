@@ -110,9 +110,9 @@ public:
   // Random gaussian given mean and sigma
   double randGaussian(const double, const double) __attribute__((hot));
   // Random exponential given mean
-  double randExponential(const double) __attribute__((hot));
+  double randExponential(const double);
   // Random poisson given mean
-  uint32_t randPoisson(const double mu) __attribute__((hot));
+  uint32_t randPoisson(const double mu);
 
   /** @brief Vector of random uniforms in [0-1] */
   std::vector<double> Rand(const uint32_t) __attribute__((hot));
@@ -121,7 +121,7 @@ public:
   /** @brief Vector of random integers in range [0-max) */
   std::vector<uint32_t> randInteger(const uint32_t max, const uint32_t n) __attribute__((hot));
   // Vector of random exponential given mean
-  std::vector<double> randExponential(const double, const uint32_t) __attribute__((hot));
+  std::vector<double> randExponential(const double, const uint32_t);
 
 private:
   SiPMRng::Xorshift256plus m_rng;
