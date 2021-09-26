@@ -4,7 +4,7 @@ import numpy as np
 import random
 import warnings
 
-N = 1000000  # Repeat tests 1e6 times
+N = 10000000  # Repeat tests 10e6 times
 toll = 3  # Tollerance sigma
 
 
@@ -59,29 +59,38 @@ class TestRandom:
         Z = np.abs(mean - expected) / std
         assert Z < 3
         if Z > 1:
-            warnings.warn(f"Unprobable mean value: {mean:.3f} instead of {expected}", UserWarning)
+            warnings.warn(
+                f"Unprobable mean value: {mean:.3f} instead of {expected}. This is expected for a test based on random values.",
+                UserWarning,
+            )
 
     def test_RandIntSmall_statistic(self):
         rng = SiPM.SiPMRandom()
         x = rng.randInteger(10, N)
         mean = np.mean(x)
         std = np.std(x) / (N ** 0.5)
-        expected = 5
+        expected = 4.5
         Z = np.abs(mean - expected) / std
         assert Z < 3
         if Z > 1:
-            warnings.warn(f"Unprobable mean value: {mean:.3f} instead of {expected}", UserWarning)
+            warnings.warn(
+                f"Unprobable mean value: {mean:.3f} instead of {expected}. This is expected for a test based on random values.",
+                UserWarning,
+            )
 
     def test_RandIntBig_statistic(self):
         rng = SiPM.SiPMRandom()
         x = rng.randInteger(10000, N)
         mean = np.mean(x)
         std = np.std(x) / (N ** 0.5)
-        expected = 4999
+        expected = 4999.5
         Z = np.abs(mean - expected) / std
         assert Z < 3
         if Z > 1:
-            warnings.warn(f"Unprobable mean value: {mean:.3f} instead of {expected}", UserWarning)
+            warnings.warn(
+                f"Unprobable mean value: {mean:.3f} instead of {expected}. This is expected for a test based on random values.",
+                UserWarning,
+            )
 
     def test_RandExpSmall_statistic(self):
         rng = SiPM.SiPMRandom()
@@ -92,7 +101,10 @@ class TestRandom:
         Z = np.abs(mean - expected) / std
         assert Z < 3
         if Z > 1:
-            warnings.warn(f"Unprobable mean value: {mean:.3f} instead of {expected}", UserWarning)
+            warnings.warn(
+                f"Unprobable mean value: {mean:.3f} instead of {expected}. This is expected for a test based on random values.",
+                UserWarning,
+            )
 
     def test_RandExpBig_statistic(self):
         rng = SiPM.SiPMRandom()
@@ -103,7 +115,10 @@ class TestRandom:
         Z = np.abs(mean - expected) / std
         assert Z < 3
         if Z > 1:
-            warnings.warn(f"Unprobable mean value: {mean:.3f} instead of {expected}", UserWarning)
+            warnings.warn(
+                f"Unprobable mean value: {mean:.3f} instead of {expected}. This is expected for a test based on random values.",
+                UserWarning,
+            )
 
     def test_RandNormSmall_statistic(self):
         rng = SiPM.SiPMRandom()
@@ -114,7 +129,10 @@ class TestRandom:
         Z = np.abs(mean - expected) / std
         assert Z < 3
         if Z > 1:
-            warnings.warn(f"Unprobable mean value: {mean:.3f} instead of {expected}", UserWarning)
+            warnings.warn(
+                f"Unprobable mean value: {mean:.3f} instead of {expected}. This is expected for a test based on random values.",
+                UserWarning,
+            )
 
     def test_RandNormBig_statistic(self):
         rng = SiPM.SiPMRandom()
@@ -125,7 +143,10 @@ class TestRandom:
         Z = np.abs(mean - expected) / std
         assert Z < 3
         if Z > 1:
-            warnings.warn(f"Unprobable mean value: {mean:.3f} instead of {expected}", UserWarning)
+            warnings.warn(
+                f"Unprobable mean value: {mean:.3f} instead of {expected}. This is expected for a test based on random values.",
+                UserWarning,
+            )
 
     def test_RandVector_is_random(self):
         rng = SiPM.SiPMRandom()
@@ -170,16 +191,16 @@ class TestRandom:
     def test_RngGeneration(self):
         rng = SiPM.SiPMRandom()
         expected = (
-            1.3385211900451485e-10,
-            1.144415872293453e-05,
-            0.7513942718724139,
-            0.505884839079995,
-            0.19397259875167241,
-            0.2046130992539562,
-            0.9990140345724089,
-            0.8763439808001743,
-            0.7853262274009136,
-            0.5648365512732478,
+            2.6770408112497535e-10,
+            2.2888317445790562e-05,
+            0.5027885437448278,
+            0.01176967815998986,
+            0.3879451975033448,
+            0.4092261985079124,
+            0.9980280691448176,
+            0.7526879616003483,
+            0.570652454801827,
+            0.12967310254649567,
         )
         for i in range(N):
             rng.seed(1234567890)
@@ -208,13 +229,16 @@ class TestProperties:
             dcr = random.random() * 1e5
             xt = random.random()
             ap = random.random()
+            dxt = random.random()
 
             prop.setProperty("Dcr", dcr)
             prop.setProperty("Xt", xt)
             prop.setProperty("Ap", ap)
+            prop.setProperty("Dxt",dxt)
             assert prop.dcr() == dcr
             assert prop.xt() == xt
             assert prop.ap() == ap
+            assert prop.dxt() == dxt
 
     def test_SetHitDistribution(self):
         prop = SiPM.SiPMProperties()
@@ -224,7 +248,6 @@ class TestProperties:
         assert prop.pdeType() == SiPM.SiPMProperties.PdeType.kSpectrumPde
         prop.setPdeType(SiPM.SiPMProperties.PdeType.kSimplePde)
         assert prop.pdeType() == SiPM.SiPMProperties.PdeType.kSimplePde
-        for i in range(N):
-            p = random.random()
-            prop.setPde(p)
-            assert prop.pde() == p
+        for p in range(1000):
+            prop.setPde(p/1000)
+            assert prop.pde() == p/1000

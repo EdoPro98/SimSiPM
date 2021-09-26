@@ -4,8 +4,7 @@
 using namespace sipm;
 
 struct TestSiPMXorshift256 : public ::testing::Test {
-  static const int N = 5000000;
-
+  static constexpr int N = 1000000;
   SiPMRng::Xorshift256plus sut;
 };
 
@@ -14,16 +13,28 @@ TEST_F(TestSiPMXorshift256, Constructor) {
 }
 
 TEST_F(TestSiPMXorshift256, Seed) {
-  const uint64_t seed = 1234567890UL; // Random seed
-  sut.seed(seed);                     // Set Seed
-  uint64_t first = sut();             // Generate random value
-  sut.seed(seed);                     // Same seed as before
-  uint64_t second = sut();            // Generate random value
-  EXPECT_EQ(first, second);
+  static constexpr uint64_t seed = 1234567890UL; // Random seed
+  static constexpr uint64_t expected[] = {2469135783U,
+                                          211107467100884U,
+                                          13860777831681755443U,
+                                          9331928157278407912U,
+                                          3578162886484453791U,
+                                          3774445476066261209U,
+                                          18428556221801251841U,
+                                          16165693134356651351U,
+                                          14486711931236482216U,
+                                          10419395304814325825U};
+  for(int i=0;i<N;++i){
+    sut.seed(seed);
+    for(int j=0;j<10;++j){
+      uint64_t x = sut();
+      EXPECT_EQ(x,expected[j]);
+    }
+  }
 }
 
 TEST_F(TestSiPMXorshift256, AutomaticSeed) {
-  for (int i = 0; i < N; ++i) {
+  for (int i = 0; i < 1000000; ++i) {
     sut.seed();              // Set automatic seed
     uint64_t first = sut();  // Generate random value
     sut.seed();              // Set automatic seed
@@ -33,12 +44,12 @@ TEST_F(TestSiPMXorshift256, AutomaticSeed) {
 }
 
 TEST_F(TestSiPMXorshift256, GenerationSmallWindowTest) {
-  const int n = 16;
+  static constexpr int n = 16;
   uint64_t first_run[n];
   uint64_t second_run[n];
 
   for (int t = 0; t < N; ++t) {
-    uint64_t seed = rand(); // Generate a random seed
+    const uint64_t seed = rand(); // Generate a random seed
     sut.seed(seed);         // Set seed
     for (int i = 0; i < n; ++i) {
       first_run[i] = sut();
@@ -49,17 +60,21 @@ TEST_F(TestSiPMXorshift256, GenerationSmallWindowTest) {
     }
     for (int i = 0; i < n; ++i) {
       EXPECT_EQ(first_run[i], second_run[i]); // Check that values are equal
+    }
+    for(int i=0; i<n-1; ++i){
+      EXPECT_NE(first_run[i],first_run[i+1]);
+      EXPECT_NE(second_run[i],second_run[i+1]);
     }
   }
 }
 
 TEST_F(TestSiPMXorshift256, GenerationMediumWindowTest) {
-  const int n = 128;
+  static constexpr int n = 256;
   uint64_t first_run[n];
   uint64_t second_run[n];
 
   for (int t = 0; t < N; ++t) {
-    uint64_t seed = rand(); // Generate a random seed
+    const uint64_t seed = rand(); // Generate a random seed
     sut.seed(seed);         // Set seed
     for (int i = 0; i < n; ++i) {
       first_run[i] = sut();
@@ -70,17 +85,21 @@ TEST_F(TestSiPMXorshift256, GenerationMediumWindowTest) {
     }
     for (int i = 0; i < n; ++i) {
       EXPECT_EQ(first_run[i], second_run[i]); // Check that values are equal
+    }
+    for(int i=0; i<n-1; ++i){
+      EXPECT_NE(first_run[i],first_run[i+1]);
+      EXPECT_NE(second_run[i],second_run[i+1]);
     }
   }
 }
 
 TEST_F(TestSiPMXorshift256, GenerationBigWindowTest) {
-  const int n = 1024;
+  static constexpr int n = 65536;
   uint64_t first_run[n];
   uint64_t second_run[n];
 
-  for (int t = 0; t < N; ++t) {
-    uint64_t seed = rand(); // Generate a random seed
+  for (int t = 0; t < 1000; ++t) {
+    const uint64_t seed = rand(); // Generate a random seed
     sut.seed(seed);         // Set seed
     for (int i = 0; i < n; ++i) {
       first_run[i] = sut();
@@ -91,6 +110,10 @@ TEST_F(TestSiPMXorshift256, GenerationBigWindowTest) {
     }
     for (int i = 0; i < n; ++i) {
       EXPECT_EQ(first_run[i], second_run[i]); // Check that values are equal
+    }
+    for(int i=0; i<n-1; ++i){
+      EXPECT_NE(first_run[i],first_run[i+1]);
+      EXPECT_NE(second_run[i],second_run[i+1]);
     }
   }
 }

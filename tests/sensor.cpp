@@ -14,7 +14,7 @@ struct TestSiPMSensor : public ::testing::Test {
 TEST_F(TestSiPMSensor, Constructor) { SiPMSensor sensor = SiPMSensor(); }
 
 TEST_F(TestSiPMSensor, AddPhoton) {
-  const int N = 100000;
+  static constexpr int N = 100000;
   for (int i = 0; i < 1000; ++i) {
     sut.resetState();
     sut.addPhoton(10);
@@ -22,18 +22,18 @@ TEST_F(TestSiPMSensor, AddPhoton) {
 }
 
 TEST_F(TestSiPMSensor, AddPhotons) {
-  const int N = 100000;
+  static constexpr int N = 100000;
   for (int i = 0; i < N; ++i) {
     sut.resetState();
-    int n = rng.randInteger(100);
+    int n = rng.randInteger(100) + 1;
     // n should be > 0
-    std::vector<double> t = rng.randGaussian(100, 0.2, n + 1);
+    std::vector<double> t = rng.randGaussian(100, 0.2, n);
     sut.addPhotons(t);
   }
 }
 
 TEST_F(TestSiPMSensor, AddPhotonWlen) {
-  const int N = 100000;
+  static constexpr int N = 100000;
   for (int i = 0; i < 1000; ++i) {
     sut.resetState();
     sut.addPhoton(rng.randGaussian(100, 0.2), rng.randGaussian(450, 20));
@@ -41,7 +41,7 @@ TEST_F(TestSiPMSensor, AddPhotonWlen) {
 }
 
 TEST_F(TestSiPMSensor, AddPhotonsWlen) {
-  const int N = 100000;
+  static constexpr int N = 100000;
   sut.resetState();
   for (int i = 0; i < N; ++i) {
     sut.resetState();
@@ -54,10 +54,10 @@ TEST_F(TestSiPMSensor, AddPhotonsWlen) {
 }
 
 TEST_F(TestSiPMSensor, AddDcr) {
-  const int N = 1000000;
+  static constexpr int N = 10000000;
   int ndcr = 0;
   SiPMSensor sensor;
-  sensor.rng().seed(1234567890);
+  sensor.rng().seed();
   for (int i = 0; i < N; ++i) {
     sensor.resetState();
     sensor.runEvent();
@@ -68,64 +68,25 @@ TEST_F(TestSiPMSensor, AddDcr) {
   EXPECT_LE(rate, sensor.properties().dcr() * 1.05);
 }
 
-TEST_F(TestSiPMSensor, AddXt) {
-  const int N = 1000000;
-  int nxt = 0;
-  int npe = 0;
-  SiPMSensor sensor;
-  sensor.rng().seed(1234567890);
-  for (int i = 0; i < N; ++i) {
-    sensor.resetState();
-    sensor.runEvent();
-    nxt += sensor.debug().nXt;
-    npe += sensor.debug().nDcr;
-  }
-  double xt = (double)nxt / (double)npe;
-  EXPECT_GE(xt, sensor.properties().xt() * 0.95);
-  EXPECT_LE(xt, sensor.properties().xt() * 1.05);
-}
-
-TEST_F(TestSiPMSensor, AddAp) {
-  const int N = 1000000;
-  int nap = 0;
-  int npe = 0;
-  SiPMSensor sensor;
-  sensor.rng().seed(1234567890);
-  for (int i = 0; i < N; ++i) {
-    sensor.resetState();
-    sensor.runEvent();
-    nap += sensor.debug().nAp;
-    npe += sensor.debug().nDcr;
-  }
-  double ap = (double)nap / (double)npe;
-  EXPECT_GE(ap, sensor.properties().ap() * 0.95);
-  EXPECT_LE(ap, sensor.properties().ap() * 1.05);
-}
-
 TEST_F(TestSiPMSensor, SignalGeneration) {
-  const int N = 25;
-  const int R = 10000;
+  static constexpr int N = 25;
+  static constexpr int R = 10000;
   SiPMSensor lsut = SiPMSensor();
+  // Almost no noise
   lsut.properties().setXtOff();
   lsut.properties().setDcrOff();
   lsut.properties().setApOff();
   lsut.properties().setSnr(40);
 
   for (int i = 1; i < N; ++i) {
-    std::vector<double> t = rng.randGaussian(100, 0.1, i);
+    // generate i photons
+    std::vector<double> t = rng.randGaussian(10, 0.1, i);
     double avg_max = 0;
     for (int j = 0; j < R; ++j) {
       lsut.resetState();
       lsut.addPhotons(t);
       lsut.runEvent();
-      SiPMAnalogSignal signal = lsut.signal();
-      double max = 0;
-      for (int k = 0; k < lsut.properties().nSignalPoints(); ++k) {
-        if (signal[k] > max) {
-          max = signal[k];
-        }
-      }
-      avg_max += max;
+      avg_max += lsut.signal().peak(0,20,0);
     }
     avg_max /= R;
     EXPECT_GE(avg_max + 0.5, i);
