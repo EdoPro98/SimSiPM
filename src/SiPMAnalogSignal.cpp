@@ -13,7 +13,7 @@ double SiPMAnalogSignal::integral(const double intstart, const double intgate, c
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  const double peak = *std::max_element(start, end);
+  const double peak = this->peak(intstart, intgate, threshold);
   if (peak < threshold) {
     return 0;
   }
@@ -55,7 +55,7 @@ double SiPMAnalogSignal::tot(const double intstart, const double intgate, const 
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  const double peak = *std::max_element(start, end);
+  const double peak = this->peak(intstart, intgate, threshold);
   if (peak < threshold) {
     return 0;
   }
@@ -81,7 +81,7 @@ double SiPMAnalogSignal::toa(const double intstart, const double intgate, const 
 
   auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  const double peak = *std::max_element(start, end);
+  const double peak = this->peak(intstart, intgate, threshold);
   if (peak < threshold) {
     return -1;
   }
@@ -106,7 +106,7 @@ double SiPMAnalogSignal::top(const double intstart, const double intgate, const 
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  const double peak = *std::max_element(start, end);
+  const double peak = this->peak(intstart, intgate, threshold);
   if (peak < threshold) {
     return 0;
   }
