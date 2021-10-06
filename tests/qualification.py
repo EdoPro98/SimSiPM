@@ -47,7 +47,7 @@ for i in range(N):
     nXtDel += debug.nDXt
     nAp += debug.nAp
 
-dcrDelays = np.diff(dcrDelays)
+dcrDelays = np.diff(np.sort(dcrDelays)) * 1e-9
 
 dcr = nDcr / (1e-9 * N * sensor.properties().signalLength())
 xt = nXt / nPe
@@ -64,25 +64,25 @@ tableData = {
 
 print(tabulate(tableData, headers="keys", floatfmt=".2f"))
 
-cost = ExtendedUnbinnedNLL(dcrDelays, exp)
-fit = Minuit(cost, a=sensor.properties().dcr(), b=sensor.properties().dcr())
+cost = UnbinnedNLL(dcrDelays, exp)
+fit = Minuit(cost, a=1/np.mean(dcrDelays))
 fit.migrad()
 fit.minos()
 
 print(fit)
 
-plt.figure()
-h = np.histogram(
-    dcrTimes,
-    np.arange(
-        0,
-        sensor.properties().signalLength() + 10,
-        10,
-    ),
-)
-mplhep.histplot(h, label="Time distribution of DCR")
-plt.xlabel("Time [ns]")
-plt.legend(frameon=False)
+fig, ax = plt.subplots(2, 1)
+h = np.histogram(dcrTimes, 300)
+mplhep.histplot(h, label="Time distribution of DCR", ax=ax[0])
+ax[0].set_xlabel("Time [ns]")
+ax[0].legend(frameon=False)
+
+h = np.histogram(dcrDelays, 300, density=True)
+mplhep.histplot(h, label="Inter-arriving time distribution of DCR", ax=ax[1])
+x=np.linspace(0,dcrDelays.max(),100)
+ax[1].plot(x,exp(x,*fit.values), label="Exponential fit")
+ax[1].set_xlabel("Time [s]")
+ax[1].legend(frameon=False)
 plt.show()
 
 tableData = {
