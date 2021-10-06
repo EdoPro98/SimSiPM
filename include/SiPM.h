@@ -1,7 +1,7 @@
 #ifndef SIPM_SIPM_H
 #define SIPM_SIPM_H
 
-#define __VERSION__ "2.0.0-beta"
+#define SIPM_VERSION "2.0.0-beta"
 
 #include "SiPMAdc.h"
 #include "SiPMAnalogSignal.h"

@@ -26,7 +26,7 @@ else:
 
 __version__ = "unknown"
 for l in open("include/SiPM.h").readlines():
-    if "__VERSION__" in l.split():
+    if "SIPM_VERSION" in l.split():
         __version__ = l.split()[-1]
         break
 
@@ -74,7 +74,7 @@ ext_modules = [
             get_pybind_include(),
             get_pybind_include(user=True),
         ],
-        define_macros=[("__VERSION__", __version__)],
+        define_macros=[("SIPM_VERSION", __version__)],
         extra_compile_args=extra_compile_args,
         extra_link_args=extra_link_args,
         language="c++",
