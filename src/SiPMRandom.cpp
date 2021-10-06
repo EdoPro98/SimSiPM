@@ -140,10 +140,10 @@ double SiPMRandom::randGaussian(const double mu, const double sigma) {
         if ((y + kD1) * (kD3 + x) < kD2) {
           result = rn;
           break;
-        } else if (kHzmp - y < exp(-(z * z + kPhln) / 2)) {
+        } else if (kHzmp - y < exp(-(z * z + kPhln) * 0.5)) {
           result = z;
           break;
-        } else if (y + kHzm < exp(-(x + kPhln) / 2)) {
+        } else if (y + kHzm < exp(-(x + kPhln) * 0.5)) {
           result = rn;
           break;
         }
@@ -205,7 +205,7 @@ std::vector<double> SiPMRandom::Rand(const uint32_t n) {
 std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma, const uint32_t n) {
 
   std::vector<double> out(n);
-  alignas(64) double s[n];
+  std::vector<double> u(n);
 
   for (uint32_t i = 0; i < n - 1; i += 2) {
     double z, u, v;
@@ -215,17 +215,15 @@ std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma
       z = (u * u) + (v * v);
     } while (z > 1.0 || z == 0.0);
     s[i] = log(z) / z;
-    out[i] = u;
     s[i + 1] = s[i];
+    out[i] = u;
     out[i + 1] = v;
   }
   for (uint32_t i = 0; i < n; ++i) {
     out[i] = sqrt(-2 * s[i]) * (out[i] * sigma) + mu;
   }
   // If n is odd we miss last value
-  if (n & 1) {
-    out[n - 1] = randGaussian(mu, sigma);
-  }
+  out[n - 1] = randGaussian(mu, sigma);
   return out;
 }
 
