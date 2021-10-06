@@ -20,8 +20,9 @@
 #define SIPM_SIPMSIGNAL_H
 
 #include <algorithm>
+#include <iomanip>
+#include <iostream>
 #include <math.h>
-#include <ostream>
 #include <stdint.h>
 #include <vector>
 
@@ -73,7 +74,7 @@ public:
   /// @brief Applies a low-pass filter to the input vector
   SiPMAnalogSignal lowpass(const double) const;
 
-  friend std::ostream& operator<<(std::ostream&, SiPMAnalogSignal const&);
+  friend std::ostream& operator<< (std::ostream&, const SiPMAnalogSignal&);
 
 private:
   std::vector<double> m_Waveform;

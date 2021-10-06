@@ -14,7 +14,8 @@
 #define SIPM_SIPMHITS_H
 
 #include <algorithm>
-#include <ostream>
+#include <iostream>
+#include <iomanip>
 #include <stdint.h>
 #include <memory>
 #include <vector>
@@ -76,7 +77,7 @@ public:
   /// @brief Returns vector of pointers to children hits
   std::vector<std::shared_ptr<SiPMHit>> childrens() const {return m_ChildrenHits; }
 
-  friend std::ostream& operator<<(std::ostream&, SiPMHit const&);
+  friend std::ostream& operator<< (std::ostream&, const SiPMHit&);
 
 private:
 
@@ -89,34 +90,63 @@ private:
   std::vector<std::shared_ptr<SiPMHit>> m_ChildrenHits;
 };
 
-inline std::ostream& operator<<(std::ostream& os, const SiPMHit& x) {
-  os << "=== SiPM Hit Start ===\n";
-  os << "Time of hit: " << x.m_Time << "\n";
-  os << "Hit relative amplitude: " << x.m_Amplitude << "\n";
-  os << "Hit position on sensor: " << x.m_Row << " - " << x.m_Col << "\n";
-  os << "Hit type: ";
-  switch (x.m_HitType) {
+inline std::ostream& operator<< (std::ostream& out, const SiPMHit& obj){
+  out<<std::setprecision(2)<<std::fixed;
+  out << "===> SiPM Hit <===\n";
+  out << "Address: "<<std::addressof(obj)<<"\n";
+  out << "Hit time: " << obj.m_Time << "\n";
+  out << "Hit relative amplitude: " << obj.m_Amplitude << "\n";
+  out << "Hit position on sensor: " << obj.m_Row << " - " << obj.m_Col << "\n";
+  out << "Hit type: ";
+  switch (obj.m_HitType) {
     case SiPMHit::HitType::kPhotoelectron:
-      os << "Photoelectron\n";
+      out << "Photoelectron\n";
       break;
     case SiPMHit::HitType::kDarkCount:
-      os << "Dark count\n";
+      out << "Dark count\n";
       break;
     case SiPMHit::HitType::kOpticalCrosstalk:
-      os << "Optical crosstalk\n";
+      out << "Optical crosstalk\n";
       break;
     case SiPMHit::HitType::kFastAfterPulse:
-      os << "Afterpulse (fast)\n";
+      out << "Afterpulse (fast)\n";
       break;
     case SiPMHit::HitType::kSlowAfterPulse:
-      os << "Afterpulse (slow)\n";
+      out << "Afterpulse (slow)\n";
       break;
     case SiPMHit::HitType::kDelayedOpticalCrosstalk:
-      os << "Delayed optical crosstalk\n";
+      out << "Delayed optical crosstalk\n";
       break;
   }
-  os << "=== SiPM Hit End ===";
-  return os;
+
+  if(obj.m_ParentHit != nullptr){
+    out << "Parent hit: ";
+    switch (obj.m_ParentHit->m_HitType) {
+      case SiPMHit::HitType::kPhotoelectron:
+        out << "Photoelectron\n";
+        break;
+      case SiPMHit::HitType::kDarkCount:
+        out << "Dark count\n";
+        break;
+      case SiPMHit::HitType::kOpticalCrosstalk:
+        out << "Optical crosstalk\n";
+        break;
+      case SiPMHit::HitType::kFastAfterPulse:
+        out << "Afterpulse (fast)\n";
+        break;
+      case SiPMHit::HitType::kSlowAfterPulse:
+        out << "Afterpulse (slow)\n";
+        break;
+      case SiPMHit::HitType::kDelayedOpticalCrosstalk:
+        out << "Delayed optical crosstalk\n";
+        break;
+    }
+  }
+
+  if (obj.m_ChildrenHits.size() > 0){
+    out << "Children hits: " << obj.m_ChildrenHits.size() << "\n";
+  }
+  return out;
 }
 
 } // namespace sipm

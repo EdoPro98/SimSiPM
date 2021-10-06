@@ -122,141 +122,69 @@ void SiPMProperties::readSettings(std::string& fname) {
   }
 }
 
-// TODO: Will be removed! Still here for backwards-compatibility
-void SiPMProperties::dumpSettings() const {
-  std::cout << "===> SiPM Properties Start <===" << '\n';
-  std::cout << "Size: " << m_Size << " mm\n";
-  std::cout << "Pitch: " << m_Pitch << " um\n";
-  std::cout << "Number of cells: " << nCells() << "\n";
-  switch (m_HitDistribution) {
-    case (HitDistribution::kUniform):
-      std::cout << "Hit distribution: Uniform"
-                << "\n";
-      break;
-    case (HitDistribution::kCircle):
-      std::cout << "Hit distribution: Circle"
-                << "\n";
-      break;
-    case (HitDistribution::kGaussian):
-      std::cout << "Hit distribution: Gaussian"
-                << "\n";
-      break;
-  }
-  std::cout << "Cell recovery time: " << m_RecoveryTime << " ns\n";
-  if (m_HasDcr) {
-    std::cout << "Dark count rate: " << m_Dcr / 1e3 << " kHz\n";
-  } else {
-    std::cout << "Dark count is OFF\n";
-  }
-  if (m_HasXt) {
-    std::cout << "Optical crosstalk probability: " << m_Xt * 100 << " %\n";
-  } else {
-    std::cout << "Optical crosstalk is OFF\n";
-  }
-  if (m_HasDXt) {
-    std::cout << "Delayed optical crosstalk probability (as a fraction of xt): " << m_DXt * 100 << " %\n";
-  } else {
-    std::cout << "Delayed optical crosstalk is OFF\n";
-  }
-  if (m_HasAp) {
-    std::cout << "Afterpulse probability: " << m_Ap * 100 << " %\n";
-    std::cout << "Tau afterpulses (fast): " << m_TauApFastComponent << " ns\n";
-    std::cout << "Tau afterpulses (slow): " << m_TauApSlowComponent << " ns\n";
-  } else {
-    std::cout << "Afterpulse is OFF\n";
-  }
-  std::cout << "Cell-to-cell gain variation: " << m_Ccgv * 100 << " %\n";
-  std::cout << "SNR: " << m_SnrdB << " dB\n";
-  if (m_HasPde == PdeType::kSimplePde) {
-    std::cout << "Photon detection efficiency: " << m_Pde * 100 << " %\n";
-  } else if (m_HasPde == PdeType::kSimplePde) {
-    std::cout << "Photon detection efficiency: depending on wavelength\n";
-    std::cout << "Photon wavelength\tDetection efficiency"
-              << "\n";
-    for (auto it = m_PdeSpectrum.begin(); it != m_PdeSpectrum.end(); ++it) {
-      std::cout << it->first << "\t\t->\t\t" << it->second << "\n";
-    }
-  } else {
-    std::cout << "Photon detection efficiency is OFF (100 %)\n";
-  }
-  std::cout << "Rising time of signal: " << m_RiseTime << " ns\n";
-  std::cout << "Falling time of signal (fast): " << m_FallTimeFast << " ns\n";
-  if (m_HasSlowComponent) {
-    std::cout << "Falling time of signal (slow): " << m_FallTimeSlow << " ns\n";
-    std::cout << "Slow component fraction: " << m_SlowComponentFraction * 100 << " %\n";
-  }
-  std::cout << "Signal length: " << m_SignalLength << " ns\n";
-  std::cout << "Sampling time: " << m_Sampling << " ns\n";
-  std::cout << "==> End of SiPM Settings <==="
-            << "\n";
-}
-
-std::ostream& operator<<(std::ostream& os, SiPMProperties const& x) {
-  os << "===> SiPM Properties Start <===" << '\n';
-  os << "Size: " << x.m_Size << " mm\n";
-  os << "Pitch: " << x.m_Pitch << " um\n";
-  os << "Number of cells: " << x.nCells() << "\n";
-  switch (x.m_HitDistribution) {
+std::ostream& operator<< (std::ostream& out, const SiPMProperties& obj){
+  out << std::setprecision(2) << std::fixed;
+  out << "===> SiPM Properties <===" << '\n';
+  out << "Address: "<<std::addressof(obj) << "\n";
+  out << "Size: " << obj.m_Size << " mm\n";
+  out << "Pitch: " << obj.m_Pitch << " um\n";
+  out << "Number of cells: " << obj.nCells() << "\n";
+  out << "Hit distribution: ";
+  switch (obj.m_HitDistribution) {
     case (SiPMProperties::HitDistribution::kUniform):
-      os << "Hit distribution: Uniform"
-         << "\n";
+      out << "Uniform\n";
       break;
     case (SiPMProperties::HitDistribution::kCircle):
-      os << "Hit distribution: Circle"
-         << "\n";
+      out << "Circle\n";
       break;
     case (SiPMProperties::HitDistribution::kGaussian):
-      os << "Hit distribution: Gaussian"
-         << "\n";
+      out << "Gaussian\n";
       break;
   }
-  os << "Cell recovery time: " << x.m_RecoveryTime << " ns\n";
-  if (x.m_HasDcr) {
-    os << "Dark count rate: " << x.m_Dcr / 1e3 << " kHz\n";
+  out << "Cell recovery time: " << obj.m_RecoveryTime << " ns\n";
+  if (obj.m_HasDcr) {
+    out << "Dark count rate: " << obj.m_Dcr / 1e3 << " kHz\n";
   } else {
-    os << "Dark count is OFF\n";
+    out << "Dark count is OFF\n";
   }
-  if (x.m_HasXt) {
-    os << "Optical crosstalk probability: " << x.m_Xt * 100 << " %\n";
+  if (obj.m_HasXt) {
+    out << "Optical crosstalk probability: " << obj.m_Xt * 100 << " %\n";
   } else {
-    os << "Optical crosstalk is OFF\n";
+    out << "Optical crosstalk is OFF\n";
   }
-  if (x.m_HasDXt) {
-    os << "Delayed optical crosstalk probability: " << x.m_DXt * 100 << " %\n";
+  if (obj.m_HasDXt && obj.m_HasXt) {
+    out << "Delayed optical crosstalk probability (as a fraction of xt): " << obj.m_DXt * 100 << " %\n";
   } else {
-    os << "Delayed optical crosstalk is OFF\n";
+    out << "Delayed optical crosstalk is OFF\n";
   }
-  if (x.m_HasAp) {
-    os << "Afterpulse probability: " << x.m_Ap * 100 << " %\n";
-    os << "Tau afterpulses (fast): " << x.m_TauApFastComponent << " ns\n";
-    os << "Tau afterpulses (slow): " << x.m_TauApSlowComponent << " ns\n";
+  if (obj.m_HasAp) {
+    out << "Afterpulse probability: " << obj.m_Ap * 100 << " %\n";
+    out << "Tau afterpulses (fast): " << obj.m_TauApFastComponent << " ns\n";
+    out << "Tau afterpulses (slow): " << obj.m_TauApSlowComponent << " ns\n";
   } else {
-    os << "Afterpulse is OFF\n";
+    out << "Afterpulse is OFF\n";
   }
-  os << "Cell-to-cell gain variation: " << x.m_Ccgv * 100 << " %\n";
-  os << "SNR: " << x.m_SnrdB << " dB\n";
-  if (x.m_HasPde == SiPMProperties::PdeType::kSimplePde) {
-    os << "Photon detection efficiency: " << x.m_Pde * 100 << " %\n";
-  } else if (x.m_HasPde == SiPMProperties::PdeType::kSimplePde) {
-    os << "Photon detection efficiency: depending on wavelength\n";
-    os << printCenter("Photon wavelength", 15) << printCenter("Detection efficiency", 15) << "\n";
-    for (auto it = x.m_PdeSpectrum.begin(); it != x.m_PdeSpectrum.end(); ++it) {
-      os << printDouble(it->first, 3, 15) << printDouble(it->second, 3, 15) << "\n";
+  out << "Cell-to-cell gain variation: " << obj.m_Ccgv * 100 << " %\n";
+  out << "SNR: " << obj.m_SnrdB << " dB\n";
+  if (obj.m_HasPde == SiPMProperties::PdeType::kSimplePde) {
+    out << "Photon detection efficiency: " << obj.m_Pde * 100 << " %\n";
+  } else if (obj.m_HasPde == SiPMProperties::PdeType::kSimplePde) {
+    out << "Photon detection efficiency: depending on wavelength\n";
+    out << "Photon wavelength\tDetection efficiency\n";
+    for (auto it = obj.m_PdeSpectrum.begin(); it != obj.m_PdeSpectrum.end(); ++it) {
+      out << it->first << "\t\t->\t\t" << it->second << "\n";
     }
   } else {
-    os << "Photon detection efficiency is OFF (100 %)\n";
+    out << "Photon detection efficiency is OFF (100 %)\n";
   }
-  os << "Rising time of signal: " << x.m_RiseTime << " ns\n";
-  os << "Falling time of signal (fast): " << x.m_FallTimeFast << " ns\n";
-  if (x.m_HasSlowComponent) {
-    os << "Falling time of signal (slow): " << x.m_FallTimeSlow << " ns\n";
-    os << "Slow component fraction: " << x.m_SlowComponentFraction * 100 << " %\n";
+  out << "Rising time of signal: " << obj.m_RiseTime << " ns\n";
+  out << "Falling time of signal (fast): " << obj.m_FallTimeFast << " ns\n";
+  if (obj.m_HasSlowComponent) {
+    out << "Falling time of signal (slow): " << obj.m_FallTimeSlow << " ns\n";
+    out << "Slow component fraction: " << obj.m_SlowComponentFraction * 100 << " %\n";
   }
-  os << "Signal length: " << x.m_SignalLength << " ns\n";
-  os << "Sampling time: " << x.m_Sampling << " ns\n";
-  os << "==> End of SiPM Settings <===";
-
-  return os;
+  out << "Signal length: " << obj.m_SignalLength << " ns\n";
+  out << "Sampling time: " << obj.m_Sampling << " ns\n";
 }
 
 } // namespace sipm

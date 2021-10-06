@@ -13,8 +13,6 @@ void SiPMPropertiesPy(py::module& m) {
   SiPMProperties
     .def(py::init<>())
     // .def("readSettings",&SiPMProperties::readSettings)
-    .def("dumpSettings", &SiPMProperties::dumpSettings,
-         py::call_guard<py::scoped_ostream_redirect, py::scoped_estream_redirect>())
     .def("nCells", &SiPMProperties::nCells)
     .def("nSideCells", &SiPMProperties::nSideCells)
     .def("nSignalPoints", &SiPMProperties::nSignalPoints)

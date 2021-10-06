@@ -133,12 +133,13 @@ SiPMAnalogSignal SiPMAnalogSignal::lowpass(const double bw) const {
   return SiPMAnalogSignal(out, m_Sampling);
 }
 
-std::ostream& operator<<(std::ostream& os, SiPMAnalogSignal const& x) {
-  os << "===> SiPM Analog Signal Start <===\n";
-  os << "Signal length is: " << x.size() / x.m_Sampling << " ns\n";
-  os << "Signal is sampled every: " << x.m_Sampling << " ns\n";
-  os << "Signal contains: " << x.size() << " points";
-  os << "===> SiPM Analog Signal End <===";
-  return os;
+std::ostream& operator<<(std::ostream& out, const SiPMAnalogSignal& obj){
+  out << std::setprecision(2)<<std::fixed;
+  out << "===> SiPM Analog Signal <===\n";
+  out << "Address: "<<std::addressof(obj)<<"\n";
+  out << "Signal length is: " << obj.m_Waveform.size() / obj.m_Sampling << " ns\n";
+  out << "Signal is sampled every: " << obj.m_Sampling << " ns\n";
+  out << "Signal contains: " << obj.m_Waveform.size() << " points";
+  return out;
 }
 } // namespace sipm

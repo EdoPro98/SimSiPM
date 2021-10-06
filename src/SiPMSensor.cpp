@@ -322,10 +322,10 @@ void SiPMSensor::calculateSignalAmplitudes() {
 
   for (uint32_t i=0; i<m_nTotalHits; ++i) {
     // Check if cell is fired more than once (at previous times)
+    // Since hits are sorted no need to check hits after begin()+i which is current hit
     if (std::count(m_Hits.begin(), m_Hits.begin()+i, m_Hits[i]) > 0) {
       // If so check which hits are in same cell (at previous times)
       for (uint32_t j=0; j<i; ++j) {
-        // j = previous hit
         if (m_Hits[i] == m_Hits[j]) {
           const double delay = m_Hits[i].time() - m_Hits[j].time();
           m_Hits[i].amplitude() = m_Hits[j].amplitude() * (1 - exp(-delay * recoveryRate));
@@ -340,16 +340,17 @@ void SiPMSensor::calculateSignalAmplitudes() {
 #if (defined __AVX2__ && !defined __clang__)
 void SiPMSensor::generateSignal() {
   const uint32_t nSignalPoints = m_Properties.nSignalPoints();
-  // Reciprocal of sampling (avoid division)
+  // Reciprocal of sampling (avoid divisions later)
   const double recSampling = 1/m_Properties.sampling();
 
   // Start with gaussian noise
   m_Signal = m_rng.randGaussian(0, m_Properties.snrLinear(), nSignalPoints);
+  // Early exit if there are no hits
   if (m_Hits.size() == 0) {
     return;
   }
 
-  for (auto hit : m_Hits) {
+  for (const auto& hit : m_Hits) {
     const int32_t time = hit->time() * recSampling;
     const double amplitude = hit->amplitude() * m_rng.randGaussian(1, m_Properties.ccgv());
     const __m256d __amplitude = _mm256_set1_pd(amplitude);
@@ -406,40 +407,20 @@ void SiPMSensor::generateSignal() {
 }
 #endif
 
-std::ostream& operator<<(std::ostream& os, const SiPMSensor& x) {
-  os << "===> SiPM Sensor Start <===\n";
-  os << x.properties() << "\n";
-  os << x.debug();
-  return os;
+std::ostream& operator<< (std::ostream& out, const SiPMSensor& obj){
+  out << std::setprecision(2)<<std::fixed;
+  out << "===> SiPM Sensor <===\n";
+  out << "Address: "<<std::addressof(obj)<<"\n";
+  out << obj.m_Properties;
+  out << obj.debug();
+  return out;
 }
 
 void SiPMSensor::dumpHits() const {
-  std::cout << std::string(65, '=') << "\n";
-  std::cout << printCenter("Hit Time", 15) << " | " << printCenter("Hit Amplitude", 15) << " | "
-            << printCenter("Hit Position", 15) << " | " << printCenter("Hit Type", 15) << "\n";
-  for (auto&& h : m_Hits) {
-    std::cout << printDouble(h.time(), 4, 15) << " | " << printDouble(h.amplitude(), 4, 15) << " | "
-              << printCenter(std::to_string(h.row()) + " - " + std::to_string(h.col()), 15) << " | ";
-    switch (h.hitType()) {
-      case SiPMHit::HitType::kPhotoelectron:
-        std::cout << printCenter("Pe", 15) << "\n";
-        break;
-      case SiPMHit::HitType::kDarkCount:
-        std::cout << printCenter("Dcr", 15) << "\n";
-        break;
-      case SiPMHit::HitType::kOpticalCrosstalk:
-        std::cout << printCenter("Xt", 15) << "\n";
-        break;
-      case SiPMHit::HitType::kDelayedOpticalCrosstalk:
-        std::cout << printCenter("DXt", 15) << "\n";
-        break;
-      case SiPMHit::HitType::kFastAfterPulse:
-        std::cout << printCenter("Ap (fast)", 15) << "\n";
-        break;
-      case SiPMHit::HitType::kSlowAfterPulse:
-        std::cout << printCenter("Ap (slow)", 15) << "\n";
-        break;
-    }
+  std::cout << std::setprecision(2) << std::fixed;
+  std::cout << "===> Hits <===\n";
+  for (const auto& h : m_Hits) {
+    std::cout<<h<<"\n";
   }
 }
 } // namespace sipm

@@ -7,9 +7,9 @@
 #include "SiPMDigitalSignal.h"
 #include "SiPMHelpers.h"
 #include "SiPMHit.h"
+#include "SiPMMath.h"
 #include "SiPMProperties.h"
 #include "SiPMRandom.h"
 #include "SiPMSensor.h"
-#include "SiPMSimulator.h"
 
 #endif

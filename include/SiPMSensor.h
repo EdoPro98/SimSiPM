@@ -12,7 +12,8 @@
 #define SIPM_SIPMSENSOR_H
 
 #include <algorithm>
-#include <ostream>
+#include <iomanip>
+#include <iostream>
 #include <memory>
 
 #include "SiPMAnalogSignal.h"
@@ -113,7 +114,7 @@ public:
   // Go virtual ?
   // virtual ~SiPMSensor() = default;
   // virtual std::vector<double> signalShape() const;
-  friend std::ostream& operator<<(std::ostream&, const SiPMSensor&);
+  friend std::ostream& operator<< (std::ostream&, const SiPMSensor&);
 
 private:
   /// @brief Returns the PDE value corresponding to the given wavelength.

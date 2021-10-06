@@ -12,7 +12,8 @@
  *  @date 2020
  */
 #include <algorithm>
-#include <ostream>
+#include <iomanip>
+#include <iostream>
 #include <stdint.h>
 #include <vector>
 
@@ -60,7 +61,7 @@ public:
   /// @brief Returns time of peak
   double top(const double, const double, const int32_t) const;
 
-  friend std::ostream& operator<<(std::ostream&, SiPMDigitalSignal const&);
+  friend std::ostream& operator<< (std::ostream&, const SiPMDigitalSignal&);
 
 private:
   std::vector<int32_t> m_Waveform;

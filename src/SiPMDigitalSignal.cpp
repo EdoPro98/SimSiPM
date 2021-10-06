@@ -116,13 +116,13 @@ double SiPMDigitalSignal::top(const double intstart, const double intgate, const
   return (std::max_element(start, end) - start) * m_Sampling;
 }
 
-std::ostream& operator<<(std::ostream& os, SiPMDigitalSignal const& x) {
-  os << "===> SiPM Digital Signal Start <===\n";
-  os << "Signal length is: " << x.size() / x.m_Sampling << " ns\n";
-  os << "Signal is sampled every: " << x.m_Sampling << " ns\n";
-  os << "Signal contains: " << x.size() << " points";
-  os << "===> SiPM Digital Signal End <===";
-  return os;
+std::ostream& operator<<(std::ostream& out, const SiPMDigitalSignal& obj){
+  out << std::setprecision(2)<<std::fixed;
+  out << "===> SiPM Analog Signal <===\n";
+  out << "Address: "<<std::addressof(obj)<<"\n";
+  out << "Signal length is: " << obj.m_Waveform.size() / obj.m_Sampling << " ns\n";
+  out << "Signal is sampled every: " << obj.m_Sampling << " ns\n";
+  out << "Signal contains: " << obj.m_Waveform.size() << " points";
+  return out;
 }
-
 } // namespace sipm

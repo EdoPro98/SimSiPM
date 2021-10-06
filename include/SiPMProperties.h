@@ -16,14 +16,13 @@
 
 #include <algorithm>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <map>
 #include <math.h>
 #include <stdint.h>
 #include <string>
 #include <vector>
-
-#include "SiPMHelpers.h"
 
 namespace sipm {
 
@@ -48,9 +47,6 @@ public:
 
   /// @brief Used to read settings from a json file
   void readSettings(std::string&); ///< @todo Still to implement
-
-  /// @brief Prints current settings of the sensor
-  void dumpSettings() const;
 
   /// @brief Returns size of sensor in mm
   uint32_t size() const { return m_Size; }
@@ -257,7 +253,7 @@ public:
 
   void setHitDistribution(const HitDistribution aHitDistribution) { m_HitDistribution = aHitDistribution; }
 
-  friend std::ostream& operator<<(std::ostream&, SiPMProperties const&);
+  friend std::ostream& operator<< (std::ostream&, const SiPMProperties&);
 
 private:
   double m_Size = 1;
