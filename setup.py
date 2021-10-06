@@ -24,7 +24,12 @@ if os.environ.get("NPY_NUM_BUILD_JOBS"):
 else:
     ParallelCompile(needs_recompile=naive_recompile).install()
 
-__version__ = "1.2.3-beta"
+__version__ = "unknown"
+for l in open("include/SiPM.h").readlines():
+    if "__VERSION__" in l.split():
+        __version__ = l.split()[-1]
+        break
+
 extra_compile_args = [
     "-DNDEBUG",
     "-O3",
@@ -38,11 +43,6 @@ extra_link_args = []
 if platform.system() == "Darwin":
     # On MacOS
     extra_compile_args.append("-fno-aligned-allocation")
-
-if os.environ.get("SIPM_OMP"):
-    print("Using OpenMP")
-    extra_compile_args.append("-fopenmp")
-    extra_link_args.append("-lgomp")
 
 sources = []
 sources.extend(glob("src/*.cpp"))
@@ -74,7 +74,7 @@ ext_modules = [
             get_pybind_include(),
             get_pybind_include(user=True),
         ],
-        define_macros=[("VERSION_INFO", __version__)],
+        define_macros=[("__VERSION__", __version__)],
         extra_compile_args=extra_compile_args,
         extra_link_args=extra_link_args,
         language="c++",
