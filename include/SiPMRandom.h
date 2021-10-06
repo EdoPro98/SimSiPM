@@ -22,6 +22,8 @@
 #include <immintrin.h>
 #endif
 
+#include "SiPMMath.h"
+
 namespace sipm {
 
 namespace SiPMRng {

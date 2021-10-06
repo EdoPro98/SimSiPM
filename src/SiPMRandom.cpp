@@ -1,5 +1,4 @@
 #include "SiPMRandom.h"
-#include "SiPMHelpers.h"
 
 namespace sipm {
 
