@@ -7,7 +7,7 @@ using namespace sipm;
 
 void SiPMHitPy(py::module& m) {
   py::class_<SiPMHit, std::shared_ptr<SiPMHit>> sipmhit(m, "SiPMHit");
-  
+
   sipmhit.def("time",&SiPMHit::time)
   .def("row",&SiPMHit::row)
   .def("col",&SiPMHit::col)
@@ -16,7 +16,7 @@ void SiPMHitPy(py::module& m) {
   .def("parent",&SiPMHit::parent)
   .def("childrens",&SiPMHit::childrens);
 
-  py::enum_<SiPMHit::HitType>(SiPMHit,"HitType")
+  py::enum_<SiPMHit::HitType>(sipmhit,"HitType")
   .value("kPhotoelectron",SiPMHit::HitType::kPhotoelectron)
   .value("kDarkCount",SiPMHit::HitType::kDarkCount)
   .value("kOpticalCrosstalk",SiPMHit::HitType::kOpticalCrosstalk)
