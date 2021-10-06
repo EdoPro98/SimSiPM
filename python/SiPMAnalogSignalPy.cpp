@@ -6,8 +6,9 @@ namespace py = pybind11;
 using namespace sipm;
 
 void SiPMAnalogSignalPy(py::module& m) {
-  py::class_<SiPMAnalogSignal> SiPMAnalogSignal(m, "SiPMAnalogSignal");
-  SiPMAnalogSignal.def("size", &SiPMAnalogSignal::size)
+  py::class_<SiPMAnalogSignal> sipmanalogsignal(m, "SiPMAnalogSignal");
+  
+  sipmanalogsignal.def("size", &SiPMAnalogSignal::size)
     .def("sampling", &SiPMAnalogSignal::sampling)
     .def("waveform", &SiPMAnalogSignal::waveform)
     .def("integral", &SiPMAnalogSignal::integral)

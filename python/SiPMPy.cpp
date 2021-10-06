@@ -3,8 +3,6 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 
-#define VERSION "1.1.3-alpha"
-
 namespace py = pybind11;
 
 void SiPMPropertiesPy(py::module&);
@@ -17,7 +15,7 @@ void SiPMRandomPy(py::module&);
 
 PYBIND11_MODULE(SiPM, m) {
   m.doc() = "Module for SiPM simulation";
-  m.attr("__version__") = VERSION;
+  m.attr("__version__") = __VERSION__;
   SiPMPropertiesPy(m);
   SiPMAnalogSignalPy(m);
   SiPMDigitalSignalPy(m);

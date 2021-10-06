@@ -9,9 +9,9 @@ using std::map;
 using std::vector;
 
 void SiPMPropertiesPy(py::module& m) {
-  py::class_<SiPMProperties> SiPMProperties(m, "SiPMProperties");
-  SiPMProperties
-    .def(py::init<>())
+  py::class_<SiPMProperties> sipmproperties(m, "SiPMProperties");
+
+  sipmproperties.def(py::init<>())
     // .def("readSettings",&SiPMProperties::readSettings)
     .def("nCells", &SiPMProperties::nCells)
     .def("nSideCells", &SiPMProperties::nSideCells)

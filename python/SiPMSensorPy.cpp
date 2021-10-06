@@ -1,14 +1,15 @@
 #include "SiPMSensor.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/iostream.h>
 
 namespace py = pybind11;
 using namespace sipm;
 using std::vector;
 
 void SiPMSensorPy(py::module& m) {
-  py::class_<SiPMSensor, std::shared_ptr<SiPMSensor>> SiPMSensor(m, "SiPMSensor");
-  SiPMSensor.def(py::init<>())
+  py::class_<SiPMSensor, std::shared_ptr<SiPMSensor>> sipmsensor(m, "SiPMSensor");
+  sipmsensor.def(py::init<>())
     .def(py::init<const SiPMProperties&>())
     .def("properties", static_cast<SiPMProperties& (SiPMSensor::*)()>(&SiPMSensor::properties))
     .def("properties", static_cast<const SiPMProperties& (SiPMSensor::*)() const>(&SiPMSensor::properties))
