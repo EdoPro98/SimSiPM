@@ -91,14 +91,72 @@ void SiPMProperties::setSampling(const double aSampling) {
 }
 
 void SiPMProperties::setPdeSpectrum(const std::map<double, double>& x) {
-  m_PdeSpectrum = x;
+  static constexpr uint32_t N = 25;
+
+  std::map<double,double> interpolatedSpectrum = x;
+  //
+  // const double xmin = interpolatedSpectrum.begin()->first;
+  // const double xmax = interpolatedSpectrum.rbegin()->first;
+  // const double dx = (xmax - xmin) / 25;
+  // double newx = xmin;
+  // for(uint32_t i=0; i<N; ++i){
+  //   newx+=dx;
+  //   auto it1 = interpolatedSpectrum.upper_bound(newx);
+  //   if (it1 == interpolatedSpectrum.end()) {
+  //     --it1;
+  //   }
+  //   if (it1 == interpolatedSpectrum.begin()) {
+  //     ++it1;
+  //   }
+  //   auto it0 = it1;
+  //   --it0;
+  //   const double x0 = it0->first;
+  //   const double x1 = it1->first;
+  //   const double y0 = it0->second;
+  //   const double y1 = it1->second;
+  //   const double logNewy = (std::log(y0)*std::log(x1/newx)+std::log(y1)*std::log(newx/x0))/ std::log(x1/x0);
+  //   const double newy = std::exp(logNewy);
+  //   interpolatedSpectrum.emplace(newx,newy);
+  // }
+
+  m_PdeSpectrum = interpolatedSpectrum;
   m_HasPde = PdeType::kSpectrumPde;
 }
 
 void SiPMProperties::setPdeSpectrum(const std::vector<double>& wav, const std::vector<double>& pde) {
+  static constexpr uint32_t N = 25;
+
+  std::map<double,double> interpolatedSpectrum;
+
   for (uint32_t i = 0, n = wav.size(); i < n; ++i) {
-    m_PdeSpectrum[wav[i]] = pde[i];
+    interpolatedSpectrum.emplace(wav[i],pde[i]);
   }
+
+  // const double xmin = interpolatedSpectrum.begin()->first;
+  // const double xmax = interpolatedSpectrum.rbegin()->first;
+  // const double dx = (xmax - xmin) / 25;
+  // double newx = xmin;
+  // for(uint32_t i=0; i<N; ++i){
+  //   newx+=dx;
+  //   auto it1 = interpolatedSpectrum.upper_bound(newx);
+  //   if (it1 == interpolatedSpectrum.end()) {
+  //     --it1;
+  //   }
+  //   if (it1 == interpolatedSpectrum.begin()) {
+  //     ++it1;
+  //   }
+  //   auto it0 = it1;
+  //   --it0;
+  //   const double x0 = it0->first;
+  //   const double x1 = it1->first;
+  //   const double y0 = it0->second;
+  //   const double y1 = it1->second;
+  //   const double logNewy = (std::log(y0)*std::log(x1/newx)+std::log(y1)*std::log(newx/x0))/ std::log(x1/x0);
+  //   const double newy = std::exp(logNewy);
+  //   interpolatedSpectrum.emplace(newx,newy);
+  // }
+
+  m_PdeSpectrum = interpolatedSpectrum;
   m_HasPde = PdeType::kSpectrumPde;
 }
 
