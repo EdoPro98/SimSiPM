@@ -15,7 +15,7 @@ void SiPMRandomPy(py::module&);
 
 PYBIND11_MODULE(SiPM, m) {
   m.doc() = "Module for SiPM simulation";
-  m.attr("__version__") = __VERSION__;
+  m.attr("__version__") = SIPM_VERSION;
   SiPMPropertiesPy(m);
   SiPMAnalogSignalPy(m);
   SiPMDigitalSignalPy(m);
