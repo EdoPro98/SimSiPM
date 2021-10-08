@@ -133,7 +133,7 @@ std::pair<uint32_t, uint32_t> SiPMSensor::hitCell() const {
 
     // Circle centered in sensor 95% probability in circle
     case (SiPMProperties::HitDistribution::kCircle):
-      if (m_rng.Rand() < 0.95) { // In circle
+      if (m_rng.Rand() < 0.90) { // In circle
         do {
           x = m_rng.Rand() * 2 - 1;      // x in [-1,1]
           y = m_rng.Rand() * 2 - 1;      // y in [-1,1]
@@ -155,7 +155,7 @@ std::pair<uint32_t, uint32_t> SiPMSensor::hitCell() const {
       x = m_rng.randGaussian(0, 1);
       y = m_rng.randGaussian(0, 1);
 
-      if (abs(x) < 1.64 && abs(y) < 1.64) { // 95% of samples (1.64 sigmas)
+      if (abs(x) < 1.64 && abs(y) < 1.64) { // 95% of samples = 1.64 sigmas
         row = (x + 1.64) * (m_Properties.nSideCells() / 3.28);
         col = (y + 1.64) * (m_Properties.nSideCells() / 3.28);
       } else {
