@@ -94,30 +94,38 @@ void SiPMProperties::setPdeSpectrum(const std::map<double, double>& x) {
   static constexpr uint32_t N = 25;
 
   std::map<double,double> interpolatedSpectrum = x;
-  //
-  // const double xmin = interpolatedSpectrum.begin()->first;
-  // const double xmax = interpolatedSpectrum.rbegin()->first;
-  // const double dx = (xmax - xmin) / 25;
-  // double newx = xmin;
-  // for(uint32_t i=0; i<N; ++i){
-  //   newx+=dx;
-  //   auto it1 = interpolatedSpectrum.upper_bound(newx);
-  //   if (it1 == interpolatedSpectrum.end()) {
-  //     --it1;
-  //   }
-  //   if (it1 == interpolatedSpectrum.begin()) {
-  //     ++it1;
-  //   }
-  //   auto it0 = it1;
-  //   --it0;
-  //   const double x0 = it0->first;
-  //   const double x1 = it1->first;
-  //   const double y0 = it0->second;
-  //   const double y1 = it1->second;
-  //   const double logNewy = (std::log(y0)*std::log(x1/newx)+std::log(y1)*std::log(newx/x0))/ std::log(x1/x0);
-  //   const double newy = std::exp(logNewy);
-  //   interpolatedSpectrum.emplace(newx,newy);
-  // }
+
+  const double xmin = interpolatedSpectrum.begin()->first;
+  const double xmax = interpolatedSpectrum.rbegin()->first;
+  const double dx = (xmax - xmin) / N;
+  for(uint32_t i=0; i<N; ++i){
+    const double newx = xmin + i*dx;  // Current x value to interpolate
+    if (interpolatedSpectrum.count(newx) > 0){ // Skip in case value exist
+      continue;
+    }
+    auto it1 = x.upper_bound(newx);   // Iterator to first value greater than newx
+    if (it1 == x.end()) { // If last value get back by one
+      --it1;
+    }
+    if (it1 == x.begin()) { // If first value go ahead by one
+      ++it1;
+    }
+    auto it0 = it1;
+    --it0;  // It0 is iterator before it1 (last value less than newx)
+    const double x0 = it0->first;
+    const double x1 = it1->first;
+    double y0 = it0->second;
+    double y1 = it1->second;
+    const double logNewy = (std::log(y0)*std::log(x1/newx)+std::log(y1)*std::log(newx/x0))/ std::log(x1/x0);
+    double newy = std::exp(logNewy);
+    if (newy == 0){ // Newy cannot be 0 becouse we are avoiding boundary conditions
+      // Linear interpolation
+      const double m = (y1-y0)/(x1-x0);
+      const double q = y0 - m*x0;
+      newy = m*newx + q;
+    }
+    interpolatedSpectrum.emplace(newx,newy);
+  }
 
   m_PdeSpectrum = interpolatedSpectrum;
   m_HasPde = PdeType::kSpectrumPde;
@@ -127,34 +135,46 @@ void SiPMProperties::setPdeSpectrum(const std::vector<double>& wav, const std::v
   static constexpr uint32_t N = 25;
 
   std::map<double,double> interpolatedSpectrum;
+  std::map<double,double> x;
 
   for (uint32_t i = 0, n = wav.size(); i < n; ++i) {
-    interpolatedSpectrum.emplace(wav[i],pde[i]);
+    x.emplace(wav[i],pde[i]);
   }
 
-  // const double xmin = interpolatedSpectrum.begin()->first;
-  // const double xmax = interpolatedSpectrum.rbegin()->first;
-  // const double dx = (xmax - xmin) / 25;
-  // double newx = xmin;
-  // for(uint32_t i=0; i<N; ++i){
-  //   newx+=dx;
-  //   auto it1 = interpolatedSpectrum.upper_bound(newx);
-  //   if (it1 == interpolatedSpectrum.end()) {
-  //     --it1;
-  //   }
-  //   if (it1 == interpolatedSpectrum.begin()) {
-  //     ++it1;
-  //   }
-  //   auto it0 = it1;
-  //   --it0;
-  //   const double x0 = it0->first;
-  //   const double x1 = it1->first;
-  //   const double y0 = it0->second;
-  //   const double y1 = it1->second;
-  //   const double logNewy = (std::log(y0)*std::log(x1/newx)+std::log(y1)*std::log(newx/x0))/ std::log(x1/x0);
-  //   const double newy = std::exp(logNewy);
-  //   interpolatedSpectrum.emplace(newx,newy);
-  // }
+  interpolatedSpectrum = x;
+
+  const double xmin = x.begin()->first;
+  const double xmax = x.rbegin()->first;
+  const double dx = (xmax - xmin) / 25;
+  for(uint32_t i=0; i<N; ++i){
+    const double newx = xmin + i*dx;
+    if (interpolatedSpectrum.count(newx) > 0){ // Skip in case value exist
+      continue;
+    }
+    auto it1 = x.upper_bound(newx);
+    // Avoid boundary conditions
+    if (it1 == x.end()) {
+      --it1;
+    }
+    if (it1 == x.begin()) {
+      ++it1;
+    }
+    auto it0 = it1;
+    --it0;
+    const double x0 = it0->first;
+    const double x1 = it1->first;
+    const double y0 = it0->second;
+    const double y1 = it1->second;
+    const double logNewy = (std::log(y0)*std::log(x1/newx)+std::log(y1)*std::log(newx/x0))/ std::log(x1/x0);
+    double newy = std::exp(logNewy);
+    if (newy == 0){ // Newy cannot be 0 becouse we are avoiding boundary conditions
+      // Linear interpolation
+      const double m = (y1-y0)/(x1-x0);
+      const double q = y0 - m*x0;
+      newy = m*newx + q;
+    }
+    interpolatedSpectrum.emplace(newx,newy);
+  }
 
   m_PdeSpectrum = interpolatedSpectrum;
   m_HasPde = PdeType::kSpectrumPde;
@@ -243,6 +263,7 @@ std::ostream& operator<< (std::ostream& out, const SiPMProperties& obj){
   }
   out << "Signal length: " << obj.m_SignalLength << " ns\n";
   out << "Sampling time: " << obj.m_Sampling << " ns\n";
+  return out;
 }
 
 } // namespace sipm

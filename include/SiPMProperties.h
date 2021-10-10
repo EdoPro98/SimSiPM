@@ -129,7 +129,7 @@ public:
   double pde() const { return m_Pde; }
 
   /// @brief Returns wavelength-PDE values if PdeType::kSpectrumPde is set
-  std::map<double, double> pdeSpectrum() const { return m_PdeSpectrum; }
+  const std::map<double, double>& pdeSpectrum() const { return m_PdeSpectrum; }
 
   /// @brief Returns type of PDE calculation used.
   PdeType pdeType() { return m_HasPde; }

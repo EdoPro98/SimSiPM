@@ -99,7 +99,7 @@ std::vector<double> SiPMSensor::signalShape() const {
 
 double SiPMSensor::evaluatePde(const double x) const {
   // Linear interpolation
-  const std::map<double, double> pde = m_Properties.pdeSpectrum();
+  const std::map<double, double>& pde = m_Properties.pdeSpectrum();
   auto it1 = pde.upper_bound(x);
   if (it1 == pde.end()) {
     --it1;
@@ -111,7 +111,8 @@ double SiPMSensor::evaluatePde(const double x) const {
   --it0;
 
   const double weight = (x - it0->first) / (it1->first - it0->first);
-  return (weight * it1->second) + ((1 - weight) * it0->second);
+  double y = (weight * it1->second) + ((1 - weight) * it0->second);
+  return (y < 0) ? 0 : y;
 }
 
 bool SiPMSensor::isInSensor(const int32_t r, const int32_t c) const {
@@ -119,7 +120,7 @@ bool SiPMSensor::isInSensor(const int32_t r, const int32_t c) const {
   return (r >= 0) && (c >= 0) && (r < nSideCells) && (c < nSideCells);
 }
 
-std::pair<uint32_t, uint32_t> SiPMSensor::hitCell() const {
+math::pair<uint32_t> SiPMSensor::hitCell() const {
   uint32_t row, col;
   double x, y;
   const int32_t nSideCells = m_Properties.nSideCells(); // index start from 0. nSidecels = 9 gives 10 cells
@@ -164,7 +165,7 @@ std::pair<uint32_t, uint32_t> SiPMSensor::hitCell() const {
       }
       break;
   }
-  return std::make_pair(row,col);
+  return math::pair(row,col);
 }
 
 void SiPMSensor::addDcrEvents() {
@@ -197,7 +198,7 @@ void SiPMSensor::addPhotoelectrons() {
     // Add all photons
     case (SiPMProperties::PdeType::kNoPde):
       for (uint32_t i = 0; i < nPhotons; ++i) {
-        std::pair<int32_t, int32_t> position = hitCell();
+        math::pair<uint32_t> position = hitCell();
         m_Hits.emplace_back(m_PhotonTimes[i], 1, position.first, position.second, SiPMHit::HitType::kPhotoelectron);
         ++m_nTotalHits;
         ++m_nPe;
@@ -208,7 +209,7 @@ void SiPMSensor::addPhotoelectrons() {
     case (SiPMProperties::PdeType::kSimplePde):
       for (uint32_t i = 0; i < nPhotons; ++i) {
         if (isDetected(m_Properties.pde())) {
-          std::pair<int32_t, int32_t> position = hitCell();
+          math::pair<uint32_t> position = hitCell();
           m_Hits.emplace_back(m_PhotonTimes[i], 1, position.first, position.second, SiPMHit::HitType::kPhotoelectron);
           ++m_nTotalHits;
           ++m_nPe;
@@ -220,7 +221,7 @@ void SiPMSensor::addPhotoelectrons() {
     case (SiPMProperties::PdeType::kSpectrumPde):
       for (uint32_t i = 0; i < nPhotons; ++i) {
         if (isDetected(evaluatePde(m_PhotonWavelengths[i]))){
-          std::pair<int32_t, int32_t> position = hitCell();
+          math::pair<uint32_t> position = hitCell();
           m_Hits.emplace_back(m_PhotonTimes[i], 1, position.first, position.second, SiPMHit::HitType::kPhotoelectron);
           ++m_nTotalHits;
           ++m_nPe;
@@ -240,7 +241,7 @@ SiPMHit SiPMSensor::generateXtHit(const SiPMHit& xtGen) const {
   do{
     xtRow = row + m_rng.randInteger(2) - 1;
     xtCol = col + m_rng.randInteger(2) - 1;
-  } while ((xtRow == row) && (xtCol == col)); // Pick a different cell
+  } while ((xtRow == row) && (xtCol == col) && !isInSensor(xtRow, xtCol)); // Pick a different cell
 
   // Time is equal to xtGenerator if isDelayed == false, else add random exponential delay
   const double xtTime = xtGen.time() + m_rng.randExponential(m_Properties.dxtTau()) * (int)isDelayed;
