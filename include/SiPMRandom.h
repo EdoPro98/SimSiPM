@@ -13,7 +13,7 @@
 #ifndef SIPM_RANDOM_H
 #define SIPM_RANDOM_H
 
-#include <math.h>
+#include <cmath>
 #include <random>
 #include <stdint.h>
 #include <vector>

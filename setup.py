@@ -27,7 +27,8 @@ else:
 __version__ = "unknown"
 for l in open("include/SiPM.h").readlines():
     if "SIPM_VERSION" in l.split():
-        __version__ = l.split()[-1]
+        __version__ = l.split()[-1].strip('"')
+        print(__version__)
         break
 
 extra_compile_args = [

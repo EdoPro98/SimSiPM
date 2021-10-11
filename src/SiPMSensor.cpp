@@ -349,8 +349,8 @@ void SiPMSensor::generateSignal() {
   }
 
   for (const auto& hit : m_Hits) {
-    const int32_t time = hit->time() * recSampling;
-    const double amplitude = hit->amplitude() * m_rng.randGaussian(1, m_Properties.ccgv());
+    const int32_t time = hit.time() * recSampling;
+    const double amplitude = hit.amplitude() * m_rng.randGaussian(1, m_Properties.ccgv());
     const __m256d __amplitude = _mm256_set1_pd(amplitude);
 
     // Skipping tail of loop (no problem since it will be far from the signal (many taus)
