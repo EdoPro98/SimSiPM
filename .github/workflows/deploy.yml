@@ -1,8 +1,9 @@
-name: Build and upload to TestPyPI
+name: Build and upload to PyPI for main branch
 
 on:
-  push:
-    branches: [main, dev]
+  release:
+    types: [published]
+    branch: [main, dev]
 
   workflow_dispatch:
 
@@ -28,10 +29,9 @@ jobs:
       - name: Build wheels
         uses: joerick/cibuildwheel@v1.11.0
         env:
-          CIBW_SKIP: cp27-* pp* *-manylinux_i686
-          CIBW_BUILD: cp3*
           CIBW_BEFORE_BUILD: pip install -U pip && pip install pybind11
-          CIBW_ARCHS_MACOS: x86_64 universal2
+          CIBW_SKIP: cp27-* pp27* *-manylinux_i686
+          CIBW_ARCHS_MACOS: "x86_64 universal2 arm64"
 
       - uses: actions/upload-artifact@v2
         with:
@@ -65,3 +65,22 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           path: dist/*.tar.gz
+
+  upload_pypi:
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    # upload to PyPI on every tag starting with 'v'
+    # if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
+    # alternatively, to publish when a GitHub Release is created, use the following rule:
+    # if: github.event_name == 'release' && github.event.action == 'published'
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: artifact
+          path: dist
+
+      - uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          #repository_url: https://test.pypi.org/legacy/
