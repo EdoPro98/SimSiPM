@@ -18,9 +18,10 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+    steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 1
+          ref: main
 
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -52,9 +53,10 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+    steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 1
+          ref: main
 
       - uses: actions/setup-python@v2
         name: Install Python
