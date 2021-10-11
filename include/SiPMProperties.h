@@ -19,7 +19,7 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
-#include <math.h>
+#include <cmath>
 #include <stdint.h>
 #include <string>
 #include <vector>

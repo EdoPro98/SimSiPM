@@ -54,7 +54,7 @@ TEST_F(TestSiPMSensor, AddPhotonsWlen) {
 }
 
 TEST_F(TestSiPMSensor, AddDcr) {
-  static constexpr int N = 10000000;
+  static constexpr int N = 1000000;
   int ndcr = 0;
   SiPMSensor sensor;
   sensor.rng().seed();

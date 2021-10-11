@@ -1,7 +1,6 @@
 #include "SiPMAdc.h"
 
 #include <algorithm>
-#include <math.h>
 #ifdef __AVX2__
 #include <immintrin.h>
 #endif

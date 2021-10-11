@@ -13,6 +13,8 @@
 #ifndef SIPM_SIPMADC_H
 #define SIPM_SIPMADC_H
 
+#include <algorithm>
+#include <cmath>
 #include <stdint.h>
 #include <vector>
 

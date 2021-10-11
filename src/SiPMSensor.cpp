@@ -1,5 +1,4 @@
 #include "SiPMSensor.h"
-#include "SiPMProperties.h"
 
 namespace sipm {
 
