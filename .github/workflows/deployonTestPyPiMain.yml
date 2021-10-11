@@ -2,7 +2,7 @@ name: Build and upload to TestPyPI
 
 on:
   push:
-    branches: [master]
+    branches: [main]
 
   workflow_dispatch:
 
