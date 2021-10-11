@@ -1,8 +1,9 @@
-name: Build and upload to PyPI
+name: Build and upload to PyPI for main branch
 
 on:
   release:
     types: [published]
+    branch: [dev]
 
   workflow_dispatch:
 
@@ -20,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 1
+          ref: dev
 
       - uses: actions/setup-python@v2
         name: Install Python
@@ -52,7 +53,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 1
+          ref: dev
 
       - uses: actions/setup-python@v2
         name: Install Python
