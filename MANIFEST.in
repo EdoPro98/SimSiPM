@@ -1,2 +1,1 @@
-include SimSiPM/*.h
-include src/components/*.h
+include SimSiPM/include/*.h
