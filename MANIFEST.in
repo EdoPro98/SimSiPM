@@ -1,1 +1,1 @@
-include SimSiPM/include/*.h
+graft include
