@@ -359,10 +359,10 @@ void SiPMSensor::generateSignal() {
       __m256d __signal2 = _mm256_loadu_pd(&m_Signal[i + 4]);
       __m256d __signal3 = _mm256_loadu_pd(&m_Signal[i + 8]);
       __m256d __signal4 = _mm256_loadu_pd(&m_Signal[i + 12]);
-      __m256d __shape1 = _mm256_loadu_pd(&m_SignalShape[i - time]);
-      __m256d __shape2 = _mm256_loadu_pd(&m_SignalShape[i - time + 4]);
-      __m256d __shape3 = _mm256_loadu_pd(&m_SignalShape[i - time + 8]);
-      __m256d __shape4 = _mm256_loadu_pd(&m_SignalShape[i - time + 12]);
+      const __m256d __shape1 = _mm256_loadu_pd(&m_SignalShape[i - time]);
+      const __m256d __shape2 = _mm256_loadu_pd(&m_SignalShape[i - time + 4]);
+      const __m256d __shape3 = _mm256_loadu_pd(&m_SignalShape[i - time + 8]);
+      const __m256d __shape4 = _mm256_loadu_pd(&m_SignalShape[i - time + 12]);
       __signal1 = _mm256_fmadd_pd(__shape1, __amplitude, __signal1);
       __signal2 = _mm256_fmadd_pd(__shape2, __amplitude, __signal2);
       __signal3 = _mm256_fmadd_pd(__shape3, __amplitude, __signal3);
