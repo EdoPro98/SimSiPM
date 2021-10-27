@@ -136,8 +136,8 @@ private:
  * to double
  */
 inline double SiPMRandom::Rand() {
-  uint64_t u = (m_rng() >> 11) | 0x3FF0000000000000;
-  return *(double*)&u - 1;
+  uint64_t u = (m_rng() >> 11) | 0x3f0000000;
+  return *(double*)&u;
 }
 } // namespace sipm
 #endif /* SIPM_RANDOM_H */
