@@ -187,12 +187,8 @@ uint32_t SiPMRandom::randInteger(const uint32_t max) { return static_cast<uint32
  */
 std::vector<double> SiPMRandom::Rand(const uint32_t n) {
   std::vector<double> out(n);
-
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = m_rng();
-  }
-  for (uint32_t i = 0; i < n; ++i) {
-    out[i] *= M_UINT64_MAX_RCP;
+    out[i] = Rand();
   }
   return out;
 }

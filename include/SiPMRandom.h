@@ -14,6 +14,7 @@
 #define SIPM_RANDOM_H
 
 #include <cmath>
+#include <cstring>
 #include <random>
 #include <stdint.h>
 #include <vector>
@@ -48,9 +49,9 @@ namespace SiPMRng {
 class Xorshift256plus {
 public:
   /// @brief Default contructor for Xorshift256plus
-  Xorshift256plus() { seed(); }
+  Xorshift256plus() {seed();}
   /// @brief Contructor for Xorshift256plus given a seed value
-  explicit Xorshift256plus(uint64_t aseed) { seed(aseed); }
+  Xorshift256plus(uint64_t aseed) {seed(aseed);}
   /// @brief Returns a pseud-random 64-bits intger
   inline uint64_t operator()() noexcept {
     const uint64_t result = s[0] + s[3];
@@ -66,15 +67,14 @@ public:
 
     s[3] = (s[3] << 45U) | (s[3] >> (64U - 45U));
     return result;
-  }
-  __attribute__((hot))
+  }__attribute__((hot))
+
   /// @brief Jump function for the alghoritm.
   /** Usefull in case the same generator is used in multiple instancies. The
    * jump function will make sure that pseudo-random values generated from the
    * different instancies are uncorrelated.
    */
-  void
-  jump();
+  void jump();
   /// @brief Sets a random seed generated with rand()
   void seed();
   /// @brief Sets a new seed
@@ -127,17 +127,19 @@ public:
 
 private:
   SiPMRng::Xorshift256plus m_rng;
-  static constexpr double M_UINT64_MAX_RCP = 1 / static_cast<double>(UINT64_MAX);
 };
 
 /** Returns a uniform random in range (0,1)
  * Using getting highest 53 bits from a unit64 for the mantissa,
- * setting the exponent to get values in range (0-1) and type punning
- * to double
+ * setting the exponent to get values in range (1-2), subtract 1 and type punning
+ * to double.
  */
 inline double SiPMRandom::Rand() {
-  uint64_t u = (m_rng() >> 11) | 0x3f0000000;
-  return *(double*)&u;
+  double x;
+  static constexpr uint64_t mask = 0x3ff0000000000000;
+  const uint64_t u = (m_rng() >> 12) | mask;
+  std::memcpy(&x, &u, 8);
+  return x - 1;
 }
 } // namespace sipm
 #endif /* SIPM_RANDOM_H */
