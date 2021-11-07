@@ -14,13 +14,15 @@ from pybind11.setup_helpers import (
     ParallelCompile,
     naive_recompile,
 )
-import os, platform
+import os
+import platform
 
 with open("README.md", encoding="utf-8") as f:
     LONG_DESCRIPTION = f.read()
 
 if os.environ.get("NPY_NUM_BUILD_JOBS"):
-    ParallelCompile("NPY_NUM_BUILD_JOBS", needs_recompile=naive_recompile).install()
+    ParallelCompile("NPY_NUM_BUILD_JOBS",
+                    needs_recompile=naive_recompile).install()
 else:
     ParallelCompile(needs_recompile=naive_recompile).install()
 
@@ -28,7 +30,6 @@ __version__ = "unknown"
 for l in open("include/SiPM.h").readlines():
     if "SIPM_VERSION" in l.split():
         __version__ = l.split()[-1].strip('"')
-        print(__version__)
         break
 
 extra_compile_args = [
