@@ -49,9 +49,9 @@ namespace SiPMRng {
 class Xorshift256plus {
 public:
   /// @brief Default contructor for Xorshift256plus
-  Xorshift256plus() {seed();}
+  Xorshift256plus() { seed(); }
   /// @brief Contructor for Xorshift256plus given a seed value
-  Xorshift256plus(uint64_t aseed) {seed(aseed);}
+  Xorshift256plus(uint64_t aseed) { seed(aseed); }
   /// @brief Returns a pseud-random 64-bits intger
   inline uint64_t operator()() noexcept {
     const uint64_t result = s[0] + s[3];
@@ -67,14 +67,16 @@ public:
 
     s[3] = (s[3] << 45U) | (s[3] >> (64U - 45U));
     return result;
-  }__attribute__((hot))
+  }
+  __attribute__((hot))
 
   /// @brief Jump function for the alghoritm.
   /** Usefull in case the same generator is used in multiple instancies. The
    * jump function will make sure that pseudo-random values generated from the
    * different instancies are uncorrelated.
    */
-  void jump();
+  void
+  jump();
   /// @brief Sets a random seed generated with rand()
   void seed();
   /// @brief Sets a new seed

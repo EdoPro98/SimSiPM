@@ -216,7 +216,7 @@ std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma
     out[i + 1] = v;
   }
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = sqrt(-2 * s[i]) * (out[i] * sigma) + mu;
+    out[i] = math::sqrt(-2 * s[i]) * (out[i] * sigma) + mu;
   }
   // If n is odd we miss last value so recalculate it anyway
   out[n - 1] = randGaussian(mu, sigma);
