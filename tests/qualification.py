@@ -3,14 +3,14 @@ from tabulate import tabulate
 import matplotlib.pyplot as plt
 import mplhep
 import numpy as np
-from iminuit.cost import ExtendedUnbinnedNLL
+from iminuit.cost import ExtendedUnbinnedNLL, UnbinnedNLL
 from iminuit import Minuit
 
 plt.style.use(mplhep.style.ATLAS)
 
 
-def exp(x, a, b):
-    return a, a * np.exp(-x * b)
+def exp(x, mu):
+    return 1/mu * np.exp(-x * 1/mu)
 
 
 print("***********************************")
@@ -65,9 +65,9 @@ tableData = {
 print(tabulate(tableData, headers="keys", floatfmt=".2f"))
 
 cost = UnbinnedNLL(dcrDelays, exp)
-fit = Minuit(cost, a=1/np.mean(dcrDelays))
-fit.migrad()
+fit = Minuit(cost, mu=np.mean(dcrDelays))
 fit.minos()
+fit.migrad()
 
 print(fit)
 

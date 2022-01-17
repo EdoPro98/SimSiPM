@@ -234,7 +234,7 @@ class TestProperties:
             prop.setProperty("Dcr", dcr)
             prop.setProperty("Xt", xt)
             prop.setProperty("Ap", ap)
-            prop.setProperty("Dxt",dxt)
+            prop.setProperty("DXt",dxt)
             assert prop.dcr() == dcr
             assert prop.xt() == xt
             assert prop.ap() == ap
