@@ -7,7 +7,7 @@
 *.dll
 *__pycache__
 *.pyc
-
+CMakeCache.txt
 
 .ccls-cache
 .hypothesis
