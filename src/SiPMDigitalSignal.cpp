@@ -13,9 +13,8 @@ int32_t SiPMDigitalSignal::integral(const double intstart, const double intgate,
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  const double peak = this->peak(intstart, intgate, threshold);
-  if (peak < threshold) {
-    return 0;
+  if (this->peak(intstart, intgate, threshold) < threshold) {
+    return -1;
   }
 
   int32_t integral = 0;
@@ -39,7 +38,7 @@ int32_t SiPMDigitalSignal::peak(const double intstart, const double intgate, con
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
   const int32_t peak = *std::max_element(start, end);
   if (peak < threshold) {
-    return 0;
+    return -1;
   }
   return peak;
 }
@@ -56,16 +55,13 @@ double SiPMDigitalSignal::tot(const double intstart, const double intgate, const
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  const double peak = this->peak(intstart, intgate, threshold);
-  if (peak < threshold) {
-    return 0;
+  if (this->peak(intstart, intgate, threshold) < threshold) {
+    return -1;
   }
 
   double tot = 0;
   for (auto itr = start; itr != end; ++itr) {
-    if (*itr > threshold) {
-      ++tot;
-    }
+    tot += (int)(*itr > threshold);
   }
 
   return tot * m_Sampling;
@@ -83,8 +79,7 @@ double SiPMDigitalSignal::toa(const double intstart, const double intgate, const
 
   auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  const double peak = this->peak(intstart, intgate, threshold);
-  if (peak < threshold) {
+  if (this->peak(intstart, intgate, threshold) < threshold) {
     return -1;
   }
 
@@ -108,18 +103,17 @@ double SiPMDigitalSignal::top(const double intstart, const double intgate, const
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  const double peak = this->peak(intstart, intgate, threshold);
-  if (peak < threshold) {
-    return 0;
+  if (this->peak(intstart, intgate, threshold) < threshold) {
+    return -1;
   }
 
   return (std::max_element(start, end) - start) * m_Sampling;
 }
 
-std::ostream& operator<<(std::ostream& out, const SiPMDigitalSignal& obj){
-  out << std::setprecision(2)<<std::fixed;
+std::ostream& operator<<(std::ostream& out, const SiPMDigitalSignal& obj) {
+  out << std::setprecision(2) << std::fixed;
   out << "===> SiPM Analog Signal <===\n";
-  out << "Address: "<<std::addressof(obj)<<"\n";
+  out << "Address: " << std::addressof(obj) << "\n";
   out << "Signal length is: " << obj.m_Waveform.size() / obj.m_Sampling << " ns\n";
   out << "Signal is sampled every: " << obj.m_Sampling << " ns\n";
   out << "Signal contains: " << obj.m_Waveform.size() << " points";

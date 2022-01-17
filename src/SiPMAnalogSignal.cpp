@@ -13,15 +13,11 @@ double SiPMAnalogSignal::integral(const double intstart, const double intgate, c
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  const double peak = this->peak(intstart, intgate, threshold);
-  if (peak < threshold) {
-    return 0;
+  if (this->peak(intstart, intgate, threshold) < threshold) {
+    return -1;
   }
-  double integral = 0;
-  for (auto itr = start; itr != end; ++itr) {
-    integral += *itr;
-  }
-  return integral * m_Sampling;
+  const double integral = std::accumulate(start, end, 0.0) * m_Sampling;
+  return integral;
 }
 
 /**
@@ -33,13 +29,17 @@ double SiPMAnalogSignal::integral(const double intstart, const double intgate, c
 @param threshold  Threshold to use for one-suppression
 */
 double SiPMAnalogSignal::peak(const double intstart, const double intgate, const double threshold) const {
-
+  // Cache value for use in other functions without calculating again
+  if (m_peak != -1) {
+    return m_peak;
+  }
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
   const double peak = *std::max_element(start, end);
   if (peak < threshold) {
-    return 0;
+    return -1;
   }
+  m_peak = peak;
   return peak;
 }
 
@@ -55,16 +55,14 @@ double SiPMAnalogSignal::tot(const double intstart, const double intgate, const 
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  const double peak = this->peak(intstart, intgate, threshold);
-  if (peak < threshold) {
-    return 0;
+  if (this->peak(intstart, intgate, threshold) < threshold) {
+    return -1;
   }
 
   uint32_t tot = 0;
   for (auto itr = start; itr != end; ++itr) {
-    if (*itr > threshold) {
-      ++tot;
-    }
+    // Add 1 if condition is true
+    tot += (int)(*itr > threshold);
   }
   return tot * m_Sampling;
 }
@@ -81,8 +79,7 @@ double SiPMAnalogSignal::toa(const double intstart, const double intgate, const 
 
   auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  const double peak = this->peak(intstart, intgate, threshold);
-  if (peak < threshold) {
+  if (this->peak(intstart, intgate, threshold) < threshold) {
     return -1;
   }
 
@@ -106,9 +103,8 @@ double SiPMAnalogSignal::top(const double intstart, const double intgate, const 
 
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  const double peak = this->peak(intstart, intgate, threshold);
-  if (peak < threshold) {
-    return 0;
+  if (this->peak(intstart, intgate, threshold) < threshold) {
+    return -1;
   }
 
   return (std::max_element(start, end) - start) * m_Sampling;
@@ -133,10 +129,10 @@ SiPMAnalogSignal SiPMAnalogSignal::lowpass(const double bw) const {
   return SiPMAnalogSignal(out, m_Sampling);
 }
 
-std::ostream& operator<<(std::ostream& out, const SiPMAnalogSignal& obj){
-  out << std::setprecision(2)<<std::fixed;
+std::ostream& operator<<(std::ostream& out, const SiPMAnalogSignal& obj) {
+  out << std::setprecision(2) << std::fixed;
   out << "===> SiPM Analog Signal <===\n";
-  out << "Address: "<<std::addressof(obj)<<"\n";
+  out << "Address: " << std::addressof(obj) << "\n";
   out << "Signal length is: " << obj.m_Waveform.size() / obj.m_Sampling << " ns\n";
   out << "Signal is sampled every: " << obj.m_Sampling << " ns\n";
   out << "Signal contains: " << obj.m_Waveform.size() << " points";
