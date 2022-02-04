@@ -101,9 +101,13 @@ setup(
     zip_safe=False,
     license="MIT",
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: MIT License",
         "Topic :: Scientific/Engineering :: Physics",
         "Programming Language :: Python :: 3",
+        "Programming Language :: C++",
+        "Intended Audience :: Science/Research",
+        "Operating System :: POSIX :: Linux",
+        "Operating System :: MacOS",
     ],
 )
