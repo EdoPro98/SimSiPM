@@ -52,7 +52,7 @@ public:
   /// @brief Returns the size of the vector containing the signal
   uint32_t size() const { return m_Waveform.size(); }
   /// @brief Clears all elements of the vector containing the signal
-  void clear() { return m_Waveform.clear(); }
+  void clear() { m_Waveform.clear(); m_peak = -1;}
   /// @brief Returns the sampling time of the signal in ns
   double sampling() const { return m_Sampling; }
   /// @brief Returns a std::vector containing the sampled waveform
