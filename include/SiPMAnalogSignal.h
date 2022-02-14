@@ -75,6 +75,7 @@ public:
   /// @brief Applies a low-pass filter to the input vector
   SiPMAnalogSignal lowpass(const double) const;
 
+  std::string toString() const {std::stringstream ss; ss << *this; return ss.str();}
   friend std::ostream& operator<<(std::ostream&, const SiPMAnalogSignal&);
 
 private:

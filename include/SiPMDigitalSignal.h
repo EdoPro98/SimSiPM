@@ -62,6 +62,7 @@ public:
   double top(const double, const double, const int32_t) const;
 
   friend std::ostream& operator<< (std::ostream&, const SiPMDigitalSignal&);
+  std::string toString() const {std::stringstream ss; ss << *this; return ss.str();}
 
 private:
   std::vector<int32_t> m_Waveform;

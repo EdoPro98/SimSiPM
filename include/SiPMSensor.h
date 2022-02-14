@@ -115,6 +115,7 @@ public:
   // virtual ~SiPMSensor() = default;
   // virtual std::vector<double> signalShape() const;
   friend std::ostream& operator<< (std::ostream&, const SiPMSensor&);
+  std::string toString() const {std::stringstream ss; ss << *this; return ss.str();}
 
 private:
   /// @brief Returns the PDE value corresponding to the given wavelength.

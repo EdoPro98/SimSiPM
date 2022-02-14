@@ -28,6 +28,7 @@ struct SiPMDebugInfo {
   uint32_t nDXt;            ///< Number of delayed XT events generated.
   uint32_t nAp;             ///< Number of AP events generated.
   friend std::ostream& operator<< (std::ostream&, const SiPMDebugInfo&);
+  std::string toString() const {std::stringstream ss; ss << *this; return ss.str();}
 };
 
 /** @brief Constructor of SiPMDebugInfo */

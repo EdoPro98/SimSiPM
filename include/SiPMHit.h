@@ -16,8 +16,9 @@
 #include <algorithm>
 #include <iostream>
 #include <iomanip>
-#include <stdint.h>
 #include <memory>
+#include <stdint.h>
+#include <sstream>
 #include <vector>
 
 namespace sipm {
@@ -78,7 +79,7 @@ public:
   std::vector<std::shared_ptr<SiPMHit>> childrens() const {return m_ChildrenHits; }
 
   friend std::ostream& operator<< (std::ostream&, const SiPMHit&);
-
+  std::string toString() const {std::stringstream ss; ss << *this; return ss.str();}
 private:
 
   double m_Time;
@@ -91,7 +92,7 @@ private:
 };
 
 inline std::ostream& operator<< (std::ostream& out, const SiPMHit& obj){
-  out<<std::setprecision(2)<<std::fixed;
+  out << std::setprecision(2) << std::fixed;
   out << "===> SiPM Hit <===\n";
   out << "Address: "<<std::addressof(obj)<<"\n";
   out << "Hit time: " << obj.m_Time << "\n";

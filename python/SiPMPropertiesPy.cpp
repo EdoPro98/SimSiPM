@@ -78,7 +78,8 @@ void SiPMPropertiesPy(py::module& m) {
     .def("setPdeSpectrum",
          py::overload_cast<const map<double, double>&>(&SiPMProperties::setPdeSpectrum))
     .def("setPdeSpectrum", py::overload_cast<const vector<double>&, const vector<double>&>(&SiPMProperties::setPdeSpectrum))
-    .def("setHitDistribution", &SiPMProperties::setHitDistribution);
+    .def("setHitDistribution", &SiPMProperties::setHitDistribution)
+    .def("__repr__",&SiPMProperties::toString);
 
   py::enum_<SiPMProperties::PdeType>(sipmproperties, "PdeType")
     .value("kNoPde", SiPMProperties::PdeType::kNoPde)

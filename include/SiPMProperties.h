@@ -254,6 +254,7 @@ public:
   void setHitDistribution(const HitDistribution aHitDistribution) { m_HitDistribution = aHitDistribution; }
 
   friend std::ostream& operator<< (std::ostream&, const SiPMProperties&);
+  std::string toString() const {std::stringstream ss; ss << *this; return ss.str();}
 
 private:
   double m_Size = 1;

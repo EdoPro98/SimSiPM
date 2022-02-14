@@ -14,7 +14,8 @@ void SiPMHitPy(py::module& m) {
   .def("amplitude",static_cast<double (SiPMHit::*)()const>(&SiPMHit::amplitude))
   .def("hitType",&SiPMHit::hitType)
   .def("parent",&SiPMHit::parent)
-  .def("childrens",&SiPMHit::childrens);
+  .def("childrens",&SiPMHit::childrens)
+  .def("__repr__",&SiPMHit::toString);
 
   py::enum_<SiPMHit::HitType>(sipmhit,"HitType")
   .value("kPhotoelectron",SiPMHit::HitType::kPhotoelectron)

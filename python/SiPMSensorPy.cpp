@@ -27,5 +27,6 @@ void SiPMSensorPy(py::module& m) {
     .def("addPhotons", py::overload_cast<const vector<double>&, const vector<double>&>(&SiPMSensor::addPhotons))
     .def("runEvent", &SiPMSensor::runEvent)
     .def("dumpHits", &SiPMSensor::dumpHits)
-    .def("resetState", &SiPMSensor::resetState);
+    .def("resetState", &SiPMSensor::resetState)
+    .def("__repr__", &SiPMSensor::toString);
 }
