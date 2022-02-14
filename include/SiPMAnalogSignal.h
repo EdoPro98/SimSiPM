@@ -26,6 +26,7 @@
 #include <numeric>
 #include <stdint.h>
 #include <vector>
+#include <sstream>
 
 namespace sipm {
 

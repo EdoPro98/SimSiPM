@@ -16,6 +16,7 @@
 #include <iostream>
 #include <stdint.h>
 #include <vector>
+#include <sstream>
 
 #ifndef SIPM_SIPMDIGITALSIGNAL_H
 #define SIPM_SIPMDIGITALSIGNAL_H

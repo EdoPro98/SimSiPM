@@ -15,6 +15,7 @@
 #include <iomanip>
 #include <iostream>
 #include <stdint.h>
+#include <sstream>
 
 namespace sipm {
 

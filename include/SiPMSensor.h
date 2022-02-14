@@ -15,6 +15,7 @@
 #include <iomanip>
 #include <iostream>
 #include <memory>
+#include <sstream>
 
 #include "SiPMAnalogSignal.h"
 #include "SiPMDebugInfo.h"
