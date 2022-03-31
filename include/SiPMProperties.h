@@ -174,10 +174,10 @@ public:
 
   /// @brief Set falling time constant for the slow component of signal @sa
   /// SiPMSensor::signalShape
-  void setFallTimeSlow(const double x) { m_FallTimeSlow = x; }
+  void setFallTimeSlow(const double x) { m_FallTimeSlow = x; m_HasSlowComponent = true; }
 
   /// @brief Set weigth of slow component in the signal
-  void setSlowComponentFraction(const double x) { m_SlowComponentFraction = x; }
+  void setSlowComponentFraction(const double x) { m_SlowComponentFraction = x; m_HasSlowComponent = true; }
 
   /// @brief Set recovery time of the SiPM cell
   void setRecoveryTime(const double x) { m_RecoveryTime = x; }
@@ -213,7 +213,7 @@ public:
 
   /// @brief Set delayed optical crosstalk probability as a fraction of total xt probability
   /// @param aDXt delayed optical crosstalk probability [0-1]
-  void setDXt(const double aDXt) { m_DXt = aDXt; }
+  void setDXt(const double aDXt) { m_DXt = aDXt; m_HasDXt = true; }
 
   /// @brief Set tau of delayed optical crosstalk in ns
   /// @param aDXt tau of delayed optical crosstalk
