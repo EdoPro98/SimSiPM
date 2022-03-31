@@ -21,6 +21,7 @@
 #include "SiPMAnalogSignal.h"
 #include "SiPMDigitalSignal.h"
 #include "SiPMRandom.h"
+#include "SiPMTypes.h"
 
 namespace sipm {
 
@@ -52,10 +53,10 @@ public:
 
 private:
   /// @brief Quantizes a signal using a given number of bits
-  std::vector<int32_t> quantize(const std::vector<double>&, uint32_t, double, double) const __attribute__((hot));
+  std::vector<int32_t> quantize(const SiPMVector<double>&, uint32_t, double, double) const;
   /// @brief Adds jitter to a signal
   /// @todo Maybe better to return by reference here
-  std::vector<double> addJitter(std::vector<double>&, const double) const __attribute__((hot));
+  SiPMVector<double> addJitter(SiPMVector<double>&, const double) const;
 
   uint32_t m_Nbits;
   double m_Range;

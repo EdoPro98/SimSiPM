@@ -19,11 +19,8 @@
 #include <stdint.h>
 #include <vector>
 
-#ifdef __AVX2__
-#include <immintrin.h>
-#endif
-
 #include "SiPMMath.h"
+#include "SiPMTypes.h"
 
 namespace sipm {
 
@@ -77,11 +74,12 @@ public:
    */
   void
   jump();
-  /// @brief Sets a random seed generated with rand()
+  /// @brief Sets a random seed generated with system random device.
   void seed();
-  /// @brief Sets a new seed
+  /// @brief Sets a new seed,
   void seed(uint64_t);
-
+  /// @brief Return internal state of rng.
+  const uint64_t* getState() const {return s;}
 private:
   alignas(64) uint64_t s[4];
 };
@@ -97,19 +95,20 @@ public:
    * @param aSeed Seed used to initialize the rng algorithm
    */
   void seed(const uint64_t aSeed) { m_rng.seed(aSeed); }
-  /** @brief Sets a seed for the rng obtained from rand().*/
+  /** @brief Sets a seed for the rng obtained from system random device*/
   void seed() { m_rng.seed(); }
   /** @brief This is the jump function for the generator. It is equivalent
    * to 2^128 calls to next(); it can be used to generate 2^128
    * non-overlapping subsequences for parallel computations.*/
   void jump() { m_rng.jump(); }
+  const uint64_t* getState() const {return m_rng.getState();}
 
   inline uint64_t operator()() { return m_rng(); }
 
-  // Uniform random in [0-1]
+  // Uniform random in [0 - 1]
   inline double Rand() __attribute__((hot));
 
-  // Uniform integer in range [0-max)
+  // Uniform integer in range [0 - max) not including max
   uint32_t randInteger(const uint32_t) __attribute__((hot));
   // Random gaussian given mean and sigma
   double randGaussian(const double, const double) __attribute__((hot));
@@ -118,20 +117,23 @@ public:
   // Random poisson given mean
   uint32_t randPoisson(const double mu);
 
-  /** @brief Vector of random uniforms in [0-1] */
-  std::vector<double> Rand(const uint32_t) __attribute__((hot));
+  /** @brief Vector of random uniforms in [0 - 1] */
+  template<typename T = std::vector<double>>
+  T Rand(const uint32_t) __attribute__((hot));
   /** @brief Vector of random gaussian given mean an sigma */
-  std::vector<double> randGaussian(const double, const double, const uint32_t) __attribute__((hot));
-  /** @brief Vector of random integers in range [0-max) */
+  template<typename T = std::vector<double>>
+  T randGaussian(const double, const double, const uint32_t) __attribute__((hot));
+  /** @brief Vector of random integers in range [0 - max) not including max*/
   std::vector<uint32_t> randInteger(const uint32_t max, const uint32_t n) __attribute__((hot));
   // Vector of random exponential given mean
-  std::vector<double> randExponential(const double, const uint32_t);
+  template<typename T = std::vector<double>>
+  T randExponential(const double, const uint32_t);
 
 private:
   SiPMRng::Xorshift256plus m_rng;
 };
 
-/** Returns a uniform random in range (0,1)
+/** Returns a uniform random in range (0,1]
  * Using getting highest 53 bits from a unit64 for the mantissa,
  * setting the exponent to get values in range (1-2), subtract 1 and type punning
  * to double.

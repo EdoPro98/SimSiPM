@@ -1,14 +1,26 @@
-
 #ifndef SIPM_SIPMHELPERS_H
 #define SIPM_SIPMHELPERS_H
+#pragma once
 
 #include <cmath>
+#include <cstdint>
+#include <cstdlib>
+#include <stdlib.h>
+#include <memory>
+#include <vector>
 #ifdef __AVX2__
 #include <immintrin.h>
 #endif
 
 namespace sipm {
 namespace math {
+
+template <typename T, typename U = T> struct pair {
+  T first, second;
+  pair(T x, U y) : first(x), second(y) {}
+  pair() = default;
+};
+
 #ifdef __AVX2__
 inline float rec(const float x) {
   float y;
@@ -34,11 +46,7 @@ inline float sqrt(const float x) {
 inline float sqrt(const float x) { return sqrt(x); }
 #endif
 
-template <typename T> struct pair {
-  T first, second;
-  pair(T x, T y) : first(x), second(y) {}
-  pair() = default;
-};
+
 } // namespace math
 } // namespace sipm
 #endif /* SIPM_SIPMHELPERS_H */

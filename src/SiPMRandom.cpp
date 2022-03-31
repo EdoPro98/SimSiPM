@@ -1,13 +1,22 @@
 #include "SiPMRandom.h"
+#include <SiPMTypes.h>
+#include <cstdint>
+
+#include <iostream>
 
 namespace sipm {
-
 namespace SiPMRng {
 void Xorshift256plus::seed() {
   s[0] = std::random_device{}();
   s[1] = std::random_device{}();
   s[2] = std::random_device{}();
   s[3] = std::random_device{}();
+
+  // Call rng few times
+  this->operator()();
+  this->operator()();
+  this->operator()();
+  this->operator()();
 }
 
 void Xorshift256plus::seed(const uint64_t aseed) {
@@ -45,9 +54,6 @@ void Xorshift256plus::jump() {
  * @param mu Mean value of the poisson distribution
  */
 uint32_t SiPMRandom::randPoisson(const double mu) {
-  if (mu <= 0) {
-    return 0;
-  }
   const double q = exp(-mu);
   double p = 1;
   int32_t out = -1;
@@ -85,75 +91,69 @@ double SiPMRandom::randExponential(const double mu) { return -log(Rand()) * mu; 
 * @return Double value from gaussian distribution
 */
 double SiPMRandom::randGaussian(const double mu, const double sigma) {
-  constexpr double kC1 = 1.448242853;
-  constexpr double kC2 = 3.307147487;
-  constexpr double kC3 = 1.46754004;
-  constexpr double kD1 = 1.036467755;
-  constexpr double kD2 = 5.295844968;
-  constexpr double kD3 = 3.631288474;
-  constexpr double kHm = 0.483941449;
-  constexpr double kZm = 0.107981933;
-  constexpr double kHp = 4.132731354;
-  constexpr double kZp = 18.52161694;
-  constexpr double kPhln = 0.4515827053;
-  constexpr double kHm1 = 0.516058551;
-  constexpr double kHp1 = 3.132731354;
-  constexpr double kHzm = 0.375959516;
-  constexpr double kHzmp = 0.591923442;
+  static constexpr double kC1 = 1.448242853;
+  static constexpr double kC2 = 3.307147487;
+  static constexpr double kC3 = 1.46754004;
+  static constexpr double kD1 = 1.036467755;
+  static constexpr double kD2 = 5.295844968;
+  static constexpr double kD3 = 3.631288474;
+  static constexpr double kHm = 0.483941449;
+  static constexpr double kZm = 0.107981933;
+  static constexpr double kHp = 4.132731354;
+  static constexpr double kZp = 18.52161694;
+  static constexpr double kPhln = 0.4515827053;
+  static constexpr double kHm1 = 0.516058551;
+  static constexpr double kHp1 = 3.132731354;
+  static constexpr double kHzm = 0.375959516;
+  static constexpr double kHzmp = 0.591923442;
   /*zhm 0.967882898*/
 
-  constexpr double kAs = 0.8853395638;
-  constexpr double kBs = 0.2452635696;
-  constexpr double kCs = 0.2770276848;
-  constexpr double kB = 0.5029324303;
-  constexpr double kX0 = 0.4571828819;
-  constexpr double kYm = 0.187308492;
-  constexpr double kS = 0.7270572718;
-  constexpr double kT = 0.03895759111;
+  static constexpr double kAs = 0.8853395638;
+  static constexpr double kBs = 0.2452635696;
+  static constexpr double kCs = 0.2770276848;
+  static constexpr double kB = 0.5029324303;
+  static constexpr double kX0 = 0.4571828819;
+  static constexpr double kYm = 0.187308492;
+  static constexpr double kS = 0.7270572718;
+  static constexpr double kT = 0.03895759111;
 
-  double result;
-  double rn, x, y, z;
 
   do {
-    y = Rand();
+    const double y = Rand();
 
     if (y > kHm1) {
-      result = kHp * y - kHp1;
-      break;
+      const double result = kHp * y - kHp1;
+      return result * sigma + mu;
     }
 
     else if (y < kZm) {
-      rn = kZp * y - 1;
-      result = (rn > 0) ? (1 + rn) : (-1 + rn);
-      break;
+      const double rn = kZp * y - 1;
+      const double result = (rn > 0) ? (1 + rn) : (-1 + rn);
+      return result * sigma + mu;
     }
 
     else if (y < kHm) {
-      rn = Rand();
-      rn = rn - 1 + rn;
-      z = (rn > 0) ? 2 - rn : -2 - rn;
+      const double rn = 2*Rand()-1;
+      const double z = (rn > 0) ? 2 - rn : -2 - rn;
       if ((kC1 - y) * (kC3 + abs(z)) < kC2) {
-        result = z;
-        break;
+        return z * sigma + mu;
       } else {
-        x = rn * rn;
+        const double x = rn * rn;
         if ((y + kD1) * (kD3 + x) < kD2) {
-          result = rn;
-          break;
+          return rn * sigma + mu;
         } else if (kHzmp - y < exp(-(z * z + kPhln) * 0.5)) {
-          result = z;
-          break;
+          return z * sigma + mu;
         } else if (y + kHzm < exp(-(x + kPhln) * 0.5)) {
-          result = rn;
-          break;
+          return rn * sigma + mu;
         }
       }
     }
 
     while (1) {
-      x = Rand();
-      y = kYm * Rand();
-      z = kX0 - kS * x - y;
+      double x = Rand();
+      double y = kYm * Rand();
+      const double z = kX0 - kS * x - y;
+      double rn;
       if (z > 0)
         rn = 2 + y / x;
       else {
@@ -162,17 +162,15 @@ double SiPMRandom::randGaussian(const double mu, const double sigma) {
         rn = -(2 + y / x);
       }
       if ((y - kAs + x) * (kCs + x) + kBs < 0) {
-        result = rn;
-        break;
-      } else if (y < x + kT)
+        return rn * sigma + mu;
+      } else if (y < x + kT){
         if (rn * rn < 4 * (kB - log(x))) {
-          result = rn;
-          break;
+          return rn * sigma + mu;
         }
+      }
     }
   } while (0);
-
-  return mu + sigma * result;
+  std::cout<<"Fallthrough\n";
 }
 
 /** @brief Returns a random integer in range [0,max)
@@ -185,11 +183,22 @@ uint32_t SiPMRandom::randInteger(const uint32_t max) { return static_cast<uint32
 /**
  * @param n Number of values to generate
  */
-std::vector<double> SiPMRandom::Rand(const uint32_t n) {
-  std::vector<double> out(n);
+template<>
+SiPMVector<double> SiPMRandom::Rand<SiPMVector<double>>(const uint32_t n) {
+  SiPMVector<double> out(n);
   for (uint32_t i = 0; i < n; ++i) {
     out[i] = Rand();
   }
+  return out;
+}
+
+/**
+ * @param n Number of values to generate
+ */
+template<>
+std::vector<double> SiPMRandom::Rand<std::vector<double>>(const uint32_t n) {
+  SiPMVector<double> _out = Rand<SiPMVector<double>>(n);
+  std::vector<double> out(_out.begin(), _out.end());
   return out;
 }
 
@@ -198,31 +207,45 @@ std::vector<double> SiPMRandom::Rand(const uint32_t n) {
  * @param sigma Standard deviation value of the gaussuan
  * @param n Number of values to generate
  */
-std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma, const uint32_t n) {
+template<>
+SiPMVector<double> SiPMRandom::randGaussian<SiPMVector<double>>(const double mu, const double sigma, const uint32_t n) {
 
-  std::vector<double> out(n);
-  std::vector<double> s(n);
-
+  SiPMVector<double> out(n);
+  SiPMVector<double> s(n);
+  
   for (uint32_t i = 0; i < n - 1; i += 2) {
     double z, u, v;
     do {
       u = Rand() * 2.0 - 1.0;
       v = Rand() * 2.0 - 1.0;
-      z = (u * u) + (v * v);
-    } while (z > 1.0 || z == 0.0);
-    s[i] = log(z) * math::rec(z);
+      z = u * u + v * v;
+    } while (z >= 1.0 || z == 0.0);
+    s[i] = std::sqrt(-2 * log(z) * math::rec(z));
     s[i + 1] = s[i];
     out[i] = u;
     out[i + 1] = v;
-  }
+  } 
+
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = math::sqrt(-2 * s[i]) * (out[i] * sigma) + mu;
+    out[i] = s[i] * out[i] * sigma + mu;
   }
   // If n is odd we miss last value so recalculate it anyway
   out[n - 1] = randGaussian(mu, sigma);
+
   return out;
 }
 
+/**
+ * @param mu Mean value of the gaussuan
+ * @param sigma Standard deviation value of the gaussuan
+ * @param n Number of values to generate
+ */
+template<>
+std::vector<double> SiPMRandom::randGaussian<std::vector<double>>(const double mu, const double sigma, const uint32_t n) {
+  SiPMVector<double> _out = randGaussian<SiPMVector<double>>(mu,sigma,n);
+  std::vector<double> out(_out.begin(), _out.end());
+  return out;
+}
 /**
  * @param max Max value to generate
  * @param n Number of values to generate
@@ -240,11 +263,24 @@ std::vector<uint32_t> SiPMRandom::randInteger(const uint32_t max, const uint32_t
  * @param mu Mean value of the exponential distribution
  * @param n Number of values to generate
  */
-std::vector<double> SiPMRandom::randExponential(const double mu, const uint32_t n) {
-  std::vector<double> out(n);
+template<>
+SiPMVector<double> SiPMRandom::randExponential<SiPMVector<double>>(const double mu, const uint32_t n) {
+  SiPMVector<double> out(n);
+  
   for (uint32_t i = 0; i < n; ++i) {
     out[i] = -log(Rand()) * mu;
   }
+  return out;
+}
+
+/** @brief Returns a vector from a exponential distribution given its mean value.
+ * @param mu Mean value of the exponential distribution
+ * @param n Number of values to generate
+ */
+template<>
+std::vector<double> SiPMRandom::randExponential<std::vector<double>>(const double mu, const uint32_t n) {
+  SiPMVector<double> _out = randExponential<SiPMVector<double>>(mu,n);
+  std::vector<double> out(_out.begin(), _out.end());
   return out;
 }
 } // namespace sipm

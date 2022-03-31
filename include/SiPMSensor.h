@@ -9,19 +9,22 @@
  */
 
 #ifndef SIPM_SIPMSENSOR_H
-#define SIPM_SIPMSENSOR_H
-
+#define SIPM_SIPMSENSOR_H  
 #include <algorithm>
+#include <cstdint>
 #include <iomanip>
 #include <iostream>
 #include <memory>
 #include <sstream>
+#include <vector>
 
 #include "SiPMAnalogSignal.h"
 #include "SiPMDebugInfo.h"
 #include "SiPMHit.h"
+#include "SiPMMath.h"
 #include "SiPMProperties.h"
 #include "SiPMRandom.h"
+#include "SiPMTypes.h"
 
 namespace sipm {
 
@@ -57,9 +60,17 @@ public:
 
   /// @brief Returns vector containing all SiPMHits.
   /** Used for debug purposes only. In general SiPMHits should remain hidden
-   * for the user of the library.
+   * for the end user.
    */
   std::vector<SiPMHit> hits() const { return m_Hits; }
+  
+  /// @brier Returns vector containing history of hits
+  /**
+   * Returns the vector containing the index of the parent hit 
+   * for each hit. If the hit has no parent (e.g. DCR hit) the 
+   * index is set to -1
+   */
+  std::vector<int32_t> hitsGraph() const { return m_HitsGraph; }
 
   /// @brief Returns a const reference to the @ref SiPMRandom.
   const SiPMRandom& rng() const { return m_rng; }
@@ -74,9 +85,6 @@ public:
   /** @sa SiPMDebugInfo
    */
   SiPMDebugInfo debug() const { return SiPMDebugInfo(m_PhotonTimes.size(), m_nPe, m_nDcr, m_nXt, m_nDXt, m_nAp); }
-
-  /// @brief Prints all informations about SiPMHits in SiPMSensor
-  void dumpHits() const;
 
   /// @brief Sets a property from its name
   /** Sets a SiPM property using its name. For a list of available SiPM
@@ -149,7 +157,7 @@ private:
    * The three exponential model adds another falling exponential term with a
    * given weight.
    */
-  std::vector<double> signalShape() const;
+  SiPMVector<double> signalShape() const;
 
   /// @brief Generated DCR events.
   /** Dark counts events are generated as poisson processes and directly added
@@ -201,7 +209,7 @@ private:
   SiPMProperties m_Properties;
   mutable SiPMRandom m_rng;
 
-  std::vector<double> m_SignalShape;
+  SiPMVector<double> m_SignalShape;
 
   uint32_t m_nTotalHits = 0;
   uint32_t m_nPe = 0;
@@ -213,6 +221,7 @@ private:
   std::vector<double> m_PhotonTimes;
   std::vector<double> m_PhotonWavelengths;
   std::vector<SiPMHit> m_Hits;
+  std::vector<int32_t> m_HitsGraph;
 
   SiPMAnalogSignal m_Signal;
 };

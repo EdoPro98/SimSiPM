@@ -27,6 +27,8 @@
 #include <stdint.h>
 #include <vector>
 #include <sstream>
+#include "SiPMMath.h"
+#include "SiPMTypes.h"
 
 namespace sipm {
 
@@ -35,12 +37,12 @@ public:
   /// @brief SiPMAnalogSignal default constructor
   SiPMAnalogSignal() = default;
 
-  /// @brief SiPMAnalogSignal constructor from a std::vector
-  SiPMAnalogSignal(const std::vector<double>& wav, const double sampling) noexcept
-    : m_Waveform(wav), m_Sampling(sampling){}; /// @brief Move assignement operator from a std::vector
+  /// @brief SiPMAnalogSignal constructor from a SiPMVector
+  SiPMAnalogSignal(const SiPMVector<double>& wav, const double sampling) noexcept
+    : m_Waveform(wav), m_Sampling(sampling){}; 
 
   /// @brief Move assignement operator from a std::vector
-  SiPMAnalogSignal& operator=(const std::vector<double>&& aVect) noexcept {
+  SiPMAnalogSignal& operator=(const SiPMVector<double>&& aVect) noexcept {
     m_Waveform = std::move(aVect);
     return *this;
   }
@@ -53,11 +55,12 @@ public:
   /// @brief Returns the size of the vector containing the signal
   uint32_t size() const { return m_Waveform.size(); }
   /// @brief Clears all elements of the vector containing the signal
-  void clear() { return m_Waveform.clear(); }
+  void clear() { m_Waveform.clear(); m_peak = -1;}
   /// @brief Returns the sampling time of the signal in ns
   double sampling() const { return m_Sampling; }
   /// @brief Returns a std::vector containing the sampled waveform
-  std::vector<double> waveform() const { return m_Waveform; }
+  template<typename T = SiPMVector<double>>
+  T waveform() const;
 
   /// @brief Returns integral of the signal
   double integral(const double, const double, const double) const;
@@ -80,7 +83,7 @@ public:
   friend std::ostream& operator<<(std::ostream&, const SiPMAnalogSignal&);
 
 private:
-  std::vector<double> m_Waveform;
+  SiPMVector<double> m_Waveform;
   double m_Sampling;
   mutable double m_peak = -1;
 

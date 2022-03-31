@@ -1,6 +1,20 @@
 #include "SiPMAnalogSignal.h"
+#include "SiPMMath.h"
+#include "SiPMTypes.h"
 
 namespace sipm {
+
+template<>
+SiPMVector<double> SiPMAnalogSignal::waveform<SiPMVector<double>>() const{
+  return m_Waveform;
+}
+
+template<>
+std::vector<double> SiPMAnalogSignal::waveform<std::vector<double>>() const{
+  std::vector<double> l_Waveform(m_Waveform.begin(), m_Waveform.end());
+  return l_Waveform;
+}
+
 /**
 * Integral of the signal defined as the sum of all samples in the integration
 * window normalized for the sampling time. If the signal is below the threshold
@@ -115,7 +129,7 @@ double SiPMAnalogSignal::top(const double intstart, const double intgate, const 
  * @return New signal with filter applied
  */
 SiPMAnalogSignal SiPMAnalogSignal::lowpass(const double bw) const {
-  std::vector<double> out = m_Waveform;
+  SiPMVector<double> out = m_Waveform;
   const uint32_t nSignalPoints = m_Waveform.size();
   const double rc = 1 / (2 * M_PI * bw);
   const double dt = 1e-9 * m_Sampling;

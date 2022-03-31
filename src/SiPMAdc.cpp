@@ -1,4 +1,5 @@
 #include "SiPMAdc.h"
+#include "SiPMTypes.h"
 
 #ifdef __AVX2__
 #include <immintrin.h>
@@ -18,7 +19,7 @@ SiPMAdc::SiPMAdc(const uint32_t nbits, const double range, const double gain)
  * @param gain Gain in dB to apply before quantization
  * @return Quantized input vector
  */
-std::vector<int32_t> SiPMAdc::quantize(const std::vector<double>& v, const uint32_t nbits, const double range,
+std::vector<int32_t> SiPMAdc::quantize(const SiPMVector<double>& v, const uint32_t nbits, const double range,
                                        const double gain) const {
   std::vector<int32_t> out(v.size());
 
@@ -39,9 +40,9 @@ std::vector<int32_t> SiPMAdc::quantize(const std::vector<double>& v, const uint3
  * @param jit Jitter value to apply
  * @return Signal with jitter applied
  */
-std::vector<double> SiPMAdc::addJitter(std::vector<double>& signal, const double jit) const {
+SiPMVector<double> SiPMAdc::addJitter(SiPMVector<double>& signal, const double jit) const {
   const uint32_t n = signal.size();
-  std::vector<double> lsignalshift = signal; // Copy of signal
+  SiPMVector<double> lsignalshift = signal; // Copy of signal
   double jitweight;
 
   // Right shift (jitter is positive -> need to move signal "to right")
@@ -90,7 +91,7 @@ std::vector<double> SiPMAdc::addJitter(std::vector<double>& signal, const double
  * @returns Digitized SiPMAnalogSignal
  */
 SiPMDigitalSignal SiPMAdc::digitize(const SiPMAnalogSignal& signal) const {
-  std::vector<double> lsignal = signal.waveform(); // Local copy of analog signal
+  SiPMVector<double> lsignal = signal.waveform(); // Local copy of analog signal
   const double sampling = signal.sampling();
 
   if (m_Jitter > 0) {
