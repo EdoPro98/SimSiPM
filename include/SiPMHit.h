@@ -14,6 +14,8 @@
 #define SIPM_SIPMHITS_H
 
 #include <algorithm>
+#include <cstdint>
+#include <ctime>
 #include <iostream>
 #include <iomanip>
 #include <memory>
@@ -40,11 +42,6 @@ public:
   /** @brief Constructor of SiPMHit */
   SiPMHit(const double time, const double amp, const uint32_t r, const uint32_t c, const HitType type) noexcept
     : m_Time(time), m_Amplitude(amp), m_Row(r), m_Col(c), m_HitType(type) {}
-
-  /** @brief Constructor of SiPMHit */
-  SiPMHit(const double time, const double amp, const uint32_t r, const uint32_t c, const HitType type,const SiPMHit& aHit) noexcept
-    : m_Time(time), m_Amplitude(amp), m_Row(r), m_Col(c), m_HitType(type), m_ParentHit(std::make_shared<SiPMHit>(aHit)) {}
-
   /// @brief Operator used to sort hits
   /**
    * Hits are sorted based on theyr time parameter:
@@ -71,24 +68,15 @@ public:
   double& amplitude() { return m_Amplitude; }
   /// @brief Returns hit type to identify the hits
   HitType hitType() const { return m_HitType; }
-  /// @brief Adds a hit to the list of childrens of this hit
-  void addChildren(const SiPMHit& aHit) {m_ChildrenHits.push_back(std::make_shared<SiPMHit>(aHit));}
-  /// @brief Returns pointer to parent hit (nullptr for dark counts and photoelectrons)
-  std::shared_ptr<SiPMHit> parent() const { return m_ParentHit; }
-  /// @brief Returns vector of pointers to children hits
-  std::vector<std::shared_ptr<SiPMHit>> childrens() const {return m_ChildrenHits; }
 
   friend std::ostream& operator<< (std::ostream&, const SiPMHit&);
   std::string toString() const {std::stringstream ss; ss << *this; return ss.str();}
 private:
-
   double m_Time;
   double m_Amplitude;
   uint32_t m_Row;
   uint32_t m_Col;
   HitType m_HitType;
-  std::shared_ptr<SiPMHit> m_ParentHit = nullptr;
-  std::vector<std::shared_ptr<SiPMHit>> m_ChildrenHits;
 };
 
 inline std::ostream& operator<< (std::ostream& out, const SiPMHit& obj){
@@ -118,34 +106,6 @@ inline std::ostream& operator<< (std::ostream& out, const SiPMHit& obj){
     case SiPMHit::HitType::kDelayedOpticalCrosstalk:
       out << "Delayed optical crosstalk\n";
       break;
-  }
-
-  if(obj.m_ParentHit != nullptr){
-    out << "Parent hit: ";
-    switch (obj.m_ParentHit->m_HitType) {
-      case SiPMHit::HitType::kPhotoelectron:
-        out << "Photoelectron\n";
-        break;
-      case SiPMHit::HitType::kDarkCount:
-        out << "Dark count\n";
-        break;
-      case SiPMHit::HitType::kOpticalCrosstalk:
-        out << "Optical crosstalk\n";
-        break;
-      case SiPMHit::HitType::kFastAfterPulse:
-        out << "Afterpulse (fast)\n";
-        break;
-      case SiPMHit::HitType::kSlowAfterPulse:
-        out << "Afterpulse (slow)\n";
-        break;
-      case SiPMHit::HitType::kDelayedOpticalCrosstalk:
-        out << "Delayed optical crosstalk\n";
-        break;
-    }
-  }
-
-  if (obj.m_ChildrenHits.size() > 0){
-    out << "Children hits: " << obj.m_ChildrenHits.size() << "\n";
   }
   return out;
 }

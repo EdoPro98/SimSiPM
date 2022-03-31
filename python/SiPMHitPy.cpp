@@ -13,8 +13,6 @@ void SiPMHitPy(py::module& m) {
   .def("col",&SiPMHit::col)
   .def("amplitude",static_cast<double (SiPMHit::*)()const>(&SiPMHit::amplitude))
   .def("hitType",&SiPMHit::hitType)
-  .def("parent",&SiPMHit::parent)
-  .def("childrens",&SiPMHit::childrens)
   .def("__repr__",&SiPMHit::toString);
 
   py::enum_<SiPMHit::HitType>(sipmhit,"HitType")
