@@ -12,13 +12,13 @@ void SiPMRandomPy(py::module& m) {
     .def("seed", py::overload_cast<>(&SiPMRandom::seed))
     .def("seed", py::overload_cast<uint64_t>(&SiPMRandom::seed))
     .def("jump", &SiPMRandom::jump)
-    .def("Rand", py::overload_cast<>(&SiPMRandom::Rand))
+    .def("Rand", static_cast<double(SiPMRandom::*)(void)>(&SiPMRandom::Rand))
     .def("randInteger", py::overload_cast<const uint32_t>(&SiPMRandom::randInteger))
-    .def("randGaussian", py::overload_cast<const double, const double>(&SiPMRandom::randGaussian))
-    .def("randExponential", py::overload_cast<const double>(&SiPMRandom::randExponential))
+    .def("randGaussian", static_cast<double(SiPMRandom::*)(const double, const double)>(&SiPMRandom::randGaussian))
+    .def("randExponential", static_cast<double(SiPMRandom::*)(double)>(&SiPMRandom::randExponential))
     .def("randPoisson", py::overload_cast<const double>(&SiPMRandom::randPoisson))
-    .def("Rand", py::overload_cast<const uint32_t>(&SiPMRandom::Rand))
-    .def("randGaussian", py::overload_cast<const double, const double, const uint32_t>(&SiPMRandom::randGaussian))
+    .def("Rand", static_cast<std::vector<double>(SiPMRandom::*)(const uint32_t)>(&SiPMRandom::Rand))
+    .def("randGaussian", static_cast<std::vector<double>(SiPMRandom::*)(const double, const double, const uint32_t)>(&SiPMRandom::randGaussian))
     .def("randInteger", py::overload_cast<const uint32_t, const uint32_t>(&SiPMRandom::randInteger))
-    .def("randExponential", py::overload_cast<const double, const uint32_t>(&SiPMRandom::randExponential));
+    .def("randExponential", static_cast<std::vector<double>(SiPMRandom::*)(const double, const uint32_t)>(&SiPMRandom::randExponential));
 }
