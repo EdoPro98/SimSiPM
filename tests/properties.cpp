@@ -90,13 +90,15 @@ TEST_F(TestSiPMProperties, SetPdeSpectrum) {
   const int N = 20;
   SiPMProperties lsut = sut;
   lsut.setPdeType(SiPMProperties::PdeType::kSpectrumPde);
-  std::map<double, double> pde;
+  std::vector<double> wlen;
+  std::vector<double> pde;
   for (int i = 0; i < N; ++i) {
-    pde[i * 50] = rng.Rand();
+    wlen.push_back(i * 50);
+    pde.push_back(rng.Rand());
   }
-  lsut.setPdeSpectrum(pde);
+  lsut.setPdeSpectrum(wlen, pde);
   std::map<double, double> pde_return = lsut.pdeSpectrum();
   for (int i = 0; i < N; ++i) {
-    EXPECT_DOUBLE_EQ(pde[i * 50], pde_return[i * 50]);
+    EXPECT_DOUBLE_EQ(pde[i], pde_return[i * 50]);
   }
 }

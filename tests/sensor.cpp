@@ -57,7 +57,7 @@ TEST_F(TestSiPMSensor, AddDcr) {
   static constexpr int N = 1000000;
   int ndcr = 0;
   SiPMSensor sensor;
-  sensor.rng().seed();
+  sensor.rng().rng().seed();
   for (int i = 0; i < N; ++i) {
     sensor.resetState();
     sensor.runEvent();
@@ -86,7 +86,7 @@ TEST_F(TestSiPMSensor, SignalGeneration) {
       lsut.resetState();
       lsut.addPhotons(t);
       lsut.runEvent();
-      avg_max += lsut.signal().peak(0,20,0);
+      avg_max += lsut.signal().peak(0, 20, 0);
     }
     avg_max /= R;
     EXPECT_GE(avg_max + 0.5, i);
