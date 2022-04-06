@@ -5,8 +5,8 @@
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
-#include <stdlib.h>
 #include <memory>
+#include <stdlib.h>
 #include <vector>
 #ifdef __AVX2__
 #include <immintrin.h>
@@ -14,7 +14,10 @@
 
 namespace sipm {
 namespace math {
-
+/** @brief Custom implementation of @ref std::pair
+ * This is a simple custom implementation of std::pair
+ * but with no run-time checks to improve performance
+ */
 template <typename T, typename U = T> struct pair {
   T first, second;
   pair(T x, U y) : first(x), second(y) {}
@@ -22,6 +25,10 @@ template <typename T, typename U = T> struct pair {
 };
 
 #ifdef __AVX2__
+/** @brief Fast reciprocal calculated directly using hardware instructions.
+ * It generates the following asm code:
+ * `rcpss xmm xmm`
+ */
 inline float rec(const float x) {
   float y;
   __m128 __x = _mm_load_ss(&x);
@@ -34,6 +41,13 @@ inline float rec(const float x) { return 1 / x; }
 #endif
 
 #ifdef __AVX2__
+/** @brief Fast square root calculated using hardware instruction.
+ * Square root is calculated using the fast reciprocal square root
+ * and then fast reciprocal of the result.
+ * It generates the following asm code
+ * `rsqrtss xmm xmm`
+ * `rcpss xmm xmm`
+ */
 inline float sqrt(const float x) {
   float y;
   __m128 __x = _mm_load_ss(&x);
@@ -45,8 +59,6 @@ inline float sqrt(const float x) {
 #else
 inline float sqrt(const float x) { return sqrt(x); }
 #endif
-
-
 } // namespace math
 } // namespace sipm
 #endif /* SIPM_SIPMHELPERS_H */

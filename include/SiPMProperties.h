@@ -15,18 +15,17 @@
 #define SIPM_SIPMPROPERTIES_H
 
 #include <algorithm>
+#include <cmath>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <map>
-#include <cmath>
+#include <sstream>
 #include <stdint.h>
 #include <string>
 #include <vector>
-#include <sstream>
 
 namespace sipm {
-
 class SiPMProperties {
 public:
   /** @enum PdeType
@@ -155,13 +154,21 @@ public:
   void setProperty(const std::string&, const double);
 
   /// @brief Set size of SiPM sensitive area (side in mm)
-  void setSize(const double x) { m_Size = x; }
+  void setSize(const double x) {
+    m_Size = x;
+    m_SideCells = 1000 * m_Size / m_Pitch;
+    m_Ncells = m_SideCells * m_SideCells;
+  }
 
   /// @brief Set pitch of SiPM cells (side in um)
-  void setPitch(const double x) { m_Pitch = x; }
+  void setPitch(const double x) {
+    m_Pitch = x;
+    m_SideCells = 1000 * m_Size / m_Pitch;
+    m_Ncells = m_SideCells * m_SideCells;
+  }
 
   /// @brief Set sampling time of the signal in ns
-  void setSampling(const double x);
+  void setSampling(const double);
 
   /// @brief Set length of the signa in ns
   void setSignalLength(const double x) { m_SignalLength = x; }
@@ -174,10 +181,16 @@ public:
 
   /// @brief Set falling time constant for the slow component of signal @sa
   /// SiPMSensor::signalShape
-  void setFallTimeSlow(const double x) { m_FallTimeSlow = x; m_HasSlowComponent = true; }
+  void setFallTimeSlow(const double x) {
+    m_FallTimeSlow = x;
+    m_HasSlowComponent = true;
+  }
 
   /// @brief Set weigth of slow component in the signal
-  void setSlowComponentFraction(const double x) { m_SlowComponentFraction = x; m_HasSlowComponent = true; }
+  void setSlowComponentFraction(const double x) {
+    m_SlowComponentFraction = x;
+    m_HasSlowComponent = true;
+  }
 
   /// @brief Set recovery time of the SiPM cell
   void setRecoveryTime(const double x) { m_RecoveryTime = x; }
@@ -185,7 +198,7 @@ public:
   /// @brief Set SNR value in dB
   void setSnr(const double x) {
     m_SnrdB = x;
-    m_SnrLinear = pow(10, -x / 20);
+    m_SnrLinear = pow(10, -m_SnrdB / 20);
   }
 
   /// @brief Set time constant for the delay of fast afterpulses
@@ -201,27 +214,42 @@ public:
   void setCcgv(const double x) { m_Ccgv = x; }
 
   /// @brief Set value for PDE (and sets @ref PdeType::kSimplePde)
-  void setPde(const double x) { m_Pde = x; }
+  void setPde(const double x) {
+    m_Pde = x;
+    m_HasPde = PdeType::kSimplePde;
+  }
 
   /// @brief Set dark counts rate
-  /// @param aDcr Dark counts rate in Hz
-  void setDcr(const double aDcr) { m_Dcr = aDcr; }
+  /// @param val Dark counts rate in Hz
+  void setDcr(const double val) {
+    m_Dcr = val;
+    m_HasDcr = true;
+  }
 
   /// @brief Set optical crosstalk probability
-  /// @param aXt optical crosstalk probability [0-1]
-  void setXt(const double aXt) { m_Xt = aXt; }
+  /// @param val optical crosstalk probability [0-1]
+  void setXt(const double val) {
+    m_Xt = val;
+    m_HasXt = true;
+  }
 
   /// @brief Set delayed optical crosstalk probability as a fraction of total xt probability
-  /// @param aDXt delayed optical crosstalk probability [0-1]
-  void setDXt(const double aDXt) { m_DXt = aDXt; m_HasDXt = true; }
+  /// @param val delayed optical crosstalk probability [0-1]
+  void setDXt(const double val) {
+    m_DXt = val;
+    m_HasDXt = true;
+  }
 
   /// @brief Set tau of delayed optical crosstalk in ns
-  /// @param aDXt tau of delayed optical crosstalk
-  void setDXtTau(const double aDXtTau) { m_DXtTau = aDXtTau; }
+  /// @param val tau of delayed optical crosstalk
+  void setDXtTau(const double val) { m_DXtTau = val; }
 
   /// @brief Set afterpulse probability
-  /// @param aAp afterpulse probability [0-1]
-  void setAp(const double aAp) { m_Ap = aAp; }
+  /// @param val afterpulse probability [0-1]
+  void setAp(const double val) {
+    m_Ap = val;
+    m_HasAp = true;
+  }
 
   /// @brief Turn off dark counts
   void setDcrOff() { m_HasDcr = false; }
@@ -244,18 +272,20 @@ public:
   /// @brief Turns on slow component of the signal
   void setSlowComponentOn() { m_HasSlowComponent = true; }
   /// @brief Turn off PDE: set @ref PdeType::kNoPde
-  void setPdeType(PdeType aPdeType) { m_HasPde = aPdeType; }
-  /// @brief Set a spectral response of the SiPM and sets @ref
-  /// PdeType::kSpectrumPde
-  void setPdeSpectrum(const std::map<double, double>&);
+  void setPdeType(PdeType val) { m_HasPde = val; }
   /// @brief Set a spectral response of the SiPM and sets @ref
   /// PdeType::kSpectrumPde
   void setPdeSpectrum(const std::vector<double>&, const std::vector<double>&);
 
-  void setHitDistribution(const HitDistribution aHitDistribution) { m_HitDistribution = aHitDistribution; }
+  /// @brief Set hit distriution type
+  void setHitDistribution(const HitDistribution val) { m_HitDistribution = val; }
 
-  friend std::ostream& operator<< (std::ostream&, const SiPMProperties&);
-  std::string toString() const {std::stringstream ss; ss << *this; return ss.str();}
+  friend std::ostream& operator<<(std::ostream&, const SiPMProperties&);
+  std::string toString() const {
+    std::stringstream ss;
+    ss << *this;
+    return ss.str();
+  }
 
 private:
   double m_Size = 1;
@@ -269,7 +299,7 @@ private:
   mutable uint32_t m_SignalPoints = 0;
   double m_RiseTime = 1;
   double m_FallTimeFast = 50;
-  double m_FallTimeSlow;
+  double m_FallTimeSlow = 100;
   double m_SlowComponentFraction;
   double m_RecoveryTime = 50;
 
@@ -286,7 +316,7 @@ private:
   double m_Gain = 1.0;
   mutable double m_SnrLinear = 0;
 
-  double m_Pde;
+  double m_Pde = 1;
   std::map<double, double> m_PdeSpectrum;
   PdeType m_HasPde = PdeType::kNoPde;
 
@@ -296,6 +326,5 @@ private:
   bool m_HasAp = true;
   bool m_HasSlowComponent = false;
 };
-
 } // namespace sipm
 #endif /* SIPM_SIPMPROPERTIES_H  */
