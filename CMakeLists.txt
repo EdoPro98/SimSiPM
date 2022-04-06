@@ -45,7 +45,6 @@ add_library(sipm SHARED
   ${include}
 )
 
-
 # Include files
 target_include_directories(sipm PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -75,6 +74,7 @@ if (SIPM_BUILD_PYTHON)
 	pybind11_add_module(SiPM SHARED ${pysrc} ${src})
 	target_include_directories(SiPM PUBLIC "include/")
 	set_property(TARGET SiPM PROPERTY CXX_STANDARD 17)
+  target_compile_options(SiPM PUBLIC -fvisibility=hidden)
 
 	install(TARGETS SiPM
 	LIBRARY DESTINATION lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages
