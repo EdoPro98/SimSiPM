@@ -7,7 +7,6 @@ namespace py = pybind11;
 
 void SiPMPropertiesPy(py::module&);
 void SiPMAnalogSignalPy(py::module&);
-void SiPMDigitalSignalPy(py::module&);
 void SiPMDebugInfoPy(py::module&);
 void SiPMHitPy(py::module&);
 void SiPMSensorPy(py::module&);
@@ -18,7 +17,6 @@ PYBIND11_MODULE(SiPM, m) {
   m.attr("__version__") = SIPM_VERSION;
   SiPMPropertiesPy(m);
   SiPMAnalogSignalPy(m);
-  SiPMDigitalSignalPy(m);
   SiPMDebugInfoPy(m);
   SiPMHitPy(m);
   SiPMSensorPy(m);
