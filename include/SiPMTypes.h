@@ -64,7 +64,6 @@ void aligned_free(void* ptr);
 
 template <class T> size_t get_alignment_offset(const T* p, size_t size, size_t block_size);
 
-
 /**
  * Default constructor.
  */
@@ -83,16 +82,16 @@ template <class U>
 inline AlignedAllocator<T, A>::AlignedAllocator(const AlignedAllocator<U, A>&) noexcept {}
 
 /**
- * Returns the actual address of \c r even in presence of overloaded \c operator&.
+ * Returns the actual address of @c r even in presence of overloaded @c operator&.
  * @param r the object to acquire address of.
- * @return the actual address of \c r.
+ * @return the actual address of @c r.
  */
 template <class T, size_t A> inline auto AlignedAllocator<T, A>::address(reference r) noexcept -> pointer { return &r; }
 
 /**
- * Returns the actual address of \c r even in presence of overloaded \c operator&.
+ * Returns the actual address of @c r even in presence of overloaded \c operator&.
  * @param r the object to acquire address of.
- * @return the actual address of \c r.
+ * @return the actual address of @c r.
  */
 template <class T, size_t A>
 inline auto AlignedAllocator<T, A>::address(const_reference r) const noexcept -> const_pointer {
@@ -100,12 +99,12 @@ inline auto AlignedAllocator<T, A>::address(const_reference r) const noexcept ->
 }
 
 /**
- * Allocates <tt>n * sizeof(T)</tt> bytes of uninitialized memory, aligned by \c A.
- * The alignment may require some extra memory allocation.
+ * Allocates <tt>n * sizeof(T)</tt> bytes of uninitialized memory, aligned by @c A.
+ * The alignment may require some extra memory allocation for padding.
  * @param n the number of objects to allocate storage for.
  * @param hint unused parameter provided for standard compliance.
  * @return a pointer to the first byte of a memory block suitably aligned and sufficient to
- * hold an array of \c n objects of type \c T.
+ * hold an array of @c n objects of type @c T.
  */
 template <class T, size_t A> inline auto AlignedAllocator<T, A>::allocate(size_type n, const void*) -> pointer {
   pointer res = reinterpret_cast<pointer>(aligned_malloc(sizeof(T) * n, A));
@@ -124,7 +123,7 @@ template <class T, size_t A> inline auto AlignedAllocator<T, A>::allocate(size_t
 template <class T, size_t A> inline void AlignedAllocator<T, A>::deallocate(pointer p, size_type) { aligned_free(p); }
 
 /**
- * Returns the maximum theoretically possible value of \c n, for which the
+ * Returns the maximum theoretically possible value of @c n, for which the
  * call allocate(n, 0) could succeed.
  * @return the maximum supported allocated size.
  */
@@ -133,8 +132,8 @@ template <class T, size_t A> inline auto AlignedAllocator<T, A>::max_size() cons
 }
 
 /**
- * Constructs an object of type \c T in allocated uninitialized memory
- * pointed to by \c p, using placement-new.
+ * Constructs an object of type @c T in allocated uninitialized memory
+ * pointed to by @c p, using placement-new.
  * @param p pointer to allocated uninitialized memory.
  * @param args the constructor arguments to use.
  */
@@ -145,14 +144,14 @@ inline void AlignedAllocator<T, A>::construct(U* p, Args&&... args) {
 }
 
 /**
- * Calls the destructor of the object pointed to by \c p.
+ * Calls the destructor of the object pointed to by @c p.
  * @param p pointer to the object that is going to be destroyed.
  */
 template <class T, size_t A> template <class U> inline void AlignedAllocator<T, A>::destroy(U* p) { p->~U(); }
 
 /**
  * Compares two aligned memory allocator for equality. Since allocators
- * are stateless, return \c true iff <tt>A1 == A2</tt>.
+ * are stateless, return @c true iff <tt>A1 == A2</tt>.
  * @param lhs AlignedAllocator to compare.
  * @param rhs AlignedAllocator to compare.
  * @return true if the allocators have the same alignment.
@@ -164,7 +163,7 @@ inline bool operator==(const AlignedAllocator<T1, A1>& lhs, const AlignedAllocat
 
 /**
  * Compares two aligned memory allocator for inequality. Since allocators
- * are stateless, return \c true iff <tt>A1 != A2</tt>.
+ * are stateless, return @c true iff <tt>A1 != A2</tt>.
  * @param lhs AlignedAllocator to compare.
  * @param rhs AlignedAllocator to compare.
  * @return true if the allocators have different alignments.
@@ -174,8 +173,7 @@ inline bool operator!=(const AlignedAllocator<T1, A1>& lhs, const AlignedAllocat
   return !(lhs == rhs);
 }
 
-namespace detail {
-inline void* _aligned_malloc(size_t size, size_t alignment) {
+inline void* aligned_malloc(size_t size, size_t alignment) {
   void* res = nullptr;
   if (posix_memalign(&res, alignment, size) != 0) {
     res = nullptr;
@@ -183,32 +181,15 @@ inline void* _aligned_malloc(size_t size, size_t alignment) {
   return res;
 }
 
-inline void _aligned_free(void* ptr) { free(ptr); }
-} // namespace detail
+inline void aligned_free(void* ptr) { free(ptr); }
 
-inline void* aligned_malloc(size_t size, size_t alignment) { return detail::_aligned_malloc(size, alignment); }
-
-inline void aligned_free(void* ptr) { detail::_aligned_free(ptr); }
-
-template <class T> inline size_t get_alignment_offset(const T* p, size_t size, size_t block_size) {
-  // size_t block_size = simd_traits<T>::size;
-  if (block_size == 1) {
-    // The simd_block consists of exactly one scalar so that all
-    // elements of the array
-    // are "well" aligned.
-    return 0;
-  } else if (size_t(p) & (sizeof(T) - 1)) {
-    // The array is not aligned to the size of a single element, so that
-    // no element
-    // of the array is well aligned
-    return size;
-  } else {
-    size_t block_mask = block_size - 1;
-    return std::min<size_t>((block_size - ((size_t(p) / sizeof(T)) & block_mask)) & block_mask, size);
-  }
-}
-
-// SiPMVector is aligned to cache line (avx2 operators can be used on this vector)
+/** SiPMVector is an high performance version of std::vector<T>.
+ * SiPMVector uses an aligned allocator that allocates memory
+ * to 64 bits boundaries. This allows more efficient cache usage since
+ * 64 bits is the cache line size on most x86_64 architectures.
+ * Also it allows the compiler to generate AVX2 operations for aligned
+ * data like `vmovapd` instead of `vmovupd`.
+ */
 template <typename T, int N = 64> using SiPMVector = std::vector<T, AlignedAllocator<T, N>>;
 } // namespace sipm
 #endif // H_SIPM_SIPMTYPES
