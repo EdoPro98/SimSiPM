@@ -7,7 +7,7 @@ using namespace sipm;
 
 void SiPMDigitalSignalPy(py::module& m) {
   py::class_<SiPMDigitalSignal> sipmdigitalsignal(m, "SiPMDigitalSignal");
-  
+
   sipmdigitalsignal.def("size", &SiPMDigitalSignal::size)
     .def("sampling", &SiPMDigitalSignal::sampling)
     .def("waveform", &SiPMDigitalSignal::waveform)

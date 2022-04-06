@@ -7,7 +7,7 @@ using namespace sipm;
 
 void SiPMDebugInfoPy(py::module& m) {
   py::class_<SiPMDebugInfo> sipmdebuginfo(m, "SiPMDebugInfo");
-  sipmdebuginfo.def("__repr__",&SiPMDebugInfo::toString);
+  sipmdebuginfo.def("__repr__", &SiPMDebugInfo::toString);
 
   sipmdebuginfo.def_readonly("nPhotons", &SiPMDebugInfo::nPhotons)
     .def_readonly("nPhotoelectrons", &SiPMDebugInfo::nPhotoelectrons)

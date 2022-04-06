@@ -11,7 +11,8 @@ using std::vector;
 void SiPMPropertiesPy(py::module& m) {
   py::class_<SiPMProperties> sipmproperties(m, "SiPMProperties");
 
-  sipmproperties.def(py::init<>())
+  sipmproperties
+    .def(py::init<>())
     // .def("readSettings",&SiPMProperties::readSettings)
     .def("nCells", &SiPMProperties::nCells)
     .def("nSideCells", &SiPMProperties::nSideCells)
@@ -76,10 +77,9 @@ void SiPMPropertiesPy(py::module& m) {
     .def("setSlowComponentOn", &SiPMProperties::setSlowComponentOn)
     .def("setPdeType", &SiPMProperties::setPdeType)
     .def("setPdeSpectrum",
-         py::overload_cast<const map<double, double>&>(&SiPMProperties::setPdeSpectrum))
-    .def("setPdeSpectrum", py::overload_cast<const vector<double>&, const vector<double>&>(&SiPMProperties::setPdeSpectrum))
+         py::overload_cast<const vector<double>&, const vector<double>&>(&SiPMProperties::setPdeSpectrum))
     .def("setHitDistribution", &SiPMProperties::setHitDistribution)
-    .def("__repr__",&SiPMProperties::toString);
+    .def("__repr__", &SiPMProperties::toString);
 
   py::enum_<SiPMProperties::PdeType>(sipmproperties, "PdeType")
     .value("kNoPde", SiPMProperties::PdeType::kNoPde)
