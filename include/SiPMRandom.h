@@ -14,7 +14,9 @@
 #define SIPM_RANDOM_H
 
 #include <cmath>
+#include <cstdint>
 #include <cstring>
+#include <iomanip>
 #include <random>
 #include <stdint.h>
 #include <vector>
@@ -23,23 +25,19 @@
 #include "SiPMTypes.h"
 
 namespace sipm {
-
 namespace SiPMRng {
-
-/// @brief Implementation of xoshiro256++ 1.0 PRNG algorithm
-/** Written in 2019 by David Blackman and Sebastiano Vigna (vigna@acm.org)
+/// @brief Implementation of xoshiro256+ 1.0 PRNG algorithm
+/**This is xoshiro256+ 1.0, our best and fastest generator for floating-point
+ * numbers. We suggest to use its upper bits for floating-point
+ * generation, as it is slightly faster than xoshiro256++/xoshiro256**. It
+ * passes all tests we are aware of except for the lowest three bits,
+ * which might fail linearity tests (and just those), so if low linear
+ * complexity is not considered an issue (as it is usually the case) it
+ * can be used to generate 64-bit outputs, too.
  *
- * To the extent possible under law, the author has dedicated all copyright
- * and related and neighboring rights to this software to the public domain
- * worldwide. This software is distributed without any warranty.
+ * We suggest to use a sign test to extract a random Boolean value, and
+ * right shifts to extract subsets of bits.
  *
- * See <http://creativecommons.org/publicdomain/zero/1.0/>.
- * This is xoshiro256++ 1.0, one of our all-purpose, rock-solid generators.
- * It has excellent (sub-ns) speed, a state (256 bits) that is large
- * enough for any parallel application, and it passes all tests we are
- * aware of.
- *
- * For generating just floating-point numbers, xoshiro256+ is even faster.
  * The state must be seeded so that it is not everywhere zero. If you have
  * a 64-bit seed, we suggest to seed a splitmix64 generator and use its
  * output to fill s. */
@@ -47,10 +45,8 @@ class Xorshift256plus {
 public:
   /// @brief Default contructor for Xorshift256plus
   Xorshift256plus() { seed(); }
-  /// @brief Contructor for Xorshift256plus given a seed value
-  Xorshift256plus(uint64_t aseed) { seed(aseed); }
   /// @brief Returns a pseud-random 64-bits intger
-  inline uint64_t operator()() noexcept {
+  constexpr inline uint64_t operator()() noexcept {
     const uint64_t result = s[0] + s[3];
 
     const uint64_t t = s[1] << 17;
@@ -68,81 +64,99 @@ public:
   __attribute__((hot))
 
   /// @brief Jump function for the alghoritm.
-  /** Usefull in case the same generator is used in multiple instancies. The
-   * jump function will make sure that pseudo-random values generated from the
-   * different instancies are uncorrelated.
-   */
+  /**This is the jump function for the generator. It is equivalent
+   * to 2^128 calls to next(); it can be used to generate 2^128
+   * non-overlapping subsequences for parallel computations. */
   void
   jump();
-  /// @brief Sets a random seed generated with system random device.
+
+  /// @brief Sets a random seed generated using system random device.
   void seed();
-  /// @brief Sets a new seed,
-  void seed(uint64_t);
+
+  /// @brief Manually set a seed
+  void seed(const uint64_t);
+
   /// @brief Return internal state of rng.
-  const uint64_t* getState() const {return s;}
+  const uint64_t* getState() const { return s; }
+
 private:
   alignas(64) uint64_t s[4];
 };
-
 } // namespace SiPMRng
 
 class SiPMRandom {
 public:
   SiPMRandom() = default;
-  SiPMRandom(uint64_t aseed) noexcept { m_rng.seed(aseed); }
 
-  /** @brief Sets a seed for the rng.
-   * @param aSeed Seed used to initialize the rng algorithm
-   */
-  void seed(const uint64_t aSeed) { m_rng.seed(aSeed); }
-  /** @brief Sets a seed for the rng obtained from system random device*/
-  void seed() { m_rng.seed(); }
-  /** @brief This is the jump function for the generator. It is equivalent
-   * to 2^128 calls to next(); it can be used to generate 2^128
-   * non-overlapping subsequences for parallel computations.*/
-  void jump() { m_rng.jump(); }
-  const uint64_t* getState() const {return m_rng.getState();}
+  /// @brief Get a reference to the underlying PRNG */
+  /// Use this method to seed the PRNG and to get the status
+  SiPMRng::Xorshift256plus& rng() { return m_rng; }
 
-  inline uint64_t operator()() { return m_rng(); }
+  /// @brief Gives an uniformly distributed random double
+  inline double Rand();
+  /// @brief Gives an uniformly distributed random float
+  inline float RandF();
 
-  // Uniform random in [0 - 1]
-  inline double Rand() __attribute__((hot));
-
-  // Uniform integer in range [0 - max) not including max
+  /// @brief Gives an uniform random integer
   uint32_t randInteger(const uint32_t) __attribute__((hot));
-  // Random gaussian given mean and sigma
+
+  /// @brief Gives random double with gaussian distribution
   double randGaussian(const double, const double) __attribute__((hot));
-  // Random exponential given mean
+  /// @brief Gives random float with gaussian distribution
+  float randGaussianF(const float, const float) __attribute__((hot));
+  /// @brief Gives random double with exponential distribution
   double randExponential(const double);
-  // Random poisson given mean
+  /// @brief Gives random float with exponential distribution
+  float randExponentialF(const float);
+  /// @brief Gives random value with poisson distribution
   uint32_t randPoisson(const double mu);
 
-  /** @brief Vector of random uniforms in [0 - 1] */
-  template<typename T = std::vector<double>>
-  T Rand(const uint32_t) __attribute__((hot));
-  /** @brief Vector of random gaussian given mean an sigma */
-  template<typename T = std::vector<double>>
+  /// @brief Vector version of @ref Rand()
+  template <typename T = std::vector<double>> T Rand(const uint32_t);
+  /// @brief Vector version of @ref RandF()
+  template <typename T = std::vector<float>> T RandF(const uint32_t);
+  /// @brief Vector version of @ref randGaussian()
+  template <typename T = std::vector<double>>
   T randGaussian(const double, const double, const uint32_t) __attribute__((hot));
-  /** @brief Vector of random integers in range [0 - max) not including max*/
-  std::vector<uint32_t> randInteger(const uint32_t max, const uint32_t n) __attribute__((hot));
-  // Vector of random exponential given mean
-  template<typename T = std::vector<double>>
-  T randExponential(const double, const uint32_t);
+  template <typename T = std::vector<float>>
+  /// @brief Vector version of @ref randGaussianF()
+  T randGaussianF(const float, const float, const uint32_t) __attribute__((hot));
+  /// @brief Vector version of @ref randInteger()
+  std::vector<uint32_t> randInteger(const uint32_t max, const uint32_t n);
+  /// @brief Vector version of @ref randExponential()
+  template <typename T = std::vector<double>> T randExponential(const double, const uint32_t);
+  /// @brief Vector version of @ref randExponentialF()
+  template <typename T = std::vector<float>> T randExponentialF(const float, const uint32_t);
 
 private:
   SiPMRng::Xorshift256plus m_rng;
 };
 
-/** Returns a uniform random in range (0,1]
- * Using getting highest 53 bits from a unit64 for the mantissa,
- * setting the exponent to get values in range (1-2), subtract 1 and type punning
- * to double.
+/**
+ * This method uses the internal PRNG to get a random uint64
+ * then sets its sign bit to 0 and the exponent bits are set to
+ * 0x3fff. By aliasing the uint to a double and subtracting 1
+ * the result is a random double in range (0-1].
  */
 inline double SiPMRandom::Rand() {
+  static constexpr uint64_t expoBitMask = 0x3ff0000000000000;
   double x;
-  static constexpr uint64_t mask = 0x3ff0000000000000;
-  const uint64_t u = (m_rng() >> 12) | mask;
-  std::memcpy(&x, &u, 8);
+  const uint64_t u = (m_rng() >> 2) | expoBitMask;
+  std::memcpy(&x, &u, sizeof(double));
+  return x - 1;
+}
+
+/**
+ * This method uses the internal PRNG to get a random uint64
+ * then sets its sign bit to 0 and the exponent bits are set to
+ * 0x3f8. By aliasing the uint to a double and subtracting 1
+ * the result is a random float in range (0-1].
+ */
+inline float SiPMRandom::RandF() {
+  float x;
+  static constexpr uint64_t expoBitMask = 0x000000003f800000;
+  const uint64_t u = (m_rng() >> 34) | expoBitMask;
+  std::memcpy(&x, &u, sizeof(float));
   return x - 1;
 }
 } // namespace sipm

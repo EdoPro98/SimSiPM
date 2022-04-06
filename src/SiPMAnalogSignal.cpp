@@ -4,14 +4,10 @@
 
 namespace sipm {
 
-template<>
-SiPMVector<double> SiPMAnalogSignal::waveform<SiPMVector<double>>() const{
-  return m_Waveform;
-}
+template <> SiPMVector<float> SiPMAnalogSignal::waveform<SiPMVector<float>>() const { return m_Waveform; }
 
-template<>
-std::vector<double> SiPMAnalogSignal::waveform<std::vector<double>>() const{
-  std::vector<double> l_Waveform(m_Waveform.begin(), m_Waveform.end());
+template <> std::vector<float> SiPMAnalogSignal::waveform<std::vector<float>>() const {
+  std::vector<float> l_Waveform(m_Waveform.begin(), m_Waveform.end());
   return l_Waveform;
 }
 
@@ -21,7 +17,7 @@ std::vector<double> SiPMAnalogSignal::waveform<std::vector<double>>() const{
 * the output is set to -1.
 @param intstart   Starting time of integration in ns
 @param intgate    Length of the integration gate
-@param threshold  Threshold to use for one-suppression
+@param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::integral(const double intstart, const double intgate, const double threshold) const {
 
@@ -40,17 +36,18 @@ double SiPMAnalogSignal::integral(const double intstart, const double intgate, c
 * If the signal is below the threshold the output is set to -1.
 @param intstart   Starting time of integration in ns
 @param intgate    Length of the integration gate
-@param threshold  Threshold to use for one-suppression
+@param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::peak(const double intstart, const double intgate, const double threshold) const {
   // Cache value for use in other functions without calculating again
-  if (m_peak != -1) {
+  if (m_peak != 0) {
     return m_peak;
   }
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
   const double peak = *std::max_element(start, end);
   if (peak < threshold) {
+    m_peak = -1;
     return -1;
   }
   m_peak = peak;
@@ -63,7 +60,7 @@ double SiPMAnalogSignal::peak(const double intstart, const double intgate, const
 * If the signal is below the threshold the output is set to -1.
 @param intstart   Starting time of integration in ns
 @param intgate    Length of the integration gate
-@param threshold  Threshold to use for one-suppression
+@param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::tot(const double intstart, const double intgate, const double threshold) const {
 
@@ -87,7 +84,7 @@ double SiPMAnalogSignal::tot(const double intstart, const double intgate, const 
 * If the signal is below the threshold the output is set to -1.
 @param intstart   Starting time of integration in ns
 @param intgate    Length of the integration gate
-@param threshold  Threshold to use for one-suppression
+@param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::toa(const double intstart, const double intgate, const double threshold) const {
 
@@ -111,7 +108,7 @@ double SiPMAnalogSignal::toa(const double intstart, const double intgate, const 
 * If the signal is below the threshold the output is set to -1.
 @param intstart   Starting time of integration in ns
 @param intgate    Length of the integration gate
-@param threshold  Threshold to use for one-suppression
+@param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::top(const double intstart, const double intgate, const double threshold) const {
 
@@ -122,25 +119,6 @@ double SiPMAnalogSignal::top(const double intstart, const double intgate, const 
   }
 
   return (std::max_element(start, end) - start) * m_Sampling;
-}
-
-/**
- * @param bw Bandwidth for the low-pass filter (-3dB cut-off)
- * @return New signal with filter applied
- */
-SiPMAnalogSignal SiPMAnalogSignal::lowpass(const double bw) const {
-  SiPMVector<double> out = m_Waveform;
-  const uint32_t nSignalPoints = m_Waveform.size();
-  const double rc = 1 / (2 * M_PI * bw);
-  const double dt = 1e-9 * m_Sampling;
-  const double alpha = dt / (rc + dt);
-
-  // Implementation of a first-order low-pass filter
-  out[0] = alpha * out[0];
-  for (uint32_t i = 1; i < nSignalPoints; ++i) {
-    out[i] = alpha * (out[i] - out[i - 1]) + out[i - 1];
-  }
-  return SiPMAnalogSignal(out, m_Sampling);
 }
 
 std::ostream& operator<<(std::ostream& out, const SiPMAnalogSignal& obj) {
