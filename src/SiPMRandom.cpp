@@ -4,8 +4,6 @@
 #include <cmath>
 #include <cstdint>
 
-#include <iostream>
-
 namespace sipm {
 namespace SiPMRng {
 void Xorshift256plus::seed() {
@@ -305,13 +303,12 @@ template <> std::vector<float> SiPMRandom::RandF<std::vector<float>>(const uint3
 }
 
 /**
- * @param mu Mean value of the gaussuan
+ * @param mu Mean value of the gaussuain
  * @param sigma Standard deviation value of the gaussuan
  * @param n Number of values to generate
  */
 template <>
 SiPMVector<double> SiPMRandom::randGaussian<SiPMVector<double>>(const double mu, const double sigma, const uint32_t n) {
-
   SiPMVector<double> out(n);
   SiPMVector<double> s(n);
 
@@ -321,15 +318,15 @@ SiPMVector<double> SiPMRandom::randGaussian<SiPMVector<double>>(const double mu,
       u = Rand() * 2.0 - 1.0;
       v = Rand() * 2.0 - 1.0;
       z = u * u + v * v;
-    } while (z >= 1.0 || z == 0.0);
-    s[i] = sqrt(-2 * log(z) / z);
+    } while (z >= 1.0);
+    s[i] = log(z) * math::reciprocal(z);
     s[i + 1] = s[i];
     out[i] = u;
     out[i + 1] = v;
   }
 
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = s[i] * out[i] * sigma + mu;
+    out[i] = sqrt(-2 * s[i]) * out[i] * sigma + mu;
   }
   // If n is odd we miss last value so recalculate it anyway
   out[n - 1] = randGaussian(mu, sigma);
@@ -338,13 +335,12 @@ SiPMVector<double> SiPMRandom::randGaussian<SiPMVector<double>>(const double mu,
 }
 
 /**
- * @param mu Mean value of the gaussuan
- * @param sigma Standard deviation value of the gaussuan
+ * @param mu Mean value of the gaussian
+ * @param sigma Standard deviation value of the gaussian
  * @param n Number of values to generate
  */
 template <>
 SiPMVector<float> SiPMRandom::randGaussianF<SiPMVector<float>>(const float mu, const float sigma, const uint32_t n) {
-
   SiPMVector<float> out(n);
   SiPMVector<float> s(n);
 
@@ -354,15 +350,16 @@ SiPMVector<float> SiPMRandom::randGaussianF<SiPMVector<float>>(const float mu, c
       u = RandF() * 2.0f - 1.0f;
       v = RandF() * 2.0f - 1.0f;
       z = u * u + v * v;
-    } while (z >= 1.0 || z == 0.0);
-    s[i] = math::sqrt(-2 * log(z) * math::rec(z));
+    } while (z >= 1.0);
+    s[i] = log(z) * math::reciprocal(z);
     s[i + 1] = s[i];
     out[i] = u;
     out[i + 1] = v;
   }
-
+  // If compiler is clever this loop should be vectorized
+  // using vsqrtps and vfmadd instructions on ymm registers
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = s[i] * out[i] * sigma + mu;
+    out[i] = sqrt(-2 * s[i]) * out[i] * sigma + mu;
   }
   // If n is odd we miss last value so recalculate it anyway
   out[n - 1] = randGaussianF(mu, sigma);

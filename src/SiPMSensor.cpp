@@ -119,7 +119,7 @@ double SiPMSensor::evaluatePde(const double x) const {
   auto it0 = it1;
   --it0;
 
-  const double m = (it1->second - it0->second) * math::rec(it1->first - it0->first);
+  const double m = (it1->second - it0->second) * math::reciprocal(it1->first - it0->first);
   const double q = it0->second - m * it0->first;
   double newy = m * x + q;
   return (newy < 0) ? 0 : newy;
