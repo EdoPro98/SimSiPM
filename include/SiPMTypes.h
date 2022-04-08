@@ -6,8 +6,14 @@
 #include <cstdlib>
 #include <math.h>
 #include <memory>
+#include <mm_malloc.h>
 #include <utility>
 #include <vector>
+
+#ifdef __SSE__
+// For _mm_malloc and _mm_free
+#include <xmmintrin.h>
+#endif // 
 
 namespace sipm {
 /**
@@ -174,14 +180,24 @@ inline bool operator!=(const AlignedAllocator<T1, A1>& lhs, const AlignedAllocat
 }
 
 inline void* aligned_malloc(size_t size, size_t alignment) {
+#ifdef __SSE__
+  return _mm_malloc(size, alignment);
+#else
   void* res = nullptr;
   if (posix_memalign(&res, alignment, size) != 0) {
     res = nullptr;
   }
   return res;
+#endif // __SSE__
 }
 
-inline void aligned_free(void* ptr) { free(ptr); }
+inline void aligned_free(void* ptr) { 
+#ifdef __SSE__
+  _mm_free(ptr);
+#else
+  free(ptr); 
+#endif // __SSE__
+}
 
 /** SiPMVector is an high performance version of std::vector<T>.
  * SiPMVector uses an aligned allocator that allocates memory
