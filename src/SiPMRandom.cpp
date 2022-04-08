@@ -50,6 +50,7 @@ void Xorshift256plus::jump() {
  * @param mu Mean value of the poisson distribution
  */
 uint32_t SiPMRandom::randPoisson(const double mu) {
+  if(mu == 0){ return 0; }
   const double q = exp(-mu);
   double p = 1;
   int32_t out = -1;
