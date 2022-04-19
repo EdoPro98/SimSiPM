@@ -24,6 +24,11 @@
 #include "SiPMMath.h"
 #include "SiPMTypes.h"
 
+#ifdef __AVX2__
+#include <immintrin.h>
+#include <x86intrin.h>
+#endif // 
+
 namespace sipm {
 namespace SiPMRng {
 /// @brief Implementation of xoshiro256+ 1.0 PRNG algorithm
@@ -140,9 +145,14 @@ private:
  */
 inline double SiPMRandom::Rand() {
   static constexpr uint64_t expoBitMask = 0x3ff0000000000000;
-  double x;
   const uint64_t u = (m_rng() >> 2) | expoBitMask;
+#ifdef __AVX2__
+  const double x = _castu64_f64(u);
+#else
+  double x;
   std::memcpy(&x, &u, sizeof(double));
+  return x - 1;
+#endif // 
   return x - 1;
 }
 
