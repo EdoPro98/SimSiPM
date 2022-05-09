@@ -1,14 +1,38 @@
 #include "SiPMRandom.h"
-#include <SiPMTypes.h>
+#include "SiPMTypes.h"
+#include "SiPMMath.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <cstdlib>
+
+#include <cstring>
+#include <iostream>
+#include <vector>
+
+// Musl implementation of lcg64
+static constexpr uint64_t lcg64(const uint64_t x) { return (x * 10419395304814325825ULL + 1) % -1ULL; }
+
+#ifdef __AVX2__
+#include <immintrin.h>
+#endif
+
+#ifdef __AVX2__
+static uint64_t rdtsc() { return _rdtsc(); }
+#else
+static uint64_t rdtsc() {
+  uint32_t lo, hi;
+  __asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
+  return ((uint64_t)hi << 32) | lo;
+}
+#endif
 
 namespace sipm {
 namespace SiPMRng {
 void Xorshift256plus::seed() {
-  for (uint8_t i = 0; i < 4; ++i) {
-    s[i] = std::random_device{}();
+  s[0] = lcg64(rdtsc());
+  for (uint8_t i = 1; i < 4; ++i) {
+    s[i] = lcg64(s[i - 1]);
   }
   // Call rng few times
   this->operator()();
@@ -18,13 +42,14 @@ void Xorshift256plus::seed() {
 }
 
 void Xorshift256plus::seed(const uint64_t aseed) {
-  for (uint8_t i = 0; i < 4; ++i) {
-    s[i] = aseed + i;
+  s[0] = lcg64(aseed);
+  for (uint8_t i = 1; i < 4; ++i) {
+    s[i] = lcg64(s[i - 1]);
   }
 }
 
 void Xorshift256plus::jump() {
-  static const uint64_t JUMP[] = {0x180ec6d33cfd0aba, 0xd5a61266f0c9392c, 0xa9582618e03fc9aa, 0x39abdc4529b1661c};
+  static constexpr uint64_t JUMP[] = {0x180ec6d33cfd0aba, 0xd5a61266f0c9392c, 0xa9582618e03fc9aa, 0x39abdc4529b1661c};
   uint64_t s0 = 0, s1 = 0, s2 = 0, s3 = 0;
   for (int i = 0; i < 4; ++i) {
     for (int b = 0; b < 64; ++b) {
@@ -49,30 +74,32 @@ void Xorshift256plus::jump() {
 /**
  * @param mu Mean value of the poisson distribution
  */
-uint32_t SiPMRandom::randPoisson(const double mu) {
-  if(mu == 0){ return 0; }
+uint32_t SiPMRandom::randPoisson(const double mu) noexcept {
+  if (mu == 0) {
+    return 0;
+  }
   const double q = exp(-mu);
-  double p = 1;
-  int32_t out = -1;
+  double p = 1.0;
+  uint32_t out = 0;
 
   while (p > q) {
     ++out;
     p *= Rand();
   }
-  return out;
+  return out - 1;
 }
 
 /**
  * @param mu Mean value of the exponential distribution
  * @return double value from exponential distribution
  */
-double SiPMRandom::randExponential(const double mu) { return -log(Rand()) * mu; }
+double SiPMRandom::randExponential(const double mu) noexcept { return -log(Rand()) * mu; }
 
 /**
  * @param mu Mean value of the exponential distribution
  * @return float value from exponential distribution
  */
-float SiPMRandom::randExponentialF(const float mu) { return -log(RandF()) * mu; }
+float SiPMRandom::randExponentialF(const float mu) noexcept { return -log(RandF()) * mu; }
 
 /**
 *   @brief Samples a random number from the standard Normal (Gaussian) Distribution with the given mean and sigma.
@@ -94,7 +121,7 @@ float SiPMRandom::randExponentialF(const float mu) { return -log(RandF()) * mu; 
 * @param sigma Standard deviation of the gaussian distribution
 * @return double value from gaussian distribution
 */
-double SiPMRandom::randGaussian(const double mu, const double sigma) {
+double SiPMRandom::randGaussian(const double mu, const double sigma) noexcept {
   static constexpr double kC1 = 1.448242853;
   static constexpr double kC2 = 3.307147487;
   static constexpr double kC3 = 1.46754004;
@@ -129,50 +156,52 @@ double SiPMRandom::randGaussian(const double mu, const double sigma) {
       return result * sigma + mu;
     }
 
-    else if (y < kZm) {
+    if (y < kZm) {
       const double rn = kZp * y - 1;
       const double result = (rn > 0) ? (1 + rn) : (-1 + rn);
       return result * sigma + mu;
     }
 
-    else if (y < kHm) {
+    if (y < kHm) {
       const double rn = 2 * Rand() - 1;
       const double z = (rn > 0) ? 2 - rn : -2 - rn;
       if ((kC1 - y) * (kC3 + abs(z)) < kC2) {
         return z * sigma + mu;
-      } else {
-        const double x = rn * rn;
-        if ((y + kD1) * (kD3 + x) < kD2) {
-          return rn * sigma + mu;
-        } else if (kHzmp - y < exp(-(z * z + kPhln) * 0.5)) {
-          return z * sigma + mu;
-        } else if (y + kHzm < exp(-(x + kPhln) * 0.5)) {
-          return rn * sigma + mu;
-        }
+      }
+      const double x = rn * rn;
+      if ((y + kD1) * (kD3 + x) < kD2) {
+        return rn * sigma + mu;
+      }
+      if (kHzmp - y < exp(-(z * z + kPhln) * 0.5)) {
+        return z * sigma + mu;
+      }
+      if (y + kHzm < exp(-(x + kPhln) * 0.5)) {
+        return rn * sigma + mu;
       }
     }
 
-    while (1) {
+    while (true) {
       double x = Rand();
       double y = kYm * Rand();
       const double z = kX0 - kS * x - y;
       double rn;
-      if (z > 0)
+      if (z > 0) {
         rn = 2 + y / x;
-      else {
+      } else {
         x = 1 - x;
         y = kYm - y;
         rn = -(2 + y / x);
       }
       if ((y - kAs + x) * (kCs + x) + kBs < 0) {
         return rn * sigma + mu;
-      } else if (y < x + kT) {
+      }
+      if (y < x + kT) {
         if (rn * rn < 4 * (kB - log(x))) {
           return rn * sigma + mu;
         }
       }
     }
-  } while (0);
+  } while (false);
 }
 
 /**
@@ -180,7 +209,7 @@ double SiPMRandom::randGaussian(const double mu, const double sigma) {
  * It is not faster than double version but is kept to avoid
  * casting double to float.
  */
-float SiPMRandom::randGaussianF(const float mu, const float sigma) {
+float SiPMRandom::randGaussianF(const float mu, const float sigma) noexcept {
   static constexpr float kC1 = 1.448242853;
   static constexpr float kC2 = 3.307147487;
   static constexpr float kC3 = 1.46754004;
@@ -215,71 +244,81 @@ float SiPMRandom::randGaussianF(const float mu, const float sigma) {
       return result * sigma + mu;
     }
 
-    else if (y < kZm) {
+    if (y < kZm) {
       const float rn = kZp * y - 1;
       const float result = (rn > 0) ? (1 + rn) : (-1 + rn);
       return result * sigma + mu;
     }
 
-    else if (y < kHm) {
+    if (y < kHm) {
       const float rn = 2 * RandF() - 1;
       const float z = (rn > 0) ? 2 - rn : -2 - rn;
       if ((kC1 - y) * (kC3 + abs(z)) < kC2) {
         return z * sigma + mu;
-      } else {
-        const float x = rn * rn;
-        if ((y + kD1) * (kD3 + x) < kD2) {
-          return rn * sigma + mu;
-        } else if (kHzmp - y < exp(-(z * z + kPhln) * 0.5)) {
-          return z * sigma + mu;
-        } else if (y + kHzm < exp(-(x + kPhln) * 0.5)) {
-          return rn * sigma + mu;
-        }
+      }
+      const float x = rn * rn;
+      if ((y + kD1) * (kD3 + x) < kD2) {
+        return rn * sigma + mu;
+      }
+      if (kHzmp - y < exp(-(z * z + kPhln) * 0.5)) {
+        return z * sigma + mu;
+      }
+      if (y + kHzm < exp(-(x + kPhln) * 0.5)) {
+        return rn * sigma + mu;
       }
     }
 
-    while (1) {
+    while (true) {
       float x = RandF();
       float y = kYm * RandF();
       const float z = kX0 - kS * x - y;
       float rn;
-      if (z > 0)
+      if (z > 0) {
         rn = 2 + y / x;
-      else {
+      } else {
         x = 1 - x;
         y = kYm - y;
         rn = -(2 + y / x);
       }
       if ((y - kAs + x) * (kCs + x) + kBs < 0) {
         return rn * sigma + mu;
-      } else if (y < x + kT) {
+      }
+      if (y < x + kT) {
         if (rn * rn < 4 * (kB - log(x))) {
           return rn * sigma + mu;
         }
       }
     }
-  } while (0);
+  } while (false);
 }
 
 /**
  * @param max Maximum value of integer to generate
  * @return uint32_t value from random integer distribution
  */
-uint32_t SiPMRandom::randInteger(const uint32_t max) { return static_cast<uint32_t>(Rand() * max); }
+uint32_t SiPMRandom::randInteger(const uint32_t max) noexcept { return static_cast<uint32_t>(Rand() * max); }
 
 /**
  * @param n Number of values to generate
  */
-template <> SiPMVector<double> SiPMRandom::Rand<SiPMVector<double>>(const uint32_t n) {
-  SiPMVector<double> out(n);
-  std::generate(out.begin(), out.end(), [this] { return this->Rand(); });
-  return out;
+template <> auto SiPMRandom::Rand<SiPMVector<double>>(const uint32_t n) -> SiPMVector<double> {
+  SiPMVector<uint64_t> uVec(n);
+  SiPMVector<double> dVec(n);
+
+  for (uint32_t i = 0; i < n; ++i) {
+    uVec[i] = 0x3FFULL << 52ULL | m_rng() >> 12ULL;
+  }
+  std::memcpy(dVec.data(), uVec.data(), n * sizeof(uint64_t));
+  for (uint32_t i = 0; i < n; ++i) {
+    dVec[i] = dVec[i] - 1;
+  }
+  return dVec;
 }
 
 /**
  * @param n Number of values to generate
  */
-template <> SiPMVector<float> SiPMRandom::RandF<SiPMVector<float>>(const uint32_t n) {
+template <> auto SiPMRandom::RandF<SiPMVector<float>>(const uint32_t n) -> SiPMVector<float> {
   SiPMVector<float> out(n);
   std::generate(out.begin(), out.end(), [this] { return this->RandF(); });
   return out;
@@ -288,19 +327,17 @@ template <> SiPMVector<float> SiPMRandom::RandF<SiPMVector<float>>(const uint32_
 /**
  * @param n Number of values to generate
  */
-template <> std::vector<double> SiPMRandom::Rand<std::vector<double>>(const uint32_t n) {
-  std::vector<double> out(n);
-  std::generate(out.begin(), out.end(), [this] { return this->Rand(); });
-  return out;
+template <> auto SiPMRandom::Rand<std::vector<double>>(const uint32_t n) -> std::vector<double> {
+  SiPMVector<double> out = Rand<SiPMVector<double>>(n);
+  return std::vector<double>(out.begin(), out.end());
 }
 
 /**
  * @param n Number of values to generate
  */
-template <> std::vector<float> SiPMRandom::RandF<std::vector<float>>(const uint32_t n) {
-  std::vector<float> out(n);
-  std::generate(out.begin(), out.end(), [this] { return this->RandF(); });
-  return out;
+template <> auto SiPMRandom::RandF<std::vector<float>>(const uint32_t n) -> std::vector<float> {
+  SiPMVector<float> out = RandF<SiPMVector<float>>(n);
+  return std::vector<float>(out.begin(), out.end());
 }
 
 /**
@@ -309,7 +346,8 @@ template <> std::vector<float> SiPMRandom::RandF<std::vector<float>>(const uint3
  * @param n Number of values to generate
  */
 template <>
-SiPMVector<double> SiPMRandom::randGaussian<SiPMVector<double>>(const double mu, const double sigma, const uint32_t n) {
+auto SiPMRandom::randGaussian<SiPMVector<double>>(const double mu, const double sigma, const uint32_t n)
+  -> SiPMVector<double> {
   SiPMVector<double> out(n);
   SiPMVector<double> s(n);
 
@@ -319,11 +357,15 @@ SiPMVector<double> SiPMRandom::randGaussian<SiPMVector<double>>(const double mu,
       u = Rand() * 2.0 - 1.0;
       v = Rand() * 2.0 - 1.0;
       z = u * u + v * v;
-    } while (z >= 1.0);
-    s[i] = log(z) * math::reciprocal(z);
-    s[i + 1] = s[i];
+    } while (z > 1.0);
+    s[i] = z;
+    s[i + 1] = z;
     out[i] = u;
     out[i + 1] = v;
+  }
+
+  for (uint32_t i = 0; i < n; ++i) {
+    s[i] = log(s[i]) * math::reciprocal(s[i]);
   }
 
   for (uint32_t i = 0; i < n; ++i) {
@@ -341,7 +383,8 @@ SiPMVector<double> SiPMRandom::randGaussian<SiPMVector<double>>(const double mu,
  * @param n Number of values to generate
  */
 template <>
-SiPMVector<float> SiPMRandom::randGaussianF<SiPMVector<float>>(const float mu, const float sigma, const uint32_t n) {
+auto SiPMRandom::randGaussianF<SiPMVector<float>>(const float mu, const float sigma, const uint32_t n)
+  -> SiPMVector<float> {
   SiPMVector<float> out(n);
   SiPMVector<float> s(n);
 
@@ -351,12 +394,17 @@ SiPMVector<float> SiPMRandom::randGaussianF<SiPMVector<float>>(const float mu, c
       u = RandF() * 2.0f - 1.0f;
       v = RandF() * 2.0f - 1.0f;
       z = u * u + v * v;
-    } while (z >= 1.0);
-    s[i] = log(z) * math::reciprocal(z);
-    s[i + 1] = s[i];
+    } while (z > 1.0);
+    s[i] = z;
+    s[i + 1] = z;
     out[i] = u;
     out[i + 1] = v;
   }
+
+  for (uint32_t i = 0; i < n; ++i) {
+    s[i] = log(s[i]) * math::reciprocal(s[i]);
+  }
+
   // If compiler is clever this loop should be vectorized
   // using vsqrtps and vfmadd instructions on ymm registers
   for (uint32_t i = 0; i < n; ++i) {
@@ -374,8 +422,8 @@ SiPMVector<float> SiPMRandom::randGaussianF<SiPMVector<float>>(const float mu, c
  * @param n Number of values to generate
  */
 template <>
-std::vector<double> SiPMRandom::randGaussian<std::vector<double>>(const double mu, const double sigma,
-                                                                  const uint32_t n) {
+auto SiPMRandom::randGaussian<std::vector<double>>(const double mu, const double sigma, const uint32_t n)
+  -> std::vector<double> {
   SiPMVector<double> out = randGaussian<SiPMVector<double>>(mu, sigma, n);
   return std::vector<double>(out.begin(), out.end());
 }
@@ -386,7 +434,8 @@ std::vector<double> SiPMRandom::randGaussian<std::vector<double>>(const double m
  * @param n Number of values to generate
  */
 template <>
-std::vector<float> SiPMRandom::randGaussianF<std::vector<float>>(const float mu, const float sigma, const uint32_t n) {
+auto SiPMRandom::randGaussianF<std::vector<float>>(const float mu, const float sigma, const uint32_t n)
+  -> std::vector<float> {
   SiPMVector<float> out = randGaussianF<SiPMVector<float>>(mu, sigma, n);
   return std::vector<float>(out.begin(), out.end());
 }
@@ -397,9 +446,10 @@ std::vector<float> SiPMRandom::randGaussianF<std::vector<float>>(const float mu,
  */
 std::vector<uint32_t> SiPMRandom::randInteger(const uint32_t max, const uint32_t n) {
   std::vector<uint32_t> out(n);
+  const SiPMVector<double> buffer = Rand<SiPMVector<double>>(n);
 
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = static_cast<uint32_t>(Rand() * max);
+    out[i] = buffer[i] * max;
   }
   return out;
 }
@@ -408,11 +458,13 @@ std::vector<uint32_t> SiPMRandom::randInteger(const uint32_t max, const uint32_t
  * @param mu Mean value of the exponential distribution
  * @param n Number of values to generate
  */
-template <> SiPMVector<double> SiPMRandom::randExponential<SiPMVector<double>>(const double mu, const uint32_t n) {
+template <>
+auto SiPMRandom::randExponential<SiPMVector<double>>(const double mu, const uint32_t n) -> SiPMVector<double> {
   SiPMVector<double> out(n);
+  const SiPMVector<double> buffer = Rand<SiPMVector<double>>(n);
 
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = -log(Rand()) * mu;
+    out[i] = -log(buffer[i]) * mu;
   }
   return out;
 }
@@ -421,11 +473,13 @@ template <> SiPMVector<double> SiPMRandom::randExponential<SiPMVector<double>>(c
  * @param mu Mean value of the exponential distribution
  * @param n Number of values to generate
  */
-template <> SiPMVector<float> SiPMRandom::randExponentialF<SiPMVector<float>>(const float mu, const uint32_t n) {
+template <>
+auto SiPMRandom::randExponentialF<SiPMVector<float>>(const float mu, const uint32_t n) -> SiPMVector<float> {
   SiPMVector<float> out(n);
+  const SiPMVector<float> buffer = RandF<SiPMVector<float>>(n);
 
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = -log(RandF()) * mu;
+    out[i] = -log(buffer[i]) * mu;
   }
   return out;
 }
@@ -434,7 +488,8 @@ template <> SiPMVector<float> SiPMRandom::randExponentialF<SiPMVector<float>>(co
  * @param mu Mean value of the exponential distribution
  * @param n Number of values to generate
  */
-template <> std::vector<double> SiPMRandom::randExponential<std::vector<double>>(const double mu, const uint32_t n) {
+template <>
+auto SiPMRandom::randExponential<std::vector<double>>(const double mu, const uint32_t n) -> std::vector<double> {
   SiPMVector<double> out = randExponential<SiPMVector<double>>(mu, n);
   return std::vector<double>(out.begin(), out.end());
 }
@@ -443,7 +498,8 @@ template <> std::vector<double> SiPMRandom::randExponential<std::vector<double>>
  * @param mu Mean value of the exponential distribution
  * @param n Number of values to generate
  */
-template <> std::vector<float> SiPMRandom::randExponentialF<std::vector<float>>(const float mu, const uint32_t n) {
+template <>
+auto SiPMRandom::randExponentialF<std::vector<float>>(const float mu, const uint32_t n) -> std::vector<float> {
   SiPMVector<float> out = randExponentialF<SiPMVector<float>>(mu, n);
   return std::vector<float>(out.begin(), out.end());
 }
