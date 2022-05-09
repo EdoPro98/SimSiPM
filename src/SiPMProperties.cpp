@@ -1,49 +1,13 @@
 #include "SiPMProperties.h"
 #include <algorithm>
 #include <cctype>
+#include <cstdint>
 
 namespace sipm {
-
-// Getters
-uint32_t SiPMProperties::nCells() const {
-  // m_SideCells and m_Ncells are cached
-  if ((m_SideCells == 0) || (m_Ncells == 0)) {
-    m_SideCells = 1000 * m_Size / m_Pitch;
-    m_Ncells = m_SideCells * m_SideCells;
-  }
-  return m_Ncells;
-}
-
-uint32_t SiPMProperties::nSideCells() const {
-  // m_SideCells and m_Ncells are cached
-  if ((m_SideCells == 0) || (m_Ncells == 0)) {
-    m_SideCells = 1000 * m_Size / m_Pitch;
-    m_Ncells = m_SideCells * m_SideCells;
-  }
-  return m_SideCells;
-}
-
-uint32_t SiPMProperties::nSignalPoints() const {
-  // m_Signalpoints is cached
-  if (m_SignalPoints == 0) {
-    m_SignalPoints = m_SignalLength / m_Sampling;
-  }
-  return m_SignalPoints;
-}
-
-double SiPMProperties::snrLinear() const {
-  // m_SnrLinear is cached
-  if (m_SnrLinear == 0) {
-    m_SnrLinear = pow(10, -m_SnrdB / 20);
-  }
-  return m_SnrLinear;
-}
-
-// Setters
 void SiPMProperties::setProperty(const std::string& prop, const double val) {
   // Make prop lowercase to avoid case-sensitive property mismatch
   std::string aProp(prop);
-  std::transform(prop.begin(), prop.end(), aProp.begin(), [](char c) -> char { return std::tolower(c); });
+  std::transform(prop.begin(), prop.end(), aProp.begin(), [](const char c) -> char { return std::tolower(c); });
 
   if (aProp == "size") {
     setSize(val);
@@ -84,29 +48,30 @@ void SiPMProperties::setProperty(const std::string& prop, const double val) {
   } else if (aProp == "ap") {
     setAp(val);
   } else {
-    std::cerr << "Property: " << aProp << " not found!" << std::endl;
+    std::cerr << "Property: " << prop << " not found!" << std::endl;
   }
 }
 
-void SiPMProperties::setSampling(const double val) {
-  m_Sampling = val;
-  m_SignalPoints = static_cast<uint32_t>(m_SignalLength / m_SignalPoints);
+/// @param x Sampling time in ns
+void SiPMProperties::setSampling(const double x) {
+  m_Sampling = x;
+  m_SignalPoints = static_cast<uint32_t>(m_SignalLength / m_Sampling);
 }
 
 void SiPMProperties::setPdeSpectrum(const std::vector<double>& wav, const std::vector<double>& pde) {
   static constexpr uint32_t N = 25;
-
+  const uint32_t n = wav.size();
   std::map<double, double> interpolatedSpectrum;
   std::map<double, double> x;
 
-  for (uint32_t i = 0, n = wav.size(); i < n; ++i) {
+  for (uint32_t i = 0; i < n; ++i) {
     x.emplace(wav[i], pde[i]);
   }
 
   interpolatedSpectrum = x;
 
-  const double xmin = x.begin()->first;
-  const double xmax = x.rbegin()->first;
+  const double xmin = x.cbegin()->first;
+  const double xmax = x.crbegin()->first;
   const double dx = (xmax - xmin) / 25;
   for (uint32_t i = 0; i < N; ++i) {
     const double newx = xmin + i * dx;
@@ -115,10 +80,10 @@ void SiPMProperties::setPdeSpectrum(const std::vector<double>& wav, const std::v
     }
     auto it1 = x.upper_bound(newx);
     // Avoid boundary conditions
-    if (it1 == x.end()) {
+    if (it1 == x.cend()) {
       --it1;
     }
-    if (it1 == x.begin()) {
+    if (it1 == x.cbegin()) {
       ++it1;
     }
     auto it0 = it1;
@@ -142,11 +107,12 @@ void SiPMProperties::setPdeSpectrum(const std::vector<double>& wav, const std::v
   m_HasPde = PdeType::kSpectrumPde;
 }
 
-void SiPMProperties::readSettings(std::string& fname) {
-  std::ifstream cFile(fname);
-  if (cFile.is_open()) {
+SiPMProperties SiPMProperties::readSettings(const std::string& fname) {
+  SiPMProperties retval;
+  std::ifstream file(fname);
+  if (file.is_open()) {
     std::string line;
-    while (getline(cFile, line)) {
+    while (getline(file, line)) {
       // Remove spaces
       line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end());
       // Ignore lines starting with # or /
@@ -154,15 +120,16 @@ void SiPMProperties::readSettings(std::string& fname) {
         continue;
       }
       // Get prop - value
-      auto delimiterPos = line.find("=");
-      auto varName = line.substr(0, delimiterPos);
-      auto varValue = line.substr(delimiterPos + 1);
+      const auto delimiterPos = line.find('=');
+      const auto varName = line.substr(0, delimiterPos);
+      const auto varValue = line.substr(delimiterPos + 1);
 
-      setProperty(varName, std::stod(varValue));
+      retval.setProperty(varName, std::stod(varValue));
     }
   } else {
     std::cerr << "Could not open " << fname << " for reading!" << std::endl;
   }
+  return retval;
 }
 
 std::ostream& operator<<(std::ostream& out, const SiPMProperties& obj) {

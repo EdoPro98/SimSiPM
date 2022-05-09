@@ -2,12 +2,16 @@
 #include "SiPMAnalogSignal.h"
 #include "SiPMRandom.h"
 #include <SiPMHit.h>
+#include <SiPMMath.h>
 #include <SiPMTypes.h>
+#include <cstdint>
 
 namespace sipm {
-
+// Initialize static memebr in SiPMSensor class
+// with a SiPMSensor object
 SiPMRandom SiPMSensor::m_rng = SiPMRandom();
 
+// All constructors MUST call signalShape
 SiPMSensor::SiPMSensor() { m_SignalShape = signalShape(); }
 
 SiPMSensor::SiPMSensor(const SiPMProperties& aProperty) {
@@ -15,6 +19,7 @@ SiPMSensor::SiPMSensor(const SiPMProperties& aProperty) {
   m_SignalShape = signalShape();
 }
 
+// Each time a property is changed signalShape MUST be called
 void SiPMSensor::setProperty(const std::string& prop, const double val) {
   m_Properties.setProperty(prop, val);
   // After setting property update sipm members
@@ -125,27 +130,20 @@ double SiPMSensor::evaluatePde(const double x) const {
   return (newy < 0) ? 0 : newy;
 }
 
-bool SiPMSensor::isInSensor(const int32_t r, const int32_t c) const {
-  const int32_t nSideCells = m_Properties.nSideCells();
-  return !((r < 0) | (c < 0) | (r > nSideCells) | (c > nSideCells));
-}
-
 math::pair<uint32_t> SiPMSensor::hitCell() const {
   math::pair<uint32_t> hit;
-  double x, y;
   // index start from 0. nSidecels = 9 gives 10 cells
   const int32_t nSideCells = m_Properties.nSideCells();
-
   switch (m_Properties.hitDistribution()) {
     // Uniform on the sensor
     case (SiPMProperties::HitDistribution::kUniform):
       hit.first = m_rng.randInteger(nSideCells);
       hit.second = m_rng.randInteger(nSideCells);
       break;
-
     // Circle centered in sensor 95% probability in circle
     case (SiPMProperties::HitDistribution::kCircle):
       if (m_rng.Rand() < 0.90) { // In circle
+        double x, y;
         do {
           x = m_rng.Rand() * 2 - 1;      // x in [-1,1]
           y = m_rng.Rand() * 2 - 1;      // y in [-1,1]
@@ -153,6 +151,7 @@ math::pair<uint32_t> SiPMSensor::hitCell() const {
         hit.first = (x + 1) * m_Properties.nSideCells() * 0.5;
         hit.second = (y + 1) * m_Properties.nSideCells() * 0.5;
       } else { // Outside
+        double x, y;
         do {
           x = m_rng.Rand() * 2 - 1;      // x in [-1,1]
           y = m_rng.Rand() * 2 - 1;      // y in [-1,1]
@@ -164,8 +163,8 @@ math::pair<uint32_t> SiPMSensor::hitCell() const {
 
     // Gaussian distribution centered in the sensor
     case (SiPMProperties::HitDistribution::kGaussian):
-      x = m_rng.randGaussian(0, 1);
-      y = m_rng.randGaussian(0, 1);
+      const double x = m_rng.randGaussian(0, 1);
+      const double y = m_rng.randGaussian(0, 1);
 
       if (abs(x) < 1.64 && abs(y) < 1.64) { // 95% of samples = 1.64 sigmas
         hit.first = (x + 1.64) * (m_Properties.nSideCells() / 3.28);
@@ -175,7 +174,7 @@ math::pair<uint32_t> SiPMSensor::hitCell() const {
         hit.second = m_rng.randInteger(nSideCells);
       }
       break;
-  }
+  } // switch-case
   return hit;
 }
 
@@ -252,80 +251,77 @@ SiPMHit SiPMSensor::generateXtHit(const SiPMHit& xtGen) const {
   int32_t xtRow, xtCol;
   const int32_t row = xtGen.row();
   const int32_t col = xtGen.col();
-  SiPMHit::HitType hitType = SiPMHit::HitType::kOpticalCrosstalk;
   const bool isDelayed = (m_rng.Rand() < m_Properties.dxt()) && m_Properties.hasDXt();
+  SiPMHit::HitType hitType = SiPMHit::HitType::kOpticalCrosstalk;
+
+  if (isDelayed) {
+    hitType = SiPMHit::HitType::kDelayedOpticalCrosstalk;
+  }
 
   do {
-    xtRow = row + m_rng.randInteger(2) - 1;
-    xtCol = col + m_rng.randInteger(2) - 1;
+    xtRow = row + m_rng.randInteger(3) - 1;
+    xtCol = col + m_rng.randInteger(3) - 1;
   } while ((xtRow == row) && (xtCol == col) && !isInSensor(xtRow, xtCol)); // Pick a different cell
 
   // Time is equal to xtGenerator if isDelayed == false, else add random exponential delay
   const double xtTime = xtGen.time() + m_rng.randExponential(m_Properties.dxtTau()) * (int)isDelayed;
 
-  if (isDelayed) {
-    hitType = SiPMHit::HitType::kDelayedOpticalCrosstalk;
-  }
-  return SiPMHit(xtTime, 1, xtRow, xtCol, hitType);
+  return SiPMHit{xtTime, 1, static_cast<uint32_t>(xtRow), static_cast<uint32_t>(xtCol), hitType};
 }
 
 SiPMHit SiPMSensor::generateApHit(const SiPMHit& apGen) const {
   const bool isSlow = m_rng.Rand() < m_Properties.apSlowFraction();
   SiPMHit::HitType hitType = SiPMHit::HitType::kFastAfterPulse;
-  // If isSlow fast component is multiplied by 0 else slow component is multiplied by 0
 
-  const double delay = m_rng.randExponential(m_Properties.tauApFast()) * (int)(!isSlow) +
-                       m_rng.randExponential(m_Properties.tauApSlow()) * (int)isSlow;
   if (isSlow) {
     hitType = SiPMHit::HitType::kSlowAfterPulse;
   }
-  return SiPMHit(apGen.time() + delay, 1, apGen.row(), apGen.col(), hitType);
+
+  // If isSlow fast component is multiplied by 0 else slow component is multiplied by 0
+  const double delay = m_rng.randExponential(m_Properties.tauApFast()) * (int)(!isSlow) +
+                       m_rng.randExponential(m_Properties.tauApSlow()) * (int)isSlow;
+  return SiPMHit{apGen.time() + delay, 1, apGen.row(), apGen.col(), hitType};
 }
 
 void SiPMSensor::addCorrelatedNoise() {
   // Correct xt considering multiple xt chains (geometric series)
-  const double xtExpMu = exp(-m_Properties.xt() / (1 + m_Properties.xt()));
-  const double apExpMu = exp(-m_Properties.ap() / (1 + m_Properties.ap()));
   const bool hasXt = m_Properties.hasXt();
   const bool hasAp = m_Properties.hasAp();
-  const double signalLength = m_Properties.signalLength();
+  const double xtExpMu = exp(-m_Properties.xt() / (1 + m_Properties.xt()));
+  const double apExpMu = exp(-m_Properties.ap() / (1 + m_Properties.ap()));
 
   uint32_t currentHitIdx = 0;
   while (currentHitIdx < m_nTotalHits) {
     // Variables used for poisson process
-    double xtPoiss = m_rng.Rand();
-    double apPoiss = m_rng.Rand();
+    double xtPoiss = m_rng.Rand() * (int)(hasXt);
+    double apPoiss = m_rng.Rand() * (int)(hasAp);
 
     // XT
-    while ((xtPoiss > xtExpMu) && hasXt) {
+    while (xtPoiss > xtExpMu) {
       // Generate generic xt hit
       const SiPMHit xtHit = generateXtHit(m_Hits[currentHitIdx]);
-      // Check if hit is valid
-      if (isInSensor(xtHit.row(), xtHit.col())) {
-        // Add hit and increase counters
-        m_Hits.push_back(xtHit);
-        m_HitsGraph.emplace_back(currentHitIdx);
-        m_nTotalHits++;
-        m_nXt++;
-        m_nPe++;
-        // Increase only if is delayed xt
-        m_nDXt += (int)(xtHit.hitType() == SiPMHit::HitType::kDelayedOpticalCrosstalk);
-      }
+      // Add hit and increase counters
+      m_Hits.push_back(xtHit);
+      m_HitsGraph.emplace_back(currentHitIdx);
+      m_nTotalHits++;
+      m_nXt++;
+      m_nPe++;
+      // Increase only if is delayed xt
+      m_nDXt += (int)(xtHit.hitType() == SiPMHit::HitType::kDelayedOpticalCrosstalk);
       xtPoiss *= m_rng.Rand();
     }
 
     // AP
-    while ((apPoiss > apExpMu) && hasAp) {
+    while (apPoiss > apExpMu) {
       // Generate generic ap hit
       const SiPMHit apHit = generateApHit(m_Hits[currentHitIdx]);
-      // Check if hit is valid
-      if (apHit.time() < signalLength) {
-        // Add hit and increase counters
-        m_Hits.push_back(apHit);
-        m_HitsGraph.emplace_back(currentHitIdx);
-        m_nTotalHits++;
-        m_nAp++;
-      }
+
+      // Add hit and increase counters
+      m_Hits.push_back(apHit);
+      m_HitsGraph.emplace_back(currentHitIdx);
+      m_nTotalHits++;
+      m_nAp++;
+
       apPoiss *= m_rng.Rand();
     }
     // Go to next hit till end
@@ -340,7 +336,7 @@ void SiPMSensor::calculateSignalAmplitudes() {
 
   for (uint32_t i = 0; i < m_nTotalHits; ++i) {
     // Add ccgv
-    m_Hits[i].amplitude() *= m_rng.randGaussianF(1, m_Properties.ccgv());
+    m_Hits[i].amplitude() *= m_rng.randGaussian(1, m_Properties.ccgv());
     // Calculate amplitude of cells fired multiple times
     // Just check cells at previous index wrt i. Cells are sorted by time
     // so just chek at "previous times".
@@ -356,7 +352,7 @@ void SiPMSensor::calculateSignalAmplitudes() {
 void SiPMSensor::generateSignal() {
   const uint32_t nHits = m_Hits.size();
   const uint32_t nSignalPoints = m_Properties.nSignalPoints();
-  // Reciprocal of sampling (avoid division)
+  // Reciprocal of sampling (avoid division later)
   const float recSampling = 1 / m_Properties.sampling();
 
   // Start with gaussian noise
@@ -366,12 +362,13 @@ void SiPMSensor::generateSignal() {
     return;
   }
 
-  // Temp storage in stack allocated array for best vectorization
-  alignas(64) uint32_t times[nHits];
-  alignas(64) float amplitudes[nHits];
+  // Temp storage in vectors
+  SiPMVector<uint32_t> times(nHits);
+  SiPMVector<float> amplitudes(nHits);
 
+  // Convert ns in units of samples and round to nearest
   for (uint32_t i = 0; i < nHits; ++i) {
-    times[i] = m_Hits[i].time() * recSampling;
+    times[i] = std::round(m_Hits[i].time() * recSampling);
     amplitudes[i] = m_Hits[i].amplitude();
   }
 

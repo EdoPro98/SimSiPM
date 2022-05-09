@@ -19,7 +19,11 @@
 
 namespace sipm {
 struct SiPMDebugInfo {
-  inline SiPMDebugInfo(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t) noexcept;
+  /** @brief Constructor of SiPMDebugInfo */
+  constexpr SiPMDebugInfo(const uint32_t aPh, const uint32_t aPe, const uint32_t aDcr, const uint32_t aXt,
+                          const uint32_t aDXt, const uint32_t aAp) noexcept
+    : nPhotons(aPh), nPhotoelectrons(aPe), nDcr(aDcr), nXt(aXt), nDXt(aDXt), nAp(aAp) {}
+
   const uint32_t nPhotons;        ///< Number of photons impinging on the sensor surface
   const uint32_t nPhotoelectrons; ///< Number of photoelectrons: total number of hitted cells
   const uint32_t nDcr;            ///< Number of DCR events generated
@@ -33,11 +37,6 @@ struct SiPMDebugInfo {
     return ss.str();
   }
 };
-
-/** @brief Constructor of SiPMDebugInfo */
-inline SiPMDebugInfo::SiPMDebugInfo(uint32_t aPh, uint32_t aPe, uint32_t aDcr, uint32_t aXt, uint32_t aDXt,
-                                    uint32_t aAp) noexcept
-  : nPhotons(aPh), nPhotoelectrons(aPe), nDcr(aDcr), nXt(aXt), nDXt(aDXt), nAp(aAp) {}
 
 inline std::ostream& operator<<(std::ostream& out, const SiPMDebugInfo& obj) {
   out << std::setprecision(2) << std::fixed;

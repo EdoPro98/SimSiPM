@@ -4,9 +4,9 @@
 
 namespace sipm {
 
-template <> SiPMVector<float> SiPMAnalogSignal::waveform<SiPMVector<float>>() const { return m_Waveform; }
+template <> auto SiPMAnalogSignal::waveform<SiPMVector<float>>() const -> SiPMVector<float> { return m_Waveform; }
 
-template <> std::vector<float> SiPMAnalogSignal::waveform<std::vector<float>>() const {
+template <> auto SiPMAnalogSignal::waveform<std::vector<float>>() const -> std::vector<float> {
   std::vector<float> l_Waveform(m_Waveform.begin(), m_Waveform.end());
   return l_Waveform;
 }
@@ -43,7 +43,7 @@ double SiPMAnalogSignal::peak(const double intstart, const double intgate, const
   if (m_peak != 0) {
     return m_peak;
   }
-  const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
+  const auto start = m_Waveform.cbegin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
   const double peak = *std::max_element(start, end);
   if (peak < threshold) {
@@ -64,7 +64,7 @@ double SiPMAnalogSignal::peak(const double intstart, const double intgate, const
 */
 double SiPMAnalogSignal::tot(const double intstart, const double intgate, const double threshold) const {
 
-  const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
+  const auto start = m_Waveform.cbegin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
   if (this->peak(intstart, intgate, threshold) < threshold) {
     return -1;
@@ -73,7 +73,7 @@ double SiPMAnalogSignal::tot(const double intstart, const double intgate, const 
   uint32_t tot = 0;
   for (auto itr = start; itr != end; ++itr) {
     // Add 1 if condition is true
-    tot += (int)(*itr > threshold);
+    tot += static_cast<int>(*itr > threshold);
   }
   return tot * m_Sampling;
 }
@@ -118,7 +118,7 @@ double SiPMAnalogSignal::top(const double intstart, const double intgate, const 
     return -1;
   }
 
-  return (std::max_element(start, end) - start) * m_Sampling;
+  return static_cast<double>(std::max_element(start, end) - start) * m_Sampling;
 }
 
 std::ostream& operator<<(std::ostream& out, const SiPMAnalogSignal& obj) {

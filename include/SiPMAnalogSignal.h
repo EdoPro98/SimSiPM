@@ -38,23 +38,18 @@ public:
   SiPMAnalogSignal(const SiPMVector<float>& wav, const double sampling) noexcept
     : m_Waveform(wav), m_Sampling(sampling){};
 
-  SiPMAnalogSignal& operator=(const SiPMVector<float>&& aVect) noexcept {
-    m_Waveform = std::move(aVect);
-    return *this;
-  }
-
   inline float& operator[](const uint32_t i) noexcept { return m_Waveform[i]; }
   inline float operator[](const uint32_t i) const noexcept { return m_Waveform[i]; }
 
   /// @brief Returns the number of points in the waveform
-  uint32_t size() const { return m_Waveform.size(); }
+  inline uint32_t size() const { return m_Waveform.size(); }
   /// @brief Resets the class to its initial state
   void clear() {
     m_Waveform.clear();
     m_peak = 0;
   }
   /// @brief Returns the sampling time of the signal in ns
-  double sampling() const { return m_Sampling; }
+  constexpr double sampling() const { return m_Sampling; }
   /// @brief Returns the waveform in an accessible data structure
   template <typename T = SiPMVector<float>> T waveform() const;
 
@@ -69,9 +64,6 @@ public:
   /// @brief Returns time of peak
   double top(const double, const double, const double) const;
 
-  /// @brief Sets the sampligng time of the signal
-  // void setSampling(const double x) { m_Sampling = x; }
-
   std::string toString() const {
     std::stringstream ss;
     ss << *this;
@@ -82,6 +74,7 @@ public:
 private:
   SiPMVector<float> m_Waveform;
   double m_Sampling = 1;
+  // Cached value of m_peak
   mutable double m_peak = 0;
 } /* SiPMAnalogSignal */;
 } /* namespace sipm */

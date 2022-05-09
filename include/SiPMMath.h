@@ -18,15 +18,15 @@ namespace math {
  * It generates the following asm code:
  * `rcpss xmm xmm`
  */
-inline float reciprocal(const float x){
+inline float reciprocal(const float x) {
   float retval;
   __m128 __x = _mm_load_ss(&x);
   __x = _mm_rcp_ss(__x);
-  _mm_store_ss(&retval,__x);
+  _mm_store_ss(&retval, __x);
   return retval;
 }
 #else
-inline float reciprocal(const float x){ return 1/x; }
+inline float reciprocal(const float x) { return 1 / x; }
 #endif
 
 /** @brief Custom implementation of @ref std::pair
@@ -35,7 +35,7 @@ inline float reciprocal(const float x){ return 1/x; }
  */
 template <typename T, typename U = T> struct pair {
   T first, second;
-  pair(T x, U y) : first(x), second(y) {}
+  constexpr pair(T x, U y) : first(x), second(y) {}
   pair() = default;
 };
 } // namespace math
