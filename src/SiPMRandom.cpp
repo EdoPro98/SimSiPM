@@ -9,20 +9,24 @@
 #include <cstring>
 #include <iostream>
 #include <vector>
+#ifdef __AVX2__
+#include <immintrin.h>
+#else
+#include <ctime>
+#endif
 
 // Musl implementation of lcg64
 static constexpr uint64_t lcg64(const uint64_t x) { return (x * 10419395304814325825ULL + 1) % -1ULL; }
 
-#ifdef __AVX2__
-#include <immintrin.h>
-#endif
-
+// Random seed
 #ifdef __AVX2__
 static uint64_t rdtsc() { return _rdtsc(); }
 #else
 static uint64_t rdtsc() {
+  std::srand(std::time(nullptr));
   uint32_t lo, hi;
-  __asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
+  lo = std::rand();
+  hi = std::rand();
   return ((uint64_t)hi << 32) | lo;
 }
 #endif
