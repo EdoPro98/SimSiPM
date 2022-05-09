@@ -26,9 +26,9 @@ sensor3.setProperty("FallTimeFast",5)
 sensor3.setProperty("FallTimeSlow",50)
 sensor3.properties().setSlowComponentOn()
 
-sensor1.setProperty("Snr",35)
-sensor2.setProperty("Snr",35)
-sensor3.setProperty("Snr",35)
+sensor1.setProperty("Snr",30)
+sensor2.setProperty("Snr",30)
+sensor3.setProperty("Snr",30)
 
 t = [250]
 
