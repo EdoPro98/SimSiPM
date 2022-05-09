@@ -5,7 +5,6 @@
 
 namespace py = pybind11;
 using namespace sipm;
-using std::map;
 using std::vector;
 
 void SiPMPropertiesPy(py::module& m) {
