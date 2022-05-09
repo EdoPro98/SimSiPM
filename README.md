@@ -34,7 +34,7 @@ SimSiPM is distrubuted as an Open Source project and if you plan to use it pleas
 SimSiPM is a simple and easy to use C++ library providing a set of object-oriented tools with all the functionality needed to describe and simulate Silicon PhotonMultipliers (SiPM) sensors.
 The main goal of SimSiPM is to include the response of SiPM sensors, along with noise and saturation effects, in the description of a generic detector in order to have a more detailed simulation. It can also be used to perform optimization studies considering different SiPMs models allowing to choose the most suitable product available on the market.
 
-SimSiPM code follows FCCSW rules and guidelines concerning C++. SimSiPM has been developed especially for high-energy physics and particle physics experiments, however its flexibility allows to simulate any kind of experiments involving SiPM devices.
+SimSiPM code mostly follows FCCSW rules and guidelines concerning C++. SimSiPM has been developed especially for high-energy physics applications and particle physics experiments, however its flexibility allows to simulate any kind of experiments involving SiPM devices.
 
 SimSiPM does not have any major external dependency making it the perfect candidate to be used in an already existing environment (Geant4 or DD4HEP) or as "stand-alone".
 
@@ -71,7 +71,7 @@ cmake -B build -S .
 make -C build
 make -C build install
 ```
-It is advisable to enable compiler optimizations like `-O3` and `-mfma -mavx2` since some parts of code are specifically written using intrinsic functions for vectorization.
+It is advisable to enable compiler optimizations like `-O3` and `-mfma -mavx2` since some parts of code are specifically written to exploit vectorization capabilities of the compilers.
 
 Installation directory can be specified with `-DCMAKE_INSTALL_PREFIX` variable.
 
@@ -93,7 +93,7 @@ pip install SiPM
 ```
 
 ## <a name="C++_basic_usage"></a>C++ basic use
-SimSiPM focuses on simplicity! It does not make use of pointers, or custom classes as  parameters of the simulation or input. In most cases a std::vector is all that you need in order to get started.
+SimSiPM focuses on simplicity! It does not make use of pointers, or custom classes as parameters of the simulation or input. In most cases a std::vector is all that you need in order to get started.
 ### SiPMProperties
 SiPMProperties class stores all SiPM and simulation parameters. It can be used to define the SiPM detector model in use and it can be shared among different SiPMs in case many identical sensors are needed.
 ```cpp
@@ -106,6 +106,28 @@ SiPMProperties myProperties;
 // Edit some parameters
 myProperties.setDcr(250e3);           // Using proper setter
 myProperties.setPropery("Xt",0.03);   // Using parameter name
+std::cout<<myPropertie<<"\n";         // All classes can be printed using std::cout
+
+// ===> SiPM Properties <===
+// Address: 0x7f2cf11ea018
+// Size: 1.00 mm
+// Pitch: 25.00 um
+// Number of cells: 1600
+// Hit distribution: Uniform
+// Cell recovery time: 50.00 ns
+// Dark count rate: 250.00 kHz
+// Optical crosstalk probability: 3.00 %
+// Delayed optical crosstalk is OFF
+// Afterpulse probability: 3.00 %
+// Tau afterpulses (fast): 10.00 ns
+// Tau afterpulses (slow): 80.00 ns
+// Cell-to-cell gain variation: 5.00 %
+// SNR: 30.00 dB
+// Photon detection efficiency is OFF (100 %)
+// Rising time of signal: 1.00 ns
+// Falling time of signal (fast): 50.00 ns
+// Signal length: 500.00 ns
+// Sampling time: 1.00 ns
 ```
 
 ### SiPMSensor
@@ -120,6 +142,38 @@ SiPMSensor mySensor(myProperties);
 // Change parameters
 mySensor.properties().setAp(0.01);    // Using proper getter/setter
 mySensor.setProperty("Pitch", 25);    // Using parameter name
+std::cout<<mySensor<<"\n";
+
+// ===> SiPM Sensor <===
+// Address: 0x7f48ef5d62f0
+// ===> SiPM Properties <===
+// Address: 0x7f48ef5d62f0
+// Size: 1.00 mm
+// Pitch: 25.00 um
+// Number of cells: 1600
+// Hit distribution: Uniform
+// Cell recovery time: 50.00 ns
+// Dark count rate: 200.00 kHz
+// Optical crosstalk probability: 5.00 %
+// Delayed optical crosstalk is OFF
+// Afterpulse probability: 1.00 %
+// Tau afterpulses (fast): 10.00 ns
+// Tau afterpulses (slow): 80.00 ns
+// Cell-to-cell gain variation: 5.00 %
+// SNR: 30.00 dB
+// Photon detection efficiency is OFF (100 %)
+// Rising time of signal: 1.00 ns
+// Falling time of signal (fast): 50.00 ns
+// Signal length: 500.00 ns
+// Sampling time: 1.00 ns
+// Address :0x7ffcded8a300
+// ===> SiPM Debug Info <===
+// Number of photons impinging to the sensor: 0
+// Number of photoelectrons detected: 0
+// Number of dark count events (DCR): 0
+// Number of optical crosstalk events (XT + DTX): 0
+// Number of delayed optical crosstalk events (DXT): 0
+// Number of afterpulsing events (AP): 10.00
 ```
 
 ### SiPMAnalogSignal
@@ -128,6 +182,13 @@ SiPMAnalogSignal class is a wrapper around std::vector that expands its features
 SiPMAnalogSignal signal = mySensor.signal();
 double sampling = signal.sampling();
 double sample = signal[10];
+std::cout<<signal<<"\n";
+
+// ===> SiPM Analog Signal <===
+// Address: 0x7f48ef5d64e8
+// Signal length is: 0.00 ns
+// Signal is sampled every: 1.00 ns
+// Signal contains: 0 points
 ```
 
 ### Input and simulation
@@ -250,10 +311,6 @@ std::vector<double> pde = {0.22, 0.30, 0.40, 0.45, 0.50, 0.50, 0.45, 0.35, 0.25,
 myProperties.setPdeType(sipm::SiPMProperties::PdeType::kSpectrumPde);
 myProperties.setPdeSpectrum(wlen,pde);
 
-// or using a std::map
-// std::map<double,double> wlen_pde = {{300, 0.01}, {400, 0.20}, {500, 0.33}, ...};
-// myProperties.setPdeSpectrum(wlen_pde);
-
 // Adding photons to the sensor
 mySensor.addPhoton(photonTime, photonWlen);
 // or mySensor.addPhotons(photonTimes, photonWlens);
@@ -291,7 +348,7 @@ myPropertie.setHitDistribution(sipm::SiPMProperties::HitDistribution::kGaussian)
 ```
 
 ## <a name="contrib"></a>Contributing
-SimSiPM is being developed in the contest of FCCSW and IDEA Dual-Readout Calorimeter Software. [I am](#contacts) the main responsible for development and maintainment of this project. Feel free to contact me if you have any problem while including SimSiPM in your project, if you find a bug or have any suggestion or improvement. I would be pleased to discuss it with you.
+Feel free to contact me if you have any problem while including SimSiPM in your project, if you find a bug or have any suggestion or improvement. I would be pleased to discuss it with you.
 
 ## <a name="cite"></a>Cite
 Even thou SimSiPM has been used in simulations related to published articles, there is not yet an article about SimSiPM itself. So if you need to cite SimSiPM please use:
