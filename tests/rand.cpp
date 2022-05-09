@@ -39,14 +39,14 @@ TEST_F(TestSiPMRandom, PoissonGeneration) {
 
 TEST_F(TestSiPMRandom, ExponentialGeneration) {
   for (int i = 0; i < N; ++i) {
-    uint32_t x = sut.randExponential(5);
+    double x = sut.randExponential(5);
     EXPECT_GE(x, 0);
   }
 }
 
 TEST_F(TestSiPMRandom, NormalGeneration) {
   for (int i = 0; i < N; ++i) {
-    uint32_t x = sut.randGaussian(0, 1);
+    double x = sut.randGaussian(0, 1);
   }
 }
 
