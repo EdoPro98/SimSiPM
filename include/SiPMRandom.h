@@ -27,12 +27,12 @@
 #ifdef __AVX2__
 #include <immintrin.h>
 #include <x86intrin.h>
-#endif // 
+#endif //
 
 namespace sipm {
 namespace SiPMRng {
 /// @brief Implementation of xoshiro256+ 1.0 PRNG algorithm
-/**This is xoshiro256+ 1.0, our best and fastest generator for floating-point
+/** This is xoshiro256+ 1.0, our best and fastest generator for floating-point
  * numbers. We suggest to use its upper bits for floating-point
  * generation, as it is slightly faster than xoshiro256++/xoshiro256**. It
  * passes all tests we are aware of except for the lowest three bits,
@@ -49,9 +49,18 @@ namespace SiPMRng {
 class Xorshift256plus {
 public:
   /// @brief Default contructor for Xorshift256plus
+  /// It cretates an instance of Xorhift256plus and sets the seed using 
+  /// a 64 bit LCG and a random value from system randomd device
   Xorshift256plus() { seed(); }
+  
+  /// @brief Constructor with seed for Xorhift256plus
+  /// It cretates an instance of Xorshift256plus and sets the seed 
+  /// using a 64 bit LCG and the seed value provided
+  /// @param sd uint64_t User provided seed. Must not be 0!
+  Xorshift256plus(const uint64_t sd) { seed(sd); }
+
   /// @brief Returns a pseud-random 64-bits intger
-  constexpr inline uint64_t operator()() noexcept {
+  inline uint64_t operator()() noexcept {
     const uint64_t result = s[0] + s[3];
 
     const uint64_t t = s[1] << 17;
@@ -65,15 +74,13 @@ public:
 
     s[3] = (s[3] << 45U) | (s[3] >> (64U - 45U));
     return result;
-  }
-  __attribute__((hot))
+  } __attribute__((hot))
 
   /// @brief Jump function for the alghoritm.
   /**This is the jump function for the generator. It is equivalent
    * to 2^128 calls to next(); it can be used to generate 2^128
    * non-overlapping subsequences for parallel computations. */
-  void
-  jump();
+  void jump();
 
   /// @brief Sets a random seed generated using system random device.
   void seed();
@@ -98,23 +105,24 @@ public:
   SiPMRng::Xorshift256plus& rng() { return m_rng; }
 
   /// @brief Gives an uniformly distributed random double
-  inline double Rand();
+  inline double Rand() noexcept;
   /// @brief Gives an uniformly distributed random float
-  inline float RandF();
-
+  inline float RandF() noexcept;
   /// @brief Gives an uniform random integer
-  uint32_t randInteger(const uint32_t) __attribute__((hot));
+  uint32_t randInteger(const uint32_t) noexcept;
+  template<uint32_t N>
+  uint32_t randInteger() noexcept;
 
   /// @brief Gives random double with gaussian distribution
-  double randGaussian(const double, const double) __attribute__((hot));
+  double randGaussian(const double, const double) noexcept;
   /// @brief Gives random float with gaussian distribution
-  float randGaussianF(const float, const float) __attribute__((hot));
+  float randGaussianF(const float, const float) noexcept;
   /// @brief Gives random double with exponential distribution
-  double randExponential(const double);
+  double randExponential(const double) noexcept;
   /// @brief Gives random float with exponential distribution
-  float randExponentialF(const float);
+  float randExponentialF(const float) noexcept;
   /// @brief Gives random value with poisson distribution
-  uint32_t randPoisson(const double mu);
+  uint32_t randPoisson(const double mu) noexcept;
 
   /// @brief Vector version of @ref Rand()
   template <typename T = std::vector<double>> T Rand(const uint32_t);
@@ -122,10 +130,10 @@ public:
   template <typename T = std::vector<float>> T RandF(const uint32_t);
   /// @brief Vector version of @ref randGaussian()
   template <typename T = std::vector<double>>
-  T randGaussian(const double, const double, const uint32_t) __attribute__((hot));
+  T randGaussian(const double, const double, const uint32_t);
   template <typename T = std::vector<float>>
   /// @brief Vector version of @ref randGaussianF()
-  T randGaussianF(const float, const float, const uint32_t) __attribute__((hot));
+  T randGaussianF(const float, const float, const uint32_t);
   /// @brief Vector version of @ref randInteger()
   std::vector<uint32_t> randInteger(const uint32_t max, const uint32_t n);
   /// @brief Vector version of @ref randExponential()
@@ -143,17 +151,9 @@ private:
  * 0x3fff. By aliasing the uint to a double and subtracting 1
  * the result is a random double in range (0-1].
  */
-inline double SiPMRandom::Rand() {
-  static constexpr uint64_t expoBitMask = 0x3ff0000000000000;
-  const uint64_t u = (m_rng() >> 2) | expoBitMask;
-#ifdef __AVX2__
-  const double x = _castu64_f64(u);
-#else
-  double x;
-  std::memcpy(&x, &u, sizeof(double));
-  return x - 1;
-#endif // 
-  return x - 1;
+inline double SiPMRandom::Rand() noexcept {
+  const uint64_t u = 0x3FFULL << 52 | m_rng() >> 12;
+  return *(double*)(&u) - 1;
 }
 
 /**
@@ -162,12 +162,9 @@ inline double SiPMRandom::Rand() {
  * 0x3f8. By aliasing the uint to a double and subtracting 1
  * the result is a random float in range (0-1].
  */
-inline float SiPMRandom::RandF() {
-  float x;
-  static constexpr uint64_t expoBitMask = 0x000000003f800000;
-  const uint64_t u = (m_rng() >> 34) | expoBitMask;
-  std::memcpy(&x, &u, sizeof(float));
-  return x - 1;
+inline float SiPMRandom::RandF() noexcept {
+  const uint32_t u = 0x3F8ULL << 20 | m_rng() >> 34;
+  return *(float*)(&u) - 1;
 }
 } // namespace sipm
 #endif /* SIPM_RANDOM_H */
