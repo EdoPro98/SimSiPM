@@ -1,14 +1,15 @@
 cmake_minimum_required(VERSION 3.9)
 project(SimSiPM VERSION 1 DESCRIPTION "Library for SiPM simulation" LANGUAGES CXX)
 include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+include(CMakeDependentOption)
+include(FeatureSummary)
 
 set(SIPM_BUILD_PYTHON OFF CACHE BOOL "Compile python bindings for SiPM simulation library")
 set(SIPM_ENABLE_TEST OFF CACHE BOOL "Build tests for SiPM simulation library")
-
-if(SIPM_BUILD_PYTHON)
-	find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
-	find_package(pybind11 CONFIG REQUIRED)
-endif(SIPM_BUILD_PYTHON)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	if(SIPM_ENABLE_TEST)
@@ -52,9 +53,11 @@ target_include_directories(sipm PUBLIC
 )
 
 set_property(TARGET sipm PROPERTY VERSION 1)
-set_property(TARGET sipm PROPERTY CXX_STANDARD 17)
 set_property(TARGET sipm PROPERTY PUBLIC_HEADER "${include}")
 set_property(TARGET sipm PROPERTY OUTPUT_NAME sipm)
+target_compile_options(sipm PRIVATE -ffast-math)
+
+feature_summary(WHAT ALL)
 
 # Install
 install(TARGETS sipm EXPORT sipm-config
@@ -70,11 +73,11 @@ install(EXPORT sipm-config
 )
 
 if (SIPM_BUILD_PYTHON)
-  find_package(Python)
-	pybind11_add_module(SiPM SHARED ${pysrc} ${src})
-	target_include_directories(SiPM PUBLIC "include/")
+	find_package(Python COMPONENTS Interpreter Development REQUIRED)
+	find_package(pybind11 CONFIG REQUIRED)
+	pybind11_add_module(SiPM SHARED ${pysrc} ${src} ${include})
 	set_property(TARGET SiPM PROPERTY CXX_STANDARD 17)
-  target_compile_options(SiPM PUBLIC -fvisibility=hidden)
+  target_compile_options(SiPM PRIVATE -fvisibility=hidden -ffast-math)
 
 	install(TARGETS SiPM
 	LIBRARY DESTINATION lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages
