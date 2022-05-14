@@ -1,22 +1,23 @@
 #include "SiPMAnalogSignal.h"
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include "nanobind/nanobind.h"
+#include "nanobind/stl/vector.h"
+#include <vector>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 using namespace sipm;
-using vectorf = std::vector<float>;
 
-void SiPMAnalogSignalPy(py::module& m) {
-  py::class_<SiPMAnalogSignal> sipmanalogsignal(m, "SiPMAnalogSignal");
+void SiPMAnalogSignalPy(nb::module_& m) {
+  nb::class_<SiPMAnalogSignal> sipmanalogsignal(m, "SiPMAnalogSignal");
 
   sipmanalogsignal.def("size", &SiPMAnalogSignal::size)
     .def("sampling", &SiPMAnalogSignal::sampling)
-    .def("waveform", &SiPMAnalogSignal::waveform<vectorf>)
+    .def("waveform", &SiPMAnalogSignal::waveform<std::vector<float>>)
     .def("integral", &SiPMAnalogSignal::integral)
     .def("peak", &SiPMAnalogSignal::peak)
     .def("tot", &SiPMAnalogSignal::tot)
     .def("toa", &SiPMAnalogSignal::toa)
     .def("top", &SiPMAnalogSignal::top)
     .def("__len__", &SiPMAnalogSignal::size)
-    .def("__repr__", &SiPMAnalogSignal::toString);
+    .def("__repr__", &SiPMAnalogSignal::toString)
+    .def("__getitem__",[](const SiPMAnalogSignal& signal, const uint32_t i){ return signal[i]; });
 }

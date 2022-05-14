@@ -1,15 +1,14 @@
 #include "SiPMSensor.h"
-#include <pybind11/iostream.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include "nanobind/nanobind.h"
+#include "nanobind/stl/vector.h"
 
-namespace py = pybind11;
+namespace nb = nanobind;
 using namespace sipm;
 
-void SiPMSensorPy(py::module& m) {
-  py::class_<SiPMSensor, std::shared_ptr<SiPMSensor>> sipmsensor(m, "SiPMSensor");
-  sipmsensor.def(py::init<>())
-    .def(py::init<const SiPMProperties&>())
+void SiPMSensorPy(nb::module_& m) {
+  nb::class_<SiPMSensor> sipmsensor(m, "SiPMSensor");
+  sipmsensor.def(nb::init<>())
+    .def(nb::init<const SiPMProperties&>())
     .def("properties", static_cast<SiPMProperties& (SiPMSensor::*)()>(&SiPMSensor::properties))
     .def("properties", static_cast<const SiPMProperties& (SiPMSensor::*)() const>(&SiPMSensor::properties))
     .def("hits", &SiPMSensor::hits)
@@ -19,12 +18,12 @@ void SiPMSensorPy(py::module& m) {
     .def("debug", &SiPMSensor::debug)
     .def("setProperty", &SiPMSensor::setProperty)
     .def("setProperties", &SiPMSensor::setProperties)
-    .def("addPhoton", py::overload_cast<>(&SiPMSensor::addPhoton))
-    .def("addPhoton", py::overload_cast<const double>(&SiPMSensor::addPhoton))
-    .def("addPhoton", py::overload_cast<const double, const double>(&SiPMSensor::addPhoton))
-    .def("addPhotons", py::overload_cast<const std::vector<double>&>(&SiPMSensor::addPhotons))
+    .def("addPhoton", nb::overload_cast<>(&SiPMSensor::addPhoton))
+    .def("addPhoton", nb::overload_cast<const double>(&SiPMSensor::addPhoton))
+    .def("addPhoton", nb::overload_cast<const double, const double>(&SiPMSensor::addPhoton))
+    .def("addPhotons", nb::overload_cast<const std::vector<double>&>(&SiPMSensor::addPhotons))
     .def("addPhotons",
-         py::overload_cast<const std::vector<double>&, const std::vector<double>&>(&SiPMSensor::addPhotons))
+         nb::overload_cast<const std::vector<double>&, const std::vector<double>&>(&SiPMSensor::addPhotons))
     .def("runEvent", &SiPMSensor::runEvent)
     .def("resetState", &SiPMSensor::resetState)
     .def("__repr__", &SiPMSensor::toString);

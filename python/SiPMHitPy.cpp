@@ -1,12 +1,11 @@
 #include "SiPMHit.h"
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include "nanobind/nanobind.h"
 
-namespace py = pybind11;
+namespace nb = nanobind;
 using namespace sipm;
 
-void SiPMHitPy(py::module& m) {
-  py::class_<SiPMHit, std::shared_ptr<SiPMHit>> sipmhit(m, "SiPMHit");
+void SiPMHitPy(nb::module_& m) {
+  nb::class_<SiPMHit> sipmhit(m, "SiPMHit");
 
   sipmhit.def("time", &SiPMHit::time)
     .def("row", &SiPMHit::row)
@@ -15,9 +14,9 @@ void SiPMHitPy(py::module& m) {
     .def("hitType", &SiPMHit::hitType)
     .def("__repr__", &SiPMHit::toString)
     .def("__copy__", [](const SiPMHit& self) { return SiPMHit(self); })
-    .def("__deepcopy__", [](const SiPMHit& self, py::dict) { return SiPMHit(self); });
+    .def("__deepcopy__", [](const SiPMHit& self, nb::dict) { return SiPMHit(self); });
 
-  py::enum_<SiPMHit::HitType>(sipmhit, "HitType")
+  nb::enum_<SiPMHit::HitType>(sipmhit, "HitType")
     .value("kPhotoelectron", SiPMHit::HitType::kPhotoelectron)
     .value("kDarkCount", SiPMHit::HitType::kDarkCount)
     .value("kOpticalCrosstalk", SiPMHit::HitType::kOpticalCrosstalk)

@@ -1,15 +1,14 @@
 #include "SiPMRandom.h"
-#include <cstdint>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include "nanobind/nanobind.h"
+#include "nanobind/stl/vector.h"
 #include <vector>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 using namespace sipm;
 
-void SiPMRandomPy(py::module& m) {
-  py::class_<SiPMRandom> SiPMRandom(m, "SiPMRandom");
-  SiPMRandom.def(py::init<>())
+void SiPMRandomPy(nb::module_& m) {
+  nb::class_<SiPMRandom> SiPMRandom(m, "SiPMRandom");
+  SiPMRandom.def(nb::init<>())
     .def("Rand", static_cast<double (SiPMRandom::*)(void)>(&SiPMRandom::Rand))
     .def("randInteger", static_cast<uint32_t (SiPMRandom::*)(const uint32_t)>(&SiPMRandom::randInteger))
     .def("randGaussian", static_cast<double (SiPMRandom::*)(const double, const double)>(&SiPMRandom::randGaussian))

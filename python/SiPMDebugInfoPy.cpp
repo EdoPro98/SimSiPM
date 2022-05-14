@@ -1,12 +1,11 @@
 #include "SiPMDebugInfo.h"
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include "nanobind/nanobind.h"
 
-namespace py = pybind11;
+namespace nb = nanobind;
 using namespace sipm;
 
-void SiPMDebugInfoPy(py::module& m) {
-  py::class_<SiPMDebugInfo> sipmdebuginfo(m, "SiPMDebugInfo");
+void SiPMDebugInfoPy(nb::module_& m) {
+  nb::class_<SiPMDebugInfo> sipmdebuginfo(m, "SiPMDebugInfo");
   sipmdebuginfo.def("__repr__", &SiPMDebugInfo::toString);
 
   sipmdebuginfo.def_readonly("nPhotons", &SiPMDebugInfo::nPhotons)

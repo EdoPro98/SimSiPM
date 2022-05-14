@@ -1,19 +1,17 @@
 #include "SiPM.h"
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <pybind11/stl_bind.h>
+#include "nanobind/nanobind.h"
 
-namespace py = pybind11;
+namespace nb = nanobind;
 
-void SiPMPropertiesPy(py::module&);
-void SiPMAnalogSignalPy(py::module&);
-void SiPMDebugInfoPy(py::module&);
-void SiPMHitPy(py::module&);
-void SiPMSensorPy(py::module&);
-void SiPMRandomPy(py::module&);
+void SiPMPropertiesPy(nb::module_&);
+void SiPMAnalogSignalPy(nb::module_&);
+void SiPMDebugInfoPy(nb::module_&);
+void SiPMHitPy(nb::module_&);
+void SiPMSensorPy(nb::module_&);
+void SiPMRandomPy(nb::module_&);
 
-PYBIND11_MODULE(SiPM, m) {
-  m.doc() = "Module for SiPM simulation";
+NB_MODULE(SiPM, m) {
+  // m.raw_doc() = "Module for SiPM simulation";
   m.attr("__version__") = SIPM_VERSION;
   SiPMPropertiesPy(m);
   SiPMAnalogSignalPy(m);

@@ -1,17 +1,15 @@
 #include "SiPMProperties.h"
-#include <pybind11/iostream.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include "nanobind/nanobind.h"
+#include "nanobind/stl/vector.h"
 
-namespace py = pybind11;
+namespace nb = nanobind;
 using namespace sipm;
-using std::vector;
 
-void SiPMPropertiesPy(py::module& m) {
-  py::class_<SiPMProperties> sipmproperties(m, "SiPMProperties");
+void SiPMPropertiesPy(nb::module_& m) {
+  nb::class_<SiPMProperties> sipmproperties(m, "SiPMProperties");
 
   sipmproperties
-    .def(py::init<>())
+    .def(nb::init<>())
     // .def("readSettings",&SiPMProperties::readSettings)
     .def("nCells", &SiPMProperties::nCells)
     .def("nSideCells", &SiPMProperties::nSideCells)
@@ -75,17 +73,16 @@ void SiPMPropertiesPy(py::module& m) {
     .def("setApOn", &SiPMProperties::setApOn)
     .def("setSlowComponentOn", &SiPMProperties::setSlowComponentOn)
     .def("setPdeType", &SiPMProperties::setPdeType)
-    .def("setPdeSpectrum",
-         py::overload_cast<const vector<double>&, const vector<double>&>(&SiPMProperties::setPdeSpectrum))
+    .def("setPdeSpectrum", &SiPMProperties::setPdeSpectrum)
     .def("setHitDistribution", &SiPMProperties::setHitDistribution)
     .def("__repr__", &SiPMProperties::toString);
 
-  py::enum_<SiPMProperties::PdeType>(sipmproperties, "PdeType")
+  nb::enum_<SiPMProperties::PdeType>(sipmproperties, "PdeType")
     .value("kNoPde", SiPMProperties::PdeType::kNoPde)
     .value("kSimplePde", SiPMProperties::PdeType::kSimplePde)
     .value("kSpectrumPde", SiPMProperties::PdeType::kSpectrumPde);
 
-  py::enum_<SiPMProperties::HitDistribution>(sipmproperties, "HitDistribution")
+  nb::enum_<SiPMProperties::HitDistribution>(sipmproperties, "HitDistribution")
     .value("kUniform", SiPMProperties::HitDistribution::kUniform)
     .value("kGaussian", SiPMProperties::HitDistribution::kGaussian)
     .value("kCircle", SiPMProperties::HitDistribution::kCircle);
