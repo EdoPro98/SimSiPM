@@ -4,7 +4,6 @@
 
 #include <cstdint>
 #include <iostream>
-#include <sipm/SiPMMath.h>
 #include <string.h>
 #include <random>
 #ifdef __AVX2__
