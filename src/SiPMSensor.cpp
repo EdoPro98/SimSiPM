@@ -7,11 +7,7 @@
 #include <cstdint>
 
 namespace sipm {
-// Initialize static memebr in SiPMSensor class
-// with a SiPMSensor object
-SiPMRandom SiPMSensor::m_rng = SiPMRandom();
-
-// All constructors MUST call signalShape
+  // All constructors MUST call signalShape
 SiPMSensor::SiPMSensor() { m_SignalShape = signalShape(); }
 
 SiPMSensor::SiPMSensor(const SiPMProperties& aProperty) {
@@ -50,9 +46,7 @@ void SiPMSensor::addPhotons(const std::vector<double>& val1, const std::vector<d
 }
 
 void SiPMSensor::runEvent() {
-  if (m_Properties.hasDcr()) {
-    addDcrEvents();
-  }
+  addDcrEvents();
   addPhotoelectrons();
   addCorrelatedNoise();
   calculateSignalAmplitudes();
@@ -179,6 +173,7 @@ math::pair<uint32_t> SiPMSensor::hitCell() const {
 }
 
 void SiPMSensor::addDcrEvents() {
+  if (m_Properties.hasDcr() == false){ return; }
   const double signalLength = m_Properties.signalLength();
   const double meanDcr = 1e9 / m_Properties.dcr();
   const int32_t nSideCells = m_Properties.nSideCells();
