@@ -2,7 +2,7 @@ enable_testing()
 
 macro(package_add_test_with_libraries TESTNAME FILES LIBRARIES TEST_WORKING_DIRECTORY)
     add_executable(${TESTNAME} ${FILES})
-    set_target_properties(${TESTNAME} PROPERTIES COMPILE_FLAGS "-O2 -g")
+    set_target_properties(${TESTNAME} PROPERTIES COMPILE_FLAGS "-O3 -g")
     target_link_libraries(${TESTNAME} gtest gmock gtest_main ${LIBRARIES})
     gtest_discover_tests(${TESTNAME}
         WORKING_DIRECTORY ${TEST_WORKING_DIRECTORY}
@@ -26,6 +26,7 @@ if(NOT GTest_FOUND)
   endif()
 endif()
 
+include_directories(../include)
 include(GoogleTest)
 package_add_test_with_libraries(TestSiPMXorshift256plus xorshift.cpp sipm "${PROJECT_DIR}")
 package_add_test_with_libraries(TestSiPMRandom rand.cpp sipm "${PROJECT_DIR}")
