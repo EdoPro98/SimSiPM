@@ -65,8 +65,8 @@ constexpr bool operator==(const AlignedAllocator<T1, Align1>& lhs, const Aligned
 template <class T1, size_t Align1, class T2, size_t Align2>
 constexpr bool operator!=(const AlignedAllocator<T1, Align1>& lhs, const AlignedAllocator<T2, Align2>& rhs) noexcept;
 
-void* aligned_malloc(size_t size, size_t alignment);
-void aligned_free(void* ptr);
+static void* aligned_malloc(size_t size, size_t alignment);
+static void aligned_free(void* ptr);
 
 /**
  * Default constructor.
@@ -178,23 +178,15 @@ constexpr bool operator!=(const AlignedAllocator<T1, A1>& lhs, const AlignedAllo
 }
 
 inline void* aligned_malloc(size_t size, size_t alignment) {
-#ifdef __SSE__
-  return _mm_malloc(size, alignment);
-#else
   void* res = nullptr;
   if (posix_memalign(&res, alignment, size) != 0) {
     res = nullptr;
   }
   return res;
-#endif // __SSE__
 }
 
 inline void aligned_free(void* ptr) {
-#ifdef __SSE__
-  _mm_free(ptr);
-#else
   free(ptr);
-#endif // __SSE__
 }
 
 /** SiPMVector is an high performance version of std::vector<T>.
