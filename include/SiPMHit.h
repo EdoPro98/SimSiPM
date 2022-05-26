@@ -13,10 +13,6 @@
 #ifndef SIPM_SIPMHITS_H
 #define SIPM_SIPMHITS_H
 
-#include <algorithm>
-#include <cstdint>
-#include <cstring>
-#include <ctime>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -51,6 +47,9 @@ public:
    * arrving/generating time.
    */
   constexpr bool operator<(const SiPMHit& rhs) const noexcept { return m_Time < rhs.m_Time; }
+  constexpr bool operator<=(const SiPMHit& rhs) const noexcept { return m_Time <= rhs.m_Time; }
+  constexpr bool operator>(const SiPMHit& rhs) const noexcept { return m_Time > rhs.m_Time; }
+  constexpr bool operator>=(const SiPMHit& rhs) const noexcept { return m_Time >= rhs.m_Time; }
 
   /// @brief Operator used to check if the hit is generated in the same cell
   /**
@@ -60,16 +59,16 @@ public:
   constexpr bool operator==(const SiPMHit& rhs) const noexcept { return m_Hash == rhs.m_Hash; }
 
   /// @brief Returns hit time
-  constexpr double time() const { return m_Time; }
+  constexpr double time() const noexcept { return m_Time; }
   /// @brief Returns row of hitted cell
-  constexpr uint32_t row() const { return m_Row; }
+  constexpr uint32_t row() const noexcept { return m_Row; }
   /// @brief Returns column of hitted cell
-  constexpr uint32_t col() const { return m_Col; }
+  constexpr uint32_t col() const noexcept { return m_Col; }
   /// @brief Returns amplitude of the signal produced by the hit
-  constexpr double amplitude() const { return m_Amplitude; }
+  constexpr double amplitude() const noexcept { return m_Amplitude; }
   double& amplitude() { return m_Amplitude; }
   /// @brief Returns hit type to identify the hits
-  constexpr HitType hitType() const { return m_HitType; }
+  constexpr HitType hitType() const noexcept { return m_HitType; }
 
   friend std::ostream& operator<<(std::ostream&, const SiPMHit&);
   std::string toString() const {
@@ -81,11 +80,11 @@ public:
   // Always construct hits with values and no default constructor
   SiPMHit() = delete;
 private:
+  double m_Time;
+  uint64_t m_Hash;
+  double m_Amplitude;
   uint32_t m_Row;
   uint32_t m_Col;
-  uint64_t m_Hash;
-  double m_Time;
-  double m_Amplitude;
   HitType m_HitType;
 };
 
