@@ -46,7 +46,6 @@ public:
   /// @brief Resets the class to its initial state
   void clear() {
     m_Waveform.clear();
-    m_peak = 0;
   }
   /// @brief Returns the sampling time of the signal in ns
   constexpr double sampling() const { return m_Sampling; }
@@ -74,8 +73,6 @@ public:
 private:
   SiPMVector<float> m_Waveform;
   double m_Sampling = 1;
-  // Cached value of m_peak
-  mutable double m_peak = 0;
 } /* SiPMAnalogSignal */;
 } /* namespace sipm */
 #endif /* SIPM_SIPMSIGNAL_H */
