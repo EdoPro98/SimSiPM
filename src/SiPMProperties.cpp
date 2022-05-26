@@ -7,7 +7,7 @@ namespace sipm {
 void SiPMProperties::setProperty(const std::string& prop, const double val) {
   // Make prop lowercase to avoid case-sensitive property mismatch
   std::string aProp(prop);
-  std::transform(prop.begin(), prop.end(), aProp.begin(), [](const char c) -> char { return std::tolower(c); });
+  std::transform(prop.cbegin(), prop.cend(), aProp.begin(), [](const char c) -> char { return std::tolower(c); });
 
   if (aProp == "size") {
     setSize(val);
