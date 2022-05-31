@@ -1,9 +1,16 @@
 cmake_minimum_required(VERSION 3.9)
+set(CMAKE_CXX_FLAGS_INIT -ffast-math)
 project(SimSiPM VERSION 1 DESCRIPTION "Library for SiPM simulation" LANGUAGES CXX)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 include(CMakeDependentOption)
 include(FeatureSummary)
+
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING
+    "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel."
+    FORCE)
+endif(NOT CMAKE_BUILD_TYPE)
 
 set(SIPM_BUILD_PYTHON OFF CACHE BOOL "Compile python bindings for SiPM simulation library")
 set(SIPM_ENABLE_TEST OFF CACHE BOOL "Build tests for SiPM simulation library")
@@ -13,27 +20,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	if(SIPM_ENABLE_TEST)
-	    enable_testing()
-	    include(GoogleTest)
 	    add_subdirectory(tests)
 	endif(SIPM_ENABLE_TEST)
 endif ()
-
-# Optimizations
-if(NOT CMAKE_BUILD_TYPE)
-	message(STATUS "No default build type specified: setting CMAKE_BUILD_TYPE=Release")
-	set(CMAKE_BUILD_TYPE Release CACHE STRING
-		"Choose the build type: options are: Debug Release RelWithDebInfo MinSizeRel"
-		FORCE)
-else(NOT CMAKE_BUILD_TYPE)
-	if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		message("====================================================================================")
-		message(STATUS "Build type is set to Debug: Performance will be negatively impacted")
-		message(STATUS "Add -DCMAKE_BUILD_TYPE=Release to the CMake command line to get an optimized build")
-		message("====================================================================================")
-	endif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-endif(NOT CMAKE_BUILD_TYPE)
-
 
 # Get files
 file(GLOB_RECURSE src "src/*.cpp")
@@ -47,15 +36,12 @@ add_library(sipm SHARED
 )
 
 # Include files
-target_include_directories(sipm PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
+target_include_directories(sipm PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
-set_property(TARGET sipm PROPERTY VERSION 1)
-set_property(TARGET sipm PROPERTY PUBLIC_HEADER "${include}")
-set_property(TARGET sipm PROPERTY OUTPUT_NAME sipm)
-target_compile_options(sipm PRIVATE -ffast-math)
+set_target_properties(sipm PROPERTIES VERSION 1 OUTPUT_NAME sipm)
+set_property(TARGET sipm PROPERTY PUBLIC_HEADER ${include})
 
 feature_summary(WHAT ALL)
 
@@ -63,7 +49,7 @@ feature_summary(WHAT ALL)
 install(TARGETS sipm EXPORT sipm-config
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/sipm
 )
 
 install(EXPORT sipm-config
@@ -75,9 +61,12 @@ install(EXPORT sipm-config
 if (SIPM_BUILD_PYTHON)
 	find_package(Python COMPONENTS Interpreter Development REQUIRED)
 	find_package(pybind11 CONFIG REQUIRED)
-	pybind11_add_module(SiPM SHARED ${pysrc} ${src} ${include})
+	pybind11_add_module(SiPM MODULE ${pysrc} ${src} ${include})
+	target_include_directories(SiPM PRIVATE 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+	)
 	set_property(TARGET SiPM PROPERTY CXX_STANDARD 17)
-  target_compile_options(SiPM PRIVATE -fvisibility=hidden -ffast-math)
+  target_compile_options(SiPM PRIVATE -fvisibility=hidden -ffast-math -O3)
 
 	install(TARGETS SiPM
 	LIBRARY DESTINATION lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages

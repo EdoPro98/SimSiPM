@@ -51,7 +51,7 @@ public:
   /** This method allows to get all the hits generated in the simulation
    * process, including noise hits.
    */
-  std::vector<SiPMHit> hits() const { return std::vector<SiPMHit>(m_Hits.begin(), m_Hits.end()); }
+  std::vector<SiPMHit> hits() const { return m_Hits; }
 
   /// @brief Returns vector containing history of hits
   /**
@@ -86,9 +86,6 @@ public:
    */
   void setProperties(const SiPMProperties&);
 
-  /// @internal Oveload method to add an empty event
-  void addPhoton() {}
-
   /// @brief Adds a single photon to the list of photons to be simulated
   void addPhoton(const double);
 
@@ -118,8 +115,8 @@ public:
 
 private:
   double evaluatePde(const double) const;
-  inline bool isDetected(const double val) const { return m_rng.Rand() < val; }
-  constexpr bool isInSensor(const int32_t, const int32_t) const;
+  inline bool isDetected(const double val) const noexcept { return m_rng.Rand() < val; }
+  constexpr bool isInSensor(const int32_t, const int32_t) const noexcept;
   math::pair<uint32_t> hitCell() const;
   SiPMVector<float> signalShape() const;
 
@@ -134,7 +131,7 @@ private:
   void generateSignal();
 
   SiPMProperties m_Properties;
-  static SiPMRandom m_rng;
+  mutable SiPMRandom m_rng;
 
   uint32_t m_nTotalHits = 0;
   uint32_t m_nPe = 0;
@@ -145,16 +142,16 @@ private:
 
   std::vector<double> m_PhotonTimes;
   std::vector<double> m_PhotonWavelengths;
-  SiPMVector<SiPMHit> m_Hits;
+  std::vector<SiPMHit> m_Hits;
   std::vector<int32_t> m_HitsGraph;
 
   SiPMVector<float> m_SignalShape;
   SiPMAnalogSignal m_Signal;
 };
 
-constexpr bool SiPMSensor::isInSensor(const int32_t r, const int32_t c) const {
+constexpr bool SiPMSensor::isInSensor(const int32_t r, const int32_t c) const noexcept {
   const int32_t nSideCells = m_Properties.nSideCells();
-  return !((r < 0) | (c < 0) | (r > nSideCells) | (c > nSideCells));
+  return (r > 0) & (c > 0) & (r < nSideCells) & (c < nSideCells);
 }
 } // namespace sipm
 #endif /* SIPM_SIPMSENSOR_H */

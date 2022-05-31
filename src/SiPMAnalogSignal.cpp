@@ -1,14 +1,15 @@
 #include "SiPMAnalogSignal.h"
 #include "SiPMMath.h"
 #include "SiPMTypes.h"
+#include <algorithm>
+#include <cstdint>
 
 namespace sipm {
 
 template <> auto SiPMAnalogSignal::waveform<SiPMVector<float>>() const -> SiPMVector<float> { return m_Waveform; }
 
 template <> auto SiPMAnalogSignal::waveform<std::vector<float>>() const -> std::vector<float> {
-  std::vector<float> l_Waveform(m_Waveform.begin(), m_Waveform.end());
-  return l_Waveform;
+  return std::vector<float>(m_Waveform.cbegin(), m_Waveform.cend());
 }
 
 /**
@@ -20,14 +21,16 @@ template <> auto SiPMAnalogSignal::waveform<std::vector<float>>() const -> std::
 @param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::integral(const double intstart, const double intgate, const double threshold) const {
-
+  double integral = 0;
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  if (this->peak(intstart, intgate, threshold) < threshold) {
+  if (std::any_of(start,end,[threshold](const double sample){ return sample > threshold; }) == false) {
     return -1;
   }
-  const double integral = std::accumulate(start, end, 0.0) * m_Sampling;
-  return integral;
+  for(auto itr = start; itr != end; ++itr){
+    integral += *itr;
+  }
+  return integral * m_Sampling;
 }
 
 /**
@@ -39,18 +42,17 @@ double SiPMAnalogSignal::integral(const double intstart, const double intgate, c
 @param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::peak(const double intstart, const double intgate, const double threshold) const {
-  // Cache value for use in other functions without calculating again
-  if (m_peak != 0) {
-    return m_peak;
-  }
+  double peak = 0;
   const auto start = m_Waveform.cbegin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  const double peak = *std::max_element(start, end);
-  if (peak < threshold) {
-    m_peak = -1;
+  if (std::any_of(start,end,[threshold](const double sample){ return sample > threshold; }) == false) {
     return -1;
   }
-  m_peak = peak;
+  for(auto itr = start; itr != end; ++itr){
+    if( *itr > peak){
+      peak = *itr;
+    }
+  }
   return peak;
 }
 
@@ -63,17 +65,16 @@ double SiPMAnalogSignal::peak(const double intstart, const double intgate, const
 @param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::tot(const double intstart, const double intgate, const double threshold) const {
-
+  uint32_t tot = 0;
   const auto start = m_Waveform.cbegin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  if (this->peak(intstart, intgate, threshold) < threshold) {
+  if (std::any_of(start,end,[threshold](const double sample){ return sample > threshold; }) == false) {
     return -1;
   }
-
-  uint32_t tot = 0;
-  for (auto itr = start; itr != end; ++itr) {
-    // Add 1 if condition is true
-    tot += static_cast<int>(*itr > threshold);
+  for(auto itr = start; itr != end; ++itr){
+    if(*itr > threshold){
+      ++tot;
+    }
   }
   return tot * m_Sampling;
 }
@@ -87,14 +88,13 @@ double SiPMAnalogSignal::tot(const double intstart, const double intgate, const 
 @param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::toa(const double intstart, const double intgate, const double threshold) const {
-
+  uint32_t toa = 0;
   auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  if (this->peak(intstart, intgate, threshold) < threshold) {
+  if (std::any_of(start,end,[threshold](const double sample){ return sample > threshold; }) == false) {
     return -1;
   }
 
-  uint32_t toa = 0;
   while (*start < threshold && start != end) {
     ++toa;
     ++start;
@@ -111,10 +111,9 @@ double SiPMAnalogSignal::toa(const double intstart, const double intgate, const 
 @param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::top(const double intstart, const double intgate, const double threshold) const {
-
-  const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
+  const auto start = m_Waveform.cbegin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  if (this->peak(intstart, intgate, threshold) < threshold) {
+  if (std::any_of(start,end,[threshold](const double sample){ return sample > threshold; }) == false) {
     return -1;
   }
 

@@ -18,7 +18,7 @@ namespace math {
  * It generates the following asm code:
  * `rcpss xmm xmm`
  */
-inline float reciprocal(const float x) {
+inline float reciprocal(const float x) noexcept {
   float retval;
   __m128 __x = _mm_load_ss(&x);
   __x = _mm_rcp_ss(__x);
@@ -34,7 +34,7 @@ inline float reciprocal(const float x) { return 1 / x; }
  * but with no run-time checks to improve performance
  */
 template <typename T, typename U = T> struct pair {
-  T first, second;
+  T first; U second;
   constexpr pair(T x, U y) : first(x), second(y) {}
   pair() = default;
 };

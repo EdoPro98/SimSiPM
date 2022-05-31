@@ -19,7 +19,6 @@ void SiPMSensorPy(py::module& m) {
     .def("debug", &SiPMSensor::debug)
     .def("setProperty", &SiPMSensor::setProperty)
     .def("setProperties", &SiPMSensor::setProperties)
-    .def("addPhoton", py::overload_cast<>(&SiPMSensor::addPhoton))
     .def("addPhoton", py::overload_cast<const double>(&SiPMSensor::addPhoton))
     .def("addPhoton", py::overload_cast<const double, const double>(&SiPMSensor::addPhoton))
     .def("addPhotons", py::overload_cast<const std::vector<double>&>(&SiPMSensor::addPhotons))

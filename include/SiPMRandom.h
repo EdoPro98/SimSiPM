@@ -15,19 +15,15 @@
 
 #include <cmath>
 #include <cstdint>
-#include <cstring>
-#include <iomanip>
-#include <random>
 #include <stdint.h>
 #include <vector>
+#include <string.h>
 
 #include "SiPMMath.h"
 #include "SiPMTypes.h"
 
-#ifdef __AVX2__
-#include <immintrin.h>
-#include <x86intrin.h>
-#endif //
+// Musl implementation of lcg64
+static constexpr uint64_t lcg64(const uint64_t x) { return (x * 10419395304814325825ULL + 1) % -1ULL; }
 
 namespace sipm {
 namespace SiPMRng {
@@ -110,8 +106,6 @@ public:
   inline float RandF() noexcept;
   /// @brief Gives an uniform random integer
   uint32_t randInteger(const uint32_t) noexcept;
-  template<uint32_t N>
-  uint32_t randInteger() noexcept;
 
   /// @brief Gives random double with gaussian distribution
   double randGaussian(const double, const double) noexcept;
@@ -152,8 +146,8 @@ private:
  * the result is a random double in range (0-1].
  */
 inline double SiPMRandom::Rand() noexcept {
-  const uint64_t u = 0x3FFULL << 52 | m_rng() >> 12;
-  return *(double*)(&u) - 1;
+  const uint64_t x = (0x3ffull << 52) | (m_rng() >> 12);
+  return *(double*)(&x) - 1;
 }
 
 /**
@@ -163,8 +157,8 @@ inline double SiPMRandom::Rand() noexcept {
  * the result is a random float in range (0-1].
  */
 inline float SiPMRandom::RandF() noexcept {
-  const uint32_t u = 0x3F8ULL << 20 | m_rng() >> 34;
-  return *(float*)(&u) - 1;
+  const uint32_t x = (0x3f8ul << 20) | (static_cast<uint32_t>(m_rng()) >> 8);
+  return *(float*)(&x) - 1;
 }
 } // namespace sipm
 #endif /* SIPM_RANDOM_H */

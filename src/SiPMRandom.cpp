@@ -1,22 +1,17 @@
 #include "SiPMRandom.h"
 #include "SiPMTypes.h"
 #include "SiPMMath.h"
-#include <algorithm>
-#include <cmath>
-#include <cstdint>
-#include <cstdlib>
 
-#include <cstring>
+#include <cstdint>
 #include <iostream>
-#include <vector>
+#include <string.h>
+#include <random>
 #ifdef __AVX2__
 #include <immintrin.h>
+#include <x86intrin.h>
 #else
 #include <ctime>
 #endif
-
-// Musl implementation of lcg64
-static constexpr uint64_t lcg64(const uint64_t x) { return (x * 10419395304814325825ULL + 1) % -1ULL; }
 
 // Random seed
 #ifdef __AVX2__
@@ -39,10 +34,9 @@ void Xorshift256plus::seed() {
     s[i] = lcg64(s[i - 1]);
   }
   // Call rng few times
-  this->operator()();
-  this->operator()();
-  this->operator()();
-  this->operator()();
+  for( uint16_t i = 0; i<1024; ++i){
+    this->operator()();
+  }
 }
 
 void Xorshift256plus::seed(const uint64_t aseed) {
@@ -312,7 +306,7 @@ template <> auto SiPMRandom::Rand<SiPMVector<double>>(const uint32_t n) -> SiPMV
   for (uint32_t i = 0; i < n; ++i) {
     uVec[i] = 0x3FFULL << 52ULL | m_rng() >> 12ULL;
   }
-  std::memcpy(dVec.data(), uVec.data(), n * sizeof(uint64_t));
+  memcpy(dVec.data(), uVec.data(), n * sizeof(uint64_t));
   for (uint32_t i = 0; i < n; ++i) {
     dVec[i] = dVec[i] - 1;
   }
@@ -349,6 +343,7 @@ template <> auto SiPMRandom::RandF<std::vector<float>>(const uint32_t n) -> std:
  * @param sigma Standard deviation value of the gaussuan
  * @param n Number of values to generate
  */
+#pragma GCC optimize ("ffast-math")
 template <>
 auto SiPMRandom::randGaussian<SiPMVector<double>>(const double mu, const double sigma, const uint32_t n)
   -> SiPMVector<double> {
@@ -368,8 +363,9 @@ auto SiPMRandom::randGaussian<SiPMVector<double>>(const double mu, const double 
     out[i + 1] = v;
   }
 
+  // Log is not vectorizable
   for (uint32_t i = 0; i < n; ++i) {
-    s[i] = log(s[i]) * math::reciprocal(s[i]);
+    s[i] = log(s[i]) / s[i];
   }
 
   for (uint32_t i = 0; i < n; ++i) {
@@ -380,12 +376,14 @@ auto SiPMRandom::randGaussian<SiPMVector<double>>(const double mu, const double 
 
   return out;
 }
+#pragma GCC reset_options
 
 /**
  * @param mu Mean value of the gaussian
  * @param sigma Standard deviation value of the gaussian
  * @param n Number of values to generate
  */
+#pragma GCC optimize ("ffast-math")
 template <>
 auto SiPMRandom::randGaussianF<SiPMVector<float>>(const float mu, const float sigma, const uint32_t n)
   -> SiPMVector<float> {
@@ -405,8 +403,9 @@ auto SiPMRandom::randGaussianF<SiPMVector<float>>(const float mu, const float si
     out[i + 1] = v;
   }
 
+  // Log is not vectorizable
   for (uint32_t i = 0; i < n; ++i) {
-    s[i] = log(s[i]) * math::reciprocal(s[i]);
+    s[i] = log(s[i]) / s[i];
   }
 
   // If compiler is clever this loop should be vectorized
@@ -419,7 +418,7 @@ auto SiPMRandom::randGaussianF<SiPMVector<float>>(const float mu, const float si
 
   return out;
 }
-
+#pragma GCC reset_options
 /**
  * @param mu Mean value of the gaussuan
  * @param sigma Standard deviation value of the gaussian
