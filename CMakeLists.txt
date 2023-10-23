@@ -14,6 +14,7 @@ endif(NOT CMAKE_BUILD_TYPE)
 
 set(SIPM_BUILD_PYTHON OFF CACHE BOOL "Compile python bindings for SiPM simulation library")
 set(SIPM_ENABLE_TEST OFF CACHE BOOL "Build tests for SiPM simulation library")
+set(SIPM_ENABLE_BENCH OFF CACHE BOOL "Build benchmarks for SiPM simulation library")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -23,6 +24,14 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	    add_subdirectory(tests)
 	endif(SIPM_ENABLE_TEST)
 endif ()
+
+if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+  if(SIPM_ENABLE_BENCH)
+	    add_subdirectory(bench)
+    endif(SIPM_ENABLE_BENCH)
+endif ()
+
+
 
 # Get files
 file(GLOB_RECURSE src "src/*.cpp")
