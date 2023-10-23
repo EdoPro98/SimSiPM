@@ -15,9 +15,10 @@ TEST_F(TestSiPMSensor, Constructor) { SiPMSensor sensor = SiPMSensor(); }
 
 TEST_F(TestSiPMSensor, AddPhoton) {
   static constexpr int N = 100000;
-  for (int i = 0; i < 1000; ++i) {
+  for (int i = 0; i < N; ++i) {
     sut.resetState();
-    sut.addPhoton(10);
+    const double t = rng.randGaussian(100, 0.1);
+    sut.addPhoton(t);
   }
 }
 
@@ -27,16 +28,18 @@ TEST_F(TestSiPMSensor, AddPhotons) {
     sut.resetState();
     int n = rng.randInteger(100) + 1;
     // n should be > 0
-    std::vector<double> t = rng.randGaussian(100, 0.2, n);
+    const std::vector<double> t = rng.randGaussian(100, 0.1, n);
     sut.addPhotons(t);
   }
 }
 
 TEST_F(TestSiPMSensor, AddPhotonWlen) {
   static constexpr int N = 100000;
-  for (int i = 0; i < 1000; ++i) {
+  for (int i = 0; i < N; ++i) {
     sut.resetState();
-    sut.addPhoton(rng.randGaussian(100, 0.2), rng.randGaussian(450, 20));
+    const double t = rng.randGaussian(100, 0.1);
+    const double w = rng.randGaussian(450, 20);
+    sut.addPhoton(t, w);
   }
 }
 
@@ -47,8 +50,8 @@ TEST_F(TestSiPMSensor, AddPhotonsWlen) {
     sut.resetState();
     int n = rng.randInteger(100) + 1;
     // n should be > 0
-    std::vector<double> t = rng.randGaussian(100, 0.2, n);
-    std::vector<double> w = rng.randGaussian(450, 20, n);
+    const std::vector<double> t = rng.randGaussian(100, 0.2, n);
+    const std::vector<double> w = rng.randGaussian(450, 20, n);
     sut.addPhotons(t, w);
   }
 }
@@ -63,7 +66,7 @@ TEST_F(TestSiPMSensor, AddDcr) {
     sensor.runEvent();
     ndcr += sensor.debug().nDcr;
   }
-  double rate = 1e9 * ((double)ndcr / N / sensor.properties().signalLength());
+  const double rate = 1e9 * ((double)ndcr / N / sensor.properties().signalLength());
   EXPECT_GE(rate, sensor.properties().dcr() * 0.95);
   EXPECT_LE(rate, sensor.properties().dcr() * 1.05);
 }
@@ -80,7 +83,7 @@ TEST_F(TestSiPMSensor, SignalGeneration) {
 
   for (int i = 1; i < N; ++i) {
     // generate i photons
-    std::vector<double> t = rng.randGaussian(10, 0.1, i);
+    const std::vector<double> t = rng.randGaussian(10, 0.1, i);
     double avg_max = 0;
     for (int j = 0; j < R; ++j) {
       lsut.resetState();
