@@ -24,6 +24,7 @@
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <vector>
 
 namespace sipm {

@@ -2,7 +2,6 @@
 #include "SiPMTypes.h"
 #include <cstdint>
 
-
 // Random seed
 #include <x86intrin.h>
 static uint64_t rdtsc() {
@@ -301,30 +300,30 @@ uint32_t SiPMRandom::randInteger(const uint32_t max) noexcept {
 }
 
 /**
-* @param n Number of values to generate
-*/
- std::vector<double> SiPMRandom::Rand(const uint32_t n) {
-    std::vector<double> f64(n);
-    uint64_t* u64; // Free at end of function
+ * @param n Number of values to generate
+ */
+std::vector<double> SiPMRandom::Rand(const uint32_t n) {
+  std::vector<double> f64(n);
+  uint64_t* u64; // Free at end of function
 
-    if (n > 8) {
-      // simd8 allocates data
-      u64 = m_rng.simd8(n);
-    } else {
-      // We do allocation
-      u64 = (uint64_t*)aligned_alloc(64, n * sizeof(uint64_t));
-      for (uint32_t i = 0; i < n; ++i) {
-        u64[i] = m_rng();
-      }
-    }
-
+  if (n > 8) {
+    // simd8 allocates data
+    u64 = m_rng.simd8(n);
+  } else {
+    // We do allocation
+    u64 = (uint64_t*)aligned_alloc(64, n * sizeof(uint64_t));
     for (uint32_t i = 0; i < n; ++i) {
-      f64[i] = static_cast<double>(u64[i]) * 0x1p-64;
+      u64[i] = m_rng();
     }
+  }
 
-    free(u64);
+  for (uint32_t i = 0; i < n; ++i) {
+    f64[i] = static_cast<double>(u64[i]) * 0x1p-64;
+  }
 
-    return f64;
+  free(u64);
+
+  return f64;
 }
 
 /**
@@ -338,7 +337,7 @@ std::vector<float> SiPMRandom::RandF(const uint32_t n) {
     // simd8 allocates data
     // need n/2 uint64_t to generate n uint32_t
     // odd case requires one more generation for tail
-    u32 = (uint32_t*)m_rng.simd8((n+1) / 2);
+    u32 = (uint32_t*)m_rng.simd8((n + 1) / 2);
   } else {
     // We do allocation
     u32 = (uint32_t*)aligned_alloc(64, n * sizeof(uint32_t));
@@ -353,7 +352,7 @@ std::vector<float> SiPMRandom::RandF(const uint32_t n) {
     // See SiPMRandom.h for details
     f32[i] = static_cast<float>(u32[i]) * 0x1p-32;
   }
-  f32[n-1] = Rand<float>();
+  f32[n - 1] = Rand<float>();
 
   free(u32);
 
@@ -393,7 +392,7 @@ std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma
 std::vector<float> SiPMRandom::randGaussianF(const float mu, const float sigma, const uint32_t n) {
   std::vector<float> out(n);
   const std::vector<float> u = RandF(n);
-  constexpr float TWO_PI = 2 * M_PIf;
+  constexpr float TWO_PI = 2 * M_PI;
 
   for (uint32_t i = 0; i < n - 1; i += 2) {
     const float R = sqrtf(-2.0 * logf(u[i]));
@@ -417,18 +416,18 @@ std::vector<uint32_t> SiPMRandom::randInteger(const uint32_t max, const uint32_t
   std::vector<uint32_t> out(n);
   uint32_t* u32;
 
-  if(n < 16){
+  if (n < 16) {
     u32 = (uint32_t*)aligned_alloc(64, n * sizeof(uint32_t));
-    for(uint32_t i = 0; i < n; ++i){
+    for (uint32_t i = 0; i < n; ++i) {
       u32[i] = m_rng() >> 32;
     }
   } else {
-    u32 = (uint32_t*)m_rng.simd8((n+1)/2);
+    u32 = (uint32_t*)m_rng.simd8((n + 1) / 2);
   }
 
   // Sort of fixed point arithmetic
   // Avoids division and float numbers
-  for (uint32_t i = 0; i < n ; ++i) {
+  for (uint32_t i = 0; i < n; ++i) {
     const uint64_t m = uint64_t(u32[i]) * uint64_t(max);
     out[i] = m >> 32;
   }

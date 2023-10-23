@@ -16,6 +16,7 @@
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 
 namespace sipm {
 class SiPMHit {
