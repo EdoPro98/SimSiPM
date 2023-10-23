@@ -11,7 +11,7 @@ void SiPMHitPy(py::module& m) {
   sipmhit.def("time", &SiPMHit::time)
     .def("row", &SiPMHit::row)
     .def("col", &SiPMHit::col)
-    .def("amplitude", static_cast<double (SiPMHit::*)() const>(&SiPMHit::amplitude))
+    .def("amplitude", static_cast<double (SiPMHit::*)() const noexcept>(&SiPMHit::amplitude))
     .def("hitType", &SiPMHit::hitType)
     .def("__repr__", &SiPMHit::toString)
     .def("__copy__", [](const SiPMHit& self) { return SiPMHit(self); })
