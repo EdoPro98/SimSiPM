@@ -1,7 +1,4 @@
 #include "SiPMProperties.h"
-#include <algorithm>
-#include <cctype>
-#include <cstdint>
 
 namespace sipm {
 void SiPMProperties::setProperty(const std::string& prop, const double val) {
@@ -75,9 +72,6 @@ void SiPMProperties::setPdeSpectrum(const std::vector<double>& wav, const std::v
   const double dx = (xmax - xmin) / 25;
   for (uint32_t i = 0; i < N; ++i) {
     const double newx = xmin + i * dx;
-    if (interpolatedSpectrum.count(newx) > 0) { // Skip in case value exist
-      continue;
-    }
     auto it1 = x.upper_bound(newx);
     // Avoid boundary conditions
     if (it1 == x.cend()) {
@@ -94,12 +88,15 @@ void SiPMProperties::setPdeSpectrum(const std::vector<double>& wav, const std::v
     const double y1 = it1->second;
     const double logNewy = (log(y0) * log(x1 / newx) + log(y1) * log(newx / x0)) / log(x1 / x0);
     double newy = std::exp(logNewy);
-    if (newy == 0) { // Newy cannot be 0 becouse we are avoiding boundary conditions
+    // If newy is 0 or less try linear interpolation
+    if (newy < 0) {
       // Linear interpolation
       const double m = (y1 - y0) / (x1 - x0);
       const double q = y0 - m * x0;
       newy = m * newx + q;
     }
+    // If newy < 0 just set at 0
+    newy = newy < 0 ? 0 : newy;
     interpolatedSpectrum.emplace(newx, newy);
   }
 
@@ -135,8 +132,8 @@ SiPMProperties SiPMProperties::readSettings(const std::string& fname) {
 std::ostream& operator<<(std::ostream& out, const SiPMProperties& obj) {
   out << std::setprecision(2) << std::fixed;
   out << "===> SiPM Properties <===" << '\n';
-  out << "Address: " << std::addressof(obj) << "\n";
-  out << "Size: " << obj.m_Size << " mm\n";
+  out << "Address: " << std::hex << std::addressof(obj) << "\n";
+  out << "Size: " << std::dec << obj.m_Size << " mm\n";
   out << "Pitch: " << obj.m_Pitch << " um\n";
   out << "Number of cells: " << obj.nCells() << "\n";
   out << "Hit distribution: ";

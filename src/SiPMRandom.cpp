@@ -1,73 +1,69 @@
 #include "SiPMRandom.h"
 #include "SiPMTypes.h"
-#include "SiPMMath.h"
-
 #include <cstdint>
-#include <iostream>
-#include <string.h>
-#include <random>
-#ifdef __AVX2__
-#include <immintrin.h>
-#include <x86intrin.h>
-#else
-#include <ctime>
-#endif
+
 
 // Random seed
-#ifdef __AVX2__
-static uint64_t rdtsc() { return _rdtsc(); }
-#else
+#include <x86intrin.h>
 static uint64_t rdtsc() {
-  std::srand(std::time(nullptr));
-  uint32_t lo, hi;
-  lo = std::rand();
-  hi = std::rand();
-  return ((uint64_t)hi << 32) | lo;
+  _mm_lfence();
+  const uint64_t t = __rdtsc();
+  _mm_lfence();
+  return t;
 }
-#endif
 
 namespace sipm {
 namespace SiPMRng {
 void Xorshift256plus::seed() {
   s[0] = lcg64(rdtsc());
+  __s[0][0] = lcg64(s[0]);
+  for (int i = 1; i < 8; ++i) {
+    __s[0][i] = lcg64(__s[0][i - 1]);
+  }
   for (uint8_t i = 1; i < 4; ++i) {
     s[i] = lcg64(s[i - 1]);
+    for (int j = 0; j < 8; ++j) {
+      __s[i][j] = lcg64(__s[i - 1][j]);
+    }
   }
   // Call rng few times
-  for( uint16_t i = 0; i<1024; ++i){
+  for (uint16_t i = 0; i < 1024; ++i) {
     this->operator()();
   }
+  free(this->simd8(1024));
 }
 
 void Xorshift256plus::seed(const uint64_t aseed) {
-  s[0] = lcg64(aseed);
+  s[0] = aseed;
+  __s[0][0] = aseed;
+  for (int i = 1; i < 8; ++i) {
+    __s[0][i] = lcg64(__s[0][i - 1]);
+  }
   for (uint8_t i = 1; i < 4; ++i) {
     s[i] = lcg64(s[i - 1]);
-  }
-}
-
-void Xorshift256plus::jump() {
-  static constexpr uint64_t JUMP[] = {0x180ec6d33cfd0aba, 0xd5a61266f0c9392c, 0xa9582618e03fc9aa, 0x39abdc4529b1661c};
-  uint64_t s0 = 0, s1 = 0, s2 = 0, s3 = 0;
-  for (int i = 0; i < 4; ++i) {
-    for (int b = 0; b < 64; ++b) {
-      if (JUMP[i] & 1UL << b) {
-        s0 ^= s[0];
-        s1 ^= s[1];
-        s2 ^= s[2];
-        s3 ^= s[3];
-      }
-      this->operator()();
+    for (int j = 0; j < 8; ++j) {
+      __s[i][j] = lcg64(__s[i - 1][j]);
     }
   }
-  s[0] = s0;
-  s[1] = s1;
-  s[2] = s2;
-  s[3] = s3;
+  // Call rng few times
+  for (uint16_t i = 0; i < 1024; ++i) {
+    this->operator()();
+  }
+  free(this->simd8(1024));
 }
 } // namespace SiPMRng
 
 // SCALAR //
+
+// Generate two 32 bit floating from one 64 bit integer
+pair<float, float> SiPMRandom::RandF2() noexcept {
+  const uint64_t u64 = m_rng();
+  const uint32_t lo = u64 & 0xffffffff;
+  const uint32_t hi = u64 >> 32;
+  const float first = static_cast<float>(lo & ((1ULL << 24) - 1)) * 0x1p-24;
+  const float second = static_cast<float>(hi & ((1ULL << 24) - 1)) * 0x1p-24;
+  return {first, second};
+}
 
 /**
  * @param mu Mean value of the poisson distribution
@@ -97,8 +93,7 @@ double SiPMRandom::randExponential(const double mu) noexcept { return -log(Rand(
  * @param mu Mean value of the exponential distribution
  * @return float value from exponential distribution
  */
-float SiPMRandom::randExponentialF(const float mu) noexcept { return -log(RandF()) * mu; }
-
+float SiPMRandom::randExponentialF(const float mu) noexcept { return -logf(Rand<float>()) * mu; }
 /**
 *   @brief Samples a random number from the standard Normal (Gaussian) Distribution with the given mean and sigma.
 *
@@ -235,7 +230,7 @@ float SiPMRandom::randGaussianF(const float mu, const float sigma) noexcept {
   static constexpr float kT = 0.03895759111;
 
   do {
-    const float y = RandF();
+    const float y = Rand<float>();
 
     if (y > kHm1) {
       const float result = kHp * y - kHp1;
@@ -249,7 +244,7 @@ float SiPMRandom::randGaussianF(const float mu, const float sigma) noexcept {
     }
 
     if (y < kHm) {
-      const float rn = 2 * RandF() - 1;
+      const float rn = 2 * Rand<float>() - 1;
       const float z = (rn > 0) ? 2 - rn : -2 - rn;
       if ((kC1 - y) * (kC3 + abs(z)) < kC2) {
         return z * sigma + mu;
@@ -267,8 +262,8 @@ float SiPMRandom::randGaussianF(const float mu, const float sigma) noexcept {
     }
 
     while (true) {
-      float x = RandF();
-      float y = kYm * RandF();
+      float x = Rand<float>();
+      float y = kYm * Rand<float>();
       const float z = kX0 - kS * x - y;
       float rn;
       if (z > 0) {
@@ -282,7 +277,7 @@ float SiPMRandom::randGaussianF(const float mu, const float sigma) noexcept {
         return rn * sigma + mu;
       }
       if (y < x + kT) {
-        if (rn * rn < 4 * (kB - log(x))) {
+        if (rn * rn < 4 * (kB - logf(x))) {
           return rn * sigma + mu;
         }
       }
@@ -294,48 +289,75 @@ float SiPMRandom::randGaussianF(const float mu, const float sigma) noexcept {
  * @param max Maximum value of integer to generate
  * @return uint32_t value from random integer distribution
  */
-uint32_t SiPMRandom::randInteger(const uint32_t max) noexcept { return static_cast<uint32_t>(Rand() * max); }
+uint32_t SiPMRandom::randInteger(const uint32_t max) noexcept {
+  uint32_t mask = ~uint32_t(0);
+  uint32_t range = max - 1;
+  mask >>= __builtin_clz(range | 1);
+  uint32_t x;
+  do {
+    x = m_rng() & mask;
+  } while (x > range);
+  return x;
+}
+
+/**
+* @param n Number of values to generate
+*/
+ std::vector<double> SiPMRandom::Rand(const uint32_t n) {
+    std::vector<double> f64(n);
+    uint64_t* u64; // Free at end of function
+
+    if (n > 8) {
+      // simd8 allocates data
+      u64 = m_rng.simd8(n);
+    } else {
+      // We do allocation
+      u64 = (uint64_t*)aligned_alloc(64, n * sizeof(uint64_t));
+      for (uint32_t i = 0; i < n; ++i) {
+        u64[i] = m_rng();
+      }
+    }
+
+    for (uint32_t i = 0; i < n; ++i) {
+      f64[i] = static_cast<double>(u64[i]) * 0x1p-64;
+    }
+
+    free(u64);
+
+    return f64;
+}
 
 /**
  * @param n Number of values to generate
  */
-template <> auto SiPMRandom::Rand<SiPMVector<double>>(const uint32_t n) -> SiPMVector<double> {
-  SiPMVector<uint64_t> uVec(n);
-  SiPMVector<double> dVec(n);
+std::vector<float> SiPMRandom::RandF(const uint32_t n) {
+  std::vector<float> f32(n);
+  uint32_t* u32; // Free before end of function
+
+  if (n > 16) {
+    // simd8 allocates data
+    // need n/2 uint64_t to generate n uint32_t
+    // odd case requires one more generation for tail
+    u32 = (uint32_t*)m_rng.simd8((n+1) / 2);
+  } else {
+    // We do allocation
+    u32 = (uint32_t*)aligned_alloc(64, n * sizeof(uint32_t));
+    for (uint32_t i = 0; i < n - 1; i += 2) {
+      const uint64_t u64 = m_rng();
+      u32[i] = u64 >> 32;
+      u32[i + 1] = u64 & 0xffffffff;
+    }
+  }
 
   for (uint32_t i = 0; i < n; ++i) {
-    uVec[i] = 0x3FFULL << 52ULL | m_rng() >> 12ULL;
+    // See SiPMRandom.h for details
+    f32[i] = static_cast<float>(u32[i]) * 0x1p-32;
   }
-  memcpy(dVec.data(), uVec.data(), n * sizeof(uint64_t));
-  for (uint32_t i = 0; i < n; ++i) {
-    dVec[i] = dVec[i] - 1;
-  }
-  return dVec;
-}
+  f32[n-1] = Rand<float>();
 
-/**
- * @param n Number of values to generate
- */
-template <> auto SiPMRandom::RandF<SiPMVector<float>>(const uint32_t n) -> SiPMVector<float> {
-  SiPMVector<float> out(n);
-  std::generate(out.begin(), out.end(), [this] { return this->RandF(); });
-  return out;
-}
+  free(u32);
 
-/**
- * @param n Number of values to generate
- */
-template <> auto SiPMRandom::Rand<std::vector<double>>(const uint32_t n) -> std::vector<double> {
-  SiPMVector<double> out = Rand<SiPMVector<double>>(n);
-  return std::vector<double>(out.begin(), out.end());
-}
-
-/**
- * @param n Number of values to generate
- */
-template <> auto SiPMRandom::RandF<std::vector<float>>(const uint32_t n) -> std::vector<float> {
-  SiPMVector<float> out = RandF<SiPMVector<float>>(n);
-  return std::vector<float>(out.begin(), out.end());
+  return f32;
 }
 
 /**
@@ -343,104 +365,48 @@ template <> auto SiPMRandom::RandF<std::vector<float>>(const uint32_t n) -> std:
  * @param sigma Standard deviation value of the gaussuan
  * @param n Number of values to generate
  */
-#pragma GCC optimize ("ffast-math")
-template <>
-auto SiPMRandom::randGaussian<SiPMVector<double>>(const double mu, const double sigma, const uint32_t n)
-  -> SiPMVector<double> {
-  SiPMVector<double> out(n);
-  SiPMVector<double> s(n);
+std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma, const uint32_t n) {
+  std::vector<double> out(n);
+  const std::vector<double> u = Rand(n);
+  constexpr double TWO_PI = 2 * M_PI;
 
   for (uint32_t i = 0; i < n - 1; i += 2) {
-    double z, u, v;
-    do {
-      u = Rand() * 2.0 - 1.0;
-      v = Rand() * 2.0 - 1.0;
-      z = u * u + v * v;
-    } while (z > 1.0);
-    s[i] = z;
-    s[i + 1] = z;
-    out[i] = u;
-    out[i + 1] = v;
-  }
-
-  // Log is not vectorizable
-  for (uint32_t i = 0; i < n; ++i) {
-    s[i] = log(s[i]) / s[i];
+    const double R = sqrt(-2.0 * log(u[i]));
+    out[i] = cos(TWO_PI * u[i]) * R;
+    out[i + 1] = sin(TWO_PI * u[i + 1]) * R;
   }
 
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = sqrt(-2 * s[i]) * out[i] * sigma + mu;
+    out[i] = out[i] * sigma + mu;
   }
-  // If n is odd we miss last value so recalculate it anyway
+
   out[n - 1] = randGaussian(mu, sigma);
 
   return out;
 }
-#pragma GCC reset_options
 
 /**
  * @param mu Mean value of the gaussian
  * @param sigma Standard deviation value of the gaussian
  * @param n Number of values to generate
  */
-#pragma GCC optimize ("ffast-math")
-template <>
-auto SiPMRandom::randGaussianF<SiPMVector<float>>(const float mu, const float sigma, const uint32_t n)
-  -> SiPMVector<float> {
-  SiPMVector<float> out(n);
-  SiPMVector<float> s(n);
+std::vector<float> SiPMRandom::randGaussianF(const float mu, const float sigma, const uint32_t n) {
+  std::vector<float> out(n);
+  const std::vector<float> u = RandF(n);
+  constexpr float TWO_PI = 2 * M_PIf;
 
   for (uint32_t i = 0; i < n - 1; i += 2) {
-    float z, u, v;
-    do {
-      u = RandF() * 2.0f - 1.0f;
-      v = RandF() * 2.0f - 1.0f;
-      z = u * u + v * v;
-    } while (z > 1.0);
-    s[i] = z;
-    s[i + 1] = z;
-    out[i] = u;
-    out[i + 1] = v;
+    const float R = sqrtf(-2.0 * logf(u[i]));
+    out[i] = cosf(TWO_PI * u[i]) * R;
+    out[i + 1] = sinf(TWO_PI * u[i + 1]) * R;
   }
 
-  // Log is not vectorizable
   for (uint32_t i = 0; i < n; ++i) {
-    s[i] = log(s[i]) / s[i];
+    out[i] = out[i] * sigma + mu;
   }
 
-  // If compiler is clever this loop should be vectorized
-  // using vsqrtps and vfmadd instructions on ymm registers
-  for (uint32_t i = 0; i < n; ++i) {
-    out[i] = sqrt(-2 * s[i]) * out[i] * sigma + mu;
-  }
-  // If n is odd we miss last value so recalculate it anyway
   out[n - 1] = randGaussianF(mu, sigma);
-
   return out;
-}
-#pragma GCC reset_options
-/**
- * @param mu Mean value of the gaussuan
- * @param sigma Standard deviation value of the gaussian
- * @param n Number of values to generate
- */
-template <>
-auto SiPMRandom::randGaussian<std::vector<double>>(const double mu, const double sigma, const uint32_t n)
-  -> std::vector<double> {
-  SiPMVector<double> out = randGaussian<SiPMVector<double>>(mu, sigma, n);
-  return std::vector<double>(out.begin(), out.end());
-}
-
-/**
- * @param mu Mean value of the gaussuan
- * @param sigma Standard deviation value of the gaussian
- * @param n Number of values to generate
- */
-template <>
-auto SiPMRandom::randGaussianF<std::vector<float>>(const float mu, const float sigma, const uint32_t n)
-  -> std::vector<float> {
-  SiPMVector<float> out = randGaussianF<SiPMVector<float>>(mu, sigma, n);
-  return std::vector<float>(out.begin(), out.end());
 }
 
 /**
@@ -449,11 +415,24 @@ auto SiPMRandom::randGaussianF<std::vector<float>>(const float mu, const float s
  */
 std::vector<uint32_t> SiPMRandom::randInteger(const uint32_t max, const uint32_t n) {
   std::vector<uint32_t> out(n);
-  const SiPMVector<double> buffer = Rand<SiPMVector<double>>(n);
+  uint32_t* u32;
 
-  for (uint32_t i = 0; i < n; ++i) {
-    out[i] = buffer[i] * max;
+  if(n < 16){
+    u32 = (uint32_t*)aligned_alloc(64, n * sizeof(uint32_t));
+    for(uint32_t i = 0; i < n; ++i){
+      u32[i] = m_rng() >> 32;
+    }
+  } else {
+    u32 = (uint32_t*)m_rng.simd8((n+1)/2);
   }
+
+  // Sort of fixed point arithmetic
+  // Avoids division and float numbers
+  for (uint32_t i = 0; i < n ; ++i) {
+    const uint64_t m = uint64_t(u32[i]) * uint64_t(max);
+    out[i] = m >> 32;
+  }
+
   return out;
 }
 
@@ -461,25 +440,9 @@ std::vector<uint32_t> SiPMRandom::randInteger(const uint32_t max, const uint32_t
  * @param mu Mean value of the exponential distribution
  * @param n Number of values to generate
  */
-template <>
-auto SiPMRandom::randExponential<SiPMVector<double>>(const double mu, const uint32_t n) -> SiPMVector<double> {
-  SiPMVector<double> out(n);
-  const SiPMVector<double> buffer = Rand<SiPMVector<double>>(n);
-
-  for (uint32_t i = 0; i < n; ++i) {
-    out[i] = -log(buffer[i]) * mu;
-  }
-  return out;
-}
-
-/**
- * @param mu Mean value of the exponential distribution
- * @param n Number of values to generate
- */
-template <>
-auto SiPMRandom::randExponentialF<SiPMVector<float>>(const float mu, const uint32_t n) -> SiPMVector<float> {
-  SiPMVector<float> out(n);
-  const SiPMVector<float> buffer = RandF<SiPMVector<float>>(n);
+std::vector<double> SiPMRandom::randExponential(const double mu, const uint32_t n) {
+  std::vector<double> out(n);
+  const std::vector<double> buffer = Rand(n);
 
   for (uint32_t i = 0; i < n; ++i) {
     out[i] = -log(buffer[i]) * mu;
@@ -491,20 +454,13 @@ auto SiPMRandom::randExponentialF<SiPMVector<float>>(const float mu, const uint3
  * @param mu Mean value of the exponential distribution
  * @param n Number of values to generate
  */
-template <>
-auto SiPMRandom::randExponential<std::vector<double>>(const double mu, const uint32_t n) -> std::vector<double> {
-  SiPMVector<double> out = randExponential<SiPMVector<double>>(mu, n);
-  return std::vector<double>(out.begin(), out.end());
-}
+std::vector<float> SiPMRandom::randExponentialF(const float mu, const uint32_t n) {
+  std::vector<float> out(n);
+  const std::vector<float> buffer = RandF(n);
 
-/**
- * @param mu Mean value of the exponential distribution
- * @param n Number of values to generate
- */
-template <>
-auto SiPMRandom::randExponentialF<std::vector<float>>(const float mu, const uint32_t n) -> std::vector<float> {
-  SiPMVector<float> out = randExponentialF<SiPMVector<float>>(mu, n);
-  return std::vector<float>(out.begin(), out.end());
+  for (uint32_t i = 0; i < n; ++i) {
+    out[i] = -logf(buffer[i]) * mu;
+  }
+  return out;
 }
-
 } // namespace sipm

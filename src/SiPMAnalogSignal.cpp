@@ -1,16 +1,7 @@
 #include "SiPMAnalogSignal.h"
-#include "SiPMMath.h"
 #include "SiPMTypes.h"
-#include <algorithm>
-#include <cstdint>
 
 namespace sipm {
-
-template <> auto SiPMAnalogSignal::waveform<SiPMVector<float>>() const -> SiPMVector<float> { return m_Waveform; }
-
-template <> auto SiPMAnalogSignal::waveform<std::vector<float>>() const -> std::vector<float> {
-  return std::vector<float>(m_Waveform.cbegin(), m_Waveform.cend());
-}
 
 /**
 * Integral of the signal defined as the sum of all samples in the integration
@@ -24,10 +15,10 @@ double SiPMAnalogSignal::integral(const double intstart, const double intgate, c
   double integral = 0;
   const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  if (std::any_of(start,end,[threshold](const double sample){ return sample > threshold; }) == false) {
+  if (std::any_of(start, end, [threshold](const double sample) { return sample > threshold; }) == false) {
     return -1;
   }
-  for(auto itr = start; itr != end; ++itr){
+  for (auto itr = start; itr != end; ++itr) {
     integral += *itr;
   }
   return integral * m_Sampling;
@@ -45,11 +36,11 @@ double SiPMAnalogSignal::peak(const double intstart, const double intgate, const
   double peak = 0;
   const auto start = m_Waveform.cbegin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  if (std::any_of(start,end,[threshold](const double sample){ return sample > threshold; }) == false) {
+  if (std::any_of(start, end, [threshold](const double sample) { return sample > threshold; }) == false) {
     return -1;
   }
-  for(auto itr = start; itr != end; ++itr){
-    if( *itr > peak){
+  for (auto itr = start; itr != end; ++itr) {
+    if (*itr > peak) {
       peak = *itr;
     }
   }
@@ -68,11 +59,11 @@ double SiPMAnalogSignal::tot(const double intstart, const double intgate, const 
   uint32_t tot = 0;
   const auto start = m_Waveform.cbegin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  if (std::any_of(start,end,[threshold](const double sample){ return sample > threshold; }) == false) {
+  if (std::any_of(start, end, [threshold](const double sample) { return sample > threshold; }) == false) {
     return -1;
   }
-  for(auto itr = start; itr != end; ++itr){
-    if(*itr > threshold){
+  for (auto itr = start; itr != end; ++itr) {
+    if (*itr > threshold) {
       ++tot;
     }
   }
@@ -91,7 +82,7 @@ double SiPMAnalogSignal::toa(const double intstart, const double intgate, const 
   uint32_t toa = 0;
   auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  if (std::any_of(start,end,[threshold](const double sample){ return sample > threshold; }) == false) {
+  if (std::any_of(start, end, [threshold](const double sample) { return sample > threshold; }) == false) {
     return -1;
   }
 
@@ -113,7 +104,7 @@ double SiPMAnalogSignal::toa(const double intstart, const double intgate, const 
 double SiPMAnalogSignal::top(const double intstart, const double intgate, const double threshold) const {
   const auto start = m_Waveform.cbegin() + static_cast<uint32_t>(intstart / m_Sampling);
   const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  if (std::any_of(start,end,[threshold](const double sample){ return sample > threshold; }) == false) {
+  if (std::any_of(start, end, [threshold](const double sample) { return sample > threshold; }) == false) {
     return -1;
   }
 
@@ -123,8 +114,8 @@ double SiPMAnalogSignal::top(const double intstart, const double intgate, const 
 std::ostream& operator<<(std::ostream& out, const SiPMAnalogSignal& obj) {
   out << std::setprecision(2) << std::fixed;
   out << "===> SiPM Analog Signal <===\n";
-  out << "Address: " << std::addressof(obj) << "\n";
-  out << "Signal length is: " << obj.m_Waveform.size() / obj.m_Sampling << " ns\n";
+  out << "Address: " << std::hex << std::addressof(obj) << "\n";
+  out << "Signal length is: " << std::dec << obj.m_Waveform.size() / obj.m_Sampling << " ns\n";
   out << "Signal is sampled every: " << obj.m_Sampling << " ns\n";
   out << "Signal contains: " << obj.m_Waveform.size() << " points";
   return out;

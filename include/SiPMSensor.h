@@ -14,14 +14,12 @@
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
-#include <memory>
 #include <sstream>
 #include <vector>
 
 #include "SiPMAnalogSignal.h"
 #include "SiPMDebugInfo.h"
 #include "SiPMHit.h"
-#include "SiPMMath.h"
 #include "SiPMProperties.h"
 #include "SiPMRandom.h"
 #include "SiPMTypes.h"
@@ -68,13 +66,10 @@ public:
   SiPMRandom& rng() { return m_rng; }
 
   /// @brief Returns a @ref SiPMDebugInfo struct with MC-Truth values
-#ifdef __clang__
-  constexpr SiPMDebugInfo debug() const {
+  SiPMDebugInfo debug() const {
     return SiPMDebugInfo{static_cast<uint32_t>(m_PhotonTimes.size()), m_nPe, m_nDcr, m_nXt, m_nDXt, m_nAp};
   }
-#else
-  SiPMDebugInfo debug() const { return SiPMDebugInfo{static_cast<uint32_t>(m_PhotonTimes.size()), m_nPe, m_nDcr, m_nXt, m_nDXt, m_nAp}; }
-#endif
+
   /// @brief Sets a property using its name
   /** For a list of available SiPM properties names @sa SiPMProperties.
    * This method uses a key/value to set the corresponding property.
@@ -115,10 +110,13 @@ public:
 
 private:
   double evaluatePde(const double) const;
-  inline bool isDetected(const double val) const noexcept { return m_rng.Rand() < val; }
-  constexpr bool isInSensor(const int32_t, const int32_t) const noexcept;
-  math::pair<uint32_t> hitCell() const;
-  SiPMVector<float> signalShape() const;
+  constexpr bool isInSensor(const int32_t r, const int32_t c) const noexcept {
+    const int32_t nSideCells = m_Properties.nSideCells();
+    return (r >= 0) & (c >= 0) & (r < nSideCells) & (c < nSideCells);
+  }
+  bool isValidHit(const SiPMHit&) const;
+  pair<uint32_t> hitCell() const;
+  std::vector<float> signalShape() const;
 
   void addDcrEvents();
   void addPhotoelectrons();
@@ -145,13 +143,9 @@ private:
   std::vector<SiPMHit> m_Hits;
   std::vector<int32_t> m_HitsGraph;
 
-  SiPMVector<float> m_SignalShape;
+  std::vector<float> m_SignalShape;
   SiPMAnalogSignal m_Signal;
 };
 
-constexpr bool SiPMSensor::isInSensor(const int32_t r, const int32_t c) const noexcept {
-  const int32_t nSideCells = m_Properties.nSideCells();
-  return (r > 0) & (c > 0) & (r < nSideCells) & (c < nSideCells);
-}
 } // namespace sipm
 #endif /* SIPM_SIPMSENSOR_H */

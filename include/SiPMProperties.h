@@ -16,12 +16,11 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <map>
-#include <sstream>
-#include <stdint.h>
 #include <string>
 #include <vector>
 

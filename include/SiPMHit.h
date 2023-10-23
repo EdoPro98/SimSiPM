@@ -13,12 +13,9 @@
 #ifndef SIPM_SIPMHITS_H
 #define SIPM_SIPMHITS_H
 
+#include <cstdint>
 #include <iomanip>
 #include <iostream>
-#include <memory>
-#include <sstream>
-#include <stdint.h>
-#include <vector>
 
 namespace sipm {
 class SiPMHit {
@@ -65,10 +62,11 @@ public:
   /// @brief Returns column of hitted cell
   constexpr uint32_t col() const noexcept { return m_Col; }
   /// @brief Returns amplitude of the signal produced by the hit
-  constexpr double amplitude() const noexcept { return m_Amplitude; }
+  double amplitude() const noexcept { return m_Amplitude; }
   double& amplitude() { return m_Amplitude; }
   /// @brief Returns hit type to identify the hits
   constexpr HitType hitType() const noexcept { return m_HitType; }
+  constexpr uint64_t hash() const noexcept { return m_Hash; }
 
   friend std::ostream& operator<<(std::ostream&, const SiPMHit&);
   std::string toString() const {
@@ -79,20 +77,23 @@ public:
 
   // Always construct hits with values and no default constructor
   SiPMHit() = delete;
+
 private:
-  double m_Time;
-  uint64_t m_Hash;
+  // Once a hit is constructed only
+  // amplitude can be changed
+  const double m_Time;
   double m_Amplitude;
-  uint32_t m_Row;
-  uint32_t m_Col;
-  HitType m_HitType;
+  const uint32_t m_Row;
+  const uint32_t m_Col;
+  const HitType m_HitType;
+  const uint64_t m_Hash;
 };
 
 inline std::ostream& operator<<(std::ostream& out, const SiPMHit& obj) {
   out << std::setprecision(2) << std::fixed;
   out << "===> SiPM Hit <===\n";
-  out << "Address: " << std::addressof(obj) << "\n";
-  out << "Hit time: " << obj.m_Time << "\n";
+  out << "Address: " << std::hex << std::addressof(obj) << "\n";
+  out << "Hit time: " << std::dec << obj.m_Time << "\n";
   out << "Hit relative amplitude: " << obj.m_Amplitude << "\n";
   out << "Hit position on sensor: " << obj.m_Row << " - " << obj.m_Col << "\n";
   out << "Hit type: ";

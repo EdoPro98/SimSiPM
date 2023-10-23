@@ -19,15 +19,11 @@
 #ifndef SIPM_SIPMSIGNAL_H
 #define SIPM_SIPMSIGNAL_H
 
-#include "SiPMMath.h"
-#include "SiPMTypes.h"
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <iomanip>
 #include <iostream>
-#include <numeric>
-#include <sstream>
-#include <stdint.h>
 #include <vector>
 
 namespace sipm {
@@ -35,8 +31,16 @@ class SiPMAnalogSignal {
 public:
   SiPMAnalogSignal() = default;
 
-  SiPMAnalogSignal(const SiPMVector<float>& wav, const double sampling) noexcept
+  SiPMAnalogSignal(const std::vector<float>& wav, const double sampling) noexcept
     : m_Waveform(wav), m_Sampling(sampling){};
+
+  SiPMAnalogSignal& operator=(const std::vector<float>& v) {
+    m_Waveform = std::move(v);
+    return *this;
+  }
+
+  std::vector<float>::iterator begin() noexcept { return m_Waveform.begin(); }
+  std::vector<float>::iterator end() noexcept { return m_Waveform.end(); }
 
   inline float& operator[](const uint32_t i) noexcept { return m_Waveform[i]; }
   inline float operator[](const uint32_t i) const noexcept { return m_Waveform[i]; }
@@ -44,13 +48,11 @@ public:
   /// @brief Returns the number of points in the waveform
   inline uint32_t size() const { return m_Waveform.size(); }
   /// @brief Resets the class to its initial state
-  void clear() {
-    m_Waveform.clear();
-  }
+  void clear() { m_Waveform.clear(); }
   /// @brief Returns the sampling time of the signal in ns
-  constexpr double sampling() const { return m_Sampling; }
+  double sampling() const { return m_Sampling; }
   /// @brief Returns the waveform in an accessible data structure
-  template <typename T = SiPMVector<float>> T waveform() const;
+  std::vector<float> waveform() const { return m_Waveform; }
 
   /// @brief Returns integral of the signal
   double integral(const double, const double, const double) const;
@@ -69,10 +71,13 @@ public:
     return ss.str();
   }
   friend std::ostream& operator<<(std::ostream&, const SiPMAnalogSignal&);
+  friend class SiPMSensor;
 
 private:
-  SiPMVector<float> m_Waveform;
+  void setSampling(const double sampling) { m_Sampling = sampling; };
+  std::vector<float> m_Waveform;
   double m_Sampling = 1;
 } /* SiPMAnalogSignal */;
+
 } /* namespace sipm */
 #endif /* SIPM_SIPMSIGNAL_H */
