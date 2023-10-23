@@ -23,7 +23,7 @@ sensor2.setProperty("FallTimeFast",80)
 
 sensor3.setProperty("SlowComponentFraction",0.10)
 sensor3.setProperty("FallTimeFast",5)
-sensor3.setProperty("FallTimeSlow",50)
+sensor3.setProperty("FallTimeSlow",80)
 sensor3.properties().setSlowComponentOn()
 
 sensor1.setProperty("Snr",30)
