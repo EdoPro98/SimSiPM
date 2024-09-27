@@ -105,8 +105,8 @@ SiPMProperties myProperties;
 
 // Edit some parameters
 myProperties.setDcr(250e3);           // Using proper setter
-myProperties.setProperty("Xt",0.03);   // Using parameter name
-std::cout<<myProperties<<"\n";         // All classes can be printed using std::cout
+myProperties.setProperty("Xt",0.03);  // Using parameter name
+std::cout<<myProperties<<"\n";        // All classes can be printed using std::cout
 
 // ===> SiPM Properties <===
 // Address: 0x7f2cf11ea018
@@ -355,7 +355,7 @@ Even thou SimSiPM has been used in simulations related to published articles, th
 ```
 @manual{,
 title = {{SimSiPM: a library for SiPM simulation}},
-author = {Proserpio, Edoardo and Santoro, Romualdo},
+author = {Proserpio, Edoardo, and Santoro, Romualdo},
 address = {Como, Italy},
 year = 2021,
 url = {https://github.com/EdoPro98/SimSiPM}
