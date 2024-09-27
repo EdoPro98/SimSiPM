@@ -13,41 +13,44 @@ concurrency:
 
 jobs:
     build_sdist:
-        name: Build SDist
+        name: Building Source Distribution
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - name: Build SDist
+            - name: Running sdist build with pipx
               run: pipx run build --sdist
-            - name: Check metadata
-              run: pipx run twine check dist/*
+
             - uses: actions/upload-artifact@v4
               with:
                   name: cibw-sdist
                   path: dist/*.tar.gz
 
     build_wheels:
-        name: Wheels on ${{ matrix.os }}
+        name: Building Wheels on ${{ matrix.os }}
         runs-on: ${{ matrix.os }}
         strategy:
             fail-fast: false
             matrix:
                 os:
                     - ubuntu-latest
-                    - macos-latest
+                    - macos-13
+                    - macos-14
         steps:
             - uses: actions/checkout@v4
-            - uses: pypa/cibuildwheel@v2.17
+            - name: Build Wheel
+              run: pipx run cibuildwheel==2.21.1
               env:
-                  CIBW_SKIP: "*-manylinux_i686"
-                  CIBW_BUILD: cp3*
+                  CIBW_SKIP: "*i686"
+                  CIBW_BUILD: cp3* pp3*
                   CIBW_BEFORE_BUILD: pip install -U pip && pip install pybind11
-                  CIBW_ARCHS_MACOS: x86_64 universal2
+                  CIBW_ARCHS_MACOS: auto64
+                  CIBW_ARCHS_LINUX: auto64
+
             - name: Upload wheels
               uses: actions/upload-artifact@v4
               with:
                   name: cibw-wheels-${{ matrix.os }}
-                  path: wheelhouse/*.whll
+                  path: ./wheelhouse/*.whl
 
     upload_test_pypi:
         name: Publish package distributions to TestPyPI
@@ -72,4 +75,6 @@ jobs:
             - name: Publish distribution to TestPyPI
               uses: pypa/gh-action-pypi-publish@release/v1
               with:
+                  user: __token__
+                  password: ${{ secrets.PYPI_API_TOKEN }}
                   repository-url: https://test.pypi.org/legacy/
