@@ -41,7 +41,7 @@ jobs:
               run: pipx run cibuildwheel==2.21.1
               env:
                   CIBW_SKIP: "*i686"
-                  CIBW_BUILD: cp3* pp3*
+                  CIBW_BUILD: cp3*
                   CIBW_BEFORE_BUILD: pip install -U pip && pip install pybind11
                   CIBW_ARCHS_MACOS: auto64
                   CIBW_ARCHS_LINUX: auto64
