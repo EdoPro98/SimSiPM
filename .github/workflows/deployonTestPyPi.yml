@@ -1,10 +1,9 @@
 name: Build and upload to TestPyPI
 on:
-    workflow_dispatch:
     push:
-    branches:
-        - main
-        - dev
+        branches:
+            - main
+            - dev
     release:
         types:
             - published
