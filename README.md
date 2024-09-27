@@ -355,7 +355,7 @@ Even thou SimSiPM has been used in simulations related to published articles, th
 ```
 @manual{,
 title = {{SimSiPM: a library for SiPM simulation}},
-author = {Edoardo, Proserpio and Romualdo, Santoro},
+author = {Proserpio, Edoardo and Santoro, Romualdo},
 address = {Como, Italy},
 year = 2021,
 url = {https://github.com/EdoPro98/SimSiPM}
