@@ -105,8 +105,8 @@ SiPMProperties myProperties;
 
 // Edit some parameters
 myProperties.setDcr(250e3);           // Using proper setter
-myProperties.setPropery("Xt",0.03);   // Using parameter name
-std::cout<<myPropertie<<"\n";         // All classes can be printed using std::cout
+myProperties.setProperty("Xt",0.03);   // Using parameter name
+std::cout<<myProperties<<"\n";         // All classes can be printed using std::cout
 
 // ===> SiPM Properties <===
 // Address: 0x7f2cf11ea018
