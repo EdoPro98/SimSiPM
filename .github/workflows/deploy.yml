@@ -51,13 +51,14 @@ jobs:
                   name: cibw-wheels-${{ matrix.os }}
                   path: ./wheelhouse/*.whl
 
-    upload_test_pypi:
+    upload_pypi:
         name: Publish package distributions to PyPI
         needs:
             - build_wheels
             - build_sdist
         runs-on: ubuntu-latest
-        environment:
+        environment: 
+            name: pypi
             url: https://test.pypi.org/p/SiPM
         permissions:
             id-token: write
