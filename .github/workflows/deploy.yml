@@ -1,86 +1,82 @@
-name: Build and upload to PyPI for main branch
-
+name: Build and upload to TestPyPI
 on:
-  release:
-    types: [published]
-    branch: [main, dev]
+    release:
+        types:
+            - published
+    workflow_dispatch:
 
-  workflow_dispatch:
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  build_wheels:
-    name: Build wheels on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      max-parallel: 4
-      fail-fast: false
-      matrix:
-        os: [macos-latest, ubuntu-latest]
+    build_sdist:
+        name: Build source distribution on ${{ matrix.os }}
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                os:
+                    - ubuntu-latest
+                    - macos-13
+                    - macos-14
+        steps:
+            - uses: actions/checkout@v4
+            - name: Running sdist build with pipx
+              run: pipx run build --sdist
 
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: cibw-sdist
+                  path: dist/*.tar.gz
 
-    steps:
-      - uses: actions/checkout@v3
+    build_wheels:
+        name: Build wheels on ${{ matrix.os }}
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                os:
+                    - ubuntu-latest
+                    - macos-13
+                    - macos-14
+        steps:
+            - uses: actions/checkout@v4
+            - name: Build Wheel
+              run: pipx run cibuildwheel==2.21.1
+              env:
+                  CIBW_SKIP: "*i686"
+                  CIBW_BUILD: cp3*
+                  CIBW_BEFORE_BUILD: pip install -U pip && pip install pybind11
+                  CIBW_ARCHS_MACOS: auto64
+                  CIBW_ARCHS_LINUX: auto64
 
-      - uses: actions/setup-python@v2
-        name: Install Python
-        with:
-          python-version: 3.9
+            - name: Upload wheels
+              uses: actions/upload-artifact@v4
+              with:
+                  name: cibw-wheels-${{ matrix.os }}
+                  path: ./wheelhouse/*.whl
 
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.5.0
-        env:
-          CIBW_BEFORE_BUILD: pip install -U pip && pip install pybind11
-          CIBW_SKIP: cp27-* pp27* *-manylinux_i686
-          CIBW_ARCHS_MACOS: "x86_64 universal2 arm64"
+    upload_test_pypi:
+        name: Publish package distributions to PyPI
+        needs:
+            - build_wheels
+            - build_sdist
+        runs-on: ubuntu-latest
+        environment:
+            url: https://test.pypi.org/p/SiPM
+        permissions:
+            id-token: write
 
-      - uses: actions/upload-artifact@v2
-        with:
-          path: ./wheelhouse/*.whl
-
-  build_sdist:
-    name: Build source distribution on ${{ matrix.os }}
-
-    strategy:
-      max-parallel: 4
-      fail-fast: false
-      matrix:
-        os: [macos-latest, ubuntu-latest]
-
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/setup-python@v3
-        name: Install Python
-        with:
-          python-version: 3.9
-
-      - name: Install Pybind11
-        run: python -m pip install -U pip && python -m pip install pybind11
-
-      - name: Build sdist
-        run: python setup.py sdist
-
-      - uses: actions/upload-artifact@v2
-        with:
-          path: dist/*.tar.gz
-
-  upload_pypi:
-    needs: [build_wheels, build_sdist]
-    runs-on: ubuntu-latest
-    # upload to PyPI on every tag starting with 'v'
-    # if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
-    # alternatively, to publish when a GitHub Release is created, use the following rule:
-    # if: github.event_name == 'release' && github.event.action == 'published'
-    steps:
-      - uses: actions/download-artifact@v2
-        with:
-          name: artifact
-          path: dist
-
-      - uses: pypa/gh-action-pypi-publish@master
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
-          #repository_url: https://test.pypi.org/legacy/
+        steps:
+            - name: Download all the sdists
+              uses: actions/download-artifact@v4
+              with:
+                  pattern: cibw-*
+                  path: dist/
+                  merge-multiple: true
+            - name: Publish distribution to PyPI
+              uses: pypa/gh-action-pypi-publish@master
+              with:
+                  user: __token__
+                  password: ${{ secrets.PYPI_API_TOKEN }}
