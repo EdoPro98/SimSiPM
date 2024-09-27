@@ -1,67 +1,76 @@
 name: Build and upload to TestPyPI
 
 on:
-  push:
-    branches: [main, dev]
+    workflow_dispatch:
+    push:
+    branches:
+        - main
+        - dev
 
-  workflow_dispatch:
+    concurrency:
+        group: ${{ github.workflow }}-${{ github.ref }}
+        cancel-in-progress: true
 
 jobs:
-  build_wheels:
-    name: Build wheels on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      max-parallel: 4
-      fail-fast: false
-      matrix:
-        os: [macos-latest, ubuntu-latest]
+    build_sdist:
+        name: Build SDist
+        runs-on: ubuntu-latest
+            steps:
+            - uses: actions/checkout@v4
 
+            - name: Build SDist
+              run: pipx run build --sdist
 
-    steps:
-      - uses: actions/checkout@v2
+            - name: Check metadata
+              run: pipx run twine check dist/*
 
-      - uses: actions/setup-python@v3
-        name: Install Python
-        with:
-          python-version: 3.9
+            - uses: actions/upload-artifact@v4
+              with:
+                name: cibw-sdist
+                path: dist/*.tar.gz
 
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.5.0
+    build_wheels:
+        name: Wheels on ${{ matrix.os }}
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+            os: [ubuntu-latest, macos-latest]
+
+        steps:
+        - uses: actions/checkout@v4
+
+        - uses: pypa/cibuildwheel@v2.17
         env:
-          CIBW_SKIP: "*-manylinux_i686"
-          CIBW_BUILD: cp3* pp3*
-          CIBW_BEFORE_BUILD: pip install -U pip && pip install pybind11
-          CIBW_ARCHS_MACOS: x86_64 universal2
+            CIBW_SKIP: "*-manylinux_i686"
+            CIBW_BUILD: cp3*
+            CIBW_BEFORE_BUILD: pip install -U pip && pip install pybind11
+            CIBW_ARCHS_MACOS: x86_64 universal2
 
-      - uses: actions/upload-artifact@v2
-        with:
-          path: ./wheelhouse/*.whl
+    - name: Upload wheels
+      uses: actions/upload-artifact@v4
+      with:
+        name: cibw-wheels-${{ matrix.os }}
+        path: wheelhouse/*.whl
+          
+    upload_test_pypi:
+        name: Publish package distributions to TestPyPI
+        needs: [build_wheels, build_sdist]
+        runs-on: ubuntu-latest
+        environment: testpypi
+        if: github.event_name == 'push'
 
-  build_sdist:
-    name: Build source distribution on ${{ matrix.os }}
+        steps:
+        - uses: actions/setup-python@v5
+          with:
+            python-version: "3.x"
 
-    strategy:
-      max-parallel: 4
-      fail-fast: false
-      matrix:
-        os: [macos-latest, ubuntu-latest]
-
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/setup-python@v3
-        name: Install Python
-        with:
-          python-version: 3.9
-
-      - name: Install Pybind11
-        run: python -m pip install -U pip && python -m pip install pybind11
-
-      - name: Build sdist
-        run: python setup.py sdist
-
-      - uses: actions/upload-artifact@v2
-        with:
-          path: dist/*.tar.gz
+        - uses: actions/download-artifact@v4
+          with:
+            pattern: cibw-*
+            path: dist
+            merge-multiple: true
+    
+        - uses: pypa/gh-action-pypi-publish@release/v1
+            with:
+              repository-url: https://test.pypi.org/legacy/
