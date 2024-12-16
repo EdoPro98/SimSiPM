@@ -1,11 +1,11 @@
 #include "SiPMRandom.h"
-#include "SiPMTypes.h"
 #include "SiPMMath.h"
+#include "SiPMTypes.h"
 
 #include <cstdint>
 #include <iostream>
-#include <string.h>
 #include <random>
+#include <string.h>
 #ifdef __AVX2__
 #include <immintrin.h>
 #include <x86intrin.h>
@@ -34,7 +34,7 @@ void Xorshift256plus::seed() {
     s[i] = lcg64(s[i - 1]);
   }
   // Call rng few times
-  for( uint16_t i = 0; i<1024; ++i){
+  for (uint16_t i = 0; i < 1024; ++i) {
     this->operator()();
   }
 }
@@ -343,10 +343,9 @@ template <> auto SiPMRandom::RandF<std::vector<float>>(const uint32_t n) -> std:
  * @param sigma Standard deviation value of the gaussuan
  * @param n Number of values to generate
  */
-#pragma GCC optimize ("ffast-math")
 template <>
-auto SiPMRandom::randGaussian<SiPMVector<double>>(const double mu, const double sigma, const uint32_t n)
-  -> SiPMVector<double> {
+auto SiPMRandom::randGaussian<SiPMVector<double>>(const double mu, const double sigma,
+                                                  const uint32_t n) -> SiPMVector<double> {
   SiPMVector<double> out(n);
   SiPMVector<double> s(n);
 
@@ -376,17 +375,15 @@ auto SiPMRandom::randGaussian<SiPMVector<double>>(const double mu, const double 
 
   return out;
 }
-#pragma GCC reset_options
 
 /**
  * @param mu Mean value of the gaussian
  * @param sigma Standard deviation value of the gaussian
  * @param n Number of values to generate
  */
-#pragma GCC optimize ("ffast-math")
 template <>
-auto SiPMRandom::randGaussianF<SiPMVector<float>>(const float mu, const float sigma, const uint32_t n)
-  -> SiPMVector<float> {
+auto SiPMRandom::randGaussianF<SiPMVector<float>>(const float mu, const float sigma,
+                                                  const uint32_t n) -> SiPMVector<float> {
   SiPMVector<float> out(n);
   SiPMVector<float> s(n);
 
@@ -418,15 +415,14 @@ auto SiPMRandom::randGaussianF<SiPMVector<float>>(const float mu, const float si
 
   return out;
 }
-#pragma GCC reset_options
 /**
  * @param mu Mean value of the gaussuan
  * @param sigma Standard deviation value of the gaussian
  * @param n Number of values to generate
  */
 template <>
-auto SiPMRandom::randGaussian<std::vector<double>>(const double mu, const double sigma, const uint32_t n)
-  -> std::vector<double> {
+auto SiPMRandom::randGaussian<std::vector<double>>(const double mu, const double sigma,
+                                                   const uint32_t n) -> std::vector<double> {
   SiPMVector<double> out = randGaussian<SiPMVector<double>>(mu, sigma, n);
   return std::vector<double>(out.begin(), out.end());
 }
@@ -437,8 +433,8 @@ auto SiPMRandom::randGaussian<std::vector<double>>(const double mu, const double
  * @param n Number of values to generate
  */
 template <>
-auto SiPMRandom::randGaussianF<std::vector<float>>(const float mu, const float sigma, const uint32_t n)
-  -> std::vector<float> {
+auto SiPMRandom::randGaussianF<std::vector<float>>(const float mu, const float sigma,
+                                                   const uint32_t n) -> std::vector<float> {
   SiPMVector<float> out = randGaussianF<SiPMVector<float>>(mu, sigma, n);
   return std::vector<float>(out.begin(), out.end());
 }
