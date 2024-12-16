@@ -21,12 +21,12 @@ with open("README.md", encoding="utf-8") as f:
     LONG_DESCRIPTION = f.read()
 
 if os.environ.get("NPY_NUM_BUILD_JOBS"):
-    ParallelCompile("NPY_NUM_BUILD_JOBS",
-                    needs_recompile=naive_recompile).install()
+    ParallelCompile("NPY_NUM_BUILD_JOBS", needs_recompile=naive_recompile).install()
 else:
     ParallelCompile(needs_recompile=naive_recompile).install()
 
-__version__ = "unknown"
+# Default version
+__version__ = "0.0.0"
 for l in open("include/SiPM.h").readlines():
     if "SIPM_VERSION" in l.split():
         __version__ = l.split()[-1].strip('"')
@@ -40,7 +40,6 @@ extra_compile_args = [
     "-mfma",
     "-mavx2",
 ]
-extra_link_args = []
 
 if platform.system() == "Darwin":
     # On MacOS
@@ -76,9 +75,7 @@ ext_modules = [
             get_pybind_include(),
             get_pybind_include(user=True),
         ],
-        define_macros=[("SIPM_VERSION", __version__)],
         extra_compile_args=extra_compile_args,
-        extra_link_args=extra_link_args,
         language="c++",
     ),
 ]
