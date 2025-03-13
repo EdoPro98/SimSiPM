@@ -1,6 +1,7 @@
 #include "SiPM.h"
 #include <benchmark/benchmark.h>
 #include <cstdint>
+#include <cstdlib>
 #include <vector>
 
 class BenchmarkRandom : public benchmark::Fixture {
@@ -67,6 +68,16 @@ BENCHMARK_F(BenchmarkRandom, SingleExponential)(benchmark::State& st) {
     benchmark::DoNotOptimize(m_random.randExponential(10));
   }
 }
+
+BENCHMARK_DEFINE_F(BenchmarkRandom, MultipleRng)(benchmark::State& st) {
+  for (auto _ : st) {
+    uint64_t* x = (uint64_t*)aligned_alloc(64,st.range(0)*sizeof(uint64_t));
+    m_rng.getRand(x,st.range(0));
+    free(x);
+  }
+  st.SetComplexityN(st.range(0));
+}
+BENCHMARK_REGISTER_F(BenchmarkRandom, MultipleRng)->RangeMultiplier(2)->Range(8, 1 << 16)->Complexity(benchmark::oN);
 
 BENCHMARK_DEFINE_F(BenchmarkRandom, MultipleRandomDouble)(benchmark::State& st) {
   for (auto _ : st) {

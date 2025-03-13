@@ -1,4 +1,5 @@
 #include "../include/SiPM.h"
+#include "SiPMProperties.h"
 #include <benchmark/benchmark.h>
 #include <cstdint>
 #include <vector>
@@ -29,9 +30,11 @@ BENCHMARK_F(BenchmarkSensor, DefaultNoLightSim)(benchmark::State& st) {
 }
 
 BENCHMARK_F(BenchmarkSensor, DefaultNoNoiseNoLightSim)(benchmark::State& st) {
-  m_sensor.properties().setDcrOff();
-  m_sensor.properties().setApOff();
-  m_sensor.properties().setXtOff();
+  auto prop = m_sensor.properties();
+  prop.setDcrOff();
+  prop.setApOff();
+  prop.setXtOff();
+  m_sensor.setProperties(prop);
   for (auto _ : st) {
     m_sensor.resetState();
     m_sensor.runEvent();
@@ -52,10 +55,11 @@ BENCHMARK_DEFINE_F(BenchmarkSensor, DefaultLightSim)(benchmark::State& st) {
 BENCHMARK_REGISTER_F(BenchmarkSensor, DefaultLightSim)->RangeMultiplier(2)->Range(1, 1 << 12);
 
 BENCHMARK_DEFINE_F(BenchmarkSensor, DefaultNoNoiseLightSim)(benchmark::State& st) {
-  m_sensor.setProperties(sipm::SiPMProperties());
-  m_sensor.properties().setDcrOff();
-  m_sensor.properties().setApOff();
-  m_sensor.properties().setXtOff();
+  auto prop = sipm::SiPMProperties();
+  prop.setDcrOff();
+  prop.setApOff();
+  prop.setXtOff();
+  m_sensor.setProperties(prop);
   for (auto _ : st) {
     st.PauseTiming();
     const std::vector<double> t = m_rng.randGaussian(10, 0.1, st.range(0));
@@ -68,10 +72,11 @@ BENCHMARK_DEFINE_F(BenchmarkSensor, DefaultNoNoiseLightSim)(benchmark::State& st
 BENCHMARK_REGISTER_F(BenchmarkSensor, DefaultNoNoiseLightSim)->RangeMultiplier(2)->Range(1, 1 << 12);
 
 BENCHMARK_DEFINE_F(BenchmarkSensor, DefaultWlenLightSim)(benchmark::State& st) {
-  m_sensor.setProperties(sipm::SiPMProperties());
+  auto prop = sipm::SiPMProperties();
   const std::vector<double> wlen = {300, 400, 500, 600, 700};
   const std::vector<double> pde = {0.1, 0.3, 0.2, 0.1};
-  m_sensor.properties().setPdeSpectrum(wlen, pde);
+  prop.setPdeSpectrum(wlen, pde);
+  m_sensor.setProperties(prop);
   for (auto _ : st) {
     st.PauseTiming();
     const std::vector<double> t = m_rng.randGaussian(10, 0.1, st.range(0));
