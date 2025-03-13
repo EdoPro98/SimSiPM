@@ -74,25 +74,27 @@ TEST_F(TestSiPMSensor, AddDcr) {
 TEST_F(TestSiPMSensor, SignalGeneration) {
   static constexpr int N = 25;
   static constexpr int R = 10000;
-  SiPMSensor lsut = SiPMSensor();
+  SiPMSensor sensor;
   // Almost no noise
-  lsut.properties().setXtOff();
-  lsut.properties().setDcrOff();
-  lsut.properties().setApOff();
-  lsut.properties().setSnr(40);
+  auto prop = sensor.properties();
+
+  prop.setXtOff();
+  prop.setDcrOff();
+  prop.setApOff();
+  prop.setSnr(40);
+  sensor.setProperties(prop);
 
   for (int i = 1; i < N; ++i) {
-    // generate i photons
-    const std::vector<double> t = rng.randGaussian(10, 0.1, i);
-    double avg_max = 0;
+    double avg_peak = 0;
     for (int j = 0; j < R; ++j) {
-      lsut.resetState();
-      lsut.addPhotons(t);
-      lsut.runEvent();
-      avg_max += lsut.signal().peak(0, 20, 0);
+      sensor.resetState();
+      const std::vector<double> t = rng.randGaussian(10, 0.1, i);
+      sensor.addPhotons(t);
+      sensor.runEvent();
+      avg_peak += sensor.signal().peak(0, 20, 0);
     }
-    avg_max /= R;
-    EXPECT_GE(avg_max + 0.5, i);
-    EXPECT_LE(avg_max - 0.5, i);
+    avg_peak /= R;
+    EXPECT_GE(avg_peak + 0.5, i);
+    EXPECT_LE(avg_peak - 0.5, i);
   }
 }
