@@ -10,10 +10,8 @@ void SiPMSensorPy(py::module& m) {
   py::class_<SiPMSensor, std::shared_ptr<SiPMSensor>> sipmsensor(m, "SiPMSensor");
   sipmsensor.def(py::init<>())
     .def(py::init<const SiPMProperties&>())
-    .def("properties", static_cast<SiPMProperties& (SiPMSensor::*)()>(&SiPMSensor::properties))
     .def("properties", static_cast<const SiPMProperties& (SiPMSensor::*)() const>(&SiPMSensor::properties))
-    .def("hits", &SiPMSensor::hits)
-    .def("hitsGraph", &SiPMSensor::hitsGraph)
+    .def("hits", &SiPMSensor::hits, py::return_value_policy::reference_internal)
     .def("signal", &SiPMSensor::signal)
     .def("rng", static_cast<const SiPMRandom (SiPMSensor::*)() const>(&SiPMSensor::rng))
     .def("debug", &SiPMSensor::debug)

@@ -10,6 +10,7 @@ using namespace sipm;
 void SiPMRandomPy(py::module& m) {
   py::class_<SiPMRandom> SiPMRandom(m, "SiPMRandom");
   SiPMRandom.def(py::init<>())
+    .def("seed", static_cast<void (SiPMRandom::*)(const uint64_t)>(&SiPMRandom::seed))
     .def("Rand", static_cast<double (SiPMRandom::*)(void)>(&SiPMRandom::Rand))
     .def("randInteger", static_cast<uint32_t (SiPMRandom::*)(const uint32_t)>(&SiPMRandom::randInteger))
     .def("randGaussian", static_cast<double (SiPMRandom::*)(const double, const double)>(&SiPMRandom::randGaussian))
@@ -18,6 +19,9 @@ void SiPMRandomPy(py::module& m) {
     .def("Rand", static_cast<std::vector<double> (SiPMRandom::*)(const uint32_t)>(&SiPMRandom::Rand))
     .def("randGaussian", static_cast<std::vector<double> (SiPMRandom::*)(const double, const double, const uint32_t)>(
                            &SiPMRandom::randGaussian))
+
+    .def("randGaussianF", static_cast<std::vector<float> (SiPMRandom::*)(const float, const float, const uint32_t)>(
+                            &SiPMRandom::randGaussianF))
     .def("randInteger",
          static_cast<std::vector<uint32_t> (SiPMRandom::*)(const uint32_t, const uint32_t)>(&SiPMRandom::randInteger))
     .def("randExponential",

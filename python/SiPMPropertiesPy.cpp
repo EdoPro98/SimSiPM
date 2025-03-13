@@ -56,7 +56,7 @@ void SiPMPropertiesPy(py::module& m) {
     .def("setSnr", &SiPMProperties::setSnr)
     .def("setTauApFastComponent", &SiPMProperties::setTauApFastComponent)
     .def("setTauApSlowComponent", &SiPMProperties::setTauApSlowComponent)
-    .def("setTauApSlowFraction", &SiPMProperties::setTauApSlowFraction)
+    .def("setApSlowFraction", &SiPMProperties::setApSlowFraction)
     .def("setCcgv", &SiPMProperties::setCcgv)
     .def("setPde", &SiPMProperties::setPde)
     .def("setDcr", &SiPMProperties::setDcr)
