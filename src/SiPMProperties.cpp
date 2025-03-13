@@ -1,6 +1,17 @@
 #include "SiPMProperties.h"
+#include <algorithm>
+#include <iomanip>
+#include <fstream>
 
 namespace sipm {
+
+SiPMProperties::SiPMProperties() {
+  m_SideCells = 1000 * m_Size / m_Pitch;
+  m_Ncells = m_SideCells * m_SideCells;
+  m_SignalPoints = m_SignalLength / m_Sampling;
+  m_SnrLinear = pow(10, -m_SnrdB / 20);
+}
+
 void SiPMProperties::setProperty(const std::string& prop, const double val) {
   // Make prop lowercase to avoid case-sensitive property mismatch
   std::string aProp(prop);
@@ -49,35 +60,25 @@ void SiPMProperties::setProperty(const std::string& prop, const double val) {
   }
 }
 
-/// @param x Sampling time in ns
-void SiPMProperties::setSampling(const double x) {
-  m_Sampling = x;
-  m_SignalPoints = static_cast<uint32_t>(m_SignalLength / m_Sampling);
-}
-
 void SiPMProperties::setPdeSpectrum(const std::vector<double>& wav, const std::vector<double>& pde) {
-  static constexpr uint32_t N = 25;
-  const uint32_t n = wav.size();
-  std::map<double, double> interpolatedSpectrum;
-  std::map<double, double> x;
+  static constexpr uint32_t N = 32;
+  std::map<double, double> inputSpectrum;
 
-  for (uint32_t i = 0; i < n; ++i) {
-    x.emplace(wav[i], pde[i]);
+  for (uint32_t i = 0; i < wav.size(); ++i) {
+    inputSpectrum[wav[i]] = pde[i];
   }
 
-  interpolatedSpectrum = x;
-
-  const double xmin = x.cbegin()->first;
-  const double xmax = x.crbegin()->first;
-  const double dx = (xmax - xmin) / 25;
+  const double xmin = inputSpectrum.cbegin()->first;
+  const double xmax = inputSpectrum.crbegin()->first;
+  const double dx = (xmax - xmin) / N;
   for (uint32_t i = 0; i < N; ++i) {
     const double newx = xmin + i * dx;
-    auto it1 = x.upper_bound(newx);
+    auto it1 = inputSpectrum.upper_bound(newx);
     // Avoid boundary conditions
-    if (it1 == x.cend()) {
+    if (it1 == inputSpectrum.cend()) {
       --it1;
     }
-    if (it1 == x.cbegin()) {
+    if (it1 == inputSpectrum.cbegin()) {
       ++it1;
     }
     auto it0 = it1;
@@ -97,10 +98,9 @@ void SiPMProperties::setPdeSpectrum(const std::vector<double>& wav, const std::v
     }
     // If newy < 0 just set at 0
     newy = newy < 0 ? 0 : newy;
-    interpolatedSpectrum.emplace(newx, newy);
+    m_PdeSpectrum[newx] = newy;
   }
 
-  m_PdeSpectrum = interpolatedSpectrum;
   m_HasPde = PdeType::kSpectrumPde;
 }
 
@@ -110,10 +110,13 @@ SiPMProperties SiPMProperties::readSettings(const std::string& fname) {
   if (file.is_open()) {
     std::string line;
     while (getline(file, line)) {
+      if (line.empty()) {
+        continue;
+      }
       // Remove spaces
       line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end());
       // Ignore lines starting with # or /
-      if (line[0] == '#' || line[0] == '/' || line.empty()) {
+      if (line[0] == '#' || line[0] == '/') {
         continue;
       }
       // Get prop - value
@@ -175,11 +178,11 @@ std::ostream& operator<<(std::ostream& out, const SiPMProperties& obj) {
   out << "SNR: " << obj.m_SnrdB << " dB\n";
   if (obj.m_HasPde == SiPMProperties::PdeType::kSimplePde) {
     out << "Photon detection efficiency: " << obj.m_Pde * 100 << " %\n";
-  } else if (obj.m_HasPde == SiPMProperties::PdeType::kSimplePde) {
+  } else if (obj.m_HasPde == SiPMProperties::PdeType::kSpectrumPde) {
     out << "Photon detection efficiency: depending on wavelength\n";
     out << "Photon wavelength\tDetection efficiency\n";
     for (auto it = obj.m_PdeSpectrum.begin(); it != obj.m_PdeSpectrum.end(); ++it) {
-      out << it->first << "\t\t->\t\t" << it->second << "\n";
+      out << it->first << " -> " << it->second << "\n";
     }
   } else {
     out << "Photon detection efficiency is OFF (100 %)\n";

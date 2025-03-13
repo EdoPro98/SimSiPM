@@ -10,9 +10,7 @@
 
 #ifndef SIPM_SIPMSENSOR_H
 #define SIPM_SIPMSENSOR_H
-#include <algorithm>
 #include <cstdint>
-#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -30,14 +28,12 @@ public:
   /// @brief SiPMSensor constructor from a @ref SiPMProperties instance
   /** Instantiates a SiPMSensor with parameter specified in the SiPMProperties.
    */
-  SiPMSensor(const SiPMProperties&);
+  explicit SiPMSensor(const SiPMProperties&);
 
   SiPMSensor();
 
   /// @brief Returns the @ref SiPMProperties class stored in the SiPMSensor
   const SiPMProperties& properties() const { return m_Properties; }
-
-  SiPMProperties& properties() { return m_Properties; }
 
   /// @brief Returns the @ref SiPMAnalogSignal stored in the SiPMSensor
   /** Used to get the generated signal from the sensor. This method should be
@@ -49,16 +45,7 @@ public:
   /** This method allows to get all the hits generated in the simulation
    * process, including noise hits.
    */
-  std::vector<SiPMHit> hits() const { return m_Hits; }
-
-  /// @brief Returns vector containing history of hits
-  /**
-   * Returns a vector containing the index of the corresponding parent hit
-   * for each hit. If the hit has no parent (e.g. DCR hit) the
-   * index is set to -1.
-   * This allows to get the complete chain of hits generation.
-   */
-  std::vector<int32_t> hitsGraph() const { return m_HitsGraph; }
+  std::vector<SiPMHit*> hits() const { return m_Hits; }
 
   /// @brief Returns the @ref SiPMRandom rng used by SiPMSensor
   const SiPMRandom rng() const { return m_rng; }
@@ -114,16 +101,18 @@ private:
     const int32_t nSideCells = m_Properties.nSideCells();
     return (r >= 0) & (c >= 0) & (r < nSideCells) & (c < nSideCells);
   }
-  bool isValidHit(const SiPMHit&) const;
+  pair<uint32_t> hitUniform() const;
+  pair<uint32_t> hitCircle() const;
+  pair<uint32_t> hitGaussian() const;
   pair<uint32_t> hitCell() const;
-  std::vector<float> signalShape() const;
+  void signalShape();
 
   void addDcrEvents();
   void addPhotoelectrons();
   void addCorrelatedNoise();
 
-  SiPMHit generateXtHit(const SiPMHit&) const;
-  SiPMHit generateApHit(const SiPMHit&) const;
+  SiPMHit* generateXtHit(const SiPMHit*) const;
+  SiPMHit* generateApHit(const SiPMHit*) const;
 
   void calculateSignalAmplitudes();
   void generateSignal();
@@ -140,8 +129,7 @@ private:
 
   std::vector<double> m_PhotonTimes;
   std::vector<double> m_PhotonWavelengths;
-  std::vector<SiPMHit> m_Hits;
-  std::vector<int32_t> m_HitsGraph;
+  std::vector<SiPMHit*> m_Hits;
 
   std::vector<float> m_SignalShape;
   SiPMAnalogSignal m_Signal;

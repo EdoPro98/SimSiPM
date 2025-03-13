@@ -13,6 +13,9 @@
 #ifndef SIPM_RANDOM_H
 #define SIPM_RANDOM_H
 
+#include <array>
+#include <cstddef>
+#include <cstdlib>
 #ifdef __AVX512F__
 #include <immintrin.h>
 #endif
@@ -56,7 +59,7 @@ public:
   /// It cretates an instance of Xorshift256plus and sets the seed
   /// using a 64 bit LCG and the seed value provided
   /// @param sd uint64_t User provided seed. Must not be 0!
-  Xorshift256plus(const uint64_t sd) { seed(sd); }
+  explicit Xorshift256plus(const uint64_t sd) { seed(sd); }
 
   /// @brief Sets a random seed generated using system random device.
   void seed();
@@ -64,44 +67,33 @@ public:
   /// @brief Manually set a seed
   void seed(const uint64_t);
 
-  /// @brief Return internal state of rng.
-  const uint64_t* getState() const { return s; }
-  const uint64_t* getStateSimd() const { return (uint64_t*)__s; }
-
 private:
   alignas(64) uint64_t s[4];
+  static constexpr uint32_t N = 1 << 16;
+  alignas(64) uint64_t buffer[N];
+  uint32_t index = N;
 #ifdef __AVX512F__
   __m512i __s[4];
-#else
-  alignas(64) uint64_t __s[4][8];
 #endif
 
 public:
   /// @brief Returns a pseud-random 64-bits integer
   inline uint64_t operator()() noexcept {
-    const uint64_t result = s[0] + s[3];
-
-    const uint64_t t = s[1] << 17;
-
-    s[2] ^= s[0];
-    s[3] ^= s[1];
-    s[1] ^= s[2];
-    s[0] ^= s[3];
-
-    s[2] ^= t;
-
-    s[3] = (s[3] << 45U) | (s[3] >> (64U - 45U));
-    return result;
+    if (index == N) {
+      getRand(buffer, N);
+      index = 0;
+    }
+    return buffer[index++];
   }
 
 #ifdef __AVX512F__
-  // Returns a minimum of 8 uint64_t in a ptr
-  inline uint64_t* simd8(const uint32_t n) noexcept {
-    uint64_t* result = (uint64_t*)aligned_alloc(64, sizeof(uint64_t) * n);
-
-    for (uint32_t i = 0; i < n - 8; i += 8) {
+  // Overload for uint64_t
+  inline void getRand(uint64_t* array, const uint32_t n) noexcept {
+    size_t i = 0;
+    // Generate 8 uint64_t values per iteration
+    for (; i + 8 <= n; i += 8) {
       const __m512i __result = _mm512_add_epi64(__s[0], __s[3]);
-      _mm512_store_epi64(result + i, __result);
+      _mm512_store_si512(array + i, __result);
 
       const __m512i __t = _mm512_slli_epi64(__s[1], 17);
 
@@ -110,66 +102,114 @@ public:
       __s[1] = _mm512_xor_epi64(__s[1], __s[2]);
       __s[0] = _mm512_xor_epi64(__s[0], __s[3]);
 
-      __s[2] = _mm512_xor_epi64(__s[2], __t);
+      __s[2] = _mm512_xor_si512(__s[2], __t);
 
-      const __m512i __temp1 = _mm512_slli_epi64(__s[3], 45);
-      const __m512i __temp2 = _mm512_srli_epi64(__s[3], 64 - 45);
-      __s[3] = _mm512_or_si512(__temp1, __temp2);
+      __s[3] = _mm512_rol_epi64(__s[3], 45);
+    }
+    // Handle leftover if n is not a multiple of 8
+    if (i < n) {
+      alignas(64) uint64_t buffer[8];
+      const __m512i __result = _mm512_add_epi64(__s[0], __s[3]);
+      _mm512_store_si512(buffer, __result);
+
+      const __m512i __t = _mm512_slli_epi64(__s[1], 17);
+
+      __s[2] = _mm512_xor_si512(__s[2], __s[0]);
+      __s[3] = _mm512_xor_si512(__s[3], __s[1]);
+      __s[1] = _mm512_xor_si512(__s[1], __s[2]);
+      __s[0] = _mm512_xor_si512(__s[0], __s[3]);
+
+      __s[2] = _mm512_xor_si512(__s[2], __t);
+
+      __s[3] = _mm512_rol_epi64(__s[3], 45);
+      for (size_t j = 0; j < n - i; ++j) {
+        array[i + j] = buffer[j];
+      }
+    }
+  }
+
+  // Overload for uint32_t
+  inline void getRand(uint32_t* array, const uint32_t n) noexcept {
+    size_t i = 0;
+
+    // Generate 8 uint64_t values per iteration and split them into 16 uint32_t values
+    for (; i + 16 <= n; i += 16) {
+      const __m512i __result = _mm512_add_epi64(__s[0], __s[3]);
+
+      _mm512_store_si512(array + i, __result);
+
+      const __m512i __t = _mm512_slli_epi64(__s[1], 17);
+
+      __s[2] = _mm512_xor_si512(__s[2], __s[0]);
+      __s[3] = _mm512_xor_si512(__s[3], __s[1]);
+      __s[1] = _mm512_xor_si512(__s[1], __s[2]);
+      __s[0] = _mm512_xor_si512(__s[0], __s[3]);
+
+      __s[2] = _mm512_xor_si512(__s[2], __t);
+
+      __s[3] = _mm512_rol_epi64(__s[3], 45);
     }
 
-    // Save scalar generator state
-    uint64_t curr_state[4];
-    memcpy(curr_state, s, 4 * sizeof(uint64_t));
-    // Tail loop
-    for (uint32_t i = n - 8; i < n; ++i) {
-      result[i] = this->operator()();
-    }
-    // Restore previous state
-    memcpy(s, curr_state, 4 * sizeof(uint64_t));
+    // Handle leftover if n is not a multiple of 16
+    if (i < n) {
+      alignas(64) uint32_t buffer[16];
+      const __m512i __result = _mm512_add_epi64(__s[0], __s[3]);
+      _mm512_store_si512(buffer, __result);
 
-    // Returning a raw ptr. Passing the resposibility to free to caller
-    return result;
+      const __m512i __t = _mm512_slli_epi64(__s[1], 17);
+
+      __s[2] = _mm512_xor_si512(__s[2], __s[0]);
+      __s[3] = _mm512_xor_si512(__s[3], __s[1]);
+      __s[1] = _mm512_xor_si512(__s[1], __s[2]);
+      __s[0] = _mm512_xor_si512(__s[0], __s[3]);
+
+      __s[2] = _mm512_xor_si512(__s[2], __t);
+
+      __s[3] = _mm512_rol_epi64(__s[3], 45);
+
+      // Fill the remaining uint32_t values
+      for (size_t j = 0; j < n - i; ++j) {
+        array[i + j] = buffer[j];
+      }
+    }
   }
 #else
-  // Returns a minimum of 8 uint64_t in a ptr
-  inline uint64_t* simd8(const uint32_t n) {
-    uint64_t* result = (uint64_t*)aligned_alloc(64, sizeof(uint64_t) * n);
 
-    for (uint32_t i = 0; i < n - 8; i += 8) {
-      uint64_t t[8];
+  // Overload for uint64_t (most of the times this one is used)
+  inline void getRand(uint64_t* array, const uint32_t n) {
+    for (uint32_t i = 0; i < n; ++i) {
+      const uint64_t randVal = s[0] + s[3];
+      const uint64_t t = s[1] << 17;
+      s[2] ^= s[0];
+      s[3] ^= s[1];
+      s[1] ^= s[2];
+      s[0] ^= s[3];
 
-      for (int j = 0; j < 8; ++j) {
-        result[i + j] = __s[1][j] + __s[3][j];
-      }
+      s[2] ^= t;
+      s[3] = (s[3] << 45) | (s[3] >> (64 - 45));
 
-      for (int j = 0; j < 8; ++j) {
-        t[j] = __s[1][j] << 17;
-      }
+      array[i] = randVal;
+    }
+  }
 
-      for (int j = 0; j < 8; ++j) {
-        __s[2][j] ^= __s[0][j];
-        __s[3][j] ^= __s[1][j];
-        __s[1][j] ^= __s[2][j];
-        __s[0][j] ^= __s[3][j];
+  // Overload for uint32_t
+  inline void getRand(uint32_t* array, const uint32_t n) {
+    for (uint32_t i = 0; i < n; i += 2) {
+      const uint64_t randVal = s[0] + s[3];
+      const uint64_t t = s[1] << 17;
+      s[2] ^= s[0];
+      s[3] ^= s[1];
+      s[1] ^= s[2];
+      s[0] ^= s[3];
 
-        __s[2][j] ^= t[j];
-      }
+      s[2] ^= t;
+      s[3] = (s[3] << 45) | (s[3] >> (64 - 45));
 
-      for (int j = 0; j < 8; ++j) {
-        __s[3][j] = (__s[3][j] << 45) | (__s[3][j] >> (64 - 45));
+      array[i] = static_cast<uint32_t>(randVal); // Lower 32 bits
+      if (i + 1 < n) {
+        array[i + 1] = static_cast<uint32_t>(randVal >> 32); // Upper 32 bits
       }
     }
-    // Store scalar generator state
-    uint64_t curr_state[4];
-    std::memcpy(curr_state, s, 4 * sizeof(uint64_t));
-    // Tail loop
-    for (uint32_t i = n - 8; i < n; ++i) {
-      result[i] = this->operator()();
-    }
-    // Restore previous state
-    std::memcpy(s, curr_state, 4 * sizeof(uint64_t));
-    // Returning a raw ptr. Passing the resposibility to free to caller
-    return result;
   }
 #endif
 };
@@ -183,12 +223,16 @@ public:
   /// Use this method to seed the PRNG and to get the status
   SiPMRng::Xorshift256plus& rng() { return m_rng; }
 
+  // Seed underlying rng
+  void seed(const uint64_t x) { m_rng.seed(x); }
+
   /// @brief Gives an uniformly distributed random
   template <typename T = double>
   inline T Rand() noexcept;
   pair<float, float> RandF2() noexcept;
   /// @brief Gives an uniform random integer
   uint32_t randInteger(const uint32_t) noexcept;
+  pair<uint32_t> randInteger2(const uint32_t) noexcept;
 
   /// @brief Gives random value with gaussian distribution
   double randGaussian(const double, const double) noexcept;
@@ -228,7 +272,7 @@ private:
  */
 template <>
 inline double SiPMRandom::Rand<double>() noexcept {
-  return static_cast<double>(m_rng() & ((1ULL << 53) - 1)) * 0x1p-53;
+  return (m_rng() >> 11) * 0x1p-53;
 }
 
 /**
@@ -239,7 +283,7 @@ inline double SiPMRandom::Rand<double>() noexcept {
  */
 template <>
 inline float SiPMRandom::Rand<float>() noexcept {
-  return static_cast<float>(m_rng() & ((1ULL << 24) - 1)) * 0x1p-24;
+  return (m_rng() >> 40) * 0x1p-24f;
 }
 } // namespace sipm
 #endif /* SIPM_RANDOM_H */
