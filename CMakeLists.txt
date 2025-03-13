@@ -36,8 +36,9 @@ add_library(sipm SHARED
 )
 
 # Include files
-target_include_directories(sipm PRIVATE
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+target_include_directories(sipm PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
 
 set_target_properties(sipm PROPERTIES VERSION 1 OUTPUT_NAME sipm)
