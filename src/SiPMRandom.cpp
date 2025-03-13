@@ -364,10 +364,17 @@ std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma
     r[i] = R;
     r[i + 1] = R;
   }
+#ifdef __APPLE__
+  for (uint32_t i = 0; i < n - 1; i += 2) {
+    double* ptr = out.data() + i;
+    __sincos(TWO_PI * u[i + 1], ptr, ptr + 1);
+  }
+#else
   for (uint32_t i = 0; i < n - 1; i += 2) {
     double* ptr = out.data() + i;
     sincos(TWO_PI * u[i + 1], ptr, ptr + 1);
   }
+#endif
   for (uint32_t i = 0; i < n; ++i) {
     out[i] = out[i] * sqrt(r[i]) * sigma + mu;
   }
@@ -393,11 +400,17 @@ std::vector<float> SiPMRandom::randGaussianF(const float mu, const float sigma, 
     r[i] = R;
     r[i + 1] = R;
   }
+#ifdef __APPLE__
+  for (uint32_t i = 0; i < n - 1; i += 2) {
+    float* ptr = out.data() + i;
+    __sincosf(TWO_PI * u[i + 1], ptr, ptr + 1);
+  }
+#else
   for (uint32_t i = 0; i < n - 1; i += 2) {
     float* ptr = out.data() + i;
     sincosf(TWO_PI * u[i + 1], ptr, ptr + 1);
   }
-
+#endif
   for (uint32_t i = 0; i < n; ++i) {
     out[i] = out[i] * sqrtf(r[i]) * sigma + mu;
   }
