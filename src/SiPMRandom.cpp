@@ -1,4 +1,5 @@
 #include "SiPMRandom.h"
+
 #include "SiPMTypes.h"
 #include <cstdint>
 #include <cstdlib>
