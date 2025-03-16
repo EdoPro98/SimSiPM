@@ -1,6 +1,6 @@
 enable_testing()
 
-macro(package_add_test_with_libraries TESTNAME FILES LIBRARIES TEST_WORKING_DIRECTORY)
+macro(package_add_test_with_libraries TESTNAME FILES LIBRARIES TEST_WORKING_DIRECTORY )
     add_executable(${TESTNAME} ${FILES})
     set_target_properties(${TESTNAME} PROPERTIES COMPILE_FLAGS "-O3 -g")
     target_link_libraries(${TESTNAME} gtest gmock gtest_main ${LIBRARIES})
@@ -11,7 +11,7 @@ macro(package_add_test_with_libraries TESTNAME FILES LIBRARIES TEST_WORKING_DIRE
     set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
 endmacro()
 
-find_package(GTest)
+find_package(GTest REQUIRED)
 
 if(NOT GTest_FOUND)
   include(FetchContent)

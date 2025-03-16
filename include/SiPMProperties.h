@@ -14,14 +14,11 @@
 #ifndef SIPM_SIPMPROPERTIES_H
 #define SIPM_SIPMPROPERTIES_H
 
-#include <algorithm>
 #include <cmath>
-#include <fstream>
-#include <iomanip>
+#include <cstdint>
 #include <iostream>
 #include <map>
 #include <sstream>
-#include <stdint.h>
 #include <string>
 #include <vector>
 
@@ -45,6 +42,8 @@ public:
     kGaussian ///< 95% of photons have a gaussian distribution
   };
 
+  SiPMProperties();
+
   /// @brief Used to read settings from a json file
   static SiPMProperties readSettings(const std::string&);
 
@@ -55,13 +54,13 @@ public:
   constexpr uint32_t pitch() const { return m_Pitch; }
 
   /// @brief Returns total number of cells in the sensor
-  constexpr uint32_t nCells() const;
+  constexpr uint32_t nCells() const { return m_Ncells; }
 
   /// @brief Returns number of cells in the side of the sensor
-  constexpr uint32_t nSideCells() const;
+  constexpr uint32_t nSideCells() const { return m_SideCells; }
 
   /// @brief Returns total number of points in the signal
-  constexpr uint32_t nSignalPoints() const;
+  constexpr uint32_t nSignalPoints() const { return m_SignalPoints; }
 
   /// @brief Returns @ref HitDistribution type of the sensor
   constexpr HitDistribution hitDistribution() const { return m_HitDistribution; }
@@ -114,7 +113,7 @@ public:
   constexpr double apSlowFraction() const { return m_ApSlowFraction; }
 
   /// @brief Returns value of cell-to-cell gain variation.
-  constexpr double ccgv() const { return m_Ccgv; }
+  constexpr float ccgv() const { return m_Ccgv; }
 
   /// @brief Returns relative gain.
   constexpr double gain() const { return m_Gain; }
@@ -123,13 +122,13 @@ public:
   constexpr double snrdB() const { return m_SnrdB; }
 
   /// @brief Returns RMS of the noise.
-  constexpr double snrLinear() const;
+  constexpr double snrLinear() const { return m_SnrLinear; }
 
   /// @brief Returns value of PDE if PdeType::kSimplePde is set.
   constexpr double pde() const { return m_Pde; }
 
   /// @brief Returns wavelength-PDE values if PdeType::kSpectrumPde is set
-  const std::map<double, double>& pdeSpectrum() const { return m_PdeSpectrum; }
+  std::map<double, double> pdeSpectrum() const { return m_PdeSpectrum; }
 
   /// @brief Returns type of PDE calculation used.
   constexpr PdeType pdeType() { return m_HasPde; }
@@ -170,11 +169,17 @@ public:
   }
 
   /// @brief Set sampling time of the signal in ns
-  void setSampling(const double);
+  void setSampling(const double x) {
+    m_Sampling = x;
+    m_SignalPoints = m_SignalLength / m_Sampling;
+  }
 
   /// @brief Set length of the signa in ns
-  /// @parame x Signal length in ns
-  constexpr void setSignalLength(const double x) { m_SignalLength = x; }
+  /// @param x Signal length in ns
+  constexpr void setSignalLength(const double x) {
+    m_SignalLength = x;
+    m_SignalPoints = m_SignalLength / m_Sampling;
+  }
 
   /// @brief Set rising time constant of signal @sa SiPMSensor::signalShape
   /// @param x Signal risign time constant in ns
@@ -220,11 +225,11 @@ public:
 
   /// @brief Set probability to have slow afterpulses over fast ones
   /// @param x Fraction of afterpulses generated using slow component
-  constexpr void setTauApSlowFraction(const double x) { m_ApSlowFraction = x; }
+  constexpr void setApSlowFraction(const double x) { m_ApSlowFraction = x; }
 
   /// @brief Set cell-to-cell gain variation @sa m_Ccgv
   /// @param x Value of ccgv as a fraction of signal
-  constexpr void setCcgv(const double x) { m_Ccgv = x; }
+  constexpr void setCcgv(const float x) { m_Ccgv = x; }
 
   /// @brief Set value for PDE (and sets @ref PdeType::kSimplePde)
   /// @param x Flat value of PDE to be applied
@@ -304,17 +309,17 @@ public:
 private:
   double m_Size = 1;
   double m_Pitch = 25;
-  mutable uint32_t m_Ncells = 0;
-  mutable uint32_t m_SideCells = 0;
+  uint32_t m_Ncells;
+  uint32_t m_SideCells;
   HitDistribution m_HitDistribution = HitDistribution::kUniform;
 
   double m_Sampling = 1;
   double m_SignalLength = 500;
-  mutable uint32_t m_SignalPoints = 0;
+  uint32_t m_SignalPoints = 0;
   double m_RiseTime = 1;
   double m_FallTimeFast = 50;
   double m_FallTimeSlow = 100;
-  double m_SlowComponentFraction;
+  double m_SlowComponentFraction = 0.2;
   double m_RecoveryTime = 50;
 
   double m_Dcr = 200e3;
@@ -325,10 +330,10 @@ private:
   double m_TauApFastComponent = 10;
   double m_TauApSlowComponent = 80;
   double m_ApSlowFraction = 0.5;
-  double m_Ccgv = 0.05;
+  float m_Ccgv = 0.05;
   double m_SnrdB = 30;
-  double m_Gain = 1.0;
-  mutable double m_SnrLinear = 0;
+  float m_Gain = 1.0;
+  double m_SnrLinear;
 
   double m_Pde = 1;
   std::map<double, double> m_PdeSpectrum;
@@ -340,40 +345,5 @@ private:
   bool m_HasAp = true;
   bool m_HasSlowComponent = false;
 };
-// Constexpr assumes inline
-
-constexpr uint32_t SiPMProperties::nCells() const {
-  // m_SideCells and m_Ncells are cached
-  if ((m_SideCells == 0) || (m_Ncells == 0)) {
-    m_SideCells = 1000 * m_Size / m_Pitch;
-    m_Ncells = m_SideCells * m_SideCells;
-  }
-  return m_Ncells;
-}
-
-constexpr uint32_t SiPMProperties::nSideCells() const {
-  // m_SideCells and m_Ncells are cached
-  if ((m_SideCells == 0) || (m_Ncells == 0)) {
-    m_SideCells = 1000 * m_Size / m_Pitch;
-    m_Ncells = m_SideCells * m_SideCells;
-  }
-  return m_SideCells;
-}
-
-constexpr uint32_t SiPMProperties::nSignalPoints() const {
-  // m_Signalpoints is cached
-  if (m_SignalPoints == 0) {
-    m_SignalPoints = m_SignalLength / m_Sampling;
-  }
-  return m_SignalPoints;
-}
-
-constexpr double SiPMProperties::snrLinear() const {
-  // m_SnrLinear is cached
-  if (m_SnrLinear == 0) {
-    m_SnrLinear = pow(10, -m_SnrdB / 20);
-  }
-  return m_SnrLinear;
-}
 } // namespace sipm
 #endif /* SIPM_SIPMPROPERTIES_H  */

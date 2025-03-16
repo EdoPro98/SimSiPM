@@ -1,201 +1,157 @@
 #ifndef H_SIPM_SIPMTYPES
 #define H_SIPM_SIPMTYPES
 
-#include <algorithm>
-#include <cstddef>
+#include <cstdint>
 #include <cstdlib>
-#include <math.h>
-#include <memory>
-#include <mm_malloc.h>
-#include <utility>
-#include <vector>
-
-#ifdef __SSE__
-// For _mm_malloc and _mm_free
-#include <xmmintrin.h>
-#endif //
+#include <cstddef> // for std::size_t
+#include <cstring> // for std::memcpy, std::memmove
+#include <utility> // for std::move, std::forward
+#include <iostream>
 
 namespace sipm {
-/**
- * @class AlignedAllocator
- * @brief Allocator for aligned memory
- *
- * The AlignedAllocator class template is an allocator that
- * performs memory allocation aligned by the specified value.
- *
- * @tparam T type of objects to allocate.
- * @tparam Align alignment in bytes.
+/** @brief Custom implementation of @ref std::pair
+ * This is a simple custom implementation of std::pair
+ * but with no run-time checks to improve performance
  */
-template <class T, size_t Align> class AlignedAllocator {
-public:
-  using value_type = T;
-  using pointer = T*;
-  using const_pointer = const T*;
-  using reference = T&;
-  using const_reference = const T&;
-  using size_type = size_t;
-  using difference_type = ptrdiff_t;
+template <typename T, typename U = T>
+struct pair {
+  T first{};
+  U second{};
 
-  static constexpr size_t alignment = Align;
+  // Default constructor
+  constexpr pair() noexcept = default;
 
-  template <class U> struct rebind { using other = AlignedAllocator<U, Align>; };
+  // Parameterized constructor
+  constexpr pair(const T& x, const U& y) noexcept : first(x), second(y) {}
 
-  AlignedAllocator() noexcept;
-  AlignedAllocator(const AlignedAllocator& rhs) noexcept;
+  // Forwarding constructor for perfect forwarding
+  template <typename X, typename Y>
+  constexpr pair(X&& x, Y&& y) noexcept : first(std::forward<X>(x)), second(std::forward<Y>(y)) {}
 
-  template <class U> AlignedAllocator(const AlignedAllocator<U, Align>& rhs) noexcept;
+  // Copy constructor
+  constexpr pair(const pair& other) noexcept = default;
 
-  pointer address(reference) noexcept;
-  const_pointer address(const_reference) const noexcept;
+  // Move constructor
+  constexpr pair(pair&& other) noexcept = default;
 
-  pointer allocate(size_type n, const void* hint = 0);
-  void deallocate(pointer p, size_type n);
+  // Copy assignment
+  constexpr pair& operator=(const pair& other) noexcept = default;
 
-  constexpr size_type max_size() const noexcept;
-  constexpr size_type size_max() const noexcept;
+  // Move assignment
+  constexpr pair& operator=(pair&& other) noexcept = default;
 
-  template <class U, class... Args> void construct(U* p, Args&&... args);
-
-  template <class U> void destroy(U* p);
+  // Swap function
+  void swap(pair& other) noexcept {
+    std::swap(first, other.first);
+    std::swap(second, other.second);
+  }
 };
 
-template <class T1, size_t Align1, class T2, size_t Align2>
-constexpr bool operator==(const AlignedAllocator<T1, Align1>& lhs, const AlignedAllocator<T2, Align2>& rhs) noexcept;
-
-template <class T1, size_t Align1, class T2, size_t Align2>
-constexpr bool operator!=(const AlignedAllocator<T1, Align1>& lhs, const AlignedAllocator<T2, Align2>& rhs) noexcept;
-
-static void* aligned_malloc(size_t size, size_t alignment);
-static void aligned_free(void* ptr);
-
-/**
- * Default constructor.
- */
-template <class T, size_t A> inline AlignedAllocator<T, A>::AlignedAllocator() noexcept {}
-
-/**
- * Copy constructor.
- */
-template <class T, size_t A> inline AlignedAllocator<T, A>::AlignedAllocator(const AlignedAllocator&) noexcept {}
-
-/**
- * Extended copy constructor.
- */
-template <class T, size_t A>
-template <class U>
-inline AlignedAllocator<T, A>::AlignedAllocator(const AlignedAllocator<U, A>&) noexcept {}
-
-/**
- * Returns the actual address of @c r even in presence of overloaded @c operator&.
- * @param r the object to acquire address of.
- * @return the actual address of @c r.
- */
-template <class T, size_t A> inline auto AlignedAllocator<T, A>::address(reference r) noexcept -> pointer { return &r; }
-
-/**
- * Returns the actual address of @c r even in presence of overloaded \c operator&.
- * @param r the object to acquire address of.
- * @return the actual address of @c r.
- */
-template <class T, size_t A>
-inline auto AlignedAllocator<T, A>::address(const_reference r) const noexcept -> const_pointer {
-  return &r;
+template <size_t N = 64>
+inline void* sipmAlloc(const size_t bytes) {
+  static_assert((N & (N - 1)) == 0, "Alignment must be a power of 2");
+  const size_t alignedBytes = (bytes + N - 1) & ~(N - 1);
+#ifdef __AVX512F__
+  return aligned_alloc(N, alignedBytes);
+#else
+  return malloc(alignedBytes);
+#endif
 }
 
-/**
- * Allocates <tt>n * sizeof(T)</tt> bytes of uninitialized memory, aligned by @c A.
- * The alignment may require some extra memory allocation for padding.
- * @param n the number of objects to allocate storage for.
- * @param hint unused parameter provided for standard compliance.
- * @return a pointer to the first byte of a memory block suitably aligned and sufficient to
- * hold an array of @c n objects of type @c T.
- */
-template <class T, size_t A> inline auto AlignedAllocator<T, A>::allocate(size_type n, const void*) -> pointer {
-  pointer res = reinterpret_cast<pointer>(aligned_malloc(sizeof(T) * n, A));
-  if (res == nullptr)
-    throw std::bad_alloc();
-  return res;
-}
+inline void sipmFree(void* ptr) { free(ptr); }
 
-/**
- * Deallocates the storage referenced by the pointer p, which must be a pointer obtained by
- * an earlier call to allocate(). The argument \c n must be equal to the first argument of the call
- * to allocate() that originally produced \c p; otherwise, the behavior is undefined.
- * @param p pointer obtained from allocate().
- * @param n number of objects earlier passed to allocate().
- */
-template <class T, size_t A> inline void AlignedAllocator<T, A>::deallocate(pointer p, size_type) { aligned_free(p); }
+template <typename T, std::size_t N = 3>
+class SiPMSmallVector {
+private:
+  alignas(64) T m_LocalStorage[N];
+    T* m_HeapStorage = nullptr;
+    size_t m_Size = 0;
+    size_t m_Capacity = N;
 
-/**
- * Returns the maximum theoretically possible value of @c n, for which the
- * call allocate(n, 0) could succeed.
- * @return the maximum supported allocated size.
- */
-template <class T, size_t A> constexpr auto AlignedAllocator<T, A>::max_size() const noexcept -> size_type {
-  return size_type(-1) / sizeof(T);
-}
+    inline bool isLocal() const noexcept {
+        return m_Capacity == N;
+    }
 
-/**
- * Constructs an object of type @c T in allocated uninitialized memory
- * pointed to by @c p, using placement-new.
- * @param p pointer to allocated uninitialized memory.
- * @param args the constructor arguments to use.
- */
-template <class T, size_t A>
-template <class U, class... Args>
-inline void AlignedAllocator<T, A>::construct(U* p, Args&&... args) {
-  new ((void*)p) U(std::forward<Args>(args)...);
-}
+    void moveToHeap() {
+      m_HeapStorage = (T*)malloc(2*N*sizeof(T));
+        memcpy(m_HeapStorage, m_LocalStorage, m_Size * sizeof(T));
+        m_Capacity = 2 * N;
+    }
 
-/**
- * Calls the destructor of the object pointed to by @c p.
- * @param p pointer to the object that is going to be destroyed.
- */
-template <class T, size_t A> template <class U> inline void AlignedAllocator<T, A>::destroy(U* p) { p->~U(); }
+    void growHeap() {
+      m_Capacity *= 2;
+      m_HeapStorage = (T*)realloc(m_HeapStorage, m_Capacity  * sizeof(T));
+    }
 
-/**
- * Compares two aligned memory allocator for equality. Since allocators
- * are stateless, return @c true iff <tt>A1 == A2</tt>.
- * @param lhs AlignedAllocator to compare.
- * @param rhs AlignedAllocator to compare.
- * @return true if the allocators have the same alignment.
- */
-template <class T1, size_t A1, class T2, size_t A2>
-constexpr bool operator==(const AlignedAllocator<T1, A1>& lhs, const AlignedAllocator<T2, A2>& rhs) noexcept {
-  return lhs.alignment == rhs.alignment;
-}
+    T* data() noexcept { return isLocal() ? m_LocalStorage : m_HeapStorage; }
 
-/**
- * Compares two aligned memory allocator for inequality. Since allocators
- * are stateless, return @c true iff <tt>A1 != A2</tt>.
- * @param lhs AlignedAllocator to compare.
- * @param rhs AlignedAllocator to compare.
- * @return true if the allocators have different alignments.
- */
-template <class T1, size_t A1, class T2, size_t A2>
-constexpr bool operator!=(const AlignedAllocator<T1, A1>& lhs, const AlignedAllocator<T2, A2>& rhs) noexcept {
-  return !(lhs == rhs);
-}
+    const T* data() const noexcept { return isLocal() ? m_LocalStorage : m_HeapStorage; }
 
-inline void* aligned_malloc(size_t size, size_t alignment) {
-  void* res = nullptr;
-  if (posix_memalign(&res, alignment, size) != 0) {
-    res = nullptr;
-  }
-  return res;
-}
+  public:
+    SiPMSmallVector() = default;
 
-inline void aligned_free(void* ptr) {
-  free(ptr);
-}
+    ~SiPMSmallVector() {
+      if (m_HeapStorage != nullptr) {
+        free(m_HeapStorage);
+      }
+    }
 
-/** SiPMVector is an high performance version of std::vector<T>.
- * SiPMVector uses an aligned allocator that allocates memory
- * to 64 bits boundaries. This allows more efficient cache usage since
- * 64 bits is the cache line size on most x86_64 architectures.
- * Also it allows the compiler to generate AVX2 operations for aligned
- * data like `vmovapd` instead of `vmovupd`.
- */
-template <typename T, int N = 64> using SiPMVector = std::vector<T, AlignedAllocator<T, N>>;
+    void push_back(const T& value) {
+      if (m_Size == m_Capacity ) {
+        if (isLocal()) {
+          moveToHeap();
+        } else {
+          growHeap();
+        }
+      }
+      data()[m_Size++] = value;
+    }
+
+    void push_back(T&& value) {
+        if (m_Size == m_Capacity ) {
+            if (isLocal()) {
+                moveToHeap();
+            } else {
+                growHeap();
+            }
+        }
+        data()[m_Size++] = std::move(value);
+    }
+
+    void pop_back() {
+        --m_Size;
+    }
+
+    T& operator[](std::size_t index) noexcept {
+        return data()[index];
+    }
+
+    const T& operator[](std::size_t index) const noexcept {
+        return data()[index];
+    }
+
+    size_t size() const noexcept {
+        return m_Size;
+    }
+
+    void clear() {
+        m_Size = 0;
+        if (!isLocal()) {
+            free(m_HeapStorage);
+            m_HeapStorage = nullptr;
+            m_Capacity  = N;
+        }
+    }
+
+    T* begin() noexcept { return data(); }
+    T* end() noexcept { return data() + m_Size; }
+
+    const T* begin() const noexcept { return data(); }
+    const T* end() const noexcept { return data() + m_Size; }
+
+    const T* cbegin() const noexcept { return data(); }
+    const T* cend() const noexcept { return data() + m_Size; }
+};
+
 } // namespace sipm
 #endif // H_SIPM_SIPMTYPES

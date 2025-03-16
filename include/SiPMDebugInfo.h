@@ -12,10 +12,10 @@
 #ifndef SIPM_SIPMDEBUGINFO_H
 #define SIPM_SIPMDEBUGINFO_H
 
+#include <cstdint>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <stdint.h>
 
 namespace sipm {
 struct SiPMDebugInfo {
@@ -40,9 +40,9 @@ struct SiPMDebugInfo {
 
 inline std::ostream& operator<<(std::ostream& out, const SiPMDebugInfo& obj) {
   out << std::setprecision(2) << std::fixed;
-  out << "Address :" << std::addressof(obj) << "\n";
+  out << "Address :" << std::hex << std::addressof(obj) << "\n";
   out << "===> SiPM Debug Info <===\n";
-  out << "Number of photons impinging to the sensor: " << obj.nPhotons << "\n";
+  out << "Number of photons impinging to the sensor: " << std::dec << obj.nPhotons << "\n";
   out << "Number of photoelectrons detected: " << obj.nPhotoelectrons << "\n";
   out << "Number of dark count events (DCR): " << obj.nDcr << "\n";
   out << "Number of optical crosstalk events (XT + DTX): " << obj.nXt << "\n";

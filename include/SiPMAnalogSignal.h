@@ -19,15 +19,10 @@
 #ifndef SIPM_SIPMSIGNAL_H
 #define SIPM_SIPMSIGNAL_H
 
-#include "SiPMMath.h"
-#include "SiPMTypes.h"
-#include <algorithm>
 #include <cmath>
-#include <iomanip>
+#include <cstdint>
 #include <iostream>
-#include <numeric>
 #include <sstream>
-#include <stdint.h>
 #include <vector>
 
 namespace sipm {
@@ -35,22 +30,23 @@ class SiPMAnalogSignal {
 public:
   SiPMAnalogSignal() = default;
 
-  SiPMAnalogSignal(const SiPMVector<float>& wav, const double sampling) noexcept
-    : m_Waveform(wav), m_Sampling(sampling){};
+  SiPMAnalogSignal(const std::vector<float>& wav, const double sampling) noexcept
+    : m_Waveform(std::move(wav)), m_Sampling(sampling) {};
+
+  float* data() noexcept { return m_Waveform.data(); }
 
   inline float& operator[](const uint32_t i) noexcept { return m_Waveform[i]; }
   inline float operator[](const uint32_t i) const noexcept { return m_Waveform[i]; }
 
   /// @brief Returns the number of points in the waveform
   inline uint32_t size() const { return m_Waveform.size(); }
-  /// @brief Resets the class to its initial state
-  void clear() {
-    m_Waveform.clear();
-  }
   /// @brief Returns the sampling time of the signal in ns
-  constexpr double sampling() const { return m_Sampling; }
+  inline double sampling() const { return m_Sampling; }
+  /// @brief Returns the signal length in ns
+  inline double length() const { return (double)m_Waveform.size() / m_Sampling; }
   /// @brief Returns the waveform in an accessible data structure
-  template <typename T = SiPMVector<float>> T waveform() const;
+  inline const std::vector<float>& waveform() const noexcept {return m_Waveform; }
+
 
   /// @brief Returns integral of the signal
   double integral(const double, const double, const double) const;
@@ -71,8 +67,9 @@ public:
   friend std::ostream& operator<<(std::ostream&, const SiPMAnalogSignal&);
 
 private:
-  SiPMVector<float> m_Waveform;
-  double m_Sampling = 1;
+  std::vector<float> m_Waveform;
+  double m_Sampling;
 } /* SiPMAnalogSignal */;
+
 } /* namespace sipm */
 #endif /* SIPM_SIPMSIGNAL_H */

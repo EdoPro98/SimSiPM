@@ -6,7 +6,7 @@ rng = SiPM.SiPMRandom()
 
 sensor = SiPM.SiPMSensor()
 
-sensor.setProperty("SignalLength",5000)
+sensor.setProperty("SignalLength",1000)
 sensor.setProperty("FallTimeFast",20)
 sensor.setProperty("Dcr",5e6)
 sensor.setProperty("Xt",0.5)
@@ -20,20 +20,23 @@ while True:
 
     signal = np.array(sensor.signal().waveform())
     hits = sensor.hits()
+    hitsGraph = sensor.hitsGraph()
     x = np.arange(0,sensor.properties().signalLength(),sensor.properties().sampling())
 
     fig,ax = plt.subplots()
-    ax.plot(x,signal,"k",lw=1)
+    maximum = signal.max()
 
-    for h in hits:
+
+    for i,h in enumerate(hits):
         if h.hitType() == SiPM.SiPMHit.HitType.kDarkCount:
-            plt.plot(h.time(), h.amplitude(), "or", ms=10)
-        if h.hitType() == SiPM.SiPMHit.HitType.kPhotoelectron:
-            plt.plot(h.time(), h.amplitude(), ".k", ms=10)
+            plt.vlines(h.time(),0, maximum, 'r')
+            plt.plot(h.time(),0,'^r',ms=8)
         if (h.hitType() == SiPM.SiPMHit.HitType.kDelayedOpticalCrosstalk) | (h.hitType() == SiPM.SiPMHit.HitType.kOpticalCrosstalk):
-            plt.plot(h.time(), h.amplitude(), "vg", ms=10)
+            plt.vlines(h.time(),0, maximum, 'g')
+            plt.plot(h.time(),0,'^g',ms=8)
         if (h.hitType() == SiPM.SiPMHit.HitType.kFastAfterPulse) | (h.hitType() == SiPM.SiPMHit.HitType.kSlowAfterPulse):
-            plt.plot(h.time(), h.amplitude(), "^b", ms=10)
-    ax.grid()
+            plt.vlines(h.time(),0, maximum, 'b')
+            plt.plot(h.time(),0,'^b',ms=8)
+    ax.plot(x,signal,"k",lw=2)
     plt.legend(["Signal","Dcr","Xt","Ap"])
     plt.show()

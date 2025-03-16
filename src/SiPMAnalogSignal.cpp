@@ -1,16 +1,9 @@
 #include "SiPMAnalogSignal.h"
-#include "SiPMMath.h"
-#include "SiPMTypes.h"
-#include <algorithm>
 #include <cstdint>
+#include <iomanip>
+#include <numeric>
 
 namespace sipm {
-
-template <> auto SiPMAnalogSignal::waveform<SiPMVector<float>>() const -> SiPMVector<float> { return m_Waveform; }
-
-template <> auto SiPMAnalogSignal::waveform<std::vector<float>>() const -> std::vector<float> {
-  return std::vector<float>(m_Waveform.cbegin(), m_Waveform.cend());
-}
 
 /**
 * Integral of the signal defined as the sum of all samples in the integration
@@ -21,16 +14,18 @@ template <> auto SiPMAnalogSignal::waveform<std::vector<float>>() const -> std::
 @param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::integral(const double intstart, const double intgate, const double threshold) const {
-  double integral = 0;
-  const auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
-  const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  if (std::any_of(start,end,[threshold](const double sample){ return sample > threshold; }) == false) {
-    return -1;
+  auto start = m_Waveform.begin() + intstart / m_Sampling;
+  const auto end = m_Waveform.cbegin() + (intstart + intgate) / m_Sampling;
+  bool isOver = false;
+  float integral = 0;
+  while (start++ < end) {
+    if (*start > threshold) {
+      isOver = true;
+    }
+    integral += *start;
   }
-  for(auto itr = start; itr != end; ++itr){
-    integral += *itr;
-  }
-  return integral * m_Sampling;
+
+  return isOver ? integral * m_Sampling : -1;
 }
 
 /**
@@ -42,17 +37,15 @@ double SiPMAnalogSignal::integral(const double intstart, const double intgate, c
 @param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::peak(const double intstart, const double intgate, const double threshold) const {
-  double peak = 0;
-  const auto start = m_Waveform.cbegin() + static_cast<uint32_t>(intstart / m_Sampling);
-  const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  if (std::any_of(start,end,[threshold](const double sample){ return sample > threshold; }) == false) {
-    return -1;
-  }
-  for(auto itr = start; itr != end; ++itr){
-    if( *itr > peak){
-      peak = *itr;
+  auto start = m_Waveform.begin() + intstart / m_Sampling;
+  const auto end = m_Waveform.cbegin() + (intstart + intgate) / m_Sampling;
+  float peak = -1;
+  while (start++ < end) {
+    if (*start > threshold && *start > peak) {
+      peak = *start;
     }
   }
+
   return peak;
 }
 
@@ -65,18 +58,16 @@ double SiPMAnalogSignal::peak(const double intstart, const double intgate, const
 @param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::tot(const double intstart, const double intgate, const double threshold) const {
-  uint32_t tot = 0;
-  const auto start = m_Waveform.cbegin() + static_cast<uint32_t>(intstart / m_Sampling);
-  const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  if (std::any_of(start,end,[threshold](const double sample){ return sample > threshold; }) == false) {
-    return -1;
-  }
-  for(auto itr = start; itr != end; ++itr){
-    if(*itr > threshold){
-      ++tot;
+  auto start = m_Waveform.begin() + intstart / m_Sampling;
+  const auto end = m_Waveform.cbegin() + (intstart + intgate) / m_Sampling;
+
+  double tot = 0;
+  while (start < end) {
+    if (*start++ > threshold) {
+      tot++;
     }
   }
-  return tot * m_Sampling;
+  return tot > 0 ? tot * m_Sampling : -1;
 }
 
 /**
@@ -88,19 +79,17 @@ double SiPMAnalogSignal::tot(const double intstart, const double intgate, const 
 @param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::toa(const double intstart, const double intgate, const double threshold) const {
-  uint32_t toa = 0;
-  auto start = m_Waveform.begin() + static_cast<uint32_t>(intstart / m_Sampling);
-  const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  if (std::any_of(start,end,[threshold](const double sample){ return sample > threshold; }) == false) {
-    return -1;
+  const uint32_t start = intstart / m_Sampling;
+  const uint32_t end = (intstart + intgate) / m_Sampling;
+
+  for (uint32_t i = start; i < end - 1; ++i) {
+    if (m_Waveform[i] > threshold) {
+      const float d = (threshold - m_Waveform[i - 1]) / (m_Waveform[i] - m_Waveform[i - 1]);
+      return (i - start - 1 + d) * m_Sampling;
+    }
   }
 
-  while (*start < threshold && start != end) {
-    ++toa;
-    ++start;
-  }
-
-  return toa * m_Sampling;
+  return -1;
 }
 
 /**
@@ -111,20 +100,25 @@ double SiPMAnalogSignal::toa(const double intstart, const double intgate, const 
 @param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::top(const double intstart, const double intgate, const double threshold) const {
-  const auto start = m_Waveform.cbegin() + static_cast<uint32_t>(intstart / m_Sampling);
-  const auto end = start + static_cast<uint32_t>(intgate / m_Sampling);
-  if (std::any_of(start,end,[threshold](const double sample){ return sample > threshold; }) == false) {
-    return -1;
+  const uint32_t start = intstart / m_Sampling;
+  const uint32_t end = (intstart + intgate) / m_Sampling;
+  float peak = -1;
+  double top = -1;
+  for (uint32_t i = start; i < end; ++i) {
+    if (m_Waveform[i] > peak) {
+      peak = m_Waveform[i];
+      top = (i - start) * m_Sampling;
+    }
   }
 
-  return static_cast<double>(std::max_element(start, end) - start) * m_Sampling;
+  return top;
 }
 
 std::ostream& operator<<(std::ostream& out, const SiPMAnalogSignal& obj) {
   out << std::setprecision(2) << std::fixed;
   out << "===> SiPM Analog Signal <===\n";
-  out << "Address: " << std::addressof(obj) << "\n";
-  out << "Signal length is: " << obj.m_Waveform.size() / obj.m_Sampling << " ns\n";
+  out << "Address: " << std::hex << std::addressof(obj) << "\n";
+  out << "Signal length is: " << std::dec << obj.m_Waveform.size() / obj.m_Sampling << " ns\n";
   out << "Signal is sampled every: " << obj.m_Sampling << " ns\n";
   out << "Signal contains: " << obj.m_Waveform.size() << " points";
   return out;

@@ -11,10 +11,10 @@ void SiPMHitPy(py::module& m) {
   sipmhit.def("time", &SiPMHit::time)
     .def("row", &SiPMHit::row)
     .def("col", &SiPMHit::col)
-    .def("amplitude", static_cast<double (SiPMHit::*)() const>(&SiPMHit::amplitude))
+    .def("amplitude", static_cast<float (SiPMHit::*)() const noexcept>(&SiPMHit::amplitude))
     .def("hitType", &SiPMHit::hitType)
+    .def("parent", &SiPMHit::parent, py::return_value_policy::reference)
     .def("__repr__", &SiPMHit::toString)
-    .def("__copy__", [](const SiPMHit& self) { return SiPMHit(self); })
     .def("__deepcopy__", [](const SiPMHit& self, py::dict) { return SiPMHit(self); });
 
   py::enum_<SiPMHit::HitType>(sipmhit, "HitType")

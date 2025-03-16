@@ -17,9 +17,11 @@ from pybind11.setup_helpers import (
 import os
 import platform
 
+# Get description from README.md
 with open("README.md", encoding="utf-8") as f:
     LONG_DESCRIPTION = f.read()
 
+# Setup parallel compilation
 if os.environ.get("NPY_NUM_BUILD_JOBS"):
     ParallelCompile("NPY_NUM_BUILD_JOBS", needs_recompile=naive_recompile).install()
 else:
@@ -32,6 +34,7 @@ for l in open("include/SiPM.h").readlines():
         __version__ = l.split()[-1].strip('"')
         break
 
+# Optimize for modern CPUs
 extra_compile_args = [
     "-DNDEBUG",
     "-O3",
@@ -41,10 +44,12 @@ extra_compile_args = [
     "-mavx2",
 ]
 
+# Custom compile flags for Mac-OS
 if platform.system() == "Darwin":
     # On MacOS
     extra_compile_args.append("-fno-aligned-allocation")
 
+# Get files
 sources = []
 sources.extend(glob("src/*.cpp"))
 sources.extend(glob("python/*.cpp"))
@@ -102,5 +107,6 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Topic :: Scientific/Engineering :: Physics",
         "Programming Language :: Python :: 3",
+        "Programming Language :: C++",
     ],
 )

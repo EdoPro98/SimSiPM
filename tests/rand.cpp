@@ -209,11 +209,11 @@ TEST_F(TestSiPMRandom, RandomFCorrelation) {
   float cov = 0;
 
   for (int i = 0; i < 1000; ++i) {
-    float xi = rng.RandF();
-    float yi = rng.RandF();
+    float xi = rng.Rand<float>();
+    float yi = rng.Rand<float>();
     for (int j = i; j < 1000; ++j) {
-      float xj = rng.RandF();
-      float yj = rng.RandF();
+      float xj = rng.Rand<float>();
+      float yj = rng.Rand<float>();
       cov += (xi - xj) * (yi - yj);
     }
   }

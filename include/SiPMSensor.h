@@ -10,18 +10,14 @@
 
 #ifndef SIPM_SIPMSENSOR_H
 #define SIPM_SIPMSENSOR_H
-#include <algorithm>
 #include <cstdint>
-#include <iomanip>
 #include <iostream>
-#include <memory>
 #include <sstream>
 #include <vector>
 
 #include "SiPMAnalogSignal.h"
 #include "SiPMDebugInfo.h"
 #include "SiPMHit.h"
-#include "SiPMMath.h"
 #include "SiPMProperties.h"
 #include "SiPMRandom.h"
 #include "SiPMTypes.h"
@@ -32,14 +28,12 @@ public:
   /// @brief SiPMSensor constructor from a @ref SiPMProperties instance
   /** Instantiates a SiPMSensor with parameter specified in the SiPMProperties.
    */
-  SiPMSensor(const SiPMProperties&);
+  explicit SiPMSensor(const SiPMProperties&);
 
   SiPMSensor();
 
   /// @brief Returns the @ref SiPMProperties class stored in the SiPMSensor
   const SiPMProperties& properties() const { return m_Properties; }
-
-  SiPMProperties& properties() { return m_Properties; }
 
   /// @brief Returns the @ref SiPMAnalogSignal stored in the SiPMSensor
   /** Used to get the generated signal from the sensor. This method should be
@@ -51,16 +45,7 @@ public:
   /** This method allows to get all the hits generated in the simulation
    * process, including noise hits.
    */
-  std::vector<SiPMHit> hits() const { return m_Hits; }
-
-  /// @brief Returns vector containing history of hits
-  /**
-   * Returns a vector containing the index of the corresponding parent hit
-   * for each hit. If the hit has no parent (e.g. DCR hit) the
-   * index is set to -1.
-   * This allows to get the complete chain of hits generation.
-   */
-  std::vector<int32_t> hitsGraph() const { return m_HitsGraph; }
+  std::vector<SiPMHit*> hits() const { return m_Hits; }
 
   /// @brief Returns the @ref SiPMRandom rng used by SiPMSensor
   const SiPMRandom rng() const { return m_rng; }
@@ -68,13 +53,10 @@ public:
   SiPMRandom& rng() { return m_rng; }
 
   /// @brief Returns a @ref SiPMDebugInfo struct with MC-Truth values
-#ifdef __clang__
-  constexpr SiPMDebugInfo debug() const {
+  SiPMDebugInfo debug() const {
     return SiPMDebugInfo{static_cast<uint32_t>(m_PhotonTimes.size()), m_nPe, m_nDcr, m_nXt, m_nDXt, m_nAp};
   }
-#else
-  SiPMDebugInfo debug() const { return SiPMDebugInfo{static_cast<uint32_t>(m_PhotonTimes.size()), m_nPe, m_nDcr, m_nXt, m_nDXt, m_nAp}; }
-#endif
+
   /// @brief Sets a property using its name
   /** For a list of available SiPM properties names @sa SiPMProperties.
    * This method uses a key/value to set the corresponding property.
@@ -115,17 +97,22 @@ public:
 
 private:
   double evaluatePde(const double) const;
-  inline bool isDetected(const double val) const noexcept { return m_rng.Rand() < val; }
-  constexpr bool isInSensor(const int32_t, const int32_t) const noexcept;
-  math::pair<uint32_t> hitCell() const;
-  SiPMVector<float> signalShape() const;
+  constexpr bool isInSensor(const int32_t r, const int32_t c) const noexcept {
+    const int32_t nSideCells = m_Properties.nSideCells();
+    return (r >= 0) & (c >= 0) & (r < nSideCells) & (c < nSideCells);
+  }
+  pair<uint32_t> hitUniform() const;
+  pair<uint32_t> hitCircle() const;
+  pair<uint32_t> hitGaussian() const;
+  pair<uint32_t> hitCell() const;
+  void signalShape();
 
   void addDcrEvents();
   void addPhotoelectrons();
   void addCorrelatedNoise();
 
-  SiPMHit generateXtHit(const SiPMHit&) const;
-  SiPMHit generateApHit(const SiPMHit&) const;
+  SiPMHit* generateXtHit(const SiPMHit*) const;
+  SiPMHit* generateApHit(const SiPMHit*) const;
 
   void calculateSignalAmplitudes();
   void generateSignal();
@@ -142,16 +129,11 @@ private:
 
   std::vector<double> m_PhotonTimes;
   std::vector<double> m_PhotonWavelengths;
-  std::vector<SiPMHit> m_Hits;
-  std::vector<int32_t> m_HitsGraph;
+  std::vector<SiPMHit*> m_Hits;
 
-  SiPMVector<float> m_SignalShape;
+  std::vector<float> m_SignalShape;
   SiPMAnalogSignal m_Signal;
 };
 
-constexpr bool SiPMSensor::isInSensor(const int32_t r, const int32_t c) const noexcept {
-  const int32_t nSideCells = m_Properties.nSideCells();
-  return (r > 0) & (c > 0) & (r < nSideCells) & (c < nSideCells);
-}
 } // namespace sipm
 #endif /* SIPM_SIPMSENSOR_H */

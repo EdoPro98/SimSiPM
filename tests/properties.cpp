@@ -25,7 +25,7 @@ TEST_F(TestSiPMProperties, Constructor) {
   EXPECT_DOUBLE_EQ(sut.tauApFast(), 10);
   EXPECT_DOUBLE_EQ(sut.tauApSlow(), 80);
   EXPECT_DOUBLE_EQ(sut.apSlowFraction(), 0.5);
-  EXPECT_DOUBLE_EQ(sut.ccgv(), 0.05);
+  EXPECT_FLOAT_EQ(sut.ccgv(), 0.05);
   EXPECT_DOUBLE_EQ(sut.snrdB(), 30);
   EXPECT_DOUBLE_EQ(sut.gain(), 1);
   EXPECT_TRUE(sut.hasDcr());
@@ -84,21 +84,4 @@ TEST_F(TestSiPMProperties, SetHitPdeType) {
   EXPECT_TRUE(lsut.pdeType() == SiPMProperties::PdeType::kSimplePde);
   lsut.setPde(0.3);
   EXPECT_DOUBLE_EQ(lsut.pde(), 0.3);
-}
-
-TEST_F(TestSiPMProperties, SetPdeSpectrum) {
-  const int N = 20;
-  SiPMProperties lsut = sut;
-  lsut.setPdeType(SiPMProperties::PdeType::kSpectrumPde);
-  std::vector<double> wlen;
-  std::vector<double> pde;
-  for (int i = 0; i < N; ++i) {
-    wlen.push_back(i * 50);
-    pde.push_back(rng.Rand());
-  }
-  lsut.setPdeSpectrum(wlen, pde);
-  std::map<double, double> pde_return = lsut.pdeSpectrum();
-  for (int i = 0; i < N; ++i) {
-    EXPECT_DOUBLE_EQ(pde[i], pde_return[i * 50]);
-  }
 }

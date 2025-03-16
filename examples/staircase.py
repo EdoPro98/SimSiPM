@@ -7,7 +7,7 @@ from scipy.optimize import curve_fit as fit
 from scipy.signal import savgol_filter
 plt.style.use(mplhep.style.ATLAS)
 
-dcr = 300
+dcr = 100
 xt = 0.10
 sensor = SiPM.SiPMSensor()
 sensor.setProperty("Dcr",dcr*1000)
@@ -26,15 +26,16 @@ def fitFun(x,
 
 start = 0
 end = 4.0
-step = 0.05
+step = 0.1
 window = 250
 N = 25000
+n = 100
 
 threshold = np.arange(start,end,step)
 nstep = threshold.size
-counts = np.zeros((nstep,25))
+counts = np.zeros((nstep,n))
 
-for j in range(25):
+for j in range(n):
     peaks = np.zeros(N)
     for i in range(N):
         sensor.resetState()
@@ -58,7 +59,7 @@ par, cov = fit(fitFun, threshold[(threshold > 0.5) & (threshold < 4)], rate[(thr
 fig,ax = plt.subplots()
 ax.plot(threshold, rate, ".k")
 diffRate = -savgol_filter(rate,5,2,1)
-ax.plot(threshold, diffRate)
+ax.plot(threshold, diffRate,'b')
 ax.fill_between(threshold, rate+raterr, rate-raterr, color="r",alpha=0.25)
 ax.plot(np.linspace(0,4.0,1000), fitFun(np.linspace(0,4.0,1000),*par), "--g")
 ax.set_yscale("log")

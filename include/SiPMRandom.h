@@ -13,16 +13,22 @@
 #ifndef SIPM_RANDOM_H
 #define SIPM_RANDOM_H
 
+#include <array>
+#include <cstddef>
+#include <cstdlib>
+#ifdef __AVX512F__
+#include <immintrin.h>
+#endif
+
 #include <cmath>
 #include <cstdint>
-#include <stdint.h>
+#include <cstring>
 #include <vector>
-#include <string.h>
 
-#include "SiPMMath.h"
 #include "SiPMTypes.h"
 
 // Musl implementation of lcg64
+// Keeping this function limited to this translation unit
 static constexpr uint64_t lcg64(const uint64_t x) { return (x * 10419395304814325825ULL + 1) % -1ULL; }
 
 namespace sipm {
@@ -45,38 +51,15 @@ namespace SiPMRng {
 class Xorshift256plus {
 public:
   /// @brief Default contructor for Xorshift256plus
-  /// It cretates an instance of Xorhift256plus and sets the seed using 
+  /// It cretates an instance of Xorhift256plus and sets the seed using
   /// a 64 bit LCG and a random value from system randomd device
   Xorshift256plus() { seed(); }
-  
+
   /// @brief Constructor with seed for Xorhift256plus
-  /// It cretates an instance of Xorshift256plus and sets the seed 
+  /// It cretates an instance of Xorshift256plus and sets the seed
   /// using a 64 bit LCG and the seed value provided
   /// @param sd uint64_t User provided seed. Must not be 0!
-  Xorshift256plus(const uint64_t sd) { seed(sd); }
-
-  /// @brief Returns a pseud-random 64-bits intger
-  inline uint64_t operator()() noexcept {
-    const uint64_t result = s[0] + s[3];
-
-    const uint64_t t = s[1] << 17;
-
-    s[2] ^= s[0];
-    s[3] ^= s[1];
-    s[1] ^= s[2];
-    s[0] ^= s[3];
-
-    s[2] ^= t;
-
-    s[3] = (s[3] << 45U) | (s[3] >> (64U - 45U));
-    return result;
-  } __attribute__((hot))
-
-  /// @brief Jump function for the alghoritm.
-  /**This is the jump function for the generator. It is equivalent
-   * to 2^128 calls to next(); it can be used to generate 2^128
-   * non-overlapping subsequences for parallel computations. */
-  void jump();
+  explicit Xorshift256plus(const uint64_t sd) { seed(sd); }
 
   /// @brief Sets a random seed generated using system random device.
   void seed();
@@ -84,11 +67,151 @@ public:
   /// @brief Manually set a seed
   void seed(const uint64_t);
 
-  /// @brief Return internal state of rng.
-  const uint64_t* getState() const { return s; }
-
 private:
   alignas(64) uint64_t s[4];
+  static constexpr uint32_t N = 1 << 16;
+  alignas(64) uint64_t buffer[N];
+  uint32_t index = N;
+#ifdef __AVX512F__
+  __m512i __s[4];
+#endif
+
+public:
+  /// @brief Returns a pseud-random 64-bits integer
+  inline uint64_t operator()() noexcept {
+    if (index == N) {
+      getRand(buffer, N);
+      index = 0;
+    }
+    return buffer[index++];
+  }
+
+#ifdef __AVX512F__
+  // Overload for uint64_t
+  inline void getRand(uint64_t* array, const uint32_t n) noexcept {
+    size_t i = 0;
+    // Generate 8 uint64_t values per iteration
+    for (; i + 8 <= n; i += 8) {
+      const __m512i __result = _mm512_add_epi64(__s[0], __s[3]);
+      _mm512_store_si512(array + i, __result);
+
+      const __m512i __t = _mm512_slli_epi64(__s[1], 17);
+
+      __s[2] = _mm512_xor_epi64(__s[2], __s[0]);
+      __s[3] = _mm512_xor_epi64(__s[3], __s[1]);
+      __s[1] = _mm512_xor_epi64(__s[1], __s[2]);
+      __s[0] = _mm512_xor_epi64(__s[0], __s[3]);
+
+      __s[2] = _mm512_xor_si512(__s[2], __t);
+
+      __s[3] = _mm512_rol_epi64(__s[3], 45);
+    }
+    // Handle leftover if n is not a multiple of 8
+    if (i < n) {
+      alignas(64) uint64_t buffer[8];
+      const __m512i __result = _mm512_add_epi64(__s[0], __s[3]);
+      _mm512_store_si512(buffer, __result);
+
+      const __m512i __t = _mm512_slli_epi64(__s[1], 17);
+
+      __s[2] = _mm512_xor_si512(__s[2], __s[0]);
+      __s[3] = _mm512_xor_si512(__s[3], __s[1]);
+      __s[1] = _mm512_xor_si512(__s[1], __s[2]);
+      __s[0] = _mm512_xor_si512(__s[0], __s[3]);
+
+      __s[2] = _mm512_xor_si512(__s[2], __t);
+
+      __s[3] = _mm512_rol_epi64(__s[3], 45);
+      for (size_t j = 0; j < n - i; ++j) {
+        array[i + j] = buffer[j];
+      }
+    }
+  }
+
+  // Overload for uint32_t
+  inline void getRand(uint32_t* array, const uint32_t n) noexcept {
+    size_t i = 0;
+
+    // Generate 8 uint64_t values per iteration and split them into 16 uint32_t values
+    for (; i + 16 <= n; i += 16) {
+      const __m512i __result = _mm512_add_epi64(__s[0], __s[3]);
+
+      _mm512_store_si512(array + i, __result);
+
+      const __m512i __t = _mm512_slli_epi64(__s[1], 17);
+
+      __s[2] = _mm512_xor_si512(__s[2], __s[0]);
+      __s[3] = _mm512_xor_si512(__s[3], __s[1]);
+      __s[1] = _mm512_xor_si512(__s[1], __s[2]);
+      __s[0] = _mm512_xor_si512(__s[0], __s[3]);
+
+      __s[2] = _mm512_xor_si512(__s[2], __t);
+
+      __s[3] = _mm512_rol_epi64(__s[3], 45);
+    }
+
+    // Handle leftover if n is not a multiple of 16
+    if (i < n) {
+      alignas(64) uint32_t buffer[16];
+      const __m512i __result = _mm512_add_epi64(__s[0], __s[3]);
+      _mm512_store_si512(buffer, __result);
+
+      const __m512i __t = _mm512_slli_epi64(__s[1], 17);
+
+      __s[2] = _mm512_xor_si512(__s[2], __s[0]);
+      __s[3] = _mm512_xor_si512(__s[3], __s[1]);
+      __s[1] = _mm512_xor_si512(__s[1], __s[2]);
+      __s[0] = _mm512_xor_si512(__s[0], __s[3]);
+
+      __s[2] = _mm512_xor_si512(__s[2], __t);
+
+      __s[3] = _mm512_rol_epi64(__s[3], 45);
+
+      // Fill the remaining uint32_t values
+      for (size_t j = 0; j < n - i; ++j) {
+        array[i + j] = buffer[j];
+      }
+    }
+  }
+#else
+
+  // Overload for uint64_t (most of the times this one is used)
+  inline void getRand(uint64_t* array, const uint32_t n) {
+    for (uint32_t i = 0; i < n; ++i) {
+      const uint64_t randVal = s[0] + s[3];
+      const uint64_t t = s[1] << 17;
+      s[2] ^= s[0];
+      s[3] ^= s[1];
+      s[1] ^= s[2];
+      s[0] ^= s[3];
+
+      s[2] ^= t;
+      s[3] = (s[3] << 45) | (s[3] >> (64 - 45));
+
+      array[i] = randVal;
+    }
+  }
+
+  // Overload for uint32_t
+  inline void getRand(uint32_t* array, const uint32_t n) {
+    for (uint32_t i = 0; i < n; i += 2) {
+      const uint64_t randVal = s[0] + s[3];
+      const uint64_t t = s[1] << 17;
+      s[2] ^= s[0];
+      s[3] ^= s[1];
+      s[1] ^= s[2];
+      s[0] ^= s[3];
+
+      s[2] ^= t;
+      s[3] = (s[3] << 45) | (s[3] >> (64 - 45));
+
+      array[i] = static_cast<uint32_t>(randVal); // Lower 32 bits
+      if (i + 1 < n) {
+        array[i + 1] = static_cast<uint32_t>(randVal >> 32); // Upper 32 bits
+      }
+    }
+  }
+#endif
 };
 } // namespace SiPMRng
 
@@ -100,14 +223,18 @@ public:
   /// Use this method to seed the PRNG and to get the status
   SiPMRng::Xorshift256plus& rng() { return m_rng; }
 
-  /// @brief Gives an uniformly distributed random double
-  inline double Rand() noexcept;
-  /// @brief Gives an uniformly distributed random float
-  inline float RandF() noexcept;
+  // Seed underlying rng
+  void seed(const uint64_t x) { m_rng.seed(x); }
+
+  /// @brief Gives an uniformly distributed random
+  template <typename T = double>
+  inline T Rand() noexcept;
+  pair<float, float> RandF2() noexcept;
   /// @brief Gives an uniform random integer
   uint32_t randInteger(const uint32_t) noexcept;
+  pair<uint32_t> randInteger2(const uint32_t) noexcept;
 
-  /// @brief Gives random double with gaussian distribution
+  /// @brief Gives random value with gaussian distribution
   double randGaussian(const double, const double) noexcept;
   /// @brief Gives random float with gaussian distribution
   float randGaussianF(const float, const float) noexcept;
@@ -119,21 +246,19 @@ public:
   uint32_t randPoisson(const double mu) noexcept;
 
   /// @brief Vector version of @ref Rand()
-  template <typename T = std::vector<double>> T Rand(const uint32_t);
+  std::vector<double> Rand(const uint32_t);
   /// @brief Vector version of @ref RandF()
-  template <typename T = std::vector<float>> T RandF(const uint32_t);
+  std::vector<float> RandF(const uint32_t);
   /// @brief Vector version of @ref randGaussian()
-  template <typename T = std::vector<double>>
-  T randGaussian(const double, const double, const uint32_t);
-  template <typename T = std::vector<float>>
+  std::vector<double> randGaussian(const double, const double, const uint32_t);
   /// @brief Vector version of @ref randGaussianF()
-  T randGaussianF(const float, const float, const uint32_t);
+  std::vector<float> randGaussianF(const float, const float, const uint32_t);
   /// @brief Vector version of @ref randInteger()
   std::vector<uint32_t> randInteger(const uint32_t max, const uint32_t n);
   /// @brief Vector version of @ref randExponential()
-  template <typename T = std::vector<double>> T randExponential(const double, const uint32_t);
+  std::vector<double> randExponential(const double, const uint32_t);
   /// @brief Vector version of @ref randExponentialF()
-  template <typename T = std::vector<float>> T randExponentialF(const float, const uint32_t);
+  std::vector<float> randExponentialF(const float, const uint32_t);
 
 private:
   SiPMRng::Xorshift256plus m_rng;
@@ -145,9 +270,9 @@ private:
  * 0x3fff. By aliasing the uint to a double and subtracting 1
  * the result is a random double in range (0-1].
  */
-inline double SiPMRandom::Rand() noexcept {
-  const uint64_t x = (0x3ffull << 52) | (m_rng() >> 12);
-  return *(double*)(&x) - 1;
+template <>
+inline double SiPMRandom::Rand<double>() noexcept {
+  return (m_rng() >> 11) * 0x1p-53;
 }
 
 /**
@@ -156,9 +281,9 @@ inline double SiPMRandom::Rand() noexcept {
  * 0x3f8. By aliasing the uint to a double and subtracting 1
  * the result is a random float in range (0-1].
  */
-inline float SiPMRandom::RandF() noexcept {
-  const uint32_t x = (0x3f8ul << 20) | (static_cast<uint32_t>(m_rng()) >> 8);
-  return *(float*)(&x) - 1;
+template <>
+inline float SiPMRandom::Rand<float>() noexcept {
+  return (m_rng() >> 40) * 0x1p-24f;
 }
 } // namespace sipm
 #endif /* SIPM_RANDOM_H */
