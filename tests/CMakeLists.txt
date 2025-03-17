@@ -1,34 +1,33 @@
-enable_testing()
-
-macro(package_add_test_with_libraries TESTNAME FILES LIBRARIES TEST_WORKING_DIRECTORY )
-    add_executable(${TESTNAME} ${FILES})
-    set_target_properties(${TESTNAME} PROPERTIES COMPILE_FLAGS "-O3 -g")
-    target_link_libraries(${TESTNAME} gtest gmock gtest_main ${LIBRARIES})
-    gtest_discover_tests(${TESTNAME}
-        WORKING_DIRECTORY ${TEST_WORKING_DIRECTORY}
-        PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${TEST_WORKING_DIRECTORY}"
-    )
-    set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
-endmacro()
-
-find_package(GTest REQUIRED)
+#find_package(GTest)
 
 if(NOT GTest_FOUND)
-  include(FetchContent)
-  FetchContent_Declare(
-    googletest
-    GIT_REPOSITORY https://github.com/google/googletest.git
-  )
-  FetchContent_GetProperties(googletest)
-  if(NOT googletest_POPULATED)
-    FetchContent_Populate(googletest)
-    add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
-  endif()
+	include(FetchContent)
+	FetchContent_Declare(
+  		googletest
+  		GIT_REPOSITORY https://github.com/google/googletest.git
+  		GIT_TAG origin/main
+	)
+	FetchContent_MakeAvailable(googletest)
 endif()
 
-include_directories(../include)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
+
+enable_testing()
+
+add_executable(TestSiPMRng xorshift.cpp)
+add_executable(TestSiPMRandom rand.cpp)
+add_executable(TestSiPMProperties properties.cpp)
+add_executable(TestSiPMSensor sensor.cpp)
+
+target_link_libraries(TestSiPMRng GTest::gtest_main sipm)
+target_link_libraries(TestSiPMRandom GTest::gtest_main sipm)
+target_link_libraries(TestSiPMProperties GTest::gtest_main sipm)
+target_link_libraries(TestSiPMSensor GTest::gtest_main sipm)
+
 include(GoogleTest)
-package_add_test_with_libraries(TestSiPMXorshift256plus xorshift.cpp sipm "${PROJECT_DIR}")
-package_add_test_with_libraries(TestSiPMRandom rand.cpp sipm "${PROJECT_DIR}")
-package_add_test_with_libraries(TestSiPMProperities properties.cpp sipm "${PROJECT_DIR}")
-package_add_test_with_libraries(TestSiPMSensor sensor.cpp sipm "${PROJECT_DIR}")
+include_directories(../include)
+gtest_discover_tests(TestSiPMRng)
+gtest_discover_tests(TestSiPMRandom)
+gtest_discover_tests(TestSiPMProperties)
+gtest_discover_tests(TestSiPMSensor)
