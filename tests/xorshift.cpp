@@ -12,11 +12,18 @@ TEST_F(TestSiPMXorshift256, Constructor) { uint64_t N = 10000000; }
 TEST_F(TestSiPMXorshift256, Seed) {
   sipm::SiPMRng::Xorshift256plus rng;
   static constexpr uint64_t seed = 1234567890UL; // Random seed
+#ifdef __AVX512F__
   static constexpr uint64_t expected[] = {3539951786562994468ULL,  16993425385450634633ULL, 12425995393443937258ULL,
                                           1971016958421006117ULL,  3113309500227661404ULL,  490387842609610270ULL,
                                           11577763190126509135ULL, 18038816835264277783ULL, 14056837810899630979ULL,
                                           8986600062506074549ULL};
+#else
 
+ static constexpr uint64_t expected[] = {2356680413504073166ULL, 6439555299326541142ULL, 13107374383302832124ULL,
+                                          15371213951372998008ULL, 3598216317549022935ULL, 9944474804087195216ULL,
+                                          1783072794770156681ULL, 9432686255404415156ULL, 5598578073076770953ULL,
+                                          11053698116263360353};
+#endif
   rng.seed(seed);
   for (int j = 0; j < 10; ++j) {
     uint64_t x = rng();
