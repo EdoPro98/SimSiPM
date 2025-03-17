@@ -1,4 +1,4 @@
-#find_package(GTest)
+find_package(GTest)
 
 if(NOT GTest_FOUND)
 	include(FetchContent)
