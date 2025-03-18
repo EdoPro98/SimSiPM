@@ -3,8 +3,9 @@
 
 <p align="center"><img src="images/logo.svg" width=600></p>
 
-[![CMake on Linux and MacOS (x86)](https://github.com/EdoPro98/SimSiPM/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/EdoPro98/SimSiPM/actions/workflows/cmake-multi-platform.yml)
-[![CMake on MacOS(ARM)](https://github.com/EdoPro98/SimSiPM/actions/workflows/cmake-single-platform.yml/badge.svg)](https://github.com/EdoPro98/SimSiPM/actions/workflows/cmake-single-platform.yml)
+[![CMake on Linux and MacOS (x86)](https://github.com/EdoPro98/SimSiPM/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/EdoPro98/SimSiPM/actions/workflows/cmake-multi-platform.yml) Linux and MacOS (x86)
+
+[![CMake on MacOS(ARM)](https://github.com/EdoPro98/SimSiPM/actions/workflows/cmake-single-platform.yml/badge.svg)](https://github.com/EdoPro98/SimSiPM/actions/workflows/cmake-single-platform.yml) MacOS (Arm)
 
 ![GitHub issues](https://img.shields.io/github/issues/EdoPro98/SimSiPM)
 ![GitHub last commit](https://img.shields.io/github/last-commit/EdoPro98/SimSiPM)
