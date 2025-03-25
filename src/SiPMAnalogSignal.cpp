@@ -1,7 +1,6 @@
 #include "SiPMAnalogSignal.h"
 #include <cstdint>
 #include <iomanip>
-#include <numeric>
 
 namespace sipm {
 

@@ -1,0 +1,128 @@
+[
+{
+  "directory": "/home/edo/SimSiPM/build",
+  "command": "/usr/bin/clang++ -Dsipm_EXPORTS -I/home/edo/SimSiPM/include -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -fPIC -o CMakeFiles/sipm.dir/src/SiPMAnalogSignal.cpp.o -c /home/edo/SimSiPM/src/SiPMAnalogSignal.cpp",
+  "file": "/home/edo/SimSiPM/src/SiPMAnalogSignal.cpp",
+  "output": "CMakeFiles/sipm.dir/src/SiPMAnalogSignal.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build",
+  "command": "/usr/bin/clang++ -Dsipm_EXPORTS -I/home/edo/SimSiPM/include -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -fPIC -o CMakeFiles/sipm.dir/src/SiPMProperties.cpp.o -c /home/edo/SimSiPM/src/SiPMProperties.cpp",
+  "file": "/home/edo/SimSiPM/src/SiPMProperties.cpp",
+  "output": "CMakeFiles/sipm.dir/src/SiPMProperties.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build",
+  "command": "/usr/bin/clang++ -Dsipm_EXPORTS -I/home/edo/SimSiPM/include -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -fPIC -o CMakeFiles/sipm.dir/src/SiPMRandom.cpp.o -c /home/edo/SimSiPM/src/SiPMRandom.cpp",
+  "file": "/home/edo/SimSiPM/src/SiPMRandom.cpp",
+  "output": "CMakeFiles/sipm.dir/src/SiPMRandom.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build",
+  "command": "/usr/bin/clang++ -Dsipm_EXPORTS -I/home/edo/SimSiPM/include -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -fPIC -o CMakeFiles/sipm.dir/src/SiPMSensor.cpp.o -c /home/edo/SimSiPM/src/SiPMSensor.cpp",
+  "file": "/home/edo/SimSiPM/src/SiPMSensor.cpp",
+  "output": "CMakeFiles/sipm.dir/src/SiPMSensor.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build",
+  "command": "/usr/bin/clang++ -DSiPM_EXPORTS -I/home/edo/SimSiPM/include -isystem /usr/include/python3.11 -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -fPIC -fvisibility=hidden -fvisibility=hidden -ffast-math -O3 -o CMakeFiles/SiPM.dir/python/SiPMAnalogSignalPy.cpp.o -c /home/edo/SimSiPM/python/SiPMAnalogSignalPy.cpp",
+  "file": "/home/edo/SimSiPM/python/SiPMAnalogSignalPy.cpp",
+  "output": "CMakeFiles/SiPM.dir/python/SiPMAnalogSignalPy.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build",
+  "command": "/usr/bin/clang++ -DSiPM_EXPORTS -I/home/edo/SimSiPM/include -isystem /usr/include/python3.11 -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -fPIC -fvisibility=hidden -fvisibility=hidden -ffast-math -O3 -o CMakeFiles/SiPM.dir/python/SiPMDebugInfoPy.cpp.o -c /home/edo/SimSiPM/python/SiPMDebugInfoPy.cpp",
+  "file": "/home/edo/SimSiPM/python/SiPMDebugInfoPy.cpp",
+  "output": "CMakeFiles/SiPM.dir/python/SiPMDebugInfoPy.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build",
+  "command": "/usr/bin/clang++ -DSiPM_EXPORTS -I/home/edo/SimSiPM/include -isystem /usr/include/python3.11 -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -fPIC -fvisibility=hidden -fvisibility=hidden -ffast-math -O3 -o CMakeFiles/SiPM.dir/python/SiPMHitPy.cpp.o -c /home/edo/SimSiPM/python/SiPMHitPy.cpp",
+  "file": "/home/edo/SimSiPM/python/SiPMHitPy.cpp",
+  "output": "CMakeFiles/SiPM.dir/python/SiPMHitPy.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build",
+  "command": "/usr/bin/clang++ -DSiPM_EXPORTS -I/home/edo/SimSiPM/include -isystem /usr/include/python3.11 -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -fPIC -fvisibility=hidden -fvisibility=hidden -ffast-math -O3 -o CMakeFiles/SiPM.dir/python/SiPMPropertiesPy.cpp.o -c /home/edo/SimSiPM/python/SiPMPropertiesPy.cpp",
+  "file": "/home/edo/SimSiPM/python/SiPMPropertiesPy.cpp",
+  "output": "CMakeFiles/SiPM.dir/python/SiPMPropertiesPy.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build",
+  "command": "/usr/bin/clang++ -DSiPM_EXPORTS -I/home/edo/SimSiPM/include -isystem /usr/include/python3.11 -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -fPIC -fvisibility=hidden -fvisibility=hidden -ffast-math -O3 -o CMakeFiles/SiPM.dir/python/SiPMPy.cpp.o -c /home/edo/SimSiPM/python/SiPMPy.cpp",
+  "file": "/home/edo/SimSiPM/python/SiPMPy.cpp",
+  "output": "CMakeFiles/SiPM.dir/python/SiPMPy.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build",
+  "command": "/usr/bin/clang++ -DSiPM_EXPORTS -I/home/edo/SimSiPM/include -isystem /usr/include/python3.11 -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -fPIC -fvisibility=hidden -fvisibility=hidden -ffast-math -O3 -o CMakeFiles/SiPM.dir/python/SiPMRandomPy.cpp.o -c /home/edo/SimSiPM/python/SiPMRandomPy.cpp",
+  "file": "/home/edo/SimSiPM/python/SiPMRandomPy.cpp",
+  "output": "CMakeFiles/SiPM.dir/python/SiPMRandomPy.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build",
+  "command": "/usr/bin/clang++ -DSiPM_EXPORTS -I/home/edo/SimSiPM/include -isystem /usr/include/python3.11 -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -fPIC -fvisibility=hidden -fvisibility=hidden -ffast-math -O3 -o CMakeFiles/SiPM.dir/python/SiPMSensorPy.cpp.o -c /home/edo/SimSiPM/python/SiPMSensorPy.cpp",
+  "file": "/home/edo/SimSiPM/python/SiPMSensorPy.cpp",
+  "output": "CMakeFiles/SiPM.dir/python/SiPMSensorPy.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build",
+  "command": "/usr/bin/clang++ -DSiPM_EXPORTS -I/home/edo/SimSiPM/include -isystem /usr/include/python3.11 -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -fPIC -fvisibility=hidden -fvisibility=hidden -ffast-math -O3 -o CMakeFiles/SiPM.dir/src/SiPMAnalogSignal.cpp.o -c /home/edo/SimSiPM/src/SiPMAnalogSignal.cpp",
+  "file": "/home/edo/SimSiPM/src/SiPMAnalogSignal.cpp",
+  "output": "CMakeFiles/SiPM.dir/src/SiPMAnalogSignal.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build",
+  "command": "/usr/bin/clang++ -DSiPM_EXPORTS -I/home/edo/SimSiPM/include -isystem /usr/include/python3.11 -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -fPIC -fvisibility=hidden -fvisibility=hidden -ffast-math -O3 -o CMakeFiles/SiPM.dir/src/SiPMProperties.cpp.o -c /home/edo/SimSiPM/src/SiPMProperties.cpp",
+  "file": "/home/edo/SimSiPM/src/SiPMProperties.cpp",
+  "output": "CMakeFiles/SiPM.dir/src/SiPMProperties.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build",
+  "command": "/usr/bin/clang++ -DSiPM_EXPORTS -I/home/edo/SimSiPM/include -isystem /usr/include/python3.11 -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -fPIC -fvisibility=hidden -fvisibility=hidden -ffast-math -O3 -o CMakeFiles/SiPM.dir/src/SiPMRandom.cpp.o -c /home/edo/SimSiPM/src/SiPMRandom.cpp",
+  "file": "/home/edo/SimSiPM/src/SiPMRandom.cpp",
+  "output": "CMakeFiles/SiPM.dir/src/SiPMRandom.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build",
+  "command": "/usr/bin/clang++ -DSiPM_EXPORTS -I/home/edo/SimSiPM/include -isystem /usr/include/python3.11 -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -fPIC -fvisibility=hidden -fvisibility=hidden -ffast-math -O3 -o CMakeFiles/SiPM.dir/src/SiPMSensor.cpp.o -c /home/edo/SimSiPM/src/SiPMSensor.cpp",
+  "file": "/home/edo/SimSiPM/src/SiPMSensor.cpp",
+  "output": "CMakeFiles/SiPM.dir/src/SiPMSensor.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build/tests",
+  "command": "/usr/bin/clang++  -I/home/edo/SimSiPM/tests/../include -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -O3 -g -o CMakeFiles/TestSiPMXorshift256plus.dir/xorshift.cpp.o -c /home/edo/SimSiPM/tests/xorshift.cpp",
+  "file": "/home/edo/SimSiPM/tests/xorshift.cpp",
+  "output": "tests/CMakeFiles/TestSiPMXorshift256plus.dir/xorshift.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build/tests",
+  "command": "/usr/bin/clang++  -I/home/edo/SimSiPM/tests/../include -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -O3 -g -o CMakeFiles/TestSiPMRandom.dir/rand.cpp.o -c /home/edo/SimSiPM/tests/rand.cpp",
+  "file": "/home/edo/SimSiPM/tests/rand.cpp",
+  "output": "tests/CMakeFiles/TestSiPMRandom.dir/rand.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build/tests",
+  "command": "/usr/bin/clang++  -I/home/edo/SimSiPM/tests/../include -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -O3 -g -o CMakeFiles/TestSiPMProperities.dir/properties.cpp.o -c /home/edo/SimSiPM/tests/properties.cpp",
+  "file": "/home/edo/SimSiPM/tests/properties.cpp",
+  "output": "tests/CMakeFiles/TestSiPMProperities.dir/properties.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build/tests",
+  "command": "/usr/bin/clang++  -I/home/edo/SimSiPM/tests/../include -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -O3 -g -o CMakeFiles/TestSiPMSensor.dir/sensor.cpp.o -c /home/edo/SimSiPM/tests/sensor.cpp",
+  "file": "/home/edo/SimSiPM/tests/sensor.cpp",
+  "output": "tests/CMakeFiles/TestSiPMSensor.dir/sensor.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build/bench",
+  "command": "/usr/bin/clang++ -DBENCHMARK_STATIC_DEFINE -I/home/edo/SimSiPM/bench/../include -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -o CMakeFiles/random.dir/random.cpp.o -c /home/edo/SimSiPM/bench/random.cpp",
+  "file": "/home/edo/SimSiPM/bench/random.cpp",
+  "output": "bench/CMakeFiles/random.dir/random.cpp.o"
+},
+{
+  "directory": "/home/edo/SimSiPM/build/bench",
+  "command": "/usr/bin/clang++ -DBENCHMARK_STATIC_DEFINE -I/home/edo/SimSiPM/bench/../include -ffast-math -march=znver4 -O3 -DNDEBUG -std=c++17 -o CMakeFiles/sensor.dir/sensor.cpp.o -c /home/edo/SimSiPM/bench/sensor.cpp",
+  "file": "/home/edo/SimSiPM/bench/sensor.cpp",
+  "output": "bench/CMakeFiles/sensor.dir/sensor.cpp.o"
+}
+]

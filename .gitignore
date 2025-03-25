@@ -7,14 +7,10 @@
 *.dll
 *__pycache__
 *.pyc
+*.data*
 CMakeCache.txt
+*/CMakeCache.txt
 
-.ccls-cache
-.hypothesis
-.pytest_cache
-tests/.hypothesis
-tests/.pytest_cache
-tests/.mypy_cache
 test
 build/*
 docs/latex
