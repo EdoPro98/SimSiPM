@@ -1,12 +1,10 @@
 #ifndef H_SIPM_SIPMTYPES
 #define H_SIPM_SIPMTYPES
 
-#include <cstdint>
 #include <cstdlib>
 #include <cstddef> // for std::size_t
 #include <cstring> // for std::memcpy, std::memmove
 #include <utility> // for std::move, std::forward
-#include <iostream>
 
 namespace sipm {
 /** @brief Custom implementation of @ref std::pair

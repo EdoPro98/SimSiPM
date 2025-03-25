@@ -13,7 +13,6 @@
 #ifndef SIPM_RANDOM_H
 #define SIPM_RANDOM_H
 
-#include <array>
 #include <cstddef>
 #include <cstdlib>
 #ifdef __AVX512F__
