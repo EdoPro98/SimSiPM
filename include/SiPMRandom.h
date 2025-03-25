@@ -76,7 +76,7 @@ private:
 #endif
 
 public:
-  /// @brief Returns a pseud-random 64-bits integer
+  /// @brief Returns a pseudo-random 64-bits integer
   inline uint64_t operator()() noexcept {
     if (index == N) {
       getRand(buffer, N);
