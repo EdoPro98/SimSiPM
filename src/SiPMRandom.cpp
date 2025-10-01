@@ -5,26 +5,25 @@
 #include <cstdlib>
 #include <cstring>
 #include <math.h>
+#include <vector>
+#include <random>
+
 
 // Random seed
-#include <vector>
-#include <x86intrin.h>
-static uint64_t rdtsc() {
-  _mm_lfence();
-  const uint64_t t = __rdtsc();
-  _mm_lfence();
-  return t;
+static uint64_t rngInit() {
+  std::random_device rd;
+  return (static_cast<uint64_t>(rd()) << 32) ^ rd();
 }
 
 namespace sipm {
 namespace SiPMRng {
 void Xorshift256plus::seed() {
-  s[0] = lcg64(rdtsc());
+  s[0] = lcg64(rngInit());
   for (uint8_t i = 1; i < 4; ++i) {
     s[i] = lcg64(s[i - 1]);
   }
 #ifdef __AVX512F__
-  __s[0][0] = lcg64(rdtsc());
+  __s[0][0] = lcg64(rngInit());
   for (int i = 1; i < 8; ++i) {
     __s[0][i] = lcg64(__s[0][i - 1]);
   }
