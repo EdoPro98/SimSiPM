@@ -69,8 +69,8 @@ void Xorshift256plus::seed(const uint64_t aseed) {
 // Generate two 32 bit floating from one 64 bit integer
 pair<float, float> SiPMRandom::RandF2() noexcept {
   const uint64_t u64 = m_rng();
-  const uint32_t lo = u64 & 0xffffffff;
-  const uint32_t hi = u64 >> 32;
+  const uint32_t lo = static_cast<uint32_t>(u64);
+  const uint32_t hi = static_cast<uint32_t>(u64 >> 32);
   const float first = (lo >> 8) * 0x1p-24f;
   const float second = (hi >> 8) * 0x1p-24f;
   return {first, second};
@@ -309,8 +309,12 @@ uint32_t SiPMRandom::randInteger(const uint32_t max) noexcept { return ((m_rng()
 
 pair<uint32_t> SiPMRandom::randInteger2(const uint32_t max) noexcept {
   const uint64_t u64 = m_rng();
-  const uint32_t first = ((u64 >> 32) * max) >> 32;
-  const uint32_t second = ((u64 & 0xffffffff) * max) >> 32;
+  // Use direct multiplication and bit-shifting
+  // Use local variables to help compiler optimize
+  uint32_t hi = static_cast<uint32_t>(u64 >> 32);
+  uint32_t lo = static_cast<uint32_t>(u64);
+  uint32_t first = (uint64_t(hi) * max) >> 32;
+  uint32_t second = (uint64_t(lo) * max) >> 32;
   return {first, second};
 }
 
@@ -327,7 +331,6 @@ std::vector<double> SiPMRandom::Rand(const uint32_t n) {
     out[i] = (u64[i] >> 11) * 0x1p-53;
   }
   sipmFree(u64);
-
   return out;
 }
 
