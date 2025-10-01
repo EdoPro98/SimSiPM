@@ -68,11 +68,15 @@ public:
   void seed(const uint64_t);
 
 private:
+  // Generator state
   alignas(64) uint64_t s[4];
+  // Size of the buffer
   static constexpr uint32_t N = 1 << 16;
+  // Buffer for random values
   alignas(64) uint64_t buffer[N];
   uint32_t index = N;
 #ifdef __AVX512F__
+  // Generator state for AVX512
   __m512i __s[4];
 #endif
 
@@ -88,7 +92,7 @@ public:
 
 #ifdef __AVX512F__
   // Overload for uint64_t
-  inline void getRand(uint64_t* array, const uint32_t n) noexcept {
+  inline void getRand(uint64_t* __restrict array, const uint32_t n) noexcept {
     size_t i = 0;
     // Generate 8 uint64_t values per iteration
     for (; i + 8 <= n; i += 8) {
@@ -176,7 +180,7 @@ public:
 #else
 
   // Overload for uint64_t (most of the times this one is used)
-  inline void getRand(uint64_t* array, const uint32_t n) {
+  inline void getRand(uint64_t* __restrict array, const uint32_t n) {
     for (uint32_t i = 0; i < n; ++i) {
       const uint64_t randVal = s[0] + s[3];
       const uint64_t t = s[1] << 17;
@@ -193,7 +197,7 @@ public:
   }
 
   // Overload for uint32_t
-  inline void getRand(uint32_t* array, const uint32_t n) {
+  inline void getRand(uint32_t* __restrict array, const uint32_t n) {
     for (uint32_t i = 0; i < n; i += 2) {
       const uint64_t randVal = s[0] + s[3];
       const uint64_t t = s[1] << 17;
