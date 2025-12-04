@@ -1,5 +1,4 @@
 .git
-
 *.s
 *.o
 *.so
@@ -17,3 +16,4 @@ docs/latex
 docs/html
 benchmarking/
 .cache/*
+compile_commands.json
