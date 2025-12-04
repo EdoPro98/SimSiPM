@@ -6,7 +6,7 @@ namespace py = pybind11;
 using namespace sipm;
 
 void SiPMHitPy(py::module& m) {
-  py::class_<SiPMHit, std::shared_ptr<SiPMHit>> sipmhit(m, "SiPMHit");
+  py::class_<SiPMHit> sipmhit(m, "SiPMHit");
 
   sipmhit.def("time", &SiPMHit::time)
     .def("row", &SiPMHit::row)

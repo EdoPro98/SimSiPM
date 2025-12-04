@@ -1,4 +1,4 @@
-/** @class sipm::SiPMProperties SimSiPM/SimSiPM/SiPMProperties.h
+/** @class sipm::SiPMProperties include/SiPMProperties.h
  * SiPMDigitalSignal.h
  *
  *  @brief Class storing all the parameters that describe a SiPM.

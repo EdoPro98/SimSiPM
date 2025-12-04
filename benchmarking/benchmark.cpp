@@ -1,4 +1,3 @@
-#include "sipm/SiPM.h"
 #include <TPad.h>
 #include <array>
 #include <chrono>
@@ -15,6 +14,8 @@
 #include <TMultiGraph.h>
 #include <TROOT.h>
 #include <TStyle.h>
+#include <sipm/SiPMProperties.h>
+#include <sipm/SiPMSensor.h>
 
 static constexpr int N_TEST = 32;
 static constexpr int N_AVG = 16;

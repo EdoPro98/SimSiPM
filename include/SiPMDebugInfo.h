@@ -1,4 +1,4 @@
-/** @struct sipm::SiPMDebugInfo SimSiPM/SimSiPM/SiPMDebugInfo.h SiPMDebugInfo.h
+/** @struct sipm::SiPMDebugInfo include/SiPMDebugInfo.h
  *
  *  @brief Stores MC-Truth informations.
  *

@@ -382,7 +382,6 @@ void SiPMSensor::generateSignal() {
     const uint32_t time = times[i];
     const float amplitude = m_Hits[i]->amplitude();
 
-
     const uint32_t endPoint = nSignalPoints - time;
     float* signalPtr = m_Signal.data() + time;
     const float* signalShapePtr = m_SignalShape.data();

@@ -1,4 +1,4 @@
-/** @class sipm::SiPMHit SimSiPM/SimSiPM/SiPMHit.h SiPMHit.h
+/** @class sipm::SiPMHit include/SiPMHit.h
  *
  * @brief Class storing informations relative to a single SiPM hitted cell.
  *

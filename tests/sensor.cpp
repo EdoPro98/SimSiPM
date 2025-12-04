@@ -1,8 +1,9 @@
-#include "SiPM.h"
 #include <gtest/gtest.h>
 #include <stdint.h>
 
-#include <iostream>
+#include "SiPMProperties.h"
+#include "SiPMSensor.h"
+#include "SiPMRandom.h"
 
 using namespace sipm;
 
@@ -76,25 +77,26 @@ TEST_F(TestSiPMSensor, SignalGeneration) {
   static constexpr int R = 10000;
   SiPMSensor sensor;
   // Almost no noise
-  auto prop = sensor.properties();
+  SiPMProperties prop;
 
   prop.setXtOff();
   prop.setDcrOff();
   prop.setApOff();
   prop.setSnr(40);
+  prop.setSignalLength(200);
   sensor.setProperties(prop);
 
   for (int i = 1; i < N; ++i) {
     double avg_peak = 0;
     for (int j = 0; j < R; ++j) {
       sensor.resetState();
-      const std::vector<double> t = rng.randGaussian(10, 0.1, i);
+      const std::vector<double> t = rng.randGaussian(50, 0.1, i);
       sensor.addPhotons(t);
       sensor.runEvent();
-      avg_peak += sensor.signal().peak(0, 20, 0);
+      avg_peak += sensor.signal().peak(30, 70, 0);
     }
     avg_peak /= R;
-    EXPECT_GE(avg_peak + 0.5, i);
-    EXPECT_LE(avg_peak - 0.5, i);
+    EXPECT_GE(avg_peak, i - 0.5);
+    EXPECT_LE(avg_peak, i + 0.5);
   }
 }

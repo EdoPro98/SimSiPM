@@ -1,4 +1,4 @@
-/** @class sipm::SiPMAnalogSignal SimSiPM/SimSiPM/SiPMAnalogSignal.h
+/** @class sipm::SiPMAnalogSignal include/SiPMAnalogSignal.h
  * SiPMAnalogSignal.h
  *
  *  @brief Class containing the waveform of the generated signal.

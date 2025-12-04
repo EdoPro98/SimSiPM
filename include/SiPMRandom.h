@@ -1,4 +1,4 @@
-/** @class sipm::SiPMRandom SimSiPM/src/components/SiPMRandom.h SiPMRandom.h
+/** @class sipm::SiPMRandom include/SiPMRandom.h
  *
  * @brief Class for random number generation.
  *
@@ -53,12 +53,6 @@ public:
   /// It cretates an instance of Xorhift256plus and sets the seed using
   /// a 64 bit LCG and a random value from system randomd device
   Xorshift256plus() { seed(); }
-
-  /// @brief Constructor with seed for Xorhift256plus
-  /// It cretates an instance of Xorshift256plus and sets the seed
-  /// using a 64 bit LCG and the seed value provided
-  /// @param sd uint64_t User provided seed. Must not be 0!
-  explicit Xorshift256plus(const uint64_t sd) { seed(sd); }
 
   /// @brief Sets a random seed generated using system random device.
   void seed();
@@ -221,9 +215,6 @@ public:
   /// @brief Get a reference to the underlying PRNG */
   /// Use this method to seed the PRNG and to get the status
   SiPMRng::Xorshift256plus& rng() { return m_rng; }
-
-  // Seed underlying rng
-  void seed(const uint64_t x) { m_rng.seed(x); }
 
   /// @brief Gives an uniformly distributed random
   template <typename T = double>

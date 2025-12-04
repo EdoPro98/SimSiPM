@@ -1,7 +1,7 @@
-#include "SiPM.h"
 #include <gtest/gtest.h>
 #include <math.h>
 #include <stdint.h>
+#include "SiPMRandom.h"
 
 using namespace sipm;
 

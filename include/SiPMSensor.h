@@ -1,4 +1,4 @@
-/** @class sipm::SiPMSensor SimSiPM/SimSiPM/SiPMSensor.h SiPMSensor.h
+/** @class sipm::SiPMSensor include/SiPMSensor.h
  *
  *  @brief Main class used to simulate a SiPM
  *

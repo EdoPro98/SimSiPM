@@ -8,9 +8,9 @@ namespace py = pybind11;
 using namespace sipm;
 
 void SiPMRandomPy(py::module& m) {
-  py::class_<SiPMRandom> SiPMRandom(m, "SiPMRandom");
-  SiPMRandom.def(py::init<>())
-    .def("seed", static_cast<void (SiPMRandom::*)(const uint64_t)>(&SiPMRandom::seed))
+  py::class_<SiPMRandom> sipmrandom(m, "SiPMRandom");
+  sipmrandom.def(py::init<>())
+    .def("rng", static_cast<sipm::SiPMRng::Xorshift256plus& (SiPMRandom::*)(void)>(&SiPMRandom::rng), py::return_value_policy::reference_internal)
     .def("Rand", static_cast<double (SiPMRandom::*)(void)>(&SiPMRandom::Rand))
     .def("randInteger", static_cast<uint32_t (SiPMRandom::*)(const uint32_t)>(&SiPMRandom::randInteger))
     .def("randGaussian", static_cast<double (SiPMRandom::*)(const double, const double)>(&SiPMRandom::randGaussian))

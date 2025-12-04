@@ -14,6 +14,6 @@ if (DOXYGEN_FOUND)
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Generating SimSiPM documentation with Doxygen"
         VERBATIM )
-else (DOXYGEN_FOUND)
+else ()
   message("Doxygen need to be installed to generate the doxygen documentation")
-endif (DOXYGEN_FOUND)
+endif ()

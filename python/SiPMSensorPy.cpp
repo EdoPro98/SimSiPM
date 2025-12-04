@@ -7,7 +7,7 @@ namespace py = pybind11;
 using namespace sipm;
 
 void SiPMSensorPy(py::module& m) {
-  py::class_<SiPMSensor, std::shared_ptr<SiPMSensor>> sipmsensor(m, "SiPMSensor");
+  py::class_<SiPMSensor> sipmsensor(m, "SiPMSensor");
   sipmsensor.def(py::init<>())
     .def(py::init<const SiPMProperties&>())
     .def("properties", static_cast<const SiPMProperties& (SiPMSensor::*)() const>(&SiPMSensor::properties))

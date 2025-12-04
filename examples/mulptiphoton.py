@@ -7,11 +7,9 @@ from dataclasses import dataclass
 import pprint
 
 prop = SiPM.SiPMProperties()
-prop.setSampling(1)
-prop.setDcrOff()
-prop.setXtOff()
-prop.setRiseTime(1)
-avg_npe = 4
+prop.setSnr(30)
+prop.setSampling(0.1)
+avg_npe = 8
 
 
 @dataclass

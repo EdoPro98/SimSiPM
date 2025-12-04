@@ -1,6 +1,7 @@
-#include "SiPM.h"
 #include <gtest/gtest.h>
 #include <stdint.h>
+#include "SiPMRandom.h"
+#include "SiPMProperties.h"
 
 using namespace sipm;
 

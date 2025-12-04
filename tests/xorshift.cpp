@@ -1,7 +1,7 @@
-#include "SiPM.h"
 #include <cstdint>
 #include <cstring>
 #include <gtest/gtest.h>
+#include "SiPMRandom.h"
 
 using namespace sipm;
 
@@ -22,7 +22,7 @@ TEST_F(TestSiPMXorshift256, Seed) {
  static constexpr uint64_t expected[] = {2356680413504073166ULL, 6439555299326541142ULL, 13107374383302832124ULL,
                                           15371213951372998008ULL, 3598216317549022935ULL, 9944474804087195216ULL,
                                           1783072794770156681ULL, 9432686255404415156ULL, 5598578073076770953ULL,
-                                          11053698116263360353};
+                                          11053698116263360353ULL};
 #endif
   rng.seed(seed);
   for (int j = 0; j < 10; ++j) {

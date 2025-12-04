@@ -13,19 +13,23 @@ namespace sipm {
 @param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::integral(const double intstart, const double intgate, const double threshold) const {
-  auto start = m_Waveform.begin() + intstart / m_Sampling;
-  const auto end = m_Waveform.cbegin() + (intstart + intgate) / m_Sampling;
+  const size_t startIdx = static_cast<size_t>(intstart / m_Sampling);
+  const size_t endIdx = static_cast<size_t>((intstart + intgate) / m_Sampling);
+
   bool isOver = false;
-  float integral = 0;
-  while (start++ < end) {
-    if (*start > threshold) {
-      isOver = true;
-    }
-    integral += *start;
+  double integral = 0;
+
+  for (size_t i = startIdx; i < endIdx; ++i) {
+      const float sample = m_Waveform[i];
+      if (sample > threshold) {
+          isOver = true;
+      }
+      integral += sample;
   }
 
   return isOver ? integral * m_Sampling : -1;
 }
+
 
 /**
 * Peak of the signal defined as sample with maximum amplitude in the integration
@@ -36,17 +40,21 @@ double SiPMAnalogSignal::integral(const double intstart, const double intgate, c
 @param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::peak(const double intstart, const double intgate, const double threshold) const {
-  auto start = m_Waveform.begin() + intstart / m_Sampling;
-  const auto end = m_Waveform.cbegin() + (intstart + intgate) / m_Sampling;
-  float peak = -1;
-  while (start++ < end) {
-    if (*start > threshold && *start > peak) {
-      peak = *start;
-    }
+  const size_t startIdx = static_cast<size_t>(intstart / m_Sampling);
+  const size_t endIdx = static_cast<size_t>((intstart + intgate) / m_Sampling);
+
+  float peak = -1.0;
+
+  for (size_t i = startIdx; i < endIdx; ++i) {
+      const float val = m_Waveform[i];
+      if (val > threshold && val > peak) {
+          peak = val;
+      }
   }
 
   return peak;
 }
+
 
 /**
 * Time over threshold of the signal in the integration gate defined as the

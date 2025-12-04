@@ -9,9 +9,9 @@
 *.pyc
 *.data*
 CMakeCache.txt
-*/CMakeCache.txt
 
 test
 build/*
 docs/latex
 docs/html
+.cache/*
