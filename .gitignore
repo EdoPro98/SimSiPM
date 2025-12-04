@@ -8,10 +8,12 @@
 *__pycache__
 *.pyc
 *.data*
+*.pdf
 CMakeCache.txt
 
 test
 build/*
 docs/latex
 docs/html
+benchmarking/
 .cache/*
