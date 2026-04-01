@@ -9,6 +9,7 @@
 *.pyc
 CMakeCache.txt
 
+.planning
 .ccls-cache
 .hypothesis
 .pytest_cache
