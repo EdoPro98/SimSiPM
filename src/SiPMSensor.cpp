@@ -38,18 +38,20 @@ void SiPMSensor::addPhoton(const double val1, const double val2) {
 }
 
 void SiPMSensor::addPhotons(const std::vector<double>& val) {
-  m_PhotonTimes = val;
+  m_PhotonTimes.assign(val.begin(), val.end());
   m_PhotonWavelengths.clear();
 }
 
 void SiPMSensor::addPhotons(const std::vector<double>& val1, const std::vector<double>& val2) {
-  m_PhotonTimes = val1;
-  m_PhotonWavelengths = val2;
+  m_PhotonTimes.assign(val1.begin(), val1.end());
+  m_PhotonWavelengths.assign(val2.begin(), val2.end());
 }
 
 void SiPMSensor::runEvent() {
-  const std::vector<float> waveform = m_rng.randGaussianF(0.0, m_Properties.snrLinear(), m_Properties.nSignalPoints());
-  m_Signal = SiPMAnalogSignal(waveform, m_Properties.sampling());
+  m_Signal = SiPMAnalogSignal(
+    m_rng.randGaussianF(0.0, m_Properties.snrLinear(), m_Properties.nSignalPoints()),
+    m_Properties.sampling()
+  );
   addDcrEvents();
 
   addPhotoelectrons();
@@ -359,7 +361,7 @@ void SiPMSensor::calculateSignalAmplitudes() {
     std::sort(hits.begin(), hits.end(), [](const SiPMHit* a, const SiPMHit* b) { return *a < *b; });
     // Calculate amplitude
     for (uint32_t i = 1; i < n_hits; ++i) {
-      const double delay = hits[i]->time() - hits[0]->time();
+      const double delay = hits[i]->time() - hits[i-1]->time();
       hits[i]->amplitude() *= 1 - exp(-delay * recoveryRate);
     }
   }
@@ -368,24 +370,30 @@ void SiPMSensor::calculateSignalAmplitudes() {
 
 void SiPMSensor::generateSignal() {
   const uint32_t nSignalPoints = m_Properties.nSignalPoints();
-  // Reciprocal of sampling (avoid division later)
-  const float recSampling = 1 / m_Properties.sampling();
+  const float recSampling = 1.0f / m_Properties.sampling();
 
-  // Convert ns in units of samples and round to nearest
+  // Pre-extract hit data into flat local arrays to eliminate pointer chasing
+  // through individually heap-allocated SiPMHit objects in the accumulation loop.
   std::vector<uint32_t> times(m_nTotalHits);
+  std::vector<float> amplitudes(m_nTotalHits);
   for (uint32_t i = 0; i < m_nTotalHits; ++i) {
-    times[i] = std::floor(m_Hits[i]->time() * recSampling);
+    if (i + 2 < m_nTotalHits) {
+      __builtin_prefetch(m_Hits[i + 2], 0, 0);
+    }
+    times[i]      = static_cast<uint32_t>(std::floor(m_Hits[i]->time() * recSampling));
+    amplitudes[i] = m_Hits[i]->amplitude();
   }
 
-  // This loop should be vectorized and unrolled by compiler
   for (uint32_t i = 0; i < m_nTotalHits; ++i) {
     const uint32_t time = times[i];
-    const float amplitude = m_Hits[i]->amplitude();
-
-
+    if (time >= nSignalPoints) { continue; }
+    const float amplitude = amplitudes[i];
     const uint32_t endPoint = nSignalPoints - time;
-    float* signalPtr = m_Signal.data() + time;
-    const float* signalShapePtr = m_SignalShape.data();
+
+    // __restrict__ proves no aliasing between signal and shape buffers,
+    // enabling the compiler to emit vectorized FMA for this inner loop.
+    float* __restrict__       signalPtr      = m_Signal.data() + time;
+    const float* __restrict__ signalShapePtr = m_SignalShape.data();
 
     for (uint32_t j = 0; j < endPoint; ++j) {
       signalPtr[j] += signalShapePtr[j] * amplitude;

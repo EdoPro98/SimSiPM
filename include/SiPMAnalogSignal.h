@@ -30,7 +30,7 @@ class SiPMAnalogSignal {
 public:
   SiPMAnalogSignal() = default;
 
-  SiPMAnalogSignal(const std::vector<float>& wav, const double sampling) noexcept
+  SiPMAnalogSignal(std::vector<float> wav, double sampling) noexcept
     : m_Waveform(std::move(wav)), m_Sampling(sampling) {};
 
   float* data() noexcept { return m_Waveform.data(); }

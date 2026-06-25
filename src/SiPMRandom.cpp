@@ -322,15 +322,15 @@ pair<uint32_t> SiPMRandom::randInteger2(const uint32_t max) noexcept {
  * @param n Number of values to generate
  */
 std::vector<double> SiPMRandom::Rand(const uint32_t n) {
-  // Integer multiple of 64 grater than n*sizeof(double)
   std::vector<double> out(n);
-
-  uint64_t* u64 = (uint64_t*)sipmAlloc(sizeof(uint64_t) * n);
+  // Generate raw u64 directly into the output buffer (sizeof(uint64_t)==sizeof(double)),
+  // then convert each element in-place before reading it as a double.
+  auto* const u64 = reinterpret_cast<uint64_t*>(out.data());
   m_rng.getRand(u64, n);
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = (u64[i] >> 11) * 0x1p-53;
+    const uint64_t u = u64[i];
+    out[i] = (u >> 11) * 0x1p-53;
   }
-  sipmFree(u64);
   return out;
 }
 
@@ -339,15 +339,14 @@ std::vector<double> SiPMRandom::Rand(const uint32_t n) {
  */
 std::vector<float> SiPMRandom::RandF(const uint32_t n) {
   std::vector<float> out(n);
-
-  // simd8 allocates data
-  uint32_t* u32 = (uint32_t*)sipmAlloc(sizeof(float) * n);
+  // Generate raw u32 directly into the output buffer (sizeof(uint32_t)==sizeof(float)),
+  // then convert each element in-place before reading it as a float.
+  auto* const u32 = reinterpret_cast<uint32_t*>(out.data());
   m_rng.getRand(u32, n);
   for (uint32_t i = 0; i < n; ++i) {
-    // See SiPMRandom.h for details
-    out[i] = (u32[i] >> 8) * 0x1p-24f;
+    const uint32_t u = u32[i];
+    out[i] = (u >> 8) * 0x1p-24f;
   }
-  sipmFree(u32);
   return out;
 }
 
@@ -360,30 +359,23 @@ std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma
   std::vector<double> out(n);
   const std::vector<double> u = Rand(n);
   constexpr double TWO_PI = 2 * M_PI;
-  double* r = (double*)sipmAlloc(sizeof(double) * n);
 
-  for (uint32_t i = 0; i < n - 1; i += 2) {
-    const double R = -2 * log(u[i]);
-    r[i] = R;
-    r[i + 1] = R;
-  }
+  // Single pass: compute sqrtR once per pair, apply to both sin and cos outputs.
+  const uint32_t pairs = n & ~1u;
+  for (uint32_t i = 0; i < pairs; i += 2) {
+    const double sqrtR = sqrt(-2.0 * log(u[i]));
+    double s, c;
 #ifdef __APPLE__
-  for (uint32_t i = 0; i < n - 1; i += 2) {
-    double* ptr = out.data() + i;
-    __sincos(TWO_PI * u[i + 1], ptr, ptr + 1);
-  }
+    __sincos(TWO_PI * u[i + 1], &s, &c);
 #else
-  for (uint32_t i = 0; i < n - 1; i += 2) {
-    double* ptr = out.data() + i;
-    sincos(TWO_PI * u[i + 1], ptr, ptr + 1);
-  }
+    sincos(TWO_PI * u[i + 1], &s, &c);
 #endif
-  for (uint32_t i = 0; i < n; ++i) {
-    out[i] = out[i] * sqrt(r[i]) * sigma + mu;
+    out[i]     = s * sqrtR * sigma + mu;
+    out[i + 1] = c * sqrtR * sigma + mu;
   }
-
-  out[n - 1] = randGaussian(mu, sigma);
-  sipmFree(r);
+  if (n & 1u) {
+    out[n - 1] = randGaussian(mu, sigma);
+  }
   return out;
 }
 
@@ -396,30 +388,23 @@ std::vector<float> SiPMRandom::randGaussianF(const float mu, const float sigma, 
   std::vector<float> out(n);
   const std::vector<float> u = RandF(n);
   constexpr float TWO_PI = 2 * M_PI;
-  float* r = (float*)sipmAlloc(sizeof(float) * n);
 
-  for (uint32_t i = 0; i < n - 1; i += 2) {
-    const float R = -2 * logf(u[i]);
-    r[i] = R;
-    r[i + 1] = R;
-  }
+  // Single pass: compute sqrtR once per pair, apply to both sin and cos outputs.
+  const uint32_t pairs = n & ~1u;
+  for (uint32_t i = 0; i < pairs; i += 2) {
+    const float sqrtR = sqrtf(-2.0f * logf(u[i]));
+    float s, c;
 #ifdef __APPLE__
-  for (uint32_t i = 0; i < n - 1; i += 2) {
-    float* ptr = out.data() + i;
-    __sincosf(TWO_PI * u[i + 1], ptr, ptr + 1);
-  }
+    __sincosf(TWO_PI * u[i + 1], &s, &c);
 #else
-  for (uint32_t i = 0; i < n - 1; i += 2) {
-    float* ptr = out.data() + i;
-    sincosf(TWO_PI * u[i + 1], ptr, ptr + 1);
-  }
+    sincosf(TWO_PI * u[i + 1], &s, &c);
 #endif
-  for (uint32_t i = 0; i < n; ++i) {
-    out[i] = out[i] * sqrtf(r[i]) * sigma + mu;
+    out[i]     = s * sqrtR * sigma + mu;
+    out[i + 1] = c * sqrtR * sigma + mu;
   }
-
-  out[n - 1] = randGaussianF(mu, sigma);
-  sipmFree(r);
+  if (n & 1u) {
+    out[n - 1] = randGaussianF(mu, sigma);
+  }
   return out;
 }
 

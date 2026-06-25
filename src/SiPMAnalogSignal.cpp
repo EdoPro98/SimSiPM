@@ -18,11 +18,11 @@ double SiPMAnalogSignal::integral(const double intstart, const double intgate, c
   const auto end = m_Waveform.cbegin() + (intstart + intgate) / m_Sampling;
   bool isOver = false;
   float integral = 0;
-  while (start++ < end) {
+  while (start < end) {
     if (*start > threshold) {
       isOver = true;
     }
-    integral += *start;
+    integral += *start++;
   }
 
   return isOver ? integral * m_Sampling : -1;
@@ -40,9 +40,9 @@ double SiPMAnalogSignal::peak(const double intstart, const double intgate, const
   auto start = m_Waveform.begin() + intstart / m_Sampling;
   const auto end = m_Waveform.cbegin() + (intstart + intgate) / m_Sampling;
   float peak = -1;
-  while (start++ < end) {
+  while (start < end) {
     if (*start > threshold && *start > peak) {
-      peak = *start;
+      peak = *start++;
     }
   }
 
@@ -82,7 +82,9 @@ double SiPMAnalogSignal::toa(const double intstart, const double intgate, const 
   const uint32_t start = intstart / m_Sampling;
   const uint32_t end = (intstart + intgate) / m_Sampling;
 
-  for (uint32_t i = start; i < end - 1; ++i) {
+  if(m_Waveform[start] > threshold){ return start; }
+
+  for (uint32_t i = start; i < end; ++i) {
     if (m_Waveform[i] > threshold) {
       const float d = (threshold - m_Waveform[i - 1]) / (m_Waveform[i] - m_Waveform[i - 1]);
       return (i - start - 1 + d) * m_Sampling;

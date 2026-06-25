@@ -96,6 +96,66 @@ private:
       }
     }
 
+    SiPMSmallVector(const SiPMSmallVector& other) noexcept
+      : m_Size(other.m_Size), m_Capacity(other.m_Capacity) {
+      if (other.isLocal()) {
+        m_HeapStorage = nullptr;
+        memcpy(m_LocalStorage, other.m_LocalStorage, m_Size * sizeof(T));
+      } else {
+        m_HeapStorage = static_cast<T*>(malloc(m_Capacity * sizeof(T)));
+        memcpy(m_HeapStorage, other.m_HeapStorage, m_Size * sizeof(T));
+      }
+    }
+
+    SiPMSmallVector& operator=(const SiPMSmallVector& other) noexcept {
+      if (this == &other) { return *this; }
+      if (m_HeapStorage != nullptr) {
+        free(m_HeapStorage);
+        m_HeapStorage = nullptr;
+      }
+      m_Size = other.m_Size;
+      m_Capacity = other.m_Capacity;
+      if (other.isLocal()) {
+        memcpy(m_LocalStorage, other.m_LocalStorage, m_Size * sizeof(T));
+      } else {
+        m_HeapStorage = static_cast<T*>(malloc(m_Capacity * sizeof(T)));
+        memcpy(m_HeapStorage, other.m_HeapStorage, m_Size * sizeof(T));
+      }
+      return *this;
+    }
+
+    SiPMSmallVector(SiPMSmallVector&& other) noexcept
+      : m_Size(other.m_Size), m_Capacity(other.m_Capacity) {
+      if (other.isLocal()) {
+        m_HeapStorage = nullptr;
+        memcpy(m_LocalStorage, other.m_LocalStorage, m_Size * sizeof(T));
+      } else {
+        m_HeapStorage = other.m_HeapStorage;
+        other.m_HeapStorage = nullptr;
+        other.m_Capacity = N;
+      }
+      other.m_Size = 0;
+    }
+
+    SiPMSmallVector& operator=(SiPMSmallVector&& other) noexcept {
+      if (this == &other) { return *this; }
+      if (m_HeapStorage != nullptr) {
+        free(m_HeapStorage);
+        m_HeapStorage = nullptr;
+      }
+      m_Size = other.m_Size;
+      m_Capacity = other.m_Capacity;
+      if (other.isLocal()) {
+        memcpy(m_LocalStorage, other.m_LocalStorage, m_Size * sizeof(T));
+      } else {
+        m_HeapStorage = other.m_HeapStorage;
+        other.m_HeapStorage = nullptr;
+        other.m_Capacity = N;
+      }
+      other.m_Size = 0;
+      return *this;
+    }
+
     void push_back(const T& value) {
       if (m_Size == m_Capacity ) {
         if (isLocal()) {

@@ -128,10 +128,10 @@ public:
   constexpr double pde() const { return m_Pde; }
 
   /// @brief Returns wavelength-PDE values if PdeType::kSpectrumPde is set
-  std::map<double, double> pdeSpectrum() const { return m_PdeSpectrum; }
+  const std::map<double, double>& pdeSpectrum() const { return m_PdeSpectrum; }
 
   /// @brief Returns type of PDE calculation used.
-  constexpr PdeType pdeType() { return m_HasPde; }
+  constexpr PdeType pdeType() const { return m_HasPde; }
 
   /// @brief Returns true if DCR is considered.
   constexpr bool hasDcr() const { return m_HasDcr; }
@@ -275,7 +275,7 @@ public:
   /// @brief Turn off optical crosstalk
   constexpr void setXtOff() { m_HasXt = false; }
   /// @brief Turn off delayed optical crosstalk
-  constexpr void setDXtOff() { m_HasXt = false; }
+  constexpr void setDXtOff() { m_HasDXt = false; }
   /// @brief Turn off afterpulses
   constexpr void setApOff() { m_HasAp = false; }
   /// @brief Turns off slow component of the signal
