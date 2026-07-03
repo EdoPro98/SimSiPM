@@ -1,4 +1,5 @@
 #include "SiPMAnalogSignal.h"
+#include <algorithm>
 #include <cstdint>
 #include <iomanip>
 #include <numeric>
@@ -14,17 +15,19 @@ namespace sipm {
 @param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::integral(const double intstart, const double intgate, const double threshold) const {
-  auto start = m_Waveform.begin() + intstart / m_Sampling;
-  const auto end = m_Waveform.cbegin() + (intstart + intgate) / m_Sampling;
+  const uint32_t startIdx = static_cast<uint32_t>(intstart / m_Sampling);
+  if (startIdx >= m_Waveform.size()) return -1;
+  const uint32_t endIdx = std::min(static_cast<uint32_t>((intstart + intgate) / m_Sampling),
+                                   static_cast<uint32_t>(m_Waveform.size()));
+  auto start = m_Waveform.begin() + startIdx;
+  const auto end = m_Waveform.cbegin() + endIdx;
   bool isOver = false;
   float integral = 0;
   while (start < end) {
-    if (*start > threshold) {
-      isOver = true;
-    }
-    integral += *start++;
+    const float v = *start++;
+    if (v > threshold) { isOver = true; }
+    integral += v;
   }
-
   return isOver ? integral * m_Sampling : -1;
 }
 
@@ -37,16 +40,18 @@ double SiPMAnalogSignal::integral(const double intstart, const double intgate, c
 @param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::peak(const double intstart, const double intgate, const double threshold) const {
-  auto start = m_Waveform.begin() + intstart / m_Sampling;
-  const auto end = m_Waveform.cbegin() + (intstart + intgate) / m_Sampling;
-  float peak = -1;
+  const uint32_t startIdx = static_cast<uint32_t>(intstart / m_Sampling);
+  if (startIdx >= m_Waveform.size()) return -1;
+  const uint32_t endIdx = std::min(static_cast<uint32_t>((intstart + intgate) / m_Sampling),
+                                   static_cast<uint32_t>(m_Waveform.size()));
+  auto start = m_Waveform.begin() + startIdx;
+  const auto end = m_Waveform.cbegin() + endIdx;
+  float peak = threshold;
   while (start < end) {
-    if (*start > threshold && *start > peak) {
-      peak = *start++;
-    }
+    const float v = *start++;
+    if (v > peak) { peak = v; }
   }
-
-  return peak;
+  return peak > threshold ? peak : -1.0f;
 }
 
 /**
@@ -58,16 +63,33 @@ double SiPMAnalogSignal::peak(const double intstart, const double intgate, const
 @param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::tot(const double intstart, const double intgate, const double threshold) const {
-  auto start = m_Waveform.begin() + intstart / m_Sampling;
-  const auto end = m_Waveform.cbegin() + (intstart + intgate) / m_Sampling;
+  const uint32_t start = static_cast<uint32_t>(intstart / m_Sampling);
+  if (start >= m_Waveform.size()) return -1;
+  const uint32_t end = std::min(static_cast<uint32_t>((intstart + intgate) / m_Sampling),
+                                static_cast<uint32_t>(m_Waveform.size()));
 
   double tot = 0;
-  while (start < end) {
-    if (*start++ > threshold) {
-      tot++;
+  bool above = m_Waveform[start] > threshold;
+  double riseTime = 0;
+
+  for (uint32_t i = start + 1; i < end; ++i) {
+    const bool currentAbove = m_Waveform[i] > threshold;
+    if (!above && currentAbove) {
+      const double d = (threshold - m_Waveform[i - 1]) / (m_Waveform[i] - m_Waveform[i - 1]);
+      riseTime = (i - 1 - start + d) * m_Sampling;
+      above = true;
+    } else if (above && !currentAbove) {
+      const double d = (threshold - m_Waveform[i - 1]) / (m_Waveform[i] - m_Waveform[i - 1]);
+      tot += (i - 1 - start + d) * m_Sampling - riseTime;
+      above = false;
     }
   }
-  return tot > 0 ? tot * m_Sampling : -1;
+
+  if (above) {
+    tot += intgate - riseTime;
+  }
+
+  return tot > 0 ? tot : -1;
 }
 
 /**
@@ -79,10 +101,12 @@ double SiPMAnalogSignal::tot(const double intstart, const double intgate, const 
 @param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::toa(const double intstart, const double intgate, const double threshold) const {
-  const uint32_t start = intstart / m_Sampling;
-  const uint32_t end = (intstart + intgate) / m_Sampling;
+  const uint32_t start = static_cast<uint32_t>(intstart / m_Sampling);
+  if (start >= m_Waveform.size()) return -1;
+  const uint32_t end = std::min(static_cast<uint32_t>((intstart + intgate) / m_Sampling),
+                                static_cast<uint32_t>(m_Waveform.size()));
 
-  if(m_Waveform[start] > threshold){ return start; }
+  if (m_Waveform[start] > threshold) { return 0; }
 
   for (uint32_t i = start; i < end; ++i) {
     if (m_Waveform[i] > threshold) {
@@ -102,8 +126,10 @@ double SiPMAnalogSignal::toa(const double intstart, const double intgate, const 
 @param threshold  Process only if above the threshold
 */
 double SiPMAnalogSignal::top(const double intstart, const double intgate, const double threshold) const {
-  const uint32_t start = intstart / m_Sampling;
-  const uint32_t end = (intstart + intgate) / m_Sampling;
+  const uint32_t start = static_cast<uint32_t>(intstart / m_Sampling);
+  if (start >= m_Waveform.size()) return -1;
+  const uint32_t end = std::min(static_cast<uint32_t>((intstart + intgate) / m_Sampling),
+                                static_cast<uint32_t>(m_Waveform.size()));
   float peak = -1;
   double top = -1;
   for (uint32_t i = start; i < end; ++i) {
