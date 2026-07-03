@@ -2,9 +2,9 @@
 
 #include "SiPMTypes.h"
 #include <cstdint>
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
-#include <math.h>
 #include <vector>
 #include <random>
 
@@ -23,15 +23,23 @@ void Xorshift256plus::seed() {
     s[i] = lcg64(s[i - 1]);
   }
 #ifdef __AVX512F__
-  __s[0][0] = lcg64(rngInit());
-  for (int i = 1; i < 8; ++i) {
-    __s[0][i] = lcg64(__s[0][i - 1]);
-  }
-  for (uint8_t i = 1; i < 4; ++i) {
-    for (int j = 0; j < 8; ++j) {
-      __s[i][j] = lcg64(__s[i - 1][j]);
-    }
-  }
+  __sA[0][0] = lcg64(rngInit());
+  for (int i = 1; i < 8; ++i) __sA[0][i] = lcg64(__sA[0][i - 1]);
+  for (int i = 1; i < 4; ++i)
+    for (int j = 0; j < 8; ++j) __sA[i][j] = lcg64(__sA[i - 1][j]);
+  __sB[0][0] = lcg64(__sA[3][7]);
+  for (int i = 1; i < 8; ++i) __sB[0][i] = lcg64(__sB[0][i - 1]);
+  for (int i = 1; i < 4; ++i)
+    for (int j = 0; j < 8; ++j) __sB[i][j] = lcg64(__sB[i - 1][j]);
+#elif defined(__AVX2__)
+  __sA[0][0] = lcg64(rngInit());
+  for (int i = 1; i < 4; ++i) __sA[0][i] = lcg64(__sA[0][i - 1]);
+  for (int i = 1; i < 4; ++i)
+    for (int j = 0; j < 4; ++j) __sA[i][j] = lcg64(__sA[i - 1][j]);
+  __sB[0][0] = lcg64(__sA[3][3]);
+  for (int i = 1; i < 4; ++i) __sB[0][i] = lcg64(__sB[0][i - 1]);
+  for (int i = 1; i < 4; ++i)
+    for (int j = 0; j < 4; ++j) __sB[i][j] = lcg64(__sB[i - 1][j]);
 #endif
   index = N;
   // Call rng few times
@@ -46,15 +54,23 @@ void Xorshift256plus::seed(const uint64_t aseed) {
     s[i] = lcg64(s[i - 1]);
   }
 #ifdef __AVX512F__
-  __s[0][0] = lcg64(s[3]);
-  for (int i = 1; i < 8; ++i) {
-    __s[0][i] = lcg64(__s[0][i - 1]);
-  }
-  for (uint8_t i = 1; i < 4; ++i) {
-    for (int j = 0; j < 8; ++j) {
-      __s[i][j] = lcg64(__s[i - 1][j]);
-    }
-  }
+  __sA[0][0] = lcg64(s[3]);
+  for (int i = 1; i < 8; ++i) __sA[0][i] = lcg64(__sA[0][i - 1]);
+  for (int i = 1; i < 4; ++i)
+    for (int j = 0; j < 8; ++j) __sA[i][j] = lcg64(__sA[i - 1][j]);
+  __sB[0][0] = lcg64(__sA[3][7]);
+  for (int i = 1; i < 8; ++i) __sB[0][i] = lcg64(__sB[0][i - 1]);
+  for (int i = 1; i < 4; ++i)
+    for (int j = 0; j < 8; ++j) __sB[i][j] = lcg64(__sB[i - 1][j]);
+#elif defined(__AVX2__)
+  __sA[0][0] = lcg64(s[3]);
+  for (int i = 1; i < 4; ++i) __sA[0][i] = lcg64(__sA[0][i - 1]);
+  for (int i = 1; i < 4; ++i)
+    for (int j = 0; j < 4; ++j) __sA[i][j] = lcg64(__sA[i - 1][j]);
+  __sB[0][0] = lcg64(__sA[3][3]);
+  for (int i = 1; i < 4; ++i) __sB[0][i] = lcg64(__sB[0][i - 1]);
+  for (int i = 1; i < 4; ++i)
+    for (int j = 0; j < 4; ++j) __sB[i][j] = lcg64(__sB[i - 1][j]);
 #endif
   index = N;
   // Call rng few
@@ -83,8 +99,12 @@ uint32_t SiPMRandom::randPoisson(const double mu) noexcept {
   if (mu <= 0) {
     return 0;
   }
-
-  const double emu = exp(-mu);
+  // For large mu, Poisson(mu) ≈ Normal(mu, sqrt(mu)). This is O(1) vs O(mu) for Knuth's algorithm.
+  if (mu > 50.0) {
+    const double x = randGaussian(mu, std::sqrt(mu));
+    return x < 0.5 ? 0u : static_cast<uint32_t>(x + 0.5);
+  }
+  const double emu = std::exp(-mu);
   double prod = 1.0;
   uint32_t out = 0;
 
@@ -174,7 +194,7 @@ double SiPMRandom::randGaussian(const double mu, const double sigma) noexcept {
     if (y < kHm) {
       const double rn = 2 * Rand() - 1;
       const double z = (rn > 0) ? 2 - rn : -2 - rn;
-      if ((kC1 - y) * (kC3 + abs(z)) < kC2) {
+      if ((kC1 - y) * (kC3 + std::abs(z)) < kC2) {
         return z * sigma + mu;
       }
       const double x = rn * rn;
@@ -262,7 +282,7 @@ float SiPMRandom::randGaussianF(const float mu, const float sigma) noexcept {
     if (y < kHm) {
       const float rn = 2 * Rand<float>() - 1;
       const float z = (rn > 0) ? 2 - rn : -2 - rn;
-      if ((kC1 - y) * (kC3 + abs(z)) < kC2) {
+      if ((kC1 - y) * (kC3 + std::abs(z)) < kC2) {
         return z * sigma + mu;
       }
       const float x = rn * rn;
@@ -357,18 +377,21 @@ std::vector<float> SiPMRandom::RandF(const uint32_t n) {
  */
 std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma, const uint32_t n) {
   std::vector<double> out(n);
-  const std::vector<double> u = Rand(n);
   constexpr double TWO_PI = 2 * M_PI;
+  // Fill out with raw u64 bits, then convert each pair in-place (same trick as Rand(n)).
+  auto* u64 = reinterpret_cast<uint64_t*>(out.data());
+  m_rng.getRand(u64, n);
 
-  // Single pass: compute sqrtR once per pair, apply to both sin and cos outputs.
   const uint32_t pairs = n & ~1u;
   for (uint32_t i = 0; i < pairs; i += 2) {
-    const double sqrtR = sqrt(-2.0 * log(u[i]));
+    const double u0 = (u64[i]     >> 11) * 0x1p-53;
+    const double u1 = (u64[i + 1] >> 11) * 0x1p-53;
+    const double sqrtR = std::sqrt(-2.0 * std::log(u0));
     double s, c;
 #ifdef __APPLE__
-    __sincos(TWO_PI * u[i + 1], &s, &c);
+    __sincos(TWO_PI * u1, &s, &c);
 #else
-    sincos(TWO_PI * u[i + 1], &s, &c);
+    sincos(TWO_PI * u1, &s, &c);
 #endif
     out[i]     = s * sqrtR * sigma + mu;
     out[i + 1] = c * sqrtR * sigma + mu;
@@ -386,18 +409,20 @@ std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma
  */
 std::vector<float> SiPMRandom::randGaussianF(const float mu, const float sigma, const uint32_t n) {
   std::vector<float> out(n);
-  const std::vector<float> u = RandF(n);
   constexpr float TWO_PI = 2 * M_PI;
+  auto* u32 = reinterpret_cast<uint32_t*>(out.data());
+  m_rng.getRand(u32, n);
 
-  // Single pass: compute sqrtR once per pair, apply to both sin and cos outputs.
   const uint32_t pairs = n & ~1u;
   for (uint32_t i = 0; i < pairs; i += 2) {
-    const float sqrtR = sqrtf(-2.0f * logf(u[i]));
+    const float u0 = (u32[i]     >> 8) * 0x1p-24f;
+    const float u1 = (u32[i + 1] >> 8) * 0x1p-24f;
+    const float sqrtR = std::sqrt(-2.0f * std::log(u0));
     float s, c;
 #ifdef __APPLE__
-    __sincosf(TWO_PI * u[i + 1], &s, &c);
+    __sincosf(TWO_PI * u1, &s, &c);
 #else
-    sincosf(TWO_PI * u[i + 1], &s, &c);
+    sincosf(TWO_PI * u1, &s, &c);
 #endif
     out[i]     = s * sqrtR * sigma + mu;
     out[i + 1] = c * sqrtR * sigma + mu;
@@ -414,18 +439,10 @@ std::vector<float> SiPMRandom::randGaussianF(const float mu, const float sigma, 
  */
 std::vector<uint32_t> SiPMRandom::randInteger(const uint32_t max, const uint32_t n) {
   std::vector<uint32_t> out(n);
-
-  // Remember to free u32 ptr
-  uint32_t* u32 = (uint32_t*)sipmAlloc(sizeof(uint32_t) * n);
-  m_rng.getRand(u32, n);
-
-  // Sort of fixed point arithmetic
-  // Avoids division and float numbers
+  m_rng.getRand(out.data(), n);
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = (uint64_t(u32[i]) * max) >> 32;
+    out[i] = (uint64_t(out[i]) * max) >> 32;
   }
-  sipmFree(u32);
-
   return out;
 }
 
@@ -435,10 +452,10 @@ std::vector<uint32_t> SiPMRandom::randInteger(const uint32_t max, const uint32_t
  */
 std::vector<double> SiPMRandom::randExponential(const double mu, const uint32_t n) {
   std::vector<double> out(n);
-  const std::vector<double> buffer = Rand(n);
-
+  auto* u64 = reinterpret_cast<uint64_t*>(out.data());
+  m_rng.getRand(u64, n);
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = -log(buffer[i]) * mu;
+    out[i] = -std::log((u64[i] >> 11) * 0x1p-53) * mu;
   }
   return out;
 }
@@ -449,10 +466,10 @@ std::vector<double> SiPMRandom::randExponential(const double mu, const uint32_t 
  */
 std::vector<float> SiPMRandom::randExponentialF(const float mu, const uint32_t n) {
   std::vector<float> out(n);
-  const std::vector<float> buffer = RandF(n);
-
+  auto* u32 = reinterpret_cast<uint32_t*>(out.data());
+  m_rng.getRand(u32, n);
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = -logf(buffer[i]) * mu;
+    out[i] = -std::log((u32[i] >> 8) * 0x1p-24f) * mu;
   }
   return out;
 }

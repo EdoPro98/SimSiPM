@@ -16,7 +16,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdlib>
-#ifdef __AVX512F__
+#if defined(__AVX512F__) || defined(__AVX2__)
 #include <immintrin.h>
 #endif
 
@@ -71,13 +71,16 @@ private:
   // Generator state
   alignas(64) uint64_t s[4];
   // Size of the buffer
-  static constexpr uint32_t N = 1 << 16;
+  static constexpr uint32_t N = 1 << 12;
   // Buffer for random values
   alignas(64) uint64_t buffer[N];
   uint32_t index = N;
 #ifdef __AVX512F__
-  // Generator state for AVX512
-  __m512i __s[4];
+  __m512i __sA[4];
+  __m512i __sB[4];
+#elif defined(__AVX2__)
+  __m256i __sA[4];
+  __m256i __sB[4];
 #endif
 
 public:
@@ -91,90 +94,212 @@ public:
   }
 
 #ifdef __AVX512F__
-  // Overload for uint64_t
+  // Overload for uint64_t — two independent states, 16 values per iteration
   inline void getRand(uint64_t* __restrict array, const uint32_t n) noexcept {
     size_t i = 0;
-    // Generate 8 uint64_t values per iteration
-    for (; i + 8 <= n; i += 8) {
-      const __m512i __result = _mm512_add_epi64(__s[0], __s[3]);
-      _mm512_store_si512(array + i, __result);
+    for (; i + 16 <= n; i += 16) {
+      const __m512i __rA = _mm512_add_epi64(__sA[0], __sA[3]);
+      const __m512i __rB = _mm512_add_epi64(__sB[0], __sB[3]);
+      _mm512_store_si512(array + i,     __rA);
+      _mm512_store_si512(array + i + 8, __rB);
 
-      const __m512i __t = _mm512_slli_epi64(__s[1], 17);
+      const __m512i __tA = _mm512_slli_epi64(__sA[1], 17);
+      const __m512i __tB = _mm512_slli_epi64(__sB[1], 17);
 
-      __s[2] = _mm512_xor_epi64(__s[2], __s[0]);
-      __s[3] = _mm512_xor_epi64(__s[3], __s[1]);
-      __s[1] = _mm512_xor_epi64(__s[1], __s[2]);
-      __s[0] = _mm512_xor_epi64(__s[0], __s[3]);
-
-      __s[2] = _mm512_xor_si512(__s[2], __t);
-
-      __s[3] = _mm512_rol_epi64(__s[3], 45);
+      __sA[2] = _mm512_xor_si512(__sA[2], __sA[0]);
+      __sB[2] = _mm512_xor_si512(__sB[2], __sB[0]);
+      __sA[3] = _mm512_xor_si512(__sA[3], __sA[1]);
+      __sB[3] = _mm512_xor_si512(__sB[3], __sB[1]);
+      __sA[1] = _mm512_xor_si512(__sA[1], __sA[2]);
+      __sB[1] = _mm512_xor_si512(__sB[1], __sB[2]);
+      __sA[0] = _mm512_xor_si512(__sA[0], __sA[3]);
+      __sB[0] = _mm512_xor_si512(__sB[0], __sB[3]);
+      __sA[2] = _mm512_xor_si512(__sA[2], __tA);
+      __sB[2] = _mm512_xor_si512(__sB[2], __tB);
+      __sA[3] = _mm512_rol_epi64(__sA[3], 45);
+      __sB[3] = _mm512_rol_epi64(__sB[3], 45);
     }
-    // Handle leftover if n is not a multiple of 8
     if (i < n) {
-      alignas(64) uint64_t buffer[8];
-      const __m512i __result = _mm512_add_epi64(__s[0], __s[3]);
-      _mm512_store_si512(buffer, __result);
+      alignas(64) uint64_t buf[16];
+      const __m512i __rA = _mm512_add_epi64(__sA[0], __sA[3]);
+      const __m512i __rB = _mm512_add_epi64(__sB[0], __sB[3]);
+      _mm512_store_si512(buf,     __rA);
+      _mm512_store_si512(buf + 8, __rB);
 
-      const __m512i __t = _mm512_slli_epi64(__s[1], 17);
+      const __m512i __tA = _mm512_slli_epi64(__sA[1], 17);
+      const __m512i __tB = _mm512_slli_epi64(__sB[1], 17);
 
-      __s[2] = _mm512_xor_si512(__s[2], __s[0]);
-      __s[3] = _mm512_xor_si512(__s[3], __s[1]);
-      __s[1] = _mm512_xor_si512(__s[1], __s[2]);
-      __s[0] = _mm512_xor_si512(__s[0], __s[3]);
+      __sA[2] = _mm512_xor_si512(__sA[2], __sA[0]);
+      __sB[2] = _mm512_xor_si512(__sB[2], __sB[0]);
+      __sA[3] = _mm512_xor_si512(__sA[3], __sA[1]);
+      __sB[3] = _mm512_xor_si512(__sB[3], __sB[1]);
+      __sA[1] = _mm512_xor_si512(__sA[1], __sA[2]);
+      __sB[1] = _mm512_xor_si512(__sB[1], __sB[2]);
+      __sA[0] = _mm512_xor_si512(__sA[0], __sA[3]);
+      __sB[0] = _mm512_xor_si512(__sB[0], __sB[3]);
+      __sA[2] = _mm512_xor_si512(__sA[2], __tA);
+      __sB[2] = _mm512_xor_si512(__sB[2], __tB);
+      __sA[3] = _mm512_rol_epi64(__sA[3], 45);
+      __sB[3] = _mm512_rol_epi64(__sB[3], 45);
 
-      __s[2] = _mm512_xor_si512(__s[2], __t);
-
-      __s[3] = _mm512_rol_epi64(__s[3], 45);
-      for (size_t j = 0; j < n - i; ++j) {
-        array[i + j] = buffer[j];
-      }
+      for (size_t j = 0; j < n - i; ++j) array[i + j] = buf[j];
     }
   }
 
-  // Overload for uint32_t
+  // Overload for uint32_t — two independent states, 32 values per iteration
   inline void getRand(uint32_t* array, const uint32_t n) noexcept {
     size_t i = 0;
+    for (; i + 32 <= n; i += 32) {
+      const __m512i __rA = _mm512_add_epi64(__sA[0], __sA[3]);
+      const __m512i __rB = _mm512_add_epi64(__sB[0], __sB[3]);
+      _mm512_store_si512(array + i,      __rA);
+      _mm512_store_si512(array + i + 16, __rB);
 
-    // Generate 8 uint64_t values per iteration and split them into 16 uint32_t values
-    for (; i + 16 <= n; i += 16) {
-      const __m512i __result = _mm512_add_epi64(__s[0], __s[3]);
+      const __m512i __tA = _mm512_slli_epi64(__sA[1], 17);
+      const __m512i __tB = _mm512_slli_epi64(__sB[1], 17);
 
-      _mm512_store_si512(array + i, __result);
-
-      const __m512i __t = _mm512_slli_epi64(__s[1], 17);
-
-      __s[2] = _mm512_xor_si512(__s[2], __s[0]);
-      __s[3] = _mm512_xor_si512(__s[3], __s[1]);
-      __s[1] = _mm512_xor_si512(__s[1], __s[2]);
-      __s[0] = _mm512_xor_si512(__s[0], __s[3]);
-
-      __s[2] = _mm512_xor_si512(__s[2], __t);
-
-      __s[3] = _mm512_rol_epi64(__s[3], 45);
+      __sA[2] = _mm512_xor_si512(__sA[2], __sA[0]);
+      __sB[2] = _mm512_xor_si512(__sB[2], __sB[0]);
+      __sA[3] = _mm512_xor_si512(__sA[3], __sA[1]);
+      __sB[3] = _mm512_xor_si512(__sB[3], __sB[1]);
+      __sA[1] = _mm512_xor_si512(__sA[1], __sA[2]);
+      __sB[1] = _mm512_xor_si512(__sB[1], __sB[2]);
+      __sA[0] = _mm512_xor_si512(__sA[0], __sA[3]);
+      __sB[0] = _mm512_xor_si512(__sB[0], __sB[3]);
+      __sA[2] = _mm512_xor_si512(__sA[2], __tA);
+      __sB[2] = _mm512_xor_si512(__sB[2], __tB);
+      __sA[3] = _mm512_rol_epi64(__sA[3], 45);
+      __sB[3] = _mm512_rol_epi64(__sB[3], 45);
     }
-
-    // Handle leftover if n is not a multiple of 16
     if (i < n) {
-      alignas(64) uint32_t buffer[16];
-      const __m512i __result = _mm512_add_epi64(__s[0], __s[3]);
-      _mm512_store_si512(buffer, __result);
+      alignas(64) uint32_t buf[32];
+      const __m512i __rA = _mm512_add_epi64(__sA[0], __sA[3]);
+      const __m512i __rB = _mm512_add_epi64(__sB[0], __sB[3]);
+      _mm512_store_si512(buf,      __rA);
+      _mm512_store_si512(buf + 16, __rB);
 
-      const __m512i __t = _mm512_slli_epi64(__s[1], 17);
+      const __m512i __tA = _mm512_slli_epi64(__sA[1], 17);
+      const __m512i __tB = _mm512_slli_epi64(__sB[1], 17);
 
-      __s[2] = _mm512_xor_si512(__s[2], __s[0]);
-      __s[3] = _mm512_xor_si512(__s[3], __s[1]);
-      __s[1] = _mm512_xor_si512(__s[1], __s[2]);
-      __s[0] = _mm512_xor_si512(__s[0], __s[3]);
+      __sA[2] = _mm512_xor_si512(__sA[2], __sA[0]);
+      __sB[2] = _mm512_xor_si512(__sB[2], __sB[0]);
+      __sA[3] = _mm512_xor_si512(__sA[3], __sA[1]);
+      __sB[3] = _mm512_xor_si512(__sB[3], __sB[1]);
+      __sA[1] = _mm512_xor_si512(__sA[1], __sA[2]);
+      __sB[1] = _mm512_xor_si512(__sB[1], __sB[2]);
+      __sA[0] = _mm512_xor_si512(__sA[0], __sA[3]);
+      __sB[0] = _mm512_xor_si512(__sB[0], __sB[3]);
+      __sA[2] = _mm512_xor_si512(__sA[2], __tA);
+      __sB[2] = _mm512_xor_si512(__sB[2], __tB);
+      __sA[3] = _mm512_rol_epi64(__sA[3], 45);
+      __sB[3] = _mm512_rol_epi64(__sB[3], 45);
 
-      __s[2] = _mm512_xor_si512(__s[2], __t);
+      for (size_t j = 0; j < n - i; ++j) array[i + j] = buf[j];
+    }
+  }
+#elif defined(__AVX2__)
 
-      __s[3] = _mm512_rol_epi64(__s[3], 45);
+  // Overload for uint64_t — two independent states, 8 values per iteration
+  inline void getRand(uint64_t* __restrict array, const uint32_t n) noexcept {
+    size_t i = 0;
+    for (; i + 8 <= n; i += 8) {
+      const __m256i __rA = _mm256_add_epi64(__sA[0], __sA[3]);
+      const __m256i __rB = _mm256_add_epi64(__sB[0], __sB[3]);
+      _mm256_storeu_si256((__m256i*)(array + i),     __rA);
+      _mm256_storeu_si256((__m256i*)(array + i + 4), __rB);
 
-      // Fill the remaining uint32_t values
-      for (size_t j = 0; j < n - i; ++j) {
-        array[i + j] = buffer[j];
-      }
+      const __m256i __tA = _mm256_slli_epi64(__sA[1], 17);
+      const __m256i __tB = _mm256_slli_epi64(__sB[1], 17);
+
+      __sA[2] = _mm256_xor_si256(__sA[2], __sA[0]);
+      __sB[2] = _mm256_xor_si256(__sB[2], __sB[0]);
+      __sA[3] = _mm256_xor_si256(__sA[3], __sA[1]);
+      __sB[3] = _mm256_xor_si256(__sB[3], __sB[1]);
+      __sA[1] = _mm256_xor_si256(__sA[1], __sA[2]);
+      __sB[1] = _mm256_xor_si256(__sB[1], __sB[2]);
+      __sA[0] = _mm256_xor_si256(__sA[0], __sA[3]);
+      __sB[0] = _mm256_xor_si256(__sB[0], __sB[3]);
+      __sA[2] = _mm256_xor_si256(__sA[2], __tA);
+      __sB[2] = _mm256_xor_si256(__sB[2], __tB);
+      __sA[3] = _mm256_or_si256(_mm256_slli_epi64(__sA[3], 45), _mm256_srli_epi64(__sA[3], 19));
+      __sB[3] = _mm256_or_si256(_mm256_slli_epi64(__sB[3], 45), _mm256_srli_epi64(__sB[3], 19));
+    }
+    if (i < n) {
+      alignas(32) uint64_t buf[8];
+      const __m256i __rA = _mm256_add_epi64(__sA[0], __sA[3]);
+      const __m256i __rB = _mm256_add_epi64(__sB[0], __sB[3]);
+      _mm256_store_si256((__m256i*)buf,     __rA);
+      _mm256_store_si256((__m256i*)(buf+4), __rB);
+
+      const __m256i __tA = _mm256_slli_epi64(__sA[1], 17);
+      const __m256i __tB = _mm256_slli_epi64(__sB[1], 17);
+
+      __sA[2] = _mm256_xor_si256(__sA[2], __sA[0]);
+      __sB[2] = _mm256_xor_si256(__sB[2], __sB[0]);
+      __sA[3] = _mm256_xor_si256(__sA[3], __sA[1]);
+      __sB[3] = _mm256_xor_si256(__sB[3], __sB[1]);
+      __sA[1] = _mm256_xor_si256(__sA[1], __sA[2]);
+      __sB[1] = _mm256_xor_si256(__sB[1], __sB[2]);
+      __sA[0] = _mm256_xor_si256(__sA[0], __sA[3]);
+      __sB[0] = _mm256_xor_si256(__sB[0], __sB[3]);
+      __sA[2] = _mm256_xor_si256(__sA[2], __tA);
+      __sB[2] = _mm256_xor_si256(__sB[2], __tB);
+      __sA[3] = _mm256_or_si256(_mm256_slli_epi64(__sA[3], 45), _mm256_srli_epi64(__sA[3], 19));
+      __sB[3] = _mm256_or_si256(_mm256_slli_epi64(__sB[3], 45), _mm256_srli_epi64(__sB[3], 19));
+
+      for (size_t j = 0; j < n - i; ++j) array[i + j] = buf[j];
+    }
+  }
+
+  // Overload for uint32_t — two independent states, 16 values per iteration
+  inline void getRand(uint32_t* array, const uint32_t n) noexcept {
+    size_t i = 0;
+    for (; i + 16 <= n; i += 16) {
+      const __m256i __rA = _mm256_add_epi64(__sA[0], __sA[3]);
+      const __m256i __rB = _mm256_add_epi64(__sB[0], __sB[3]);
+      _mm256_storeu_si256((__m256i*)(array + i),     __rA);
+      _mm256_storeu_si256((__m256i*)(array + i + 8), __rB);
+
+      const __m256i __tA = _mm256_slli_epi64(__sA[1], 17);
+      const __m256i __tB = _mm256_slli_epi64(__sB[1], 17);
+
+      __sA[2] = _mm256_xor_si256(__sA[2], __sA[0]);
+      __sB[2] = _mm256_xor_si256(__sB[2], __sB[0]);
+      __sA[3] = _mm256_xor_si256(__sA[3], __sA[1]);
+      __sB[3] = _mm256_xor_si256(__sB[3], __sB[1]);
+      __sA[1] = _mm256_xor_si256(__sA[1], __sA[2]);
+      __sB[1] = _mm256_xor_si256(__sB[1], __sB[2]);
+      __sA[0] = _mm256_xor_si256(__sA[0], __sA[3]);
+      __sB[0] = _mm256_xor_si256(__sB[0], __sB[3]);
+      __sA[2] = _mm256_xor_si256(__sA[2], __tA);
+      __sB[2] = _mm256_xor_si256(__sB[2], __tB);
+      __sA[3] = _mm256_or_si256(_mm256_slli_epi64(__sA[3], 45), _mm256_srli_epi64(__sA[3], 19));
+      __sB[3] = _mm256_or_si256(_mm256_slli_epi64(__sB[3], 45), _mm256_srli_epi64(__sB[3], 19));
+    }
+    if (i < n) {
+      alignas(32) uint32_t buf[16];
+      const __m256i __rA = _mm256_add_epi64(__sA[0], __sA[3]);
+      const __m256i __rB = _mm256_add_epi64(__sB[0], __sB[3]);
+      _mm256_store_si256((__m256i*)buf,      __rA);
+      _mm256_store_si256((__m256i*)(buf+8),  __rB);
+
+      const __m256i __tA = _mm256_slli_epi64(__sA[1], 17);
+      const __m256i __tB = _mm256_slli_epi64(__sB[1], 17);
+
+      __sA[2] = _mm256_xor_si256(__sA[2], __sA[0]);
+      __sB[2] = _mm256_xor_si256(__sB[2], __sB[0]);
+      __sA[3] = _mm256_xor_si256(__sA[3], __sA[1]);
+      __sB[3] = _mm256_xor_si256(__sB[3], __sB[1]);
+      __sA[1] = _mm256_xor_si256(__sA[1], __sA[2]);
+      __sB[1] = _mm256_xor_si256(__sB[1], __sB[2]);
+      __sA[0] = _mm256_xor_si256(__sA[0], __sA[3]);
+      __sB[0] = _mm256_xor_si256(__sB[0], __sB[3]);
+      __sA[2] = _mm256_xor_si256(__sA[2], __tA);
+      __sB[2] = _mm256_xor_si256(__sB[2], __tB);
+      __sA[3] = _mm256_or_si256(_mm256_slli_epi64(__sA[3], 45), _mm256_srli_epi64(__sA[3], 19));
+      __sB[3] = _mm256_or_si256(_mm256_slli_epi64(__sB[3], 45), _mm256_srli_epi64(__sB[3], 19));
+
+      for (size_t j = 0; j < n - i; ++j) array[i + j] = buf[j];
     }
   }
 #else
@@ -198,21 +323,29 @@ public:
 
   // Overload for uint32_t
   inline void getRand(uint32_t* __restrict array, const uint32_t n) {
-    for (uint32_t i = 0; i < n; i += 2) {
+    const uint32_t pairs = n >> 1;
+    for (uint32_t i = 0; i < pairs; ++i) {
       const uint64_t randVal = s[0] + s[3];
       const uint64_t t = s[1] << 17;
       s[2] ^= s[0];
       s[3] ^= s[1];
       s[1] ^= s[2];
       s[0] ^= s[3];
-
       s[2] ^= t;
       s[3] = (s[3] << 45) | (s[3] >> (64 - 45));
-
-      array[i] = static_cast<uint32_t>(randVal); // Lower 32 bits
-      if (i + 1 < n) {
-        array[i + 1] = static_cast<uint32_t>(randVal >> 32); // Upper 32 bits
-      }
+      array[2 * i]     = static_cast<uint32_t>(randVal);
+      array[2 * i + 1] = static_cast<uint32_t>(randVal >> 32);
+    }
+    if (n & 1u) {
+      const uint64_t randVal = s[0] + s[3];
+      const uint64_t t = s[1] << 17;
+      s[2] ^= s[0];
+      s[3] ^= s[1];
+      s[1] ^= s[2];
+      s[0] ^= s[3];
+      s[2] ^= t;
+      s[3] = (s[3] << 45) | (s[3] >> (64 - 45));
+      array[n - 1] = static_cast<uint32_t>(randVal);
     }
   }
 #endif
