@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <fstream>
+#include <nlohmann/json.hpp>
 
 namespace sipm {
 
@@ -130,6 +131,85 @@ SiPMProperties SiPMProperties::readSettings(const std::string& fname) {
     std::cerr << "Could not open " << fname << " for reading!" << std::endl;
   }
   return retval;
+}
+
+SiPMProperties SiPMProperties::readSettingsJson(const std::string& fname) {
+  SiPMProperties p;
+  std::ifstream file(fname);
+  if (!file.is_open()) {
+    std::cerr << "Could not open " << fname << " for reading!\n";
+    return p;
+  }
+
+  nlohmann::json j;
+  try {
+    file >> j;
+  } catch (const nlohmann::json::parse_error& e) {
+    std::cerr << "JSON parse error in " << fname << ": " << e.what() << "\n";
+    return p;
+  }
+
+  if (j.contains("size"))                  p.setSize(j["size"].get<double>());
+  if (j.contains("pitch"))                 p.setPitch(j["pitch"].get<double>());
+  if (j.contains("sampling"))              p.setSampling(j["sampling"].get<double>());
+  if (j.contains("signalLength"))          p.setSignalLength(j["signalLength"].get<double>());
+  if (j.contains("risingTime"))            p.setRiseTime(j["risingTime"].get<double>());
+  if (j.contains("fallingTimeFast"))       p.setFallTimeFast(j["fallingTimeFast"].get<double>());
+  if (j.contains("fallingTimeSlow"))       p.setFallTimeSlow(j["fallingTimeSlow"].get<double>());
+  if (j.contains("slowComponentFraction")) p.setSlowComponentFraction(j["slowComponentFraction"].get<double>());
+  if (j.contains("recoveryTime"))          p.setRecoveryTime(j["recoveryTime"].get<double>());
+  if (j.contains("snr"))                   p.setSnr(j["snr"].get<double>());
+  if (j.contains("dcr"))                   p.setDcr(j["dcr"].get<double>());
+  if (j.contains("xt"))                    p.setXt(j["xt"].get<double>());
+  if (j.contains("dxt"))                   p.setDXt(j["dxt"].get<double>());
+  if (j.contains("dxtTau"))                p.setDXtTau(j["dxtTau"].get<double>());
+  if (j.contains("ap"))                    p.setAp(j["ap"].get<double>());
+  if (j.contains("tauApFast"))             p.setTauApFastComponent(j["tauApFast"].get<double>());
+  if (j.contains("tauApSlow"))             p.setTauApSlowComponent(j["tauApSlow"].get<double>());
+  if (j.contains("apSlowFraction"))        p.setApSlowFraction(j["apSlowFraction"].get<double>());
+  if (j.contains("ccgv"))                  p.setCcgv(j["ccgv"].get<float>());
+  if (j.contains("pde"))                   p.setPde(j["pde"].get<double>());
+
+  if (j.contains("hasDcr"))          { j["hasDcr"].get<bool>()          ? p.setDcrOn()           : p.setDcrOff(); }
+  if (j.contains("hasXt"))           { j["hasXt"].get<bool>()           ? p.setXtOn()            : p.setXtOff(); }
+  if (j.contains("hasDXt"))          { j["hasDXt"].get<bool>()          ? p.setDXtOn()           : p.setDXtOff(); }
+  if (j.contains("hasAp"))           { j["hasAp"].get<bool>()           ? p.setApOn()            : p.setApOff(); }
+  if (j.contains("hasSlowComponent")) { j["hasSlowComponent"].get<bool>() ? p.setSlowComponentOn() : p.setSlowComponentOff(); }
+
+  if (j.contains("pdeType")) {
+    const auto& t = j["pdeType"];
+    if (t.is_string()) {
+      const std::string s = t.get<std::string>();
+      if (s == "kSimplePde")       p.setPdeType(PdeType::kSimplePde);
+      else if (s == "kSpectrumPde") p.setPdeType(PdeType::kSpectrumPde);
+      else                          p.setPdeType(PdeType::kNoPde);
+    } else {
+      p.setPdeType(static_cast<PdeType>(t.get<int>()));
+    }
+  }
+
+  if (j.contains("hitDistribution")) {
+    const auto& h = j["hitDistribution"];
+    if (h.is_string()) {
+      const std::string s = h.get<std::string>();
+      if (s == "kCircle")        p.setHitDistribution(HitDistribution::kCircle);
+      else if (s == "kGaussian") p.setHitDistribution(HitDistribution::kGaussian);
+      else                       p.setHitDistribution(HitDistribution::kUniform);
+    } else {
+      p.setHitDistribution(static_cast<HitDistribution>(h.get<int>()));
+    }
+  }
+
+  if (j.contains("pdeSpectrum")) {
+    const auto& spec = j["pdeSpectrum"];
+    if (spec.contains("wavelengths") && spec.contains("pde")) {
+      p.setPdeSpectrum(
+        spec["wavelengths"].get<std::vector<double>>(),
+        spec["pde"].get<std::vector<double>>());
+    }
+  }
+
+  return p;
 }
 
 std::ostream& operator<<(std::ostream& out, const SiPMProperties& obj) {

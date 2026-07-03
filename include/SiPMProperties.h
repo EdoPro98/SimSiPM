@@ -44,8 +44,11 @@ public:
 
   SiPMProperties();
 
-  /// @brief Used to read settings from a json file
+  /// @brief Read settings from a legacy key=value config file
   static SiPMProperties readSettings(const std::string&);
+
+  /// @brief Read settings from a JSON file
+  static SiPMProperties readSettingsJson(const std::string&);
 
   /// @brief Returns size of sensor in mm
   constexpr uint32_t size() const { return m_Size; }

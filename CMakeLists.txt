@@ -20,6 +20,22 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# nlohmann/json — try system install first, then fetch single-header release
+find_package(nlohmann_json 3.2.0 QUIET)
+if(NOT nlohmann_json_FOUND)
+  message(STATUS "nlohmann_json not found on system — fetching from GitHub")
+  include(FetchContent)
+  FetchContent_Declare(
+    nlohmann_json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG        v3.11.3
+    GIT_SHALLOW    TRUE
+  )
+  set(JSON_BuildTests OFF CACHE INTERNAL "")
+  set(JSON_Install    OFF CACHE INTERNAL "")
+  FetchContent_MakeAvailable(nlohmann_json)
+endif()
+
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	if(SIPM_ENABLE_TEST)
 	    add_subdirectory(tests)
@@ -54,6 +70,7 @@ target_include_directories(sipm PUBLIC
     $<INSTALL_INTERFACE:include>
 )
 
+target_link_libraries(sipm PRIVATE nlohmann_json::nlohmann_json)
 set_target_properties(sipm PROPERTIES VERSION 1 OUTPUT_NAME sipm)
 set_property(TARGET sipm PROPERTY PUBLIC_HEADER ${include})
 
@@ -81,6 +98,7 @@ if (SIPM_BUILD_PYTHON)
 	)
 	set_property(TARGET SiPM PROPERTY CXX_STANDARD 17)
   	target_compile_options(SiPM PRIVATE -fvisibility=hidden -ffast-math -O3)
+	target_link_libraries(SiPM PRIVATE nlohmann_json::nlohmann_json)
 
 	install(TARGETS SiPM
 	LIBRARY DESTINATION lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages

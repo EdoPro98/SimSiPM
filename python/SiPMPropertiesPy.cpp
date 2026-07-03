@@ -1,5 +1,6 @@
 #include "SiPMProperties.h"
 #include <pybind11/iostream.h>
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -12,7 +13,86 @@ void SiPMPropertiesPy(py::module& m) {
 
   sipmproperties
     .def(py::init<>())
-    // .def("readSettings",&SiPMProperties::readSettings)
+    .def_static("readSettings", &SiPMProperties::readSettings)
+    .def_static("readSettingsJson", &SiPMProperties::readSettingsJson)
+    .def(py::pickle(
+      [](const SiPMProperties& p) {
+        py::dict d;
+        d["size"]                 = p.size();
+        d["pitch"]                = p.pitch();
+        d["sampling"]             = p.sampling();
+        d["signalLength"]         = p.signalLength();
+        d["risingTime"]           = p.risingTime();
+        d["fallingTimeFast"]      = p.fallingTimeFast();
+        d["fallingTimeSlow"]      = p.fallingTimeSlow();
+        d["slowComponentFraction"]= p.slowComponentFraction();
+        d["recoveryTime"]         = p.recoveryTime();
+        d["snrdB"]                = p.snrdB();
+        d["dcr"]                  = p.dcr();
+        d["xt"]                   = p.xt();
+        d["dxt"]                  = p.dxt();
+        d["dxtTau"]               = p.dxtTau();
+        d["ap"]                   = p.ap();
+        d["tauApFast"]            = p.tauApFast();
+        d["tauApSlow"]            = p.tauApSlow();
+        d["apSlowFraction"]       = p.apSlowFraction();
+        d["ccgv"]                 = p.ccgv();
+        d["pde"]                  = p.pde();
+        d["pdeType"]              = static_cast<int>(p.pdeType());
+        d["hitDistribution"]      = static_cast<int>(p.hitDistribution());
+        d["hasDcr"]               = p.hasDcr();
+        d["hasXt"]                = p.hasXt();
+        d["hasDXt"]               = p.hasDXt();
+        d["hasAp"]                = p.hasAp();
+        d["hasSlowComponent"]     = p.hasSlowComponent();
+        // PDE spectrum as parallel lists
+        py::list wls, pdes;
+        for (const auto& kv : p.pdeSpectrum()) {
+          wls.append(kv.first);
+          pdes.append(kv.second);
+        }
+        d["pdeSpectrum_wl"]  = wls;
+        d["pdeSpectrum_pde"] = pdes;
+        return d;
+      },
+      [](py::dict d) {
+        SiPMProperties p;
+        p.setSize(d["size"].cast<double>());
+        p.setPitch(d["pitch"].cast<double>());
+        p.setSampling(d["sampling"].cast<double>());
+        p.setSignalLength(d["signalLength"].cast<double>());
+        p.setRiseTime(d["risingTime"].cast<double>());
+        p.setFallTimeFast(d["fallingTimeFast"].cast<double>());
+        p.setFallTimeSlow(d["fallingTimeSlow"].cast<double>());
+        p.setSlowComponentFraction(d["slowComponentFraction"].cast<double>());
+        p.setRecoveryTime(d["recoveryTime"].cast<double>());
+        p.setSnr(d["snrdB"].cast<double>());
+        p.setDcr(d["dcr"].cast<double>());
+        p.setXt(d["xt"].cast<double>());
+        p.setDXt(d["dxt"].cast<double>());
+        p.setDXtTau(d["dxtTau"].cast<double>());
+        p.setAp(d["ap"].cast<double>());
+        p.setTauApFastComponent(d["tauApFast"].cast<double>());
+        p.setTauApSlowComponent(d["tauApSlow"].cast<double>());
+        p.setApSlowFraction(d["apSlowFraction"].cast<double>());
+        p.setCcgv(d["ccgv"].cast<float>());
+        p.setPde(d["pde"].cast<double>());
+        p.setPdeType(static_cast<SiPMProperties::PdeType>(d["pdeType"].cast<int>()));
+        p.setHitDistribution(static_cast<SiPMProperties::HitDistribution>(d["hitDistribution"].cast<int>()));
+        if (d["hasDcr"].cast<bool>()) p.setDcrOn(); else p.setDcrOff();
+        if (d["hasXt"].cast<bool>())  p.setXtOn();  else p.setXtOff();
+        if (d["hasDXt"].cast<bool>()) p.setDXtOn(); else p.setDXtOff();
+        if (d["hasAp"].cast<bool>())  p.setApOn();  else p.setApOff();
+        if (d["hasSlowComponent"].cast<bool>()) p.setSlowComponentOn(); else p.setSlowComponentOff();
+        // restore PDE spectrum if present
+        auto wls  = d["pdeSpectrum_wl"].cast<vector<double>>();
+        auto pdes = d["pdeSpectrum_pde"].cast<vector<double>>();
+        if (!wls.empty()) p.setPdeSpectrum(wls, pdes);
+        return p;
+      }
+    ))
+    .def("size", &SiPMProperties::size)
+    .def("pitch", &SiPMProperties::pitch)
     .def("nCells", &SiPMProperties::nCells)
     .def("nSideCells", &SiPMProperties::nSideCells)
     .def("nSignalPoints", &SiPMProperties::nSignalPoints)
@@ -77,6 +157,19 @@ void SiPMPropertiesPy(py::module& m) {
     .def("setPdeType", &SiPMProperties::setPdeType)
     .def("setPdeSpectrum",
          py::overload_cast<const vector<double>&, const vector<double>&>(&SiPMProperties::setPdeSpectrum))
+    // Numpy array overload — avoids list → vector conversion
+    .def("setPdeSpectrum",
+         [](SiPMProperties& self,
+            py::array_t<double, py::array::c_style | py::array::forcecast> wavelengths,
+            py::array_t<double, py::array::c_style | py::array::forcecast> pde) {
+           auto wbuf = wavelengths.request();
+           auto pbuf = pde.request();
+           const double* wptr = static_cast<const double*>(wbuf.ptr);
+           const double* pptr = static_cast<const double*>(pbuf.ptr);
+           self.setPdeSpectrum(
+             vector<double>(wptr, wptr + wbuf.size),
+             vector<double>(pptr, pptr + pbuf.size));
+         })
     .def("setHitDistribution", &SiPMProperties::setHitDistribution)
     .def("__repr__", &SiPMProperties::toString);
 
