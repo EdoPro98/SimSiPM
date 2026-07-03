@@ -41,11 +41,11 @@ public:
    */
   SiPMAnalogSignal signal() const { return m_Signal; }
 
-  /// @brief Returns vector containing all SiPMHits
-  /** This method allows to get all the hits generated in the simulation
-   * process, including noise hits.
+  /// @brief Returns the list of hits generated in the last event (by const reference)
+  /** Elements are valid until the next call to resetState() or runEvent().
+   * Copy individual hits if you need to keep them longer.
    */
-  std::vector<SiPMHit*> hits() const { return m_Hits; }
+  const std::vector<SiPMHit>& hits() const { return m_Hits; }
 
   /// @brief Returns the @ref SiPMRandom rng used by SiPMSensor
   const SiPMRandom rng() const { return m_rng; }
@@ -111,8 +111,8 @@ private:
   void addPhotoelectrons();
   void addCorrelatedNoise();
 
-  SiPMHit* generateXtHit(const SiPMHit*) const;
-  SiPMHit* generateApHit(const SiPMHit*) const;
+  SiPMHit generateXtHit(const SiPMHit&, int32_t parentIdx) const;
+  SiPMHit generateApHit(const SiPMHit&, int32_t parentIdx) const;
 
   void calculateSignalAmplitudes();
   void generateSignal();
@@ -129,7 +129,7 @@ private:
 
   std::vector<double> m_PhotonTimes;
   std::vector<double> m_PhotonWavelengths;
-  std::vector<SiPMHit*> m_Hits;
+  std::vector<SiPMHit> m_Hits;
 
   std::vector<float> m_SignalShape;
   SiPMAnalogSignal m_Signal;

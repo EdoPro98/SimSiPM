@@ -16,7 +16,6 @@
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
-#include <memory>
 #include <sstream>
 
 namespace sipm {
@@ -35,8 +34,8 @@ public:
   };
 
   constexpr SiPMHit(double time, float amp, uint32_t row, uint32_t col, HitType type,
-                    const SiPMHit* parentPtr = nullptr) noexcept
-    : m_Time(time), m_Amplitude(amp), m_Row(row), m_Col(col), m_HitType(type), m_ParentPtr(parentPtr) {}
+                    int32_t parentIdx = -1) noexcept
+    : m_Time(time), m_Amplitude(amp), m_Row(row), m_Col(col), m_HitType(type), m_ParentIdx(parentIdx) {}
 
 
   /// @brief Comparison operator for hits
@@ -69,7 +68,8 @@ public:
   float& amplitude() { return m_Amplitude; }
   /// @brief Returns hit type to identify the hits
   constexpr HitType hitType() const noexcept { return m_HitType; }
-  constexpr const SiPMHit* parent() const noexcept { return m_ParentPtr; }
+  /// @brief Returns index of the parent hit in the sensor's hit list (-1 if none)
+  constexpr int32_t parentIdx() const noexcept { return m_ParentIdx; }
 
   friend std::ostream& operator<<(std::ostream&, const SiPMHit&);
   std::string toString() const {
@@ -82,14 +82,12 @@ public:
   SiPMHit() = delete;
 
 private:
-  // Once a hit is constructed only
-  // amplitude can be changed
-  const double m_Time;
-  const SiPMHit* m_ParentPtr;
+  double m_Time;
+  int32_t m_ParentIdx; // index into sensor hit list; -1 = no parent
   float m_Amplitude;
-  const uint32_t m_Row;
-  const uint32_t m_Col;
-  const HitType m_HitType;
+  uint32_t m_Row;
+  uint32_t m_Col;
+  HitType m_HitType;
 };
 
 inline std::ostream& operator<<(std::ostream& out, const SiPMHit& obj) {
