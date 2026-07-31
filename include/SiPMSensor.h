@@ -68,6 +68,16 @@ public:
    */
   void setProperties(const SiPMProperties&);
 
+  /// @brief Override the computed signal shape with a user-supplied one.
+  /** The shape vector is used verbatim (no gain scaling, no normalization).
+   *  Rise/fall time flags are set to -1 in properties.  A subsequent call to
+   *  setRiseTime / setFallTimeFast / setFallTimeSlow restores computed shapes.
+   *  @param shape  Waveform samples (arbitrary units, user is responsible for normalisation)
+   *  @param sampling  Sampling period in ns
+   */
+  void setSignalShape(const std::vector<float>& shape, double sampling);
+  void setSignalShape(const std::vector<double>& shape, double sampling);
+
   /// @brief Adds a single photon to the list of photons to be simulated
   void addPhoton(const double);
 

@@ -73,7 +73,22 @@ void SiPMSensor::resetState() {
   m_PhotonWavelengths.clear();
 }
 
+void SiPMSensor::setSignalShape(const std::vector<float>& shape, double sampling) {
+  m_Properties.setCustomSignalShape(sampling, static_cast<uint32_t>(shape.size()));
+  m_SignalShape = shape;
+}
+
+void SiPMSensor::setSignalShape(const std::vector<double>& shape, double sampling) {
+  m_Properties.setCustomSignalShape(sampling, static_cast<uint32_t>(shape.size()));
+  m_SignalShape.resize(shape.size());
+  for (size_t i = 0; i < shape.size(); ++i) {
+    m_SignalShape[i] = static_cast<float>(shape[i]);
+  }
+}
+
 void SiPMSensor::signalShape() {
+  if (m_Properties.hasCustomSignalShape()) return;
+
   const uint32_t nSignalPoints = m_Properties.nSignalPoints();
   const float sampling = m_Properties.sampling();
   const float tr = m_Properties.risingTime() / sampling;

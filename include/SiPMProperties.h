@@ -152,6 +152,21 @@ public:
   /// @sa SiPMSensor::signalShape
   constexpr bool hasSlowComponent() const { return m_HasSlowComponent; }
 
+  /// @brief Returns true if a user-supplied signal shape is active
+  constexpr bool hasCustomSignalShape() const { return m_HasCustomSignalShape; }
+
+  /// @brief Registers a user-supplied shape (sampling + point count only; the
+  ///        vector itself is stored in SiPMSensor).  Sets rise/fall flags to -1.
+  void setCustomSignalShape(const double sampling, const uint32_t nPoints) {
+    m_Sampling = sampling;
+    m_SignalPoints = nPoints;
+    m_SignalLength = static_cast<double>(nPoints) * sampling;
+    m_RiseTime = -1;
+    m_FallTimeFast = -1;
+    m_FallTimeSlow = -1;
+    m_HasCustomSignalShape = true;
+  }
+
   /// @brief Sets a property using its name
   void setProperty(const std::string&, const double);
 
@@ -186,11 +201,17 @@ public:
 
   /// @brief Set rising time constant of signal @sa SiPMSensor::signalShape
   /// @param x Signal risign time constant in ns
-  constexpr void setRiseTime(const double x) { m_RiseTime = x; }
+  constexpr void setRiseTime(const double x) {
+    m_RiseTime = x;
+    m_HasCustomSignalShape = false;
+  }
 
   /// @brief Set falling time constant of signal @sa SiPMSensor::signalShape
   /// @param x Signal falling time constant for fast component in ns
-  constexpr void setFallTimeFast(const double x) { m_FallTimeFast = x; }
+  constexpr void setFallTimeFast(const double x) {
+    m_FallTimeFast = x;
+    m_HasCustomSignalShape = false;
+  }
 
   /// @brief Set falling time constant for the slow component of signal @sa
   /// SiPMSensor::signalShape
@@ -198,6 +219,7 @@ public:
   constexpr void setFallTimeSlow(const double x) {
     m_FallTimeSlow = x;
     m_HasSlowComponent = true;
+    m_HasCustomSignalShape = false;
   }
 
   /// @brief Set weigth of slow component in the signal
@@ -347,6 +369,7 @@ private:
   bool m_HasDXt = false;
   bool m_HasAp = true;
   bool m_HasSlowComponent = false;
+  bool m_HasCustomSignalShape = false;
 };
 } // namespace sipm
 #endif /* SIPM_SIPMPROPERTIES_H  */

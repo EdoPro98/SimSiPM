@@ -497,6 +497,110 @@ TEST_F(TestSiPMSensor, SetPropertyStringUpdatesSignalShape) {
   EXPECT_DOUBLE_EQ(sut.properties().signalLength(), 300);
 }
 
+// ── setSignalShape ────────────────────────────────────────────────────────────
+
+TEST_F(TestSiPMSensor, SetSignalShapeFloatStoresShapeVerbatim) {
+  const std::vector<float> shape = {0.0f, 0.5f, 1.0f, 0.7f, 0.3f};
+  sut.setSignalShape(shape, 0.5);
+  // Run an event and retrieve signal — shape length must match
+  sut.addPhoton(1.0);
+  sut.runEvent();
+  EXPECT_EQ(sut.signal().size(), shape.size());
+}
+
+TEST_F(TestSiPMSensor, SetSignalShapeDoubleStoresShapeVerbatim) {
+  const std::vector<double> shape = {0.0, 0.5, 1.0, 0.7, 0.3};
+  sut.setSignalShape(shape, 0.5);
+  sut.addPhoton(1.0);
+  sut.runEvent();
+  EXPECT_EQ(sut.signal().size(), shape.size());
+}
+
+TEST_F(TestSiPMSensor, SetSignalShapeUpdatesSamplingInProperties) {
+  const std::vector<float> shape(100, 0.5f);
+  const double sampling = 0.25;
+  sut.setSignalShape(shape, sampling);
+  EXPECT_DOUBLE_EQ(sut.properties().sampling(), sampling);
+}
+
+TEST_F(TestSiPMSensor, SetSignalShapeUpdatesNSignalPoints) {
+  const std::vector<float> shape(80, 0.5f);
+  sut.setSignalShape(shape, 1.0);
+  EXPECT_EQ(sut.properties().nSignalPoints(), 80u);
+}
+
+TEST_F(TestSiPMSensor, SetSignalShapeSetsRiseTimeToFlagValue) {
+  const std::vector<float> shape(50, 0.5f);
+  sut.setSignalShape(shape, 1.0);
+  EXPECT_DOUBLE_EQ(sut.properties().risingTime(), -1.0);
+}
+
+TEST_F(TestSiPMSensor, SetSignalShapeSetsFallTimeFastToFlagValue) {
+  const std::vector<float> shape(50, 0.5f);
+  sut.setSignalShape(shape, 1.0);
+  EXPECT_DOUBLE_EQ(sut.properties().fallingTimeFast(), -1.0);
+}
+
+TEST_F(TestSiPMSensor, SetSignalShapeSetsFallTimeSlowToFlagValue) {
+  const std::vector<float> shape(50, 0.5f);
+  sut.setSignalShape(shape, 1.0);
+  EXPECT_DOUBLE_EQ(sut.properties().fallingTimeSlow(), -1.0);
+}
+
+TEST_F(TestSiPMSensor, SetSignalShapeSetsHasCustomSignalShapeFlag) {
+  const std::vector<float> shape(50, 0.5f);
+  sut.setSignalShape(shape, 1.0);
+  EXPECT_TRUE(sut.properties().hasCustomSignalShape());
+}
+
+TEST_F(TestSiPMSensor, SubsequentPropertyChangePreservesCustomShape) {
+  // After setSignalShape, a generic property change must NOT recompute the shape
+  const std::vector<float> shape(50, 0.5f);
+  sut.setSignalShape(shape, 1.0);
+  sut.setProperty("Dcr", 200e3);  // triggers signalShape() inside sensor
+  EXPECT_TRUE(sut.properties().hasCustomSignalShape());
+  EXPECT_EQ(sut.properties().nSignalPoints(), 50u);
+}
+
+TEST_F(TestSiPMSensor, SetRiseTimeClearsCustomShapeFlag) {
+  const std::vector<float> shape(50, 0.5f);
+  sut.setSignalShape(shape, 1.0);
+  EXPECT_TRUE(sut.properties().hasCustomSignalShape());
+  sut.setProperty("RiseTime", 2.0);
+  EXPECT_FALSE(sut.properties().hasCustomSignalShape());
+}
+
+TEST_F(TestSiPMSensor, SetFallTimeFastClearsCustomShapeFlag) {
+  const std::vector<float> shape(50, 0.5f);
+  sut.setSignalShape(shape, 1.0);
+  sut.setProperty("FallTimeFast", 40.0);
+  EXPECT_FALSE(sut.properties().hasCustomSignalShape());
+}
+
+TEST_F(TestSiPMSensor, SetFallTimeSlowClearsCustomShapeFlag) {
+  const std::vector<float> shape(50, 0.5f);
+  sut.setSignalShape(shape, 1.0);
+  sut.setProperty("FallTimeSlow", 80.0);
+  EXPECT_FALSE(sut.properties().hasCustomSignalShape());
+}
+
+TEST_F(TestSiPMSensor, AfterRestoringShapeParamsSignalUsesComputedShape) {
+  // Set custom, then restore shape params — signal should recompute to
+  // a shape whose length matches the new signalLength/sampling settings
+  const std::vector<float> customShape(30, 0.5f);
+  sut.setSignalShape(customShape, 1.0);
+
+  SiPMProperties p = sut.properties();
+  p.setRiseTime(1.0);
+  p.setFallTimeFast(50.0);
+  p.setSignalLength(500);
+  p.setSampling(1.0);
+  sut.setProperties(p);  // replaces properties and recomputes shape
+
+  EXPECT_FALSE(sut.properties().hasCustomSignalShape());
+  EXPECT_EQ(sut.properties().nSignalPoints(), 500u);
+}
+
 // ── toString / ostream ────────────────────────────────────────────────────────
 
 TEST_F(TestSiPMSensor, ToStringDoesNotCrash) {
