@@ -65,7 +65,12 @@ void SiPMProperties::setPdeSpectrum(const std::vector<double>& wav, const std::v
   static constexpr uint32_t N = 32;
   std::map<double, double> inputSpectrum;
 
-  for (uint32_t i = 0; i < wav.size(); ++i) {
+  const size_t n = std::min(wav.size(), pde.size());
+  if (wav.size() != pde.size()) {
+    std::cerr << "setPdeSpectrum: wavelengths and pde have different sizes (" << wav.size() << " vs " << pde.size()
+               << "), extra entries are ignored" << std::endl;
+  }
+  for (size_t i = 0; i < n; ++i) {
     inputSpectrum[wav[i]] = pde[i];
   }
 

@@ -11,7 +11,8 @@ void SiPMSensorPy(py::module& m) {
   py::class_<SiPMSensor, std::shared_ptr<SiPMSensor>> sipmsensor(m, "SiPMSensor");
   sipmsensor.def(py::init<>())
     .def(py::init<const SiPMProperties&>())
-    .def("properties", static_cast<const SiPMProperties& (SiPMSensor::*)() const>(&SiPMSensor::properties))
+    .def("properties", static_cast<const SiPMProperties& (SiPMSensor::*)() const>(&SiPMSensor::properties),
+         py::return_value_policy::reference_internal)
     .def("hits", [](const SiPMSensor& self) {
            return std::vector<SiPMHit>(self.hits());
          })

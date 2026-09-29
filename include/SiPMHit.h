@@ -70,6 +70,7 @@ public:
   constexpr HitType hitType() const noexcept { return m_HitType; }
   /// @brief Returns index of the parent hit in the sensor's hit list (-1 if none)
   constexpr int32_t parentIdx() const noexcept { return m_ParentIdx; }
+  int32_t& parentIdx() { return m_ParentIdx; }
 
   friend std::ostream& operator<<(std::ostream&, const SiPMHit&);
   std::string toString() const {

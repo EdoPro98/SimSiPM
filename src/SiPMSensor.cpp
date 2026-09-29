@@ -5,8 +5,10 @@
 #include "SiPMRandom.h"
 #include "SiPMTypes.h"
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdint>
+#include <iostream>
 #include <ostream>
 #include <vector>
 
@@ -41,8 +43,13 @@ void SiPMSensor::addPhotons(const std::vector<double>& val) {
 }
 
 void SiPMSensor::addPhotons(const std::vector<double>& val1, const std::vector<double>& val2) {
-  m_PhotonTimes.insert(m_PhotonTimes.end(), val1.begin(), val1.end());
-  m_PhotonWavelengths.insert(m_PhotonWavelengths.end(), val2.begin(), val2.end());
+  const size_t n = std::min(val1.size(), val2.size());
+  if (val1.size() != val2.size()) {
+    std::cerr << "addPhotons: times and wavelengths have different sizes (" << val1.size() << " vs " << val2.size()
+               << "), extra entries are ignored" << std::endl;
+  }
+  m_PhotonTimes.insert(m_PhotonTimes.end(), val1.begin(), val1.begin() + n);
+  m_PhotonWavelengths.insert(m_PhotonWavelengths.end(), val2.begin(), val2.begin() + n);
 }
 
 void SiPMSensor::runEvent() {
@@ -122,6 +129,7 @@ double SiPMSensor::evaluatePde(const double x) const {
   // Linear interpolation of x (wlen) to obtain a new value
   // for y (pde) using a LUT stored in m_Properties
   const std::map<double, double>& pde = m_Properties.pdeSpectrum();
+  if (pde.size() < 2) { return 0; }
   auto it1 = pde.upper_bound(x);
   if (it1 == pde.end()) {
     --it1;
@@ -223,7 +231,7 @@ void SiPMSensor::addPhotoelectrons() {
   switch (pdeType) {
     case SiPMProperties::PdeType::kNoPde:
       for (uint32_t i = 0; i < nPhotons; ++i) {
-        if (m_PhotonTimes[i] < 0 || m_PhotonTimes[i] > sigLen) { continue; }
+        if (m_PhotonTimes[i] < 0 || m_PhotonTimes[i] >= sigLen) { continue; }
         const pair<uint32_t> position = hitCell();
         m_Hits.emplace_back(m_PhotonTimes[i], 1.f, position.first, position.second, photoelectron);
         m_nTotalHits++;
@@ -232,7 +240,7 @@ void SiPMSensor::addPhotoelectrons() {
       return;
     case SiPMProperties::PdeType::kSimplePde:
       for (uint32_t i = 0; i < nPhotons; ++i) {
-        if (m_PhotonTimes[i] < 0 || m_PhotonTimes[i] > sigLen) { continue; }
+        if (m_PhotonTimes[i] < 0 || m_PhotonTimes[i] >= sigLen) { continue; }
         if (m_Properties.pde() > m_rng.Rand()) {
           const pair<uint32_t> position = hitCell();
           m_Hits.emplace_back(m_PhotonTimes[i], 1.f, position.first, position.second, photoelectron);
@@ -243,7 +251,7 @@ void SiPMSensor::addPhotoelectrons() {
       return;
     case SiPMProperties::PdeType::kSpectrumPde:
       for (uint32_t i = 0; i < nPhotons; ++i) {
-        if (m_PhotonTimes[i] < 0 || m_PhotonTimes[i] > sigLen) { continue; }
+        if (m_PhotonTimes[i] < 0 || m_PhotonTimes[i] >= sigLen) { continue; }
         if (i < m_PhotonWavelengths.size() && evaluatePde(m_PhotonWavelengths[i]) > m_rng.Rand()) {
           const pair<uint32_t> position = hitCell();
           m_Hits.emplace_back(m_PhotonTimes[i], 1.f, position.first, position.second, photoelectron);
@@ -269,9 +277,11 @@ SiPMHit SiPMSensor::generateXtHit(const SiPMHit& xtGen, int32_t parentIdx) const
 
   double xtDelay = 0;
   if (isDelayed) {
+    // Strict '>=' keeps every hit time strictly below signalLength, matching
+    // addDcrEvents/addPhotoelectrons, so generateSignal() can trust time < nSignalPoints.
     do {
       xtDelay = m_rng.randExponential(m_Properties.dxtTau());
-    } while (xtGen.time() + xtDelay > m_Properties.signalLength());
+    } while (xtGen.time() + xtDelay >= m_Properties.signalLength());
   }
   return SiPMHit{xtGen.time() + xtDelay, 1.f, (uint32_t)xtRow, (uint32_t)xtCol, hitType, parentIdx};
 }
@@ -281,9 +291,11 @@ SiPMHit SiPMSensor::generateApHit(const SiPMHit& apGen, int32_t parentIdx) const
   const SiPMHit::HitType hitType = isSlow ? SiPMHit::HitType::kSlowAfterPulse : SiPMHit::HitType::kFastAfterPulse;
   const float tau = isSlow ? m_Properties.tauApSlow() : m_Properties.tauApFast();
   double delay;
+  // Strict '>=' keeps every hit time strictly below signalLength, matching
+  // addDcrEvents/addPhotoelectrons, so generateSignal() can trust time < nSignalPoints.
   do {
     delay = m_rng.randExponential(tau);
-  } while (apGen.time() + delay > m_Properties.signalLength());
+  } while (apGen.time() + delay >= m_Properties.signalLength());
 
   return SiPMHit{apGen.time() + delay, 1.f, apGen.row(), apGen.col(), hitType, parentIdx};
 }
@@ -316,6 +328,7 @@ void SiPMSensor::addCorrelatedNoise() {
       m_Hits.push_back(std::move(apHit));
       m_nTotalHits++;
       m_nAp++;
+      m_nPe++;
       apPoiss *= m_rng.Rand();
     }
   }
@@ -326,6 +339,11 @@ void SiPMSensor::calculateSignalAmplitudes() {
   const uint32_t n = m_nTotalHits;
   const uint32_t nSideCells = m_Properties.nSideCells();
   const float ccgv = m_Properties.ccgv();
+
+  if (n == 1) {
+    m_Hits[0].amplitude() *= m_rng.randGaussianF(1.0f, ccgv);
+    return;
+  }
 
   const auto cellKey = [nSideCells](const SiPMHit& h) {
     return h.col() + nSideCells * h.row();
@@ -348,6 +366,27 @@ void SiPMSensor::calculateSignalAmplitudes() {
           anyCollision = true; break;
         }
     if (!anyCollision) return;
+
+    // Sorting reorders m_Hits, which would invalidate parentIdx (an index into
+    // m_Hits) for every XT/AP hit whose parent moves. Precompute each hit's
+    // final position with a tiny sort over plain indices (n < 16, stack-only,
+    // no SiPMHit copies) and rewrite parentIdx in place before physically
+    // sorting: std::sort's sequence of comparisons for a given n depends only
+    // on the comparator's results, not on the element type being moved, so
+    // sorting indices with the same comparator predicts the exact order the
+    // real sort below will produce.
+    std::array<uint32_t, 16> order;
+    for (uint32_t i = 0; i < n; ++i) order[i] = i;
+    std::sort(order.begin(), order.begin() + n,
+              [&](uint32_t a, uint32_t b) { return hitCmp(m_Hits[a], m_Hits[b]); });
+
+    std::array<uint32_t, 16> newPosOf;
+    for (uint32_t k = 0; k < n; ++k) newPosOf[order[k]] = k;
+
+    for (uint32_t i = 0; i < n; ++i) {
+      int32_t& parent = m_Hits[i].parentIdx();
+      if (parent >= 0) parent = static_cast<int32_t>(newPosOf[parent]);
+    }
 
     std::sort(m_Hits.begin(), m_Hits.end(), hitCmp);
   } else {
@@ -391,14 +430,12 @@ void SiPMSensor::calculateSignalAmplitudes() {
 
 void SiPMSensor::generateSignal() {
   const uint32_t nSignalPoints = m_Properties.nSignalPoints();
-  const float recSampling = 1.0f / m_Properties.sampling();
+  const double sampling = m_Properties.sampling();
 
-  // Pre-extract hit data into flat local arrays to eliminate pointer chasing
-  // through individually heap-allocated SiPMHit objects in the accumulation loop.
   std::vector<uint32_t> times(m_nTotalHits);
   std::vector<float> amplitudes(m_nTotalHits);
   for (uint32_t i = 0; i < m_nTotalHits; ++i) {
-    times[i] = static_cast<uint32_t>(std::floor(m_Hits[i].time() * recSampling));
+    times[i] = static_cast<uint32_t>(std::floor(m_Hits[i].time() / sampling));
     amplitudes[i] = m_Hits[i].amplitude();
   }
 

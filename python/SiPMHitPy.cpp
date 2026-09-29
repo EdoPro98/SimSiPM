@@ -13,7 +13,7 @@ void SiPMHitPy(py::module& m) {
     .def("col", &SiPMHit::col)
     .def("amplitude", static_cast<float (SiPMHit::*)() const noexcept>(&SiPMHit::amplitude))
     .def("hitType", &SiPMHit::hitType)
-    .def("parentIdx", &SiPMHit::parentIdx)
+    .def("parentIdx", static_cast<int32_t (SiPMHit::*)() const noexcept>(&SiPMHit::parentIdx))
     .def("__repr__", &SiPMHit::toString)
     .def("__deepcopy__", [](const SiPMHit& self, py::dict) { return SiPMHit(self); });
 

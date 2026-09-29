@@ -100,8 +100,10 @@ public:
     for (; i + 16 <= n; i += 16) {
       const __m512i __rA = _mm512_add_epi64(__sA[0], __sA[3]);
       const __m512i __rB = _mm512_add_epi64(__sB[0], __sB[3]);
-      _mm512_store_si512(array + i,     __rA);
-      _mm512_store_si512(array + i + 8, __rB);
+      // array is caller-supplied (e.g. std::vector::data()) and not guaranteed
+      // 64-byte aligned, so an unaligned store is required here.
+      _mm512_storeu_si512(array + i,     __rA);
+      _mm512_storeu_si512(array + i + 8, __rB);
 
       const __m512i __tA = _mm512_slli_epi64(__sA[1], 17);
       const __m512i __tB = _mm512_slli_epi64(__sB[1], 17);
@@ -152,8 +154,10 @@ public:
     for (; i + 32 <= n; i += 32) {
       const __m512i __rA = _mm512_add_epi64(__sA[0], __sA[3]);
       const __m512i __rB = _mm512_add_epi64(__sB[0], __sB[3]);
-      _mm512_store_si512(array + i,      __rA);
-      _mm512_store_si512(array + i + 16, __rB);
+      // array is caller-supplied (e.g. std::vector::data()) and not guaranteed
+      // 64-byte aligned, so an unaligned store is required here.
+      _mm512_storeu_si512(array + i,      __rA);
+      _mm512_storeu_si512(array + i + 16, __rB);
 
       const __m512i __tA = _mm512_slli_epi64(__sA[1], 17);
       const __m512i __tB = _mm512_slli_epi64(__sB[1], 17);

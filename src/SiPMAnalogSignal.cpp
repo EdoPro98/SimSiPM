@@ -70,23 +70,23 @@ double SiPMAnalogSignal::tot(const double intstart, const double intgate, const 
 
   double tot = 0;
   bool above = m_Waveform[start] > threshold;
-  double riseTime = 0;
+  uint32_t riseIdx = start;
 
   for (uint32_t i = start + 1; i < end; ++i) {
     const bool currentAbove = m_Waveform[i] > threshold;
     if (!above && currentAbove) {
-      const double d = (threshold - m_Waveform[i - 1]) / (m_Waveform[i] - m_Waveform[i - 1]);
-      riseTime = (i - 1 - start + d) * m_Sampling;
+      riseIdx = i;
       above = true;
     } else if (above && !currentAbove) {
-      const double d = (threshold - m_Waveform[i - 1]) / (m_Waveform[i] - m_Waveform[i - 1]);
-      tot += (i - 1 - start + d) * m_Sampling - riseTime;
+      tot += (i - riseIdx) * m_Sampling;
       above = false;
     }
   }
 
   if (above) {
-    tot += intgate - riseTime;
+    // Signal is still above threshold when the window ends: measure up to the
+    // last available sample instead of assuming the full intgate was covered.
+    tot += (end - riseIdx) * m_Sampling;
   }
 
   return tot > 0 ? tot : -1;
@@ -106,12 +106,9 @@ double SiPMAnalogSignal::toa(const double intstart, const double intgate, const 
   const uint32_t end = std::min(static_cast<uint32_t>((intstart + intgate) / m_Sampling),
                                 static_cast<uint32_t>(m_Waveform.size()));
 
-  if (m_Waveform[start] > threshold) { return 0; }
-
   for (uint32_t i = start; i < end; ++i) {
     if (m_Waveform[i] > threshold) {
-      const float d = (threshold - m_Waveform[i - 1]) / (m_Waveform[i] - m_Waveform[i - 1]);
-      return (i - start - 1 + d) * m_Sampling;
+      return (i - start) * m_Sampling;
     }
   }
 
@@ -130,7 +127,7 @@ double SiPMAnalogSignal::top(const double intstart, const double intgate, const 
   if (start >= m_Waveform.size()) return -1;
   const uint32_t end = std::min(static_cast<uint32_t>((intstart + intgate) / m_Sampling),
                                 static_cast<uint32_t>(m_Waveform.size()));
-  float peak = -1;
+  float peak = threshold;
   double top = -1;
   for (uint32_t i = start; i < end; ++i) {
     if (m_Waveform[i] > peak) {
