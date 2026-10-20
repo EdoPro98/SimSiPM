@@ -87,8 +87,8 @@ pair<float, float> SiPMRandom::RandF2() noexcept {
   const uint64_t u64 = m_rng();
   const uint32_t lo = static_cast<uint32_t>(u64);
   const uint32_t hi = static_cast<uint32_t>(u64 >> 32);
-  const float first = (lo >> 8) * 0x1p-24f;
-  const float second = (hi >> 8) * 0x1p-24f;
+  const float first = unitFloat(lo);
+  const float second = unitFloat(hi);
   return {first, second};
 }
 
@@ -349,7 +349,7 @@ std::vector<double> SiPMRandom::Rand(const uint32_t n) {
   m_rng.getRand(u64, n);
   for (uint32_t i = 0; i < n; ++i) {
     const uint64_t u = u64[i];
-    out[i] = (u >> 11) * 0x1p-53;
+    out[i] = unitDouble(u);
   }
   return out;
 }
@@ -365,7 +365,7 @@ std::vector<float> SiPMRandom::RandF(const uint32_t n) {
   m_rng.getRand(u32, n);
   for (uint32_t i = 0; i < n; ++i) {
     const uint32_t u = u32[i];
-    out[i] = (u >> 8) * 0x1p-24f;
+    out[i] = unitFloat(u);
   }
   return out;
 }
@@ -384,8 +384,8 @@ std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma
 
   const uint32_t pairs = n & ~1u;
   for (uint32_t i = 0; i < pairs; i += 2) {
-    const double u0 = (u64[i]     >> 11) * 0x1p-53;
-    const double u1 = (u64[i + 1] >> 11) * 0x1p-53;
+    const double u0 = unitDouble(u64[i]);
+    const double u1 = unitDouble(u64[i + 1]);
     const double sqrtR = std::sqrt(-2.0 * std::log(u0));
     double s, c;
 #ifdef __APPLE__
@@ -415,8 +415,8 @@ std::vector<float> SiPMRandom::randGaussianF(const float mu, const float sigma, 
 
   const uint32_t pairs = n & ~1u;
   for (uint32_t i = 0; i < pairs; i += 2) {
-    const float u0 = (u32[i]     >> 8) * 0x1p-24f;
-    const float u1 = (u32[i + 1] >> 8) * 0x1p-24f;
+    const float u0 = unitFloat(u32[i]);
+    const float u1 = unitFloat(u32[i + 1]);
     const float sqrtR = std::sqrt(-2.0f * std::log(u0));
     float s, c;
 #ifdef __APPLE__
@@ -455,7 +455,7 @@ std::vector<double> SiPMRandom::randExponential(const double mu, const uint32_t 
   auto* u64 = reinterpret_cast<uint64_t*>(out.data());
   m_rng.getRand(u64, n);
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = -std::log((u64[i] >> 11) * 0x1p-53) * mu;
+    out[i] = -std::log(unitDouble(u64[i])) * mu;
   }
   return out;
 }
@@ -469,7 +469,7 @@ std::vector<float> SiPMRandom::randExponentialF(const float mu, const uint32_t n
   auto* u32 = reinterpret_cast<uint32_t*>(out.data());
   m_rng.getRand(u32, n);
   for (uint32_t i = 0; i < n; ++i) {
-    out[i] = -std::log((u32[i] >> 8) * 0x1p-24f) * mu;
+    out[i] = -std::log(unitFloat(u32[i])) * mu;
   }
   return out;
 }

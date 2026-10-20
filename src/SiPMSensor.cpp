@@ -152,7 +152,7 @@ pair<uint32_t> SiPMSensor::hitUniform() const {
 
 pair<uint32_t> SiPMSensor::hitCircle() const {
   pair<uint32_t> hit;
-  if (m_rng.Rand() < 0.90) { // In circle
+  if (m_rng.Rand() <= 0.90) { // In circle
     double x, y;
     do {
       x = m_rng.Rand() * 2 - 1; // x in [-1,1]
@@ -241,7 +241,7 @@ void SiPMSensor::addPhotoelectrons() {
     case SiPMProperties::PdeType::kSimplePde:
       for (uint32_t i = 0; i < nPhotons; ++i) {
         if (m_PhotonTimes[i] < 0 || m_PhotonTimes[i] >= sigLen) { continue; }
-        if (m_Properties.pde() > m_rng.Rand()) {
+        if (m_rng.Rand() <= m_Properties.pde()) {
           const pair<uint32_t> position = hitCell();
           m_Hits.emplace_back(m_PhotonTimes[i], 1.f, position.first, position.second, photoelectron);
           m_nTotalHits++;
@@ -252,7 +252,7 @@ void SiPMSensor::addPhotoelectrons() {
     case SiPMProperties::PdeType::kSpectrumPde:
       for (uint32_t i = 0; i < nPhotons; ++i) {
         if (m_PhotonTimes[i] < 0 || m_PhotonTimes[i] >= sigLen) { continue; }
-        if (i < m_PhotonWavelengths.size() && evaluatePde(m_PhotonWavelengths[i]) > m_rng.Rand()) {
+        if (i < m_PhotonWavelengths.size() && m_rng.Rand() <= evaluatePde(m_PhotonWavelengths[i])) {
           const pair<uint32_t> position = hitCell();
           m_Hits.emplace_back(m_PhotonTimes[i], 1.f, position.first, position.second, photoelectron);
           m_nTotalHits++;
@@ -267,7 +267,7 @@ SiPMHit SiPMSensor::generateXtHit(const SiPMHit& xtGen, int32_t parentIdx) const
   int32_t xtRow, xtCol;
   const int32_t row = xtGen.row();
   const int32_t col = xtGen.col();
-  const bool isDelayed = m_Properties.hasDXt() && (m_Properties.dxt() > m_rng.Rand());
+  const bool isDelayed = m_Properties.hasDXt() && (m_rng.Rand() <= m_Properties.dxt());
   const SiPMHit::HitType hitType = isDelayed ? SiPMHit::HitType::kDelayedOpticalCrosstalk : SiPMHit::HitType::kOpticalCrosstalk;
 
   do {
@@ -287,7 +287,7 @@ SiPMHit SiPMSensor::generateXtHit(const SiPMHit& xtGen, int32_t parentIdx) const
 }
 
 SiPMHit SiPMSensor::generateApHit(const SiPMHit& apGen, int32_t parentIdx) const {
-  const bool isSlow = m_rng.Rand() < m_Properties.apSlowFraction();
+  const bool isSlow = m_rng.Rand() <= m_Properties.apSlowFraction();
   const SiPMHit::HitType hitType = isSlow ? SiPMHit::HitType::kSlowAfterPulse : SiPMHit::HitType::kFastAfterPulse;
   const float tau = isSlow ? m_Properties.tauApSlow() : m_Properties.tauApFast();
   double delay;

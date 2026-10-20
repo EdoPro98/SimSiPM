@@ -53,7 +53,7 @@ class TestSeedDeterminism:
         assert [r1.Rand() for _ in range(10)] != [r2.Rand() for _ in range(10)]
 
 
-# ── Rand() scalar: uniform [0, 1) ─────────────────────────────────────────────
+# ── Rand() scalar: uniform (0, 1] ─────────────────────────────────────────────
 
 class TestRandScalar:
 
@@ -66,7 +66,7 @@ class TestRandScalar:
     def test_in_unit_interval(self):
         for _ in range(10_000):
             x = self.r.Rand()
-            assert 0.0 <= x <= 1.0
+            assert 0.0 < x <= 1.0
 
     def test_mean(self):
         vals = [self.r.Rand() for _ in range(N)]
@@ -80,7 +80,7 @@ class TestRandScalar:
         K = 50
         counts = np.zeros(K, dtype=int)
         for _ in range(N):
-            b = min(int(self.r.Rand() * K), K - 1)
+            b = int((1.0 - self.r.Rand()) * K)  # binning needs [0,1)
             counts[b] += 1
         expected = N / K
         chi2 = sum((c - expected) ** 2 / expected for c in counts)

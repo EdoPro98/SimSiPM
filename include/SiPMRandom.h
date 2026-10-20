@@ -356,6 +356,17 @@ public:
 };
 } // namespace SiPMRng
 
+/// @brief Converts 64 random bits to a double uniformly distributed in (0, 1]
+/** The top 53 bits k are mapped to (k + 1) * 2^-53. The range excludes 0
+ * (and includes 1) so that the value can be passed to log() without
+ * producing infinities, as needed by exponential and gaussian sampling.
+ */
+constexpr double unitDouble(const uint64_t u) noexcept { return ((u >> 11) + 1) * 0x1p-53; }
+
+/// @brief Converts 32 random bits to a float uniformly distributed in (0, 1]
+/** The top 24 bits k are mapped to (k + 1) * 2^-24, see @ref unitDouble. */
+constexpr float unitFloat(const uint32_t u) noexcept { return ((u >> 8) + 1) * 0x1p-24f; }
+
 class SiPMRandom {
 public:
   SiPMRandom() = default;
@@ -367,7 +378,7 @@ public:
   // Seed underlying rng
   void seed(const uint64_t x) { m_rng.seed(x); }
 
-  /// @brief Gives an uniformly distributed random
+  /// @brief Gives an uniformly distributed random number in (0, 1]
   template <typename T = double>
   inline T Rand() noexcept;
   pair<float, float> RandF2() noexcept;
@@ -406,25 +417,23 @@ private:
 };
 
 /**
- * This method uses the internal PRNG to get a random uint64
- * then sets its sign bit to 0 and the exponent bits are set to
- * 0x3fff. By aliasing the uint to a double and subtracting 1
- * the result is a random double in range (0-1].
+ * Returns a random double uniformly distributed in (0, 1].
+ * Zero is excluded so the value can be safely passed to log(),
+ * see @ref unitDouble.
  */
 template <>
 inline double SiPMRandom::Rand<double>() noexcept {
-  return (m_rng() >> 11) * 0x1p-53;
+  return unitDouble(m_rng());
 }
 
 /**
- * This method uses the internal PRNG to get a random uint64
- * then sets its sign bit to 0 and the exponent bits are set to
- * 0x3f8. By aliasing the uint to a double and subtracting 1
- * the result is a random float in range (0-1].
+ * Returns a random float uniformly distributed in (0, 1].
+ * Zero is excluded so the value can be safely passed to log(),
+ * see @ref unitFloat.
  */
 template <>
 inline float SiPMRandom::Rand<float>() noexcept {
-  return (m_rng() >> 40) * 0x1p-24f;
+  return unitFloat(static_cast<uint32_t>(m_rng() >> 32));
 }
 } // namespace sipm
 #endif /* SIPM_RANDOM_H */

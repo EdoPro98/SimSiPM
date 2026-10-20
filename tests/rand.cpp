@@ -32,15 +32,26 @@ TEST_F(TestSiPMRandom, SeedDeterminism) {
 }
 
 // ============================================================================
-// Rand<double>() – uniform [0, 1)
+// Rand<double>() – uniform (0, 1]
 // ============================================================================
 
 TEST_F(TestSiPMRandom, RandRangeInBounds) {
   for (int i = 0; i < N; ++i) {
     double x = rng.Rand();
-    EXPECT_GE(x, 0.0);
+    EXPECT_GT(x, 0.0);
     EXPECT_LE(x, 1.0);
   }
+}
+
+// The conversion excludes 0 (log-safe) and includes 1
+TEST_F(TestSiPMRandom, UnitDoubleEdges) {
+  EXPECT_DOUBLE_EQ(unitDouble(0), 0x1p-53);
+  EXPECT_DOUBLE_EQ(unitDouble(~0ull), 1.0);
+}
+
+TEST_F(TestSiPMRandom, UnitFloatEdges) {
+  EXPECT_FLOAT_EQ(unitFloat(0), 0x1p-24f);
+  EXPECT_FLOAT_EQ(unitFloat(~0u), 1.0f);
 }
 
 TEST_F(TestSiPMRandom, RandAverage) {
@@ -67,7 +78,7 @@ TEST_F(TestSiPMRandom, RandChiSquaredUniformity) {
   constexpr double expected = static_cast<double>(N_VEC) / K;
   int bins[K] = {};
   for (int i = 0; i < N_VEC; ++i) {
-    int b = static_cast<int>(rng.Rand() * K);
+    int b = static_cast<int>((1.0 - rng.Rand()) * K); // binning needs [0,1)
     if (b >= K) b = K - 1;
     ++bins[b];
   }
@@ -84,13 +95,13 @@ TEST_F(TestSiPMRandom, RandSeedDeterminism) {
 }
 
 // ============================================================================
-// Rand<float>() – uniform float [0, 1)
+// Rand<float>() – uniform float (0, 1]
 // ============================================================================
 
 TEST_F(TestSiPMRandom, RandFloatRangeInBounds) {
   for (int i = 0; i < N; ++i) {
     float x = rng.Rand<float>();
-    EXPECT_GE(x, 0.0f);
+    EXPECT_GT(x, 0.0f);
     EXPECT_LE(x, 1.0f);
   }
 }
@@ -118,7 +129,7 @@ TEST_F(TestSiPMRandom, RandFloatChiSquaredUniformity) {
   constexpr double expected = static_cast<double>(N_VEC) / K;
   int bins[K] = {};
   for (int i = 0; i < N_VEC; ++i) {
-    int b = static_cast<int>(rng.Rand<float>() * K);
+    int b = static_cast<int>((1.0f - rng.Rand<float>()) * K); // binning needs [0,1)
     if (b >= K) b = K - 1;
     ++bins[b];
   }
@@ -141,8 +152,8 @@ TEST_F(TestSiPMRandom, RandFloatSeedDeterminism) {
 TEST_F(TestSiPMRandom, RandF2RangeInBounds) {
   for (int i = 0; i < N_VEC; ++i) {
     auto p = rng.RandF2();
-    EXPECT_GE(p.first,  0.0f); EXPECT_LE(p.first,  1.0f);
-    EXPECT_GE(p.second, 0.0f); EXPECT_LE(p.second, 1.0f);
+    EXPECT_GT(p.first,  0.0f); EXPECT_LE(p.first,  1.0f);
+    EXPECT_GT(p.second, 0.0f); EXPECT_LE(p.second, 1.0f);
   }
 }
 
