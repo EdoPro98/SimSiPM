@@ -93,6 +93,12 @@ void SiPMProperties::setPdeSpectrum(const std::vector<double>& wav, const std::v
     const double x1 = it1->first;
     const double y0 = it0->second;
     const double y1 = it1->second;
+    // Interpolation is done in log space: if one of the two input points has
+    // zero PDE the interpolated value is zero (avoids log(0) = -inf)
+    if (y0 <= 0 || y1 <= 0) {
+      m_PdeSpectrum[newx] = (newx == x0 && y0 > 0) ? y0 : 0;
+      continue;
+    }
     const double logNewy = (log(y0) * log(x1 / newx) + log(y1) * log(newx / x0)) / log(x1 / x0);
     double newy = std::exp(logNewy);
     // If newy is 0 or less try linear interpolation

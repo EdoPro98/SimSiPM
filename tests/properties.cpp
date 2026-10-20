@@ -135,6 +135,20 @@ TEST_F(TestSiPMProperties, SetPdeSpectrumSwitchesToSpectrumPde) {
   EXPECT_FALSE(sut.pdeSpectrum().empty());
 }
 
+TEST_F(TestSiPMProperties, SetPdeSpectrumZeroInputGivesZeroPde) {
+  std::vector<double> wav = {300, 400, 500, 600};
+  std::vector<double> pde = {0.0, 0.3, 0.4, 0.0};
+  sut.setPdeSpectrum(wav, pde);
+  for (const auto& [wl, val] : sut.pdeSpectrum()) {
+    if (wl < 400 || wl > 500) {
+      EXPECT_EQ(val, 0.0) << "at " << wl << " nm";
+    } else {
+      EXPECT_GT(val, 0.0) << "at " << wl << " nm";
+      EXPECT_LE(val, 0.4) << "at " << wl << " nm";
+    }
+  }
+}
+
 // ── Slow component ────────────────────────────────────────────────────────────
 
 TEST_F(TestSiPMProperties, SetFallTimeSlowEnablesSlowComponent) {
