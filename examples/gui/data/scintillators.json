@@ -1,0 +1,48 @@
+{
+  "_comment": [
+    "Scintillator materials and crystal size presets used by the GUI (Photons -> Gamma source).",
+    "Values are typical room-temperature figures from manufacturer datasheets and literature; treat them as approximate.",
+    "lightYield: photons/keV. resolution662: intrinsic (non-statistical) FWHM at 662 keV in %, scaled as sqrt(E);",
+    "photon statistics, PDE and SiPM effects are added by the simulation. decay: [[tau ns, fraction], ...].",
+    "emission: Gaussian approximation of the emission spectrum (peak and FWHM in nm).",
+    "composition: atoms per formula unit (Tl/Ce dopants neglected). density: g/cm3.",
+    "Sizes: source on the crystal axis at 'distance' mm from the entrance face."
+  ],
+  "sizes": [
+    {"id": "small", "name": "Small (6x6x6 mm)", "shape": "box", "width": 6.0, "length": 6.0, "distance": 10.0},
+    {"id": "medium", "name": "Medium (1\"x1\")", "shape": "cylinder", "width": 25.4, "length": 25.4, "distance": 10.0},
+    {"id": "large", "name": "Large (2\"x2\")", "shape": "cylinder", "width": 50.8, "length": 50.8, "distance": 10.0}
+  ],
+  "materials": [
+    {"id": "NaI_Tl", "name": "NaI(Tl)", "density": 3.67, "composition": {"Na": 1, "I": 1},
+     "lightYield": 38, "resolution662": 5.5, "riseTime": 10, "decay": [[250, 1.0]],
+     "emission": {"peak": 415, "fwhm": 80}},
+    {"id": "CsI_Tl", "name": "CsI(Tl)", "density": 4.51, "composition": {"Cs": 1, "I": 1},
+     "lightYield": 54, "resolution662": 5.0, "riseTime": 20, "decay": [[680, 0.64], [3340, 0.36]],
+     "emission": {"peak": 550, "fwhm": 150}},
+    {"id": "CsI", "name": "CsI (undoped)", "density": 4.51, "composition": {"Cs": 1, "I": 1},
+     "lightYield": 2.3, "resolution662": 3.0, "riseTime": 0.5, "decay": [[6, 0.6], [35, 0.4]],
+     "emission": {"peak": 315, "fwhm": 50}},
+    {"id": "LYSO", "name": "LYSO(Ce)", "density": 7.1, "composition": {"Lu": 1.8, "Y": 0.2, "Si": 1, "O": 5},
+     "lightYield": 30, "resolution662": 6.0, "riseTime": 0.1, "decay": [[40, 1.0]],
+     "emission": {"peak": 420, "fwhm": 70}},
+    {"id": "BGO", "name": "BGO", "density": 7.13, "composition": {"Bi": 4, "Ge": 3, "O": 12},
+     "lightYield": 8.2, "resolution662": 6.0, "riseTime": 2, "decay": [[300, 0.9], [60, 0.1]],
+     "emission": {"peak": 480, "fwhm": 100}},
+    {"id": "PbWO4", "name": "PbWO4", "density": 8.28, "composition": {"Pb": 1, "W": 1, "O": 4},
+     "lightYield": 0.2, "resolution662": 3.0, "riseTime": 0.5, "decay": [[10, 0.8], [30, 0.2]],
+     "emission": {"peak": 420, "fwhm": 110}},
+    {"id": "LaBr3_Ce", "name": "LaBr3(Ce)", "density": 5.08, "composition": {"La": 1, "Br": 3},
+     "lightYield": 63, "resolution662": 2.0, "riseTime": 0.5, "decay": [[16, 1.0]],
+     "emission": {"peak": 380, "fwhm": 50}},
+    {"id": "CeBr3", "name": "CeBr3", "density": 5.1, "composition": {"Ce": 1, "Br": 3},
+     "lightYield": 60, "resolution662": 3.0, "riseTime": 0.7, "decay": [[17, 1.0]],
+     "emission": {"peak": 375, "fwhm": 50}},
+    {"id": "GAGG_Ce", "name": "GAGG(Ce)", "density": 6.63, "composition": {"Gd": 3, "Al": 2, "Ga": 3, "O": 12},
+     "lightYield": 46, "resolution662": 4.5, "riseTime": 5, "decay": [[88, 0.91], [258, 0.09]],
+     "emission": {"peak": 520, "fwhm": 100}},
+    {"id": "EJ200", "name": "Plastic (EJ-200)", "density": 1.023, "composition": {"C": 9, "H": 10},
+     "lightYield": 10, "resolution662": 10.0, "riseTime": 0.9, "decay": [[2.1, 1.0]],
+     "emission": {"peak": 425, "fwhm": 60}}
+  ]
+}

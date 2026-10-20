@@ -1,0 +1,49 @@
+{
+  "_comment": [
+    "Commercial SiPM presets for the GUI (Sensor -> Model).",
+    "Values from the manufacturer datasheets at the listed overvoltage (typ., 25 C):",
+    "  Hamamatsu S13360 series (KAPD1052E), S14160/S14161 series (KAPD1064E), S14160-1310PS etc. (KAPD1070E);",
+    "  Broadcom NUV-HD / NUV-MT (FBK technology): AFBR-S4N33C013, AFBR-S4N44C013, AFBR-S4N66P024M.",
+    "PDE curves were digitised from the datasheet plots (accuracy ~1-2 % absolute).",
+    "Fields listed in 'estimated' are not given by the datasheet and use typical values:",
+    "  fall/recovery times of Hamamatsu devices (pixel-pitch dependent), Hamamatsu afterpulsing,",
+    "  DCR of S14160-xx50HS computed from the dark current as ID / (q * gain * (1 + crosstalk)).",
+    "Units: size mm, pitch um, dcr kHz, crosstalk / afterpulse %, times ns, PDE curves [nm, %]."
+  ],
+  "pdeCurves": {
+    "S13360-25": [[280, 2], [300, 13], [320, 16], [340, 18], [360, 18.5], [380, 21], [400, 23.5], [450, 25.5], [500, 24], [550, 21], [600, 17.5], [650, 14], [700, 11], [750, 8.5], [800, 6], [850, 4], [900, 2.5]],
+    "S13360-50": [[280, 3], [300, 22], [320, 25], [340, 28], [360, 29], [380, 33], [400, 36], [450, 40], [500, 37.5], [550, 32], [600, 26], [650, 20], [700, 15], [750, 11.5], [800, 8], [850, 5.5], [900, 3.5]],
+    "S13360-75": [[280, 3], [290, 20], [300, 27], [320, 31], [340, 35], [360, 36], [380, 39], [400, 44], [450, 49.5], [500, 46], [550, 38], [600, 30], [650, 23], [700, 18], [750, 13], [800, 9], [850, 6], [900, 4]],
+    "S14160-HS": [[290, 2], [300, 28], [320, 34], [350, 38.5], [370, 40], [400, 47], [450, 50.5], [480, 48], [500, 44], [550, 37], [600, 30], [650, 23.5], [700, 18], [750, 13.5], [800, 10], [850, 6.5], [900, 4]],
+    "S14160-15PS": [[290, 1], [300, 12], [330, 17], [350, 21], [370, 22], [400, 27], [450, 31.5], [480, 32], [500, 31.5], [550, 27], [600, 22.5], [650, 18], [700, 13.5], [750, 9.5], [800, 6.5], [850, 4.5], [900, 3]],
+    "S14160-10PS": [[290, 1], [310, 6], [340, 9], [350, 11], [370, 12], [400, 15], [450, 18], [480, 18.3], [500, 18], [550, 16], [600, 13.5], [650, 11.5], [700, 9], [750, 6.5], [800, 4], [850, 2.8], [900, 1.8]],
+    "NUV-HD-3V": [[300, 34], [350, 40], [400, 43], [420, 43], [450, 39], [500, 28], [550, 21], [600, 17], [650, 13.5], [700, 10], [750, 8], [800, 6], [850, 4], [900, 2.5]],
+    "NUV-HD-7V": [[300, 40], [350, 46], [400, 52], [420, 54], [450, 50], [500, 40], [550, 33], [600, 29], [650, 25], [700, 19.5], [750, 14], [800, 11], [850, 8], [900, 5]],
+    "NUV-MT-12V": [[250, 6], [270, 10], [290, 30], [300, 40], [320, 42], [340, 50], [360, 51], [380, 57], [400, 62], [420, 63], [450, 60], [500, 53], [550, 46], [600, 41], [650, 34], [700, 27], [750, 21], [800, 15], [850, 10], [900, 5]]
+  },
+  "models": [
+    {"name": "S13360-1325CS", "maker": "Hamamatsu", "vov": 5, "size": 1.3, "pitch": 25, "dcr": 70, "xt": 1, "ap": 1, "rise": 1, "fall": 20, "recovery": 20, "gain": 7.0e5, "pde": "S13360-25", "estimated": ["ap", "fall", "recovery"]},
+    {"name": "S13360-1350CS", "maker": "Hamamatsu", "vov": 3, "size": 1.3, "pitch": 50, "dcr": 90, "xt": 3, "ap": 1, "rise": 1, "fall": 50, "recovery": 50, "gain": 1.7e6, "pde": "S13360-50", "estimated": ["ap", "fall", "recovery"]},
+    {"name": "S13360-1375CS", "maker": "Hamamatsu", "vov": 3, "size": 1.3, "pitch": 75, "dcr": 90, "xt": 7, "ap": 1, "rise": 1, "fall": 80, "recovery": 80, "gain": 4.0e6, "pde": "S13360-75", "estimated": ["ap", "fall", "recovery"]},
+    {"name": "S13360-3025CS", "maker": "Hamamatsu", "vov": 5, "size": 3.0, "pitch": 25, "dcr": 400, "xt": 1, "ap": 1, "rise": 1, "fall": 20, "recovery": 20, "gain": 7.0e5, "pde": "S13360-25", "estimated": ["ap", "fall", "recovery"]},
+    {"name": "S13360-3050CS", "maker": "Hamamatsu", "vov": 3, "size": 3.0, "pitch": 50, "dcr": 500, "xt": 3, "ap": 1, "rise": 1, "fall": 50, "recovery": 50, "gain": 1.7e6, "pde": "S13360-50", "estimated": ["ap", "fall", "recovery"]},
+    {"name": "S13360-3075CS", "maker": "Hamamatsu", "vov": 3, "size": 3.0, "pitch": 75, "dcr": 500, "xt": 7, "ap": 1, "rise": 1, "fall": 80, "recovery": 80, "gain": 4.0e6, "pde": "S13360-75", "estimated": ["ap", "fall", "recovery"]},
+    {"name": "S13360-6025CS", "maker": "Hamamatsu", "vov": 5, "size": 6.0, "pitch": 25, "dcr": 1600, "xt": 1, "ap": 1, "rise": 1, "fall": 20, "recovery": 20, "gain": 7.0e5, "pde": "S13360-25", "estimated": ["ap", "fall", "recovery"]},
+    {"name": "S13360-6050CS", "maker": "Hamamatsu", "vov": 3, "size": 6.0, "pitch": 50, "dcr": 2000, "xt": 3, "ap": 1, "rise": 1, "fall": 50, "recovery": 50, "gain": 1.7e6, "pde": "S13360-50", "estimated": ["ap", "fall", "recovery"]},
+    {"name": "S13360-6075CS", "maker": "Hamamatsu", "vov": 3, "size": 6.0, "pitch": 75, "dcr": 2000, "xt": 7, "ap": 1, "rise": 1, "fall": 80, "recovery": 80, "gain": 4.0e6, "pde": "S13360-75", "estimated": ["ap", "fall", "recovery"]},
+    {"name": "S14160-3050HS", "maker": "Hamamatsu", "vov": 2.7, "size": 3.0, "pitch": 50, "dcr": 1400, "xt": 7, "ap": 1, "rise": 1, "fall": 50, "recovery": 50, "gain": 2.5e6, "pde": "S14160-HS", "estimated": ["dcr", "ap", "fall", "recovery"]},
+    {"name": "S14160-4050HS", "maker": "Hamamatsu", "vov": 2.7, "size": 4.0, "pitch": 50, "dcr": 2570, "xt": 7, "ap": 1, "rise": 1, "fall": 50, "recovery": 50, "gain": 2.5e6, "pde": "S14160-HS", "estimated": ["dcr", "ap", "fall", "recovery"]},
+    {"name": "S14160-6050HS", "maker": "Hamamatsu", "vov": 2.7, "size": 6.0, "pitch": 50, "dcr": 5840, "xt": 7, "ap": 1, "rise": 1, "fall": 50, "recovery": 50, "gain": 2.5e6, "pde": "S14160-HS", "estimated": ["dcr", "ap", "fall", "recovery"]},
+    {"name": "S14160-1310PS", "maker": "Hamamatsu", "vov": 5, "size": 1.3, "pitch": 10, "dcr": 120, "xt": 1, "ap": 1, "rise": 1, "fall": 10, "recovery": 10, "gain": 1.8e5, "pde": "S14160-10PS", "estimated": ["ap", "fall", "recovery"]},
+    {"name": "S14160-3010PS", "maker": "Hamamatsu", "vov": 5, "size": 3.0, "pitch": 10, "dcr": 700, "xt": 1, "ap": 1, "rise": 1, "fall": 10, "recovery": 10, "gain": 1.8e5, "pde": "S14160-10PS", "estimated": ["ap", "fall", "recovery"]},
+    {"name": "S14160-6010PS", "maker": "Hamamatsu", "vov": 5, "size": 6.0, "pitch": 10, "dcr": 3000, "xt": 1, "ap": 1, "rise": 1, "fall": 10, "recovery": 10, "gain": 1.8e5, "pde": "S14160-10PS", "estimated": ["ap", "fall", "recovery"]},
+    {"name": "S14160-1315PS", "maker": "Hamamatsu", "vov": 4, "size": 1.3, "pitch": 15, "dcr": 120, "xt": 1, "ap": 1, "rise": 1, "fall": 15, "recovery": 15, "gain": 3.6e5, "pde": "S14160-15PS", "estimated": ["ap", "fall", "recovery"]},
+    {"name": "S14160-3015PS", "maker": "Hamamatsu", "vov": 4, "size": 3.0, "pitch": 15, "dcr": 700, "xt": 1, "ap": 1, "rise": 1, "fall": 15, "recovery": 15, "gain": 3.6e5, "pde": "S14160-15PS", "estimated": ["ap", "fall", "recovery"]},
+    {"name": "S14160-6015PS", "maker": "Hamamatsu", "vov": 4, "size": 6.0, "pitch": 15, "dcr": 3000, "xt": 1, "ap": 1, "rise": 1, "fall": 15, "recovery": 15, "gain": 3.6e5, "pde": "S14160-15PS", "estimated": ["ap", "fall", "recovery"]},
+    {"name": "AFBR-S4N33C013 (NUV-HD, 3 V)", "maker": "Broadcom / FBK", "vov": 3, "size": 3.0, "pitch": 30, "dcr": 1000, "xt": 11, "ap": 0.5, "rise": 1, "fall": 57, "recovery": 57, "gain": 1.6e6, "pde": "NUV-HD-3V", "estimated": []},
+    {"name": "AFBR-S4N33C013 (NUV-HD, 7 V)", "maker": "Broadcom / FBK", "vov": 7, "size": 3.0, "pitch": 30, "dcr": 2300, "xt": 34, "ap": 1, "rise": 1, "fall": 48, "recovery": 48, "gain": 3.2e6, "pde": "NUV-HD-7V", "estimated": []},
+    {"name": "AFBR-S4N44C013 (NUV-HD, 3 V)", "maker": "Broadcom / FBK", "vov": 3, "size": 3.72, "pitch": 30, "dcr": 1700, "xt": 9, "ap": 0.5, "rise": 1, "fall": 55, "recovery": 55, "gain": 1.6e6, "pde": "NUV-HD-3V", "estimated": []},
+    {"name": "AFBR-S4N44C013 (NUV-HD, 7 V)", "maker": "Broadcom / FBK", "vov": 7, "size": 3.72, "pitch": 30, "dcr": 3700, "xt": 29, "ap": 1, "rise": 1, "fall": 50, "recovery": 50, "gain": 3.3e6, "pde": "NUV-HD-7V", "pdeScale": 1.0185, "estimated": []},
+    {"name": "AFBR-S4N66P024M (NUV-MT, 12 V)", "maker": "Broadcom / FBK", "vov": 12, "size": 6.0, "pitch": 40, "dcr": 4400, "xt": 23, "ap": 0.5, "rise": 1, "fall": 55, "recovery": 55, "gain": 7.3e6, "pde": "NUV-MT-12V", "estimated": []}
+  ]
+}

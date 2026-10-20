@@ -16,6 +16,7 @@ set(SIPM_BUILD_PYTHON OFF CACHE BOOL "Compile python bindings for SiPM simulatio
 set(SIPM_ENABLE_TEST OFF CACHE BOOL "Build tests for SiPM simulation library")
 set(SIPM_ENABLE_BENCH OFF CACHE BOOL "Build benchmarks for SiPM simulation library")
 set(SIPM_BUILD_DOCS OFF CACHE BOOL "Build documentation for SiPM simulation library")
+set(SIPM_BUILD_GUI OFF CACHE BOOL "Build the interactive GUI example (fetches GLFW, Dear ImGui, ImPlot)")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -73,6 +74,10 @@ target_include_directories(sipm PUBLIC
 target_link_libraries(sipm PRIVATE nlohmann_json::nlohmann_json)
 set_target_properties(sipm PROPERTIES VERSION 1 OUTPUT_NAME sipm)
 set_property(TARGET sipm PROPERTY PUBLIC_HEADER ${include})
+
+if(SIPM_BUILD_GUI)
+  add_subdirectory(examples/gui)
+endif()
 
 feature_summary(WHAT ALL)
 
