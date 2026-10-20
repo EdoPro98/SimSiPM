@@ -142,6 +142,7 @@ private:
   std::vector<SiPMHit> m_Hits;
 
   std::vector<float> m_SignalShape;
+  float m_SignalNorm = 0; // gain / peak of the analytic shape, used by the recursive convolution
   SiPMAnalogSignal m_Signal;
 };
 

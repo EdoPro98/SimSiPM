@@ -13,6 +13,19 @@
 #include <vector>
 
 namespace sipm {
+namespace {
+// Recursion stride of the recursive convolution: the loop z[i] += d^K * z[i-K]
+// can only vectorize up to K lanes, so K matches the float SIMD width.
+#ifdef __AVX512F__
+constexpr uint32_t kBlock = 16; // one 16-float zmm per block
+#elif defined(__AVX2__)
+constexpr uint32_t kBlock = 8;  // one 8-float ymm per block
+#else
+constexpr uint32_t kBlock = 8;  // two 4-float SSE/NEON vectors per block, measured best with default flags
+#endif
+constexpr uint32_t kRecursiveCost = 2; // its cost per sample and component, in direct-convolution units
+} // namespace
+
 // All constructors MUST call signalShape
 SiPMSensor::SiPMSensor() { signalShape(); }
 
@@ -119,6 +132,7 @@ void SiPMSensor::signalShape() {
   }
 
   const float peak = *std::max_element(m_SignalShape.begin(), m_SignalShape.end());
+  m_SignalNorm = gain / peak;
 
   for (uint32_t i = 0; i < nSignalPoints; ++i) {
     m_SignalShape[i] = m_SignalShape[i] / peak * gain;
@@ -434,9 +448,41 @@ void SiPMSensor::generateSignal() {
 
   std::vector<uint32_t> times(m_nTotalHits);
   std::vector<float> amplitudes(m_nTotalHits);
+  uint64_t directWork = 0;
   for (uint32_t i = 0; i < m_nTotalHits; ++i) {
     times[i] = static_cast<uint32_t>(std::floor(m_Hits[i].time() / sampling));
     amplitudes[i] = m_Hits[i].amplitude();
+    directWork += nSignalPoints - times[i];
+  }
+
+  // The analytic shape is a sum of exponentials, so each component can be
+  // convolved recursively in O(nSignalPoints + nHits) instead of O(nSignalPoints * nHits).
+  // The recursion has a fixed cost per component, so it only pays off with many hits.
+  const uint32_t nComponents = m_Properties.hasSlowComponent() ? 3 : 2;
+  if (!m_Properties.hasCustomSignalShape() && directWork > kRecursiveCost * nComponents * nSignalPoints) {
+    const float slf = m_Properties.hasSlowComponent() ? m_Properties.slowComponentFraction() : 0;
+    const double taus[3] = {m_Properties.fallingTimeFast(), m_Properties.risingTime(), m_Properties.fallingTimeSlow()};
+    const float weights[3] = {(1 - slf) * m_SignalNorm, -m_SignalNorm, slf * m_SignalNorm};
+    float* __restrict__ signal = m_Signal.data();
+    std::vector<float> z(nSignalPoints + kBlock);
+    for (uint32_t c = 0; c < nComponents; ++c) {
+      // y[i] = d^K * y[i-K] + z[i], where z holds each hit spread over K taps
+      const float d = std::exp(-sampling / taus[c]);
+      float pw[kBlock];
+      pw[0] = 1;
+      for (uint32_t j = 1; j < kBlock; ++j) pw[j] = pw[j - 1] * d;
+      const float dK = pw[kBlock - 1] * d;
+
+      std::fill(z.begin(), z.end(), 0.0f);
+      for (uint32_t i = 0; i < m_nTotalHits; ++i) {
+        float* zt = z.data() + times[i];
+        for (uint32_t j = 0; j < kBlock; ++j) zt[j] += amplitudes[i] * pw[j];
+      }
+      for (uint32_t i = kBlock; i < nSignalPoints; ++i) z[i] += dK * z[i - kBlock];
+      const float w = weights[c];
+      for (uint32_t i = 0; i < nSignalPoints; ++i) signal[i] += w * z[i];
+    }
+    return;
   }
 
   for (uint32_t i = 0; i < m_nTotalHits; ++i) {

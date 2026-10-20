@@ -488,6 +488,42 @@ TEST_F(TestSiPMSensor, SlowComponentProducesLongerSignal) {
             fast_sensor.signal().integral(0, len, -1e9));
 }
 
+// Many hits take the recursive convolution path; a custom shape always takes the
+// direct one. Feeding the analytic shape back as a custom shape must give the same signal.
+TEST_F(TestSiPMSensor, RecursiveConvolutionMatchesDirect) {
+  for (const bool slow : {false, true}) {
+    SiPMProperties p;
+    p.setSnr(200);
+    if (slow) { p.setFallTimeSlow(200); p.setSlowComponentFraction(0.3); }
+
+    SiPMProperties pShape = p;
+    pShape.setDcrOff(); pShape.setXtOff(); pShape.setApOff(); pShape.setCcgv(0);
+    pShape.setPdeType(SiPMProperties::PdeType::kNoPde);
+    SiPMSensor shapeSensor(pShape);
+    shapeSensor.addPhoton(0.0);
+    shapeSensor.runEvent();
+    std::vector<float> shape(shapeSensor.signal().size());
+    for (uint32_t i = 0; i < shape.size(); ++i) shape[i] = shapeSensor.signal()[i];
+
+    SiPMSensor recursive(p), direct(p);
+    direct.setSignalShape(shape, p.sampling());
+    recursive.rng().rng().seed(42);
+    direct.rng().rng().seed(42);
+    SiPMRandom times;
+    for (int i = 0; i < 500; ++i) {
+      const double t = times.Rand() * p.signalLength();
+      recursive.addPhoton(t);
+      direct.addPhoton(t);
+    }
+    recursive.runEvent();
+    direct.runEvent();
+
+    ASSERT_EQ(recursive.signal().size(), direct.signal().size());
+    for (uint32_t i = 0; i < direct.signal().size(); ++i)
+      ASSERT_NEAR(recursive.signal()[i], direct.signal()[i], 1e-3 * std::abs(direct.signal()[i]) + 1e-3) << i;
+  }
+}
+
 // ── setProperty string API ────────────────────────────────────────────────────
 
 TEST_F(TestSiPMSensor, SetPropertyStringUpdatesSignalShape) {
