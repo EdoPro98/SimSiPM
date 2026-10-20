@@ -15,6 +15,48 @@ static uint64_t rngInit() {
   return (static_cast<uint64_t>(rd()) << 32) ^ rd();
 }
 
+// Branch-free logf/sincosf (Cephes polynomials, ~1e-7 error) so the bulk
+// Box-Muller loop vectorizes: scalar libm calls block auto-vectorization.
+// Valid for x in (0, 1], the range of unitFloat.
+static inline float logUnit(const float x) {
+  uint32_t ix;
+  std::memcpy(&ix, &x, sizeof ix);
+  int32_t e = static_cast<int32_t>(ix >> 23) - 126;
+  ix = (ix & 0x007FFFFFu) | 0x3F000000u; // mantissa in [0.5, 1)
+  float m;
+  std::memcpy(&m, &ix, sizeof m);
+  const bool small = m < 0.70710678f;
+  e -= small;
+  const float f = small ? m + m - 1 : m - 1;
+  const float z = f * f;
+  float y = 7.0376836292E-2f;
+  y = y * f - 1.1514610310E-1f;
+  y = y * f + 1.1676998740E-1f;
+  y = y * f - 1.2420140846E-1f;
+  y = y * f + 1.4249322787E-1f;
+  y = y * f - 1.6668057665E-1f;
+  y = y * f + 2.0000714765E-1f;
+  y = y * f - 2.4999993993E-1f;
+  y = y * f + 3.3333331174E-1f;
+  y = y * f * z - 2.12194440E-4f * e - 0.5f * z;
+  return f + y + 0.693359375f * e;
+}
+
+// sin and cos of 2*pi*u for u in [0, 1]
+static inline void sinCosTurn(const float u, float& s, float& c) {
+  const float t = u * 4;
+  const int32_t k = static_cast<int32_t>(t + 0.5f); // nearest quarter turn
+  const float r = (t - k) * 1.5707963267948966f;   // in [-pi/4, pi/4]
+  const float z = r * r;
+  const float sr = r + r * z * ((-1.9515295891E-4f * z + 8.3321608736E-3f) * z - 1.6666654611E-1f);
+  const float cr = 1 - 0.5f * z + z * z * ((2.443315711809948E-5f * z - 1.388731625493765E-3f) * z + 4.166664568298827E-2f);
+  const bool swap = k & 1;
+  const float ss = swap ? cr : sr;
+  const float cc = swap ? sr : cr;
+  s = (k & 2) ? -ss : ss;
+  c = ((k + 1) & 2) ? -cc : cc;
+}
+
 namespace sipm {
 namespace SiPMRng {
 void Xorshift256plus::seed() {
@@ -409,7 +451,6 @@ std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma
  */
 std::vector<float> SiPMRandom::randGaussianF(const float mu, const float sigma, const uint32_t n) {
   std::vector<float> out(n);
-  constexpr float TWO_PI = 2 * M_PI;
   auto* u32 = reinterpret_cast<uint32_t*>(out.data());
   m_rng.getRand(u32, n);
 
@@ -417,13 +458,9 @@ std::vector<float> SiPMRandom::randGaussianF(const float mu, const float sigma, 
   for (uint32_t i = 0; i < pairs; i += 2) {
     const float u0 = unitFloat(u32[i]);
     const float u1 = unitFloat(u32[i + 1]);
-    const float sqrtR = std::sqrt(-2.0f * std::log(u0));
+    const float sqrtR = std::sqrt(-2.0f * logUnit(u0));
     float s, c;
-#ifdef __APPLE__
-    __sincosf(TWO_PI * u1, &s, &c);
-#else
-    sincosf(TWO_PI * u1, &s, &c);
-#endif
+    sinCosTurn(u1, s, c);
     out[i]     = s * sqrtR * sigma + mu;
     out[i + 1] = c * sqrtR * sigma + mu;
   }
