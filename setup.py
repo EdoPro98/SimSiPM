@@ -53,7 +53,7 @@ if platform.system() == "Darwin":
 sources = []
 sources.extend(glob("src/*.cpp"))
 sources.extend(glob("python/*.cpp"))
-include_dirs = ["include/"]
+include_dirs = ["include/", "extern/"]
 
 
 class get_pybind_include(object):
