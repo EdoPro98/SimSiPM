@@ -9,6 +9,7 @@
 #include <cmath>
 #include <cstdint>
 #include <iostream>
+#include <iterator>
 #include <ostream>
 #include <vector>
 
@@ -27,21 +28,26 @@ constexpr uint32_t kRecursiveCost = 2; // its cost per sample and component, in 
 } // namespace
 
 // All constructors MUST call signalShape
-SiPMSensor::SiPMSensor() { signalShape(); }
+SiPMSensor::SiPMSensor() { signalShape(); updatePdeTable(); }
 
-SiPMSensor::SiPMSensor(const SiPMProperties& aProperty) : m_Properties(aProperty) { signalShape(); }
+SiPMSensor::SiPMSensor(const SiPMProperties& aProperty) : m_Properties(aProperty) {
+  signalShape();
+  updatePdeTable();
+}
 
 // Each time a property is changed signalShape MUST be called
 void SiPMSensor::setProperty(const std::string& prop, const double val) {
   m_Properties.setProperty(prop, val);
   // After setting property update sipm members
   signalShape();
+  updatePdeTable();
 }
 
 void SiPMSensor::setProperties(const SiPMProperties& val) {
   m_Properties = val;
   // After setting property update sipm members
   signalShape();
+  updatePdeTable();
 }
 
 void SiPMSensor::addPhoton(const double val) { m_PhotonTimes.emplace_back(val); }
@@ -139,24 +145,36 @@ void SiPMSensor::signalShape() {
   }
 }
 
+void SiPMSensor::updatePdeTable() {
+  // Flat copy of the pde map with per-segment line coefficients: evaluatePde
+  // then needs no tree walk and no division per photon.
+  const std::map<double, double>& pde = m_Properties.pdeSpectrum();
+  m_PdeX.clear(); m_PdeSlope.clear(); m_PdeIntercept.clear();
+  if (pde.size() < 2) { return; }
+  for (auto it1 = std::next(pde.begin()); it1 != pde.end(); ++it1) {
+    const auto it0 = std::prev(it1);
+    const double m = (it1->second - it0->second) / (it1->first - it0->first);
+    m_PdeX.push_back(it0->first);
+    m_PdeSlope.push_back(m);
+    m_PdeIntercept.push_back(it0->second - m * it0->first);
+  }
+  m_PdeX.push_back(pde.rbegin()->first);
+}
+
 double SiPMSensor::evaluatePde(const double x) const {
   // Linear interpolation of x (wlen) to obtain a new value
   // for y (pde) using a LUT stored in m_Properties
-  const std::map<double, double>& pde = m_Properties.pdeSpectrum();
-  if (pde.size() < 2) { return 0; }
-  auto it1 = pde.upper_bound(x);
-  if (it1 == pde.end()) {
-    --it1;
-  }
-  if (it1 == pde.begin()) {
-    ++it1;
-  }
-  auto it0 = it1;
-  --it0;
+  if (m_PdeX.size() < 2) { return 0; }
+  // setPdeSpectrum samples a uniform grid, so the segment index is a direct
+  // guess; the walks only fix rounding (or a non-uniform map) so the segment
+  // is the same one std::map::upper_bound would pick.
+  const uint32_t last = m_PdeX.size() - 2;
+  const double guess = (x - m_PdeX[0]) / (m_PdeX.back() - m_PdeX[0]) * (last + 1);
+  uint32_t s = !(guess > 0) ? 0 : guess >= last ? last : static_cast<uint32_t>(guess);
+  while (s < last && x >= m_PdeX[s + 1]) { ++s; }
+  while (s > 0 && x < m_PdeX[s]) { --s; }
 
-  const double m = (it1->second - it0->second) / (it1->first - it0->first);
-  const double q = it0->second - m * it0->first;
-  double newy = m * x + q;
+  const double newy = m_PdeSlope[s] * x + m_PdeIntercept[s];
   return (newy < 0) ? 0 : newy;
 }
 
