@@ -481,6 +481,30 @@ TEST_F(TestSiPMSensor, ManyHitsInOneCellRecoverFromPreviousHit) {
   }
 }
 
+TEST_F(TestSiPMSensor, GaussianHitDistributionIsCentredAndInSensor) {
+  for (const auto pdeType : {SiPMProperties::PdeType::kNoPde, SiPMProperties::PdeType::kSimplePde}) {
+    SiPMProperties p;
+    p.setDcrOff(); p.setXtOff(); p.setApOff();
+    p.setPdeType(pdeType);
+    p.setPde(0.5);
+    p.setHitDistribution(SiPMProperties::HitDistribution::kGaussian);
+    SiPMSensor sensor(p);
+    sensor.rng().rng().seed(7);
+    for (int i = 0; i < 20000; ++i) sensor.addPhoton(10.0);
+    sensor.runEvent();
+
+    const uint32_t n = p.nSideCells();
+    uint32_t central = 0;
+    for (const SiPMHit& h : sensor.hits()) {
+      ASSERT_LT(h.row(), n);
+      ASSERT_LT(h.col(), n);
+      central += (h.row() >= n / 4 && h.row() < 3 * n / 4 && h.col() >= n / 4 && h.col() < 3 * n / 4);
+    }
+    // central quarter of the area: 0.25 if uniform, ~0.34 for this gaussian
+    EXPECT_GT(static_cast<double>(central) / sensor.hits().size(), 0.3);
+  }
+}
+
 // ── Signal shape with slow component ─────────────────────────────────────────
 
 TEST_F(TestSiPMSensor, SlowComponentProducesLongerSignal) {
