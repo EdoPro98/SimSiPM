@@ -404,27 +404,35 @@ void SiPMSensor::calculateSignalAmplitudes() {
 
     std::sort(m_Hits.begin(), m_Hits.end(), hitCmp);
   } else {
-    // Large-N path: proxy array keeps key+time+idx contiguous so sort
-    // comparisons stay cache-friendly without chasing per-element pointers.
+    // Large-N path: chain hits per cell through a cell-indexed head table, O(n)
+    // instead of sorting every hit. Only cells with 2+ hits need a (tiny) time sort.
     const std::vector<float> ccgvs = m_rng.randGaussianF(1.0f, ccgv, n);
     for (uint32_t i = 0; i < n; ++i)
       m_Hits[i].amplitude() *= ccgvs[i];
 
-    struct Proxy { uint32_t key; uint32_t idx; double time; };
-    std::vector<Proxy> proxies(n);
-    for (uint32_t i = 0; i < n; ++i)
-      proxies[i] = { cellKey(m_Hits[i]), i, m_Hits[i].time() };
-    std::sort(proxies.begin(), proxies.end(), [](const Proxy& a, const Proxy& b) {
-      return a.key != b.key ? a.key < b.key : a.time < b.time;
-    });
+    const uint32_t nCells = nSideCells * nSideCells;
+    if (m_CellHead.size() != nCells) m_CellHead.assign(nCells, -1);
+    std::vector<int32_t> next(n);
+    for (uint32_t i = 0; i < n; ++i) {
+      int32_t& head = m_CellHead[cellKey(m_Hits[i])];
+      next[i] = head;
+      head = static_cast<int32_t>(i);
+    }
 
-    uint32_t prevKey = proxies[0].key;
-    for (uint32_t i = 1; i < n; ++i) {
-      if (proxies[i].key == prevKey) {
-        const double delay = proxies[i].time - proxies[i - 1].time;
-        m_Hits[proxies[i].idx].amplitude() *= 1 - exp(-delay * recoveryRate);
+    std::vector<int32_t> cell;
+    for (uint32_t i = 0; i < n; ++i) {
+      int32_t& head = m_CellHead[cellKey(m_Hits[i])];
+      const int32_t first = head;
+      head = -1; // restores the table for the next event
+      if (first < 0 || next[first] < 0) continue; // cell already done, or a single hit
+
+      cell.clear();
+      for (int32_t j = first; j >= 0; j = next[j]) cell.push_back(j);
+      std::sort(cell.begin(), cell.end(), [this](int32_t a, int32_t b) { return m_Hits[a].time() < m_Hits[b].time(); });
+      for (size_t j = 1; j < cell.size(); ++j) {
+        const double delay = m_Hits[cell[j]].time() - m_Hits[cell[j - 1]].time();
+        m_Hits[cell[j]].amplitude() *= 1 - exp(-delay * recoveryRate);
       }
-      prevKey = proxies[i].key;
     }
     return;
   }

@@ -461,6 +461,26 @@ TEST_F(TestSiPMSensor, SecondHitInSameCellHasReducedAmplitude) {
   // if we had any same-cell collision (test passes vacuously otherwise)
 }
 
+TEST_F(TestSiPMSensor, ManyHitsInOneCellRecoverFromPreviousHit) {
+  // One cell and >= 16 hits: the large-N path must chain recovery in time order
+  SiPMProperties p;
+  p.setDcrOff(); p.setXtOff(); p.setApOff();
+  p.setCcgv(0);
+  p.setSize(1);
+  p.setPitch(1000);
+  p.setPdeType(SiPMProperties::PdeType::kNoPde);
+  p.setRecoveryTime(50);
+  SiPMSensor sensor(p);
+  for (int i = 19; i >= 0; --i) sensor.addPhoton(10.0 + 7.0 * i); // reverse time order
+  sensor.runEvent();
+
+  ASSERT_EQ(sensor.hits().size(), 20u);
+  for (const SiPMHit& h : sensor.hits()) {
+    const double expected = h.time() == 10.0 ? 1.0 : 1 - std::exp(-7.0 / 50);
+    EXPECT_NEAR(h.amplitude(), expected, 1e-6) << h.time();
+  }
+}
+
 // ── Signal shape with slow component ─────────────────────────────────────────
 
 TEST_F(TestSiPMSensor, SlowComponentProducesLongerSignal) {

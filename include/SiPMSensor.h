@@ -143,6 +143,7 @@ private:
 
   std::vector<float> m_SignalShape;
   float m_SignalNorm = 0; // gain / peak of the analytic shape, used by the recursive convolution
+  std::vector<int32_t> m_CellHead; // per-cell first hit index, all -1 between events
   SiPMAnalogSignal m_Signal;
 };
 
