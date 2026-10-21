@@ -568,6 +568,75 @@ TEST_F(TestSiPMSensor, RecursiveConvolutionMatchesDirect) {
   }
 }
 
+// ── runEvent(false): hits only, signal on demand ──────────────────────────────
+
+static SiPMProperties noisyProps() {
+  SiPMProperties p;
+  p.setXt(0.2); p.setAp(0.1); p.setDcr(5e6);
+  p.setPdeType(SiPMProperties::PdeType::kSimplePde);
+  p.setPde(0.5);
+  p.setHitDistribution(SiPMProperties::HitDistribution::kGaussian);
+  return p;
+}
+
+static void fillPhotons(SiPMSensor& s) {
+  for (int i = 0; i < 60; ++i) s.addPhoton(10.0 + 5.0 * i);
+}
+
+TEST_F(TestSiPMSensor, HitsOnlyEventGivesSameHitsAndSignalAsFullEvent) {
+  SiPMSensor full(noisyProps()), lazy(noisyProps());
+  full.rng().rng().seed(5);
+  lazy.rng().rng().seed(5);
+  fillPhotons(full);
+  fillPhotons(lazy);
+
+  full.runEvent();
+  lazy.runEvent(false);
+
+  // Hits are complete without the signal
+  ASSERT_GT(lazy.hits().size(), 10u);
+  ASSERT_EQ(lazy.hits().size(), full.hits().size());
+  for (size_t i = 0; i < full.hits().size(); ++i) {
+    EXPECT_EQ(lazy.hits()[i].time(), full.hits()[i].time());
+    EXPECT_EQ(lazy.hits()[i].amplitude(), full.hits()[i].amplitude());
+    EXPECT_EQ(lazy.hits()[i].parentIdx(), full.hits()[i].parentIdx());
+  }
+
+  // Requesting the signal generates it, identical to the one of the full event
+  const SiPMAnalogSignal a = full.signal(), b = lazy.signal();
+  ASSERT_EQ(a.size(), b.size());
+  for (uint32_t i = 0; i < a.size(); ++i) ASSERT_EQ(a[i], b[i]) << i;
+}
+
+TEST_F(TestSiPMSensor, LazySignalIsGeneratedOnlyOnce) {
+  SiPMSensor sensor(noisyProps());
+  fillPhotons(sensor);
+  sensor.runEvent(false);
+  const SiPMAnalogSignal first = sensor.signal();
+  const SiPMAnalogSignal second = sensor.signal();
+  for (uint32_t i = 0; i < first.size(); ++i) ASSERT_EQ(first[i], second[i]) << i;
+}
+
+TEST_F(TestSiPMSensor, ResetStateDiscardsPendingSignal) {
+  SiPMSensor sensor(noisyProps());
+  fillPhotons(sensor);
+  sensor.runEvent(false);
+  sensor.resetState();
+  EXPECT_EQ(sensor.signal().size(), 0u); // nothing was ever generated
+}
+
+TEST_F(TestSiPMSensor, PendingSignalSkipsHitsOutsideShrunkWindow) {
+  SiPMProperties p = noisyProps();
+  p.setSignalLength(500);
+  SiPMSensor sensor(p);
+  fillPhotons(sensor);
+  sensor.runEvent(false);
+  ASSERT_GT(sensor.hits().size(), 10u);
+  sensor.setProperty("SignalLength", 100); // hits up to 500 ns are now outside the window
+  const SiPMAnalogSignal signal = sensor.signal();
+  EXPECT_EQ(signal.size(), 100u);
+}
+
 // ── setProperty string API ────────────────────────────────────────────────────
 
 TEST_F(TestSiPMSensor, SetPropertyStringUpdatesSignalShape) {

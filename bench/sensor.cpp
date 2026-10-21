@@ -469,6 +469,25 @@ BENCHMARK_DEFINE_F(SensorFixture, FullSimulation)(benchmark::State& st) {
 BENCHMARK_REGISTER_F(SensorFixture, FullSimulation)
     ->RangeMultiplier(2)->Range(1, 1 << 12)->Complexity(benchmark::oN);
 
+// B10b — Same as FullSimulation but runEvent(false): hits only, no signal generation.
+BENCHMARK_DEFINE_F(SensorFixture, HitsOnly)(benchmark::State& st) {
+  m_sensor.setProperties(baseProps());
+
+  for (auto _ : st) {
+    st.PauseTiming();
+    const auto t = m_aux.randGaussian(10.0, 0.1, st.range(0));
+    m_sensor.resetState();
+    m_sensor.addPhotons(t);
+    st.ResumeTiming();
+    m_sensor.runEvent(false);
+    benchmark::ClobberMemory();
+  }
+  st.SetItemsProcessed(st.iterations() * st.range(0));
+  st.SetComplexityN(st.range(0));
+}
+BENCHMARK_REGISTER_F(SensorFixture, HitsOnly)
+    ->RangeMultiplier(2)->Range(1, 1 << 12)->Complexity(benchmark::oN);
+
 // B11 — Full event + feature extraction: measures the complete pipeline a
 //       user would run in practice (simulate → analyse waveform).
 BENCHMARK_DEFINE_F(SensorFixture, FullEventWithAnalysis)(benchmark::State& st) {

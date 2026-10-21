@@ -71,20 +71,32 @@ void SiPMSensor::addPhotons(const std::vector<double>& val1, const std::vector<d
   m_PhotonWavelengths.insert(m_PhotonWavelengths.end(), val2.begin(), val2.begin() + n);
 }
 
-void SiPMSensor::runEvent() {
+void SiPMSensor::runEvent(const bool generateSignal) {
+  // Hit simulation: complete without the signal, so hits() is valid right away
+  addDcrEvents();
+  addPhotoelectrons();
+  addCorrelatedNoise();
+  if (m_nTotalHits > 0) {
+    calculateSignalAmplitudes();
+  }
+
+  // The baseline noise is drawn after the hits so the random stream, and thus
+  // the event, is the same whether the signal is built now or on first use
+  m_SignalPending = true;
+  if (generateSignal) {
+    buildSignal();
+  }
+}
+
+void SiPMSensor::buildSignal() const {
   m_Signal = SiPMAnalogSignal(
     m_rng.randGaussianF(0.0, m_Properties.snrLinear(), m_Properties.nSignalPoints()),
     m_Properties.sampling()
   );
-  addDcrEvents();
-
-  addPhotoelectrons();
-
-  addCorrelatedNoise();
-  if(m_nTotalHits > 0){
-    calculateSignalAmplitudes();
+  if (m_nTotalHits > 0) {
     generateSignal();
   }
+  m_SignalPending = false;
 }
 
 void SiPMSensor::resetState() {
@@ -95,6 +107,7 @@ void SiPMSensor::resetState() {
   m_nDXt = 0;
   m_nAp = 0;
   m_Hits.clear();
+  m_SignalPending = false; // the pending event is discarded with its hits
   m_PhotonTimes.clear();
   m_PhotonWavelengths.clear();
 }
@@ -472,17 +485,23 @@ void SiPMSensor::calculateSignalAmplitudes() {
 }
 
 
-void SiPMSensor::generateSignal() {
+void SiPMSensor::generateSignal() const {
   const uint32_t nSignalPoints = m_Properties.nSignalPoints();
   const double sampling = m_Properties.sampling();
 
   std::vector<uint32_t> times(m_nTotalHits);
   std::vector<float> amplitudes(m_nTotalHits);
   uint64_t directWork = 0;
+  uint32_t nHits = 0;
   for (uint32_t i = 0; i < m_nTotalHits; ++i) {
-    times[i] = static_cast<uint32_t>(std::floor(m_Hits[i].time() / sampling));
-    amplitudes[i] = m_Hits[i].amplitude();
-    directWork += nSignalPoints - times[i];
+    const uint32_t time = static_cast<uint32_t>(std::floor(m_Hits[i].time() / sampling));
+    // Hits always fall inside the window they were simulated with, but the
+    // properties may have changed between runEvent(false) and the signal request
+    if (time >= nSignalPoints) { continue; }
+    times[nHits] = time;
+    amplitudes[nHits] = m_Hits[i].amplitude();
+    directWork += nSignalPoints - time;
+    ++nHits;
   }
 
   // The analytic shape is a sum of exponentials, so each component can be
@@ -504,7 +523,7 @@ void SiPMSensor::generateSignal() {
       const float dK = pw[kBlock - 1] * d;
 
       std::fill(z.begin(), z.end(), 0.0f);
-      for (uint32_t i = 0; i < m_nTotalHits; ++i) {
+      for (uint32_t i = 0; i < nHits; ++i) {
         float* zt = z.data() + times[i];
         for (uint32_t j = 0; j < kBlock; ++j) zt[j] += amplitudes[i] * pw[j];
       }
@@ -515,7 +534,7 @@ void SiPMSensor::generateSignal() {
     return;
   }
 
-  for (uint32_t i = 0; i < m_nTotalHits; ++i) {
+  for (uint32_t i = 0; i < nHits; ++i) {
     const uint32_t time = times[i];
     const uint32_t endPoint = nSignalPoints - time;
     const float amplitude = amplitudes[i];

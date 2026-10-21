@@ -35,11 +35,16 @@ public:
   /// @brief Returns the @ref SiPMProperties class stored in the SiPMSensor
   const SiPMProperties& properties() const { return m_Properties; }
 
-  /// @brief Returns the @ref SiPMAnalogSignal stored in the SiPMSensor
-  /** Used to get the generated signal from the sensor. This method should be
-   * run after @ref runEvent otherwise it will return only electronic noise.
+  /// @brief Returns the @ref SiPMAnalogSignal of the last event
+  /** If the last event was run with runEvent(false) the signal is generated
+   * here, on first use, from the hits already simulated. Because of this
+   * signal() may modify the sensor internals: do not call it concurrently
+   * on the same sensor.
    */
-  SiPMAnalogSignal signal() const { return m_Signal; }
+  SiPMAnalogSignal signal() const {
+    if (m_SignalPending) { buildSignal(); }
+    return m_Signal;
+  }
 
   /// @brief Returns the list of hits generated in the last event (by const reference)
   /** Elements are valid until the next call to resetState() or runEvent().
@@ -90,8 +95,16 @@ public:
   /// @brief Adds multiple photons to the list of photons to be simulated at once
   void addPhotons(const std::vector<double>&, const std::vector<double>&);
 
-  /// @brief Runs a complete SiPM event
-  void runEvent();
+  /// @brief Runs a SiPM event
+  /** Simulates the hits (dark counts, photoelectrons, crosstalk, afterpulses
+   * and cell recovery). With @p generateSignal = true (default) the analog
+   * signal is generated too. With false only the hits are simulated, which
+   * is much cheaper; the signal is then generated automatically the first
+   * time it is requested (@ref signal), from the same hits. For a given seed
+   * the hits and the signal are the same in both cases.
+   * @param generateSignal Generate the analog signal now
+   */
+  void runEvent(const bool generateSignal = true);
 
   /// @brief Resets internal state of the SiPMSensor
   /** Resets the SiPMSensor to a fresh state
@@ -126,7 +139,8 @@ private:
   SiPMHit generateApHit(const SiPMHit&, int32_t parentIdx) const;
 
   void calculateSignalAmplitudes();
-  void generateSignal();
+  void buildSignal() const;
+  void generateSignal() const;
 
   SiPMProperties m_Properties;
   mutable SiPMRandom m_rng;
@@ -146,7 +160,9 @@ private:
   float m_SignalNorm = 0; // gain / peak of the analytic shape, used by the recursive convolution
   std::vector<int32_t> m_CellHead; // per-cell first hit index, all -1 between events
   std::vector<double> m_PdeX, m_PdeSlope, m_PdeIntercept; // flat copy of pdeSpectrum segments
-  SiPMAnalogSignal m_Signal;
+  // Mutable: the signal is generated lazily from the const signal() accessor
+  mutable SiPMAnalogSignal m_Signal;
+  mutable bool m_SignalPending = false; // hits simulated but signal not generated yet
 };
 
 } // namespace sipm

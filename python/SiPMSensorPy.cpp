@@ -48,7 +48,7 @@ void SiPMSensorPy(py::module& m) {
                static_cast<const double*>(wbuf.ptr),
                static_cast<const double*>(wbuf.ptr) + wbuf.size));
          })
-    .def("runEvent", &SiPMSensor::runEvent)
+    .def("runEvent", &SiPMSensor::runEvent, py::arg("generateSignal") = true)
     .def("resetState", &SiPMSensor::resetState)
     .def("__repr__", &SiPMSensor::toString);
 }

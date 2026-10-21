@@ -137,6 +137,44 @@ class TestResetState:
         assert s.debug().nPhotons == 1
 
 
+# ── runEvent(generateSignal) ───────────────────────────────────────────────────
+
+class TestRunEventWithoutSignal:
+    # The sensor rng cannot be seeded from Python, so use a deterministic event
+    # (one photon, no noise, no cell-to-cell variation); exact same-seed
+    # equivalence of both modes is checked in the C++ tests.
+
+    @staticmethod
+    def _sensor():
+        s = SiPM.SiPMSensor(_clean(Snr=100))
+        s.addPhoton(100.0)
+        return s
+
+    def test_positional_and_keyword_argument(self):
+        s = SiPM.SiPMSensor(_clean())
+        s.addPhoton(10.0); s.runEvent(False)
+        s.runEvent(generateSignal=False)
+        s.runEvent(True)
+
+    def test_hits_available_without_signal(self):
+        s = self._sensor()
+        s.runEvent(False)
+        assert len(s.hits()) == 1
+
+    def test_signal_generated_on_demand_matches_full_event(self):
+        full, lazy = self._sensor(), self._sensor()
+        full.runEvent()
+        lazy.runEvent(False)
+        wf = np.asarray(lazy.signal().waveform())
+        assert wf.max() == pytest.approx(1.0, abs=0.1)  # the pulse is there
+        assert np.argmax(wf) == pytest.approx(np.argmax(full.signal().waveform()), abs=3)
+
+    def test_reset_discards_pending_signal(self):
+        s = self._sensor()
+        s.runEvent(False); s.resetState()
+        assert s.signal().size() == 0
+
+
 # ── PDE behavior ───────────────────────────────────────────────────────────────
 
 class TestPde:
