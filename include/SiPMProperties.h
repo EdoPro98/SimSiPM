@@ -1,5 +1,4 @@
-/** @class sipm::SiPMProperties SimSiPM/SimSiPM/SiPMProperties.h
- * SiPMDigitalSignal.h
+/** @class sipm::SiPMProperties SiPMProperties.h
  *
  *  @brief Class storing all the parameters that describe a SiPM.
  *
@@ -38,125 +37,167 @@ public:
    */
   enum class HitDistribution {
     kUniform, ///< Photons uniformly distributed on the sensor surface
-    kCircle,  ///< 95% of photons are uniformly distributed on a circle
-    kGaussian ///< 95% of photons have a gaussian distribution
+    kCircle,  ///< 90% of photons uniform inside the circle inscribed in the sensor, the rest uniform in the corners
+    kGaussian ///< Photons inside +-1.64 sigma (sigma = side/3.28) on both axes are gaussian distributed, the others uniform
   };
 
+  /// @brief Creates a SiPM with the default properties
   SiPMProperties();
 
-  /// @brief Read settings from a legacy key=value config file
-  static SiPMProperties readSettings(const std::string&);
+  /// @brief Reads the settings from a legacy key=value file
+  /// One @c name=value pair per line, names as accepted by setProperty(); spaces are ignored and lines starting with # or / are comments.
+  /// @param fname Path of the file
+  /// @return Properties read (defaults for unset values, or all defaults if the file cannot be opened)
+  static SiPMProperties readSettings(const std::string& fname);
 
-  /// @brief Read settings from a JSON file
-  static SiPMProperties readSettingsJson(const std::string&);
+  /// @brief Reads the settings from a JSON file
+  /// Recognised keys: size, pitch, sampling, signalLength, risingTime, fallingTimeFast, fallingTimeSlow, slowComponentFraction,
+  /// recoveryTime, snr, dcr, xt, dxt, dxtTau, ap, tauApFast, tauApSlow, apSlowFraction, ccgv, pde, the flags hasDcr, hasXt, hasDXt, hasAp,
+  /// hasSlowComponent, pdeType and hitDistribution (enumerator name or integer) and pdeSpectrum ({"wavelengths": [...], "pde": [...]}).
+  /// @param fname Path of the file
+  /// @return Properties read (defaults for unset values, or all defaults if the file cannot be read or parsed)
+  static SiPMProperties readSettingsJson(const std::string& fname);
 
-  /// @brief Returns size of sensor in mm
+  /// @brief Size of the sensor
+  /// @return Side of the sensitive area in mm
   constexpr uint32_t size() const { return m_Size; }
 
-  /// @brief Returns pitch of cell in um
+  /// @brief Pitch of the cells
+  /// @return Side of one cell in um
   constexpr uint32_t pitch() const { return m_Pitch; }
 
-  /// @brief Returns total number of cells in the sensor
+  /// @brief Total number of cells in the sensor
+  /// @return Number of cells (nSideCells() squared)
   constexpr uint32_t nCells() const { return m_Ncells; }
 
-  /// @brief Returns number of cells in the side of the sensor
+  /// @brief Number of cells along one side of the sensor
+  /// @return Cells per side
   constexpr uint32_t nSideCells() const { return m_SideCells; }
 
-  /// @brief Returns total number of points in the signal
+  /// @brief Number of points of the signal
+  /// @return Number of samples (signal length / sampling)
   constexpr uint32_t nSignalPoints() const { return m_SignalPoints; }
 
-  /// @brief Returns @ref HitDistribution type of the sensor
+  /// @brief Distribution of the hits on the sensor surface
+  /// @return The @ref HitDistribution in use
   constexpr HitDistribution hitDistribution() const { return m_HitDistribution; }
 
-  /// @brief Returns total signal length in ns
+  /// @brief Length of the simulated signal
+  /// @return Signal length in ns
   constexpr double signalLength() const { return m_SignalLength; }
 
-  /// @brief Returns sampling time considered by the sensor in ns
+  /// @brief Sampling time of the signal
+  /// @return Sampling time in ns
   constexpr double sampling() const { return m_Sampling; }
 
-  /// @brief Returns rising time constant @sa SiPMSensor::signalShape
+  /// @brief Rising time constant of the signal pulse @sa SiPMSensor::signalShape
+  /// @return Time constant in ns
   constexpr double risingTime() const { return m_RiseTime; }
 
-  /// @brief Returns falling time constant @sa SiPMSensor::signalShape
+  /// @brief Falling time constant of the fast component of the pulse @sa SiPMSensor::signalShape
+  /// @return Time constant in ns
   constexpr double fallingTimeFast() const { return m_FallTimeFast; }
 
-  /// @brief Returns falling time constant of slow component @sa
-  /// SiPMSensor::signalShape
+  /// @brief Falling time constant of the slow component of the pulse @sa SiPMSensor::signalShape
+  /// @return Time constant in ns
   constexpr double fallingTimeSlow() const { return m_FallTimeSlow; }
 
-  /// @brief Returns weight of slow component of the signal @sa
-  /// SiPMSensor::signalShape.
+  /// @brief Weight of the slow component of the pulse @sa SiPMSensor::signalShape
+  /// @return Fraction in [0, 1]
   constexpr double slowComponentFraction() const { return m_SlowComponentFraction; }
 
-  /// @brief Returns recovery time of SiPM cells.
+  /// @brief Recovery time constant of the cells
+  /// @return Time constant in ns
   constexpr double recoveryTime() const { return m_RecoveryTime; }
 
-  /// @brief Returns DCR value.
+  /// @brief Dark count rate
+  /// @return Rate in Hz
   constexpr double dcr() const { return m_Dcr; }
 
-  /// @brief Returns XT value.
+  /// @brief Optical crosstalk probability
+  /// @return Probability in [0, 1]
   constexpr double xt() const { return m_Xt; }
 
-  /// @brief Returns Delayed XT value.
+  /// @brief Fraction of the optical crosstalk that is delayed
+  /// @return Fraction in [0, 1]
   constexpr double dxt() const { return m_DXt; }
 
-  /// @brief Returns Delayed XT tau.
+  /// @brief Time constant of the delay of delayed optical crosstalk
+  /// @return Time constant in ns
   constexpr double dxtTau() const { return m_DXtTau; }
 
-  /// @brief Returns AP value.
+  /// @brief Afterpulse probability
+  /// @return Probability in [0, 1]
   constexpr double ap() const { return m_Ap; }
 
-  /// @brief Returns fast time constant for AP.
+  /// @brief Time constant of the delay of fast afterpulses
+  /// @return Time constant in ns
   constexpr double tauApFast() const { return m_TauApFastComponent; }
 
-  /// @brief Returns slow time constant for AP.
+  /// @brief Time constant of the delay of slow afterpulses
+  /// @return Time constant in ns
   constexpr double tauApSlow() const { return m_TauApSlowComponent; }
 
-  /// @brief Returns fraction of AP generated as slow.
+  /// @brief Fraction of the afterpulses that are slow
+  /// @return Fraction in [0, 1]
   constexpr double apSlowFraction() const { return m_ApSlowFraction; }
 
-  /// @brief Returns value of cell-to-cell gain variation.
+  /// @brief Cell-to-cell gain variation
+  /// @return Relative sigma of the gaussian spread of the cell amplitudes (0.05 = 5%)
   constexpr float ccgv() const { return m_Ccgv; }
 
-  /// @brief Returns relative gain.
+  /// @brief Gain of the sensor
+  /// @return Amplitude of the pulse of one photoelectron (peak of the signal shape)
   constexpr double gain() const { return m_Gain; }
 
-  /// @brief Returns SNR in dB.
+  /// @brief Signal to noise ratio
+  /// @return SNR in dB
   constexpr double snrdB() const { return m_SnrdB; }
 
-  /// @brief Returns RMS of the noise.
+  /// @brief Electronic noise
+  /// @return Standard deviation of the gaussian baseline noise, in units of the one photoelectron amplitude (10^(-SNR/20))
   constexpr double snrLinear() const { return m_SnrLinear; }
 
-  /// @brief Returns value of PDE if PdeType::kSimplePde is set.
+  /// @brief Photon detection efficiency used with PdeType::kSimplePde
+  /// @return PDE in [0, 1]
   constexpr double pde() const { return m_Pde; }
 
-  /// @brief Returns wavelength-PDE values if PdeType::kSpectrumPde is set
+  /// @brief Photon detection efficiency versus wavelength, used with PdeType::kSpectrumPde
+  /// @return Map wavelength -> PDE, sampled on a uniform grid of 32 points
   const std::map<double, double>& pdeSpectrum() const { return m_PdeSpectrum; }
 
-  /// @brief Returns type of PDE calculation used.
+  /// @brief Type of PDE calculation used
+  /// @return The @ref PdeType in use
   constexpr PdeType pdeType() const { return m_HasPde; }
 
-  /// @brief Returns true if DCR is considered.
+  /// @brief Dark counts simulation
+  /// @return true if dark counts are simulated
   constexpr bool hasDcr() const { return m_HasDcr; }
 
-  /// @brief Returns true if XT is considered.
+  /// @brief Optical crosstalk simulation
+  /// @return true if optical crosstalk is simulated
   constexpr bool hasXt() const { return m_HasXt; }
 
-  /// @brief Returns true if Delayes XT is considered.
+  /// @brief Delayed optical crosstalk simulation
+  /// @return true if delayed optical crosstalk is simulated
   constexpr bool hasDXt() const { return m_HasDXt; }
 
-  /// @brief Returns true if AP is considered.
+  /// @brief Afterpulses simulation
+  /// @return true if afterpulses are simulated
   constexpr bool hasAp() const { return m_HasAp; }
 
-  /// @brief Returns true if slow component of the signal is considered.
-  /// @sa SiPMSensor::signalShape
+  /// @brief Slow component of the pulse @sa SiPMSensor::signalShape
+  /// @return true if the slow component is used
   constexpr bool hasSlowComponent() const { return m_HasSlowComponent; }
 
-  /// @brief Returns true if a user-supplied signal shape is active
+  /// @brief User-supplied signal shape
+  /// @return true if a shape set with SiPMSensor::setSignalShape is active
   constexpr bool hasCustomSignalShape() const { return m_HasCustomSignalShape; }
 
-  /// @brief Registers a user-supplied shape (sampling + point count only; the
-  ///        vector itself is stored in SiPMSensor).  Sets rise/fall flags to -1.
+  /// @brief Registers a user-supplied signal shape
+  /// Only sampling and number of points are stored here, the vector itself is stored in SiPMSensor. Sets rise/fall times to -1.
+  /// @param sampling Sampling time of the shape in ns
+  /// @param nPoints Number of samples of the shape
   void setCustomSignalShape(const double sampling, const uint32_t nPoints) {
     m_Sampling = sampling;
     m_SignalPoints = nPoints;
@@ -168,7 +209,12 @@ public:
   }
 
   /// @brief Sets a property using its name
-  void setProperty(const std::string&, const double);
+  /// Names are case-insensitive: size, pitch, sampling, signallength, risetime, falltimefast, falltimeslow, slowcomponentfraction,
+  /// recoverytime (or cellrecovery), tauapfast, tauapslow, ccgv, snr, pde, dcr, xt, dxt, ap. Setting pde, dcr, xt, dxt or ap also enables
+  /// that effect. An unknown name prints a message on std::cerr and is ignored.
+  /// @param prop Name of the property
+  /// @param val Value of the property, in the units of the corresponding setter
+  void setProperty(const std::string& prop, const double val);
 
   /// @brief Set size of SiPM sensitive area (side in mm)
   ///@param x Size of sipm sensor in mm
@@ -186,7 +232,8 @@ public:
     m_Ncells = m_SideCells * m_SideCells;
   }
 
-  /// @brief Set sampling time of the signal in ns
+  /// @brief Set sampling time of the signal
+  /// @param x Sampling time in ns
   void setSampling(const double x) {
     m_Sampling = x;
     m_SignalPoints = m_SignalLength / m_Sampling;
@@ -316,15 +363,23 @@ public:
   /// @brief Turns on slow component of the signal
   constexpr void setSlowComponentOn() { m_HasSlowComponent = true; }
   /// @brief Sets a different type of PDE simulation @ref PdeType
+  /// @param val Type of PDE calculation
   constexpr void setPdeType(PdeType val) { m_HasPde = val; }
-  /// @brief Set a spectral response of the SiPM and sets @ref
-  /// PdeType::kSpectrumPde
-  void setPdeSpectrum(const std::vector<double>&, const std::vector<double>&);
+  /// @brief Set a spectral response of the SiPM and sets @ref PdeType::kSpectrumPde
+  /// The points are resampled on a uniform grid of 32 wavelengths between the first and the last one, interpolating in log space;
+  /// segments touching a zero PDE give zero.
+  /// @param wav Wavelengths of the points (same unit as the photon wavelengths)
+  /// @param pde PDE of each point, same size as @p wav
+  void setPdeSpectrum(const std::vector<double>& wav, const std::vector<double>& pde);
 
-  /// @brief Set hit distriution type
+  /// @brief Set the distribution of hits on the sensor surface
+  /// @param val The @ref HitDistribution to use
   constexpr void setHitDistribution(const HitDistribution val) { m_HitDistribution = val; }
 
+  /// @brief Prints all the properties
   friend std::ostream& operator<<(std::ostream&, const SiPMProperties&);
+  /// @brief Description of the properties
+  /// @return String printed by operator<<
   std::string toString() const {
     std::stringstream ss;
     ss << *this;
@@ -332,44 +387,44 @@ public:
   }
 
 private:
-  double m_Size = 1;
-  double m_Pitch = 25;
-  uint32_t m_Ncells;
-  uint32_t m_SideCells;
-  HitDistribution m_HitDistribution = HitDistribution::kUniform;
+  double m_Size = 1;  ///< Side of the sensitive area in mm
+  double m_Pitch = 25;  ///< Side of a cell in um
+  uint32_t m_Ncells;  ///< Total number of cells
+  uint32_t m_SideCells;  ///< Cells per side
+  HitDistribution m_HitDistribution = HitDistribution::kUniform;  ///< Distribution of hits on the surface
 
-  double m_Sampling = 1;
-  double m_SignalLength = 500;
-  uint32_t m_SignalPoints = 0;
-  double m_RiseTime = 1;
-  double m_FallTimeFast = 50;
-  double m_FallTimeSlow = 100;
-  double m_SlowComponentFraction = 0.2;
-  double m_RecoveryTime = 50;
+  double m_Sampling = 1;  ///< Sampling time in ns
+  double m_SignalLength = 500;  ///< Signal length in ns
+  uint32_t m_SignalPoints = 0;  ///< Number of samples
+  double m_RiseTime = 1;  ///< Rise time constant in ns
+  double m_FallTimeFast = 50;  ///< Fast fall time constant in ns
+  double m_FallTimeSlow = 100;  ///< Slow fall time constant in ns
+  double m_SlowComponentFraction = 0.2;  ///< Weight of the slow component
+  double m_RecoveryTime = 50;  ///< Cell recovery time constant in ns
 
-  double m_Dcr = 200e3;
-  double m_Xt = 0.05;
-  double m_DXt = 0.05;
-  double m_DXtTau = 15;
-  double m_Ap = 0.03;
-  double m_TauApFastComponent = 10;
-  double m_TauApSlowComponent = 80;
-  double m_ApSlowFraction = 0.5;
-  float m_Ccgv = 0.05;
-  double m_SnrdB = 30;
-  float m_Gain = 1.0;
-  double m_SnrLinear;
+  double m_Dcr = 200e3;  ///< Dark count rate in Hz
+  double m_Xt = 0.05;  ///< Optical crosstalk probability
+  double m_DXt = 0.05;  ///< Fraction of delayed crosstalk
+  double m_DXtTau = 15;  ///< Delayed crosstalk time constant in ns
+  double m_Ap = 0.03;  ///< Afterpulse probability
+  double m_TauApFastComponent = 10;  ///< Fast afterpulse time constant in ns
+  double m_TauApSlowComponent = 80;  ///< Slow afterpulse time constant in ns
+  double m_ApSlowFraction = 0.5;  ///< Fraction of slow afterpulses
+  float m_Ccgv = 0.05;  ///< Cell-to-cell gain variation (relative sigma)
+  double m_SnrdB = 30;  ///< SNR in dB
+  float m_Gain = 1.0;  ///< Amplitude of the one photoelectron pulse
+  double m_SnrLinear;  ///< Baseline noise sigma
 
-  double m_Pde = 1;
-  std::map<double, double> m_PdeSpectrum;
-  PdeType m_HasPde = PdeType::kNoPde;
+  double m_Pde = 1;  ///< Flat PDE for kSimplePde
+  std::map<double, double> m_PdeSpectrum;  ///< Wavelength -> PDE table for kSpectrumPde
+  PdeType m_HasPde = PdeType::kNoPde;  ///< Type of PDE calculation
 
-  bool m_HasDcr = true;
-  bool m_HasXt = true;
-  bool m_HasDXt = false;
-  bool m_HasAp = true;
-  bool m_HasSlowComponent = false;
-  bool m_HasCustomSignalShape = false;
+  bool m_HasDcr = true;  ///< Dark counts enabled
+  bool m_HasXt = true;  ///< Crosstalk enabled
+  bool m_HasDXt = false;  ///< Delayed crosstalk enabled
+  bool m_HasAp = true;  ///< Afterpulses enabled
+  bool m_HasSlowComponent = false;  ///< Slow component of the pulse enabled
+  bool m_HasCustomSignalShape = false;  ///< A user-supplied shape is active
 };
 } // namespace sipm
 #endif /* SIPM_SIPMPROPERTIES_H  */

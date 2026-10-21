@@ -8,11 +8,12 @@ namespace sipm {
 
 /**
 * Integral of the signal defined as the sum of all samples in the integration
-* window normalized for the sampling time. If the signal is below the threshold
-* the output is set to -1.
-@param intstart   Starting time of integration in ns
-@param intgate    Length of the integration gate
-@param threshold  Process only if above the threshold
+* gate multiplied by the sampling time.
+* If no sample of the gate is above the threshold the output is set to -1.
+* @param intstart   Starting time of the integration gate in ns
+* @param intgate    Length of the integration gate in ns, clipped to the end of the signal
+* @param threshold  Process only if above the threshold
+* @return Integral in (signal units * ns), or -1 if below threshold or if the gate starts after the end of the signal
 */
 double SiPMAnalogSignal::integral(const double intstart, const double intgate, const double threshold) const {
   const uint32_t startIdx = static_cast<uint32_t>(intstart / m_Sampling);
@@ -32,12 +33,13 @@ double SiPMAnalogSignal::integral(const double intstart, const double intgate, c
 }
 
 /**
-* Peak of the signal defined as sample with maximum amplitude in the integration
-* gate.
-* If the signal is below the threshold the output is set to -1.
-@param intstart   Starting time of integration in ns
-@param intgate    Length of the integration gate
-@param threshold  Process only if above the threshold
+* Peak of the signal defined as the sample with maximum amplitude in the
+* integration gate.
+* If no sample of the gate is above the threshold the output is set to -1.
+* @param intstart   Starting time of the integration gate in ns
+* @param intgate    Length of the integration gate in ns, clipped to the end of the signal
+* @param threshold  Process only if above the threshold
+* @return Amplitude of the highest sample, or -1 if below threshold or if the gate starts after the end of the signal
 */
 double SiPMAnalogSignal::peak(const double intstart, const double intgate, const double threshold) const {
   const uint32_t startIdx = static_cast<uint32_t>(intstart / m_Sampling);
@@ -55,12 +57,15 @@ double SiPMAnalogSignal::peak(const double intstart, const double intgate, const
 }
 
 /**
-* Time over threshold of the signal in the integration gate defined as the
-* number of samples higher than the threshold normalized for the sampling time.
-* If the signal is below the threshold the output is set to -1.
-@param intstart   Starting time of integration in ns
-@param intgate    Length of the integration gate
-@param threshold  Process only if above the threshold
+* Time over threshold of the signal in the integration gate: the time spent
+* above the threshold, counted in whole samples (number of samples above the
+* threshold multiplied by the sampling time). A signal still above the
+* threshold at the end of the gate is counted up to the last sample of the gate.
+* If the signal is never above the threshold the output is set to -1.
+* @param intstart   Starting time of the integration gate in ns
+* @param intgate    Length of the integration gate in ns, clipped to the end of the signal
+* @param threshold  Process only if above the threshold
+* @return Time over threshold in ns, or -1 if below threshold or if the gate starts after the end of the signal
 */
 double SiPMAnalogSignal::tot(const double intstart, const double intgate, const double threshold) const {
   const uint32_t start = static_cast<uint32_t>(intstart / m_Sampling);
@@ -93,12 +98,13 @@ double SiPMAnalogSignal::tot(const double intstart, const double intgate, const 
 }
 
 /**
-* Arriving time of the signal defined as the time in ns of the first sample
-* above the threshold.
+* Arrival time of the signal defined as the time of the first sample above the
+* threshold, measured from the start of the integration gate.
 * If the signal is below the threshold the output is set to -1.
-@param intstart   Starting time of integration in ns
-@param intgate    Length of the integration gate
-@param threshold  Process only if above the threshold
+* @param intstart   Starting time of the integration gate in ns
+* @param intgate    Length of the integration gate in ns, clipped to the end of the signal
+* @param threshold  Process only if above the threshold
+* @return Arrival time in ns relative to @p intstart, or -1 if below threshold or if the gate starts after the end of the signal
 */
 double SiPMAnalogSignal::toa(const double intstart, const double intgate, const double threshold) const {
   const uint32_t start = static_cast<uint32_t>(intstart / m_Sampling);
@@ -116,11 +122,13 @@ double SiPMAnalogSignal::toa(const double intstart, const double intgate, const 
 }
 
 /**
-* Time in ns of the sample in the peak
+* Time of peak: time of the sample with maximum amplitude above the threshold,
+* measured from the start of the integration gate.
 * If the signal is below the threshold the output is set to -1.
-@param intstart   Starting time of integration in ns
-@param intgate    Length of the integration gate
-@param threshold  Process only if above the threshold
+* @param intstart   Starting time of the integration gate in ns
+* @param intgate    Length of the integration gate in ns, clipped to the end of the signal
+* @param threshold  Process only if above the threshold
+* @return Time of the peak in ns relative to @p intstart, or -1 if below threshold or if the gate starts after the end of the signal
 */
 double SiPMAnalogSignal::top(const double intstart, const double intgate, const double threshold) const {
   const uint32_t start = static_cast<uint32_t>(intstart / m_Sampling);

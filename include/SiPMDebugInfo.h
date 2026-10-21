@@ -1,8 +1,8 @@
-/** @struct sipm::SiPMDebugInfo SimSiPM/SimSiPM/SiPMDebugInfo.h SiPMDebugInfo.h
+/** @struct sipm::SiPMDebugInfo SiPMDebugInfo.h
  *
- *  @brief Stores MC-Truth informations.
+ *  @brief Stores MC-Truth information.
  *
- *  This class is used to store some MC-Truth informations about the generated
+ *  This class is used to store some MC-Truth information about the generated
  *  event for debug purposes.
  *
  *  @author Edoardo Proserpio
@@ -19,18 +19,27 @@
 
 namespace sipm {
 struct SiPMDebugInfo {
-  /** @brief Constructor of SiPMDebugInfo */
+  /// @brief Constructor of SiPMDebugInfo
+  /// @param aPh Number of photons impinging on the sensor
+  /// @param aPe Number of hit cells
+  /// @param aDcr Number of dark count events
+  /// @param aXt Number of optical crosstalk events (delayed included)
+  /// @param aDXt Number of delayed optical crosstalk events
+  /// @param aAp Number of afterpulses
   constexpr SiPMDebugInfo(const uint32_t aPh, const uint32_t aPe, const uint32_t aDcr, const uint32_t aXt,
                           const uint32_t aDXt, const uint32_t aAp) noexcept
     : nPhotons(aPh), nPhotoelectrons(aPe), nDcr(aDcr), nXt(aXt), nDXt(aDXt), nAp(aAp) {}
 
   const uint32_t nPhotons;        ///< Number of photons impinging on the sensor surface
-  const uint32_t nPhotoelectrons; ///< Number of photoelectrons: total number of hitted cells
+  const uint32_t nPhotoelectrons; ///< Number of hit cells: photoelectrons, dark counts, crosstalk and afterpulses
   const uint32_t nDcr;            ///< Number of DCR events generated
   const uint32_t nXt;             ///< Number of XT events generated: XT and DXT
   const uint32_t nDXt;            ///< Number of DXT events generated
   const uint32_t nAp;             ///< Number of AP events generated
+  /// @brief Prints all the counters
   friend std::ostream& operator<<(std::ostream&, const SiPMDebugInfo&);
+  /// @brief Description of the counters
+  /// @return String printed by operator<<
   std::string toString() const {
     std::stringstream ss;
     ss << *this;

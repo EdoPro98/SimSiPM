@@ -134,9 +134,6 @@ pair<float, float> SiPMRandom::RandF2() noexcept {
   return {first, second};
 }
 
-/**
- * @param mu Mean value of the poisson distribution
- */
 uint32_t SiPMRandom::randPoisson(const double mu) noexcept {
   if (mu <= 0) {
     return 0;
@@ -161,24 +158,13 @@ uint32_t SiPMRandom::randPoisson(const double mu) noexcept {
   }
 }
 
-/**
- * @param mu Mean value of the exponential distribution
- * @return double value from exponential distribution
- */
 double SiPMRandom::randExponential(const double mu) noexcept { return -log(Rand()) * mu; }
 
-/**
- * @param mu Mean value of the exponential distribution
- * @return float value from exponential distribution
- */
 float SiPMRandom::randExponentialF(const float mu) noexcept { return -logf(Rand<float>()) * mu; }
 /**
  * Marsaglia polar method: a point uniform in the unit disk (accepted 78.5% of
  * the time) needs only one log, one division and one sqrt, no trig. Measured
  * faster than Box-Muller and the previous ACR method for single calls.
- * @param mu Mean value of the gaussian distribution
- * @param sigma Standard deviation of the gaussian distribution
- * @return double value from gaussian distribution
  */
 double SiPMRandom::randGaussian(const double mu, const double sigma) noexcept {
   double x, y, r;
@@ -198,10 +184,6 @@ float SiPMRandom::randGaussianF(const float mu, const float sigma) noexcept {
   return static_cast<float>(randGaussian(mu, sigma));
 }
 
-/**
- * @param max Maximum value of integer to generate
- * @return uint32_t value from random integer distribution
- */
 uint32_t SiPMRandom::randInteger(const uint32_t max) noexcept { return ((m_rng() >> 32) * max) >> 32; }
 
 pair<uint32_t> SiPMRandom::randInteger2(const uint32_t max) noexcept {
@@ -217,6 +199,7 @@ pair<uint32_t> SiPMRandom::randInteger2(const uint32_t max) noexcept {
 
 /**
  * @param n Number of values to generate
+ * @return Values uniformly distributed in (0, 1]
  */
 std::vector<double> SiPMRandom::Rand(const uint32_t n) {
   std::vector<double> out(n);
@@ -233,6 +216,7 @@ std::vector<double> SiPMRandom::Rand(const uint32_t n) {
 
 /**
  * @param n Number of values to generate
+ * @return Values uniformly distributed in (0, 1]
  */
 std::vector<float> SiPMRandom::RandF(const uint32_t n) {
   std::vector<float> out(n);
@@ -248,9 +232,10 @@ std::vector<float> SiPMRandom::RandF(const uint32_t n) {
 }
 
 /**
- * @param mu Mean value of the gaussuain
- * @param sigma Standard deviation value of the gaussuan
+ * @param mu Mean value of the gaussian
+ * @param sigma Standard deviation value of the gaussian
  * @param n Number of values to generate
+ * @return Gaussian distributed values
  */
 std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma, const uint32_t n) {
   std::vector<double> out(n);
@@ -283,6 +268,7 @@ std::vector<double> SiPMRandom::randGaussian(const double mu, const double sigma
  * @param mu Mean value of the gaussian
  * @param sigma Standard deviation value of the gaussian
  * @param n Number of values to generate
+ * @return Gaussian distributed values
  */
 std::vector<float> SiPMRandom::randGaussianF(const float mu, const float sigma, const uint32_t n) {
   std::vector<float> out(n);
@@ -306,8 +292,9 @@ std::vector<float> SiPMRandom::randGaussianF(const float mu, const float sigma, 
 }
 
 /**
- * @param max Max value to generate
+ * @param max Upper limit of the integers to generate, excluded
  * @param n Number of values to generate
+ * @return Integers in [0, max)
  */
 std::vector<uint32_t> SiPMRandom::randInteger(const uint32_t max, const uint32_t n) {
   std::vector<uint32_t> out(n);
@@ -321,6 +308,7 @@ std::vector<uint32_t> SiPMRandom::randInteger(const uint32_t max, const uint32_t
 /**
  * @param mu Mean value of the exponential distribution
  * @param n Number of values to generate
+ * @return Exponentially distributed values
  */
 std::vector<double> SiPMRandom::randExponential(const double mu, const uint32_t n) {
   std::vector<double> out(n);
@@ -335,6 +323,7 @@ std::vector<double> SiPMRandom::randExponential(const double mu, const uint32_t 
 /**
  * @param mu Mean value of the exponential distribution
  * @param n Number of values to generate
+ * @return Exponentially distributed values
  */
 std::vector<float> SiPMRandom::randExponentialF(const float mu, const uint32_t n) {
   std::vector<float> out(n);

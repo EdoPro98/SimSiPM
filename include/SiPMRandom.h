@@ -1,9 +1,9 @@
-/** @class sipm::SiPMRandom SimSiPM/src/components/SiPMRandom.h SiPMRandom.h
+/** @class sipm::SiPMRandom SiPMRandom.h
  *
  * @brief Class for random number generation.
  *
  * Class used for random number generation. The simulation needs very fast
- * pseudo-random number generation, Xorhift256+ algorithm is used as it is one
+ * pseudo-random number generation, xoshiro256+ algorithm is used as it is one
  * of the fastest considering modern x86-64 architectures.
  *
  *  @author Edoardo Proserpio
@@ -51,12 +51,12 @@ namespace SiPMRng {
 class Xorshift256plus {
 public:
   /// @brief Default contructor for Xorshift256plus
-  /// It cretates an instance of Xorhift256plus and sets the seed using
-  /// a 64 bit LCG and a random value from system randomd device
+  /// It creates an instance of Xorshift256plus and sets the seed using
+  /// a 64 bit LCG and a random value from the system random device
   Xorshift256plus() { seed(); }
 
-  /// @brief Constructor with seed for Xorhift256plus
-  /// It cretates an instance of Xorshift256plus and sets the seed
+  /// @brief Constructor with seed for Xorshift256plus
+  /// It creates an instance of Xorshift256plus and sets the seed
   /// using a 64 bit LCG and the seed value provided
   /// @param sd uint64_t User provided seed. Must not be 0!
   explicit Xorshift256plus(const uint64_t sd) { seed(sd); }
@@ -65,16 +65,17 @@ public:
   void seed();
 
   /// @brief Manually set a seed
-  void seed(const uint64_t);
+  /// @param sd Seed, must not be 0
+  void seed(const uint64_t sd);
 
 private:
   // Generator state
-  alignas(64) uint64_t s[4];
+  alignas(64) uint64_t s[4];  ///< Generator state
   // Size of the buffer
-  static constexpr uint32_t N = 1 << 12;
+  static constexpr uint32_t N = 1 << 12;  ///< Size of the buffer
   // Buffer for random values
-  alignas(64) uint64_t buffer[N];
-  uint32_t index = N;
+  alignas(64) uint64_t buffer[N];  ///< Buffer of random values
+  uint32_t index = N;  ///< Next unused value of the buffer
 #ifdef __AVX512F__
   __m512i __sA[4];
   __m512i __sB[4];
@@ -84,7 +85,9 @@ private:
 #endif
 
 public:
-  /// @brief Returns a pseud-random 64-bits integer
+  /// @brief Returns a pseudo-random 64-bits integer
+  /// Values come from a buffer that is refilled (vectorized when AVX2/AVX512 are available) when empty.
+  /// @return A uniformly distributed 64-bits integer
   inline uint64_t operator()() noexcept {
     if (index == N) {
       getRand(buffer, N);
@@ -95,6 +98,9 @@ public:
 
 #ifdef __AVX512F__
   // Overload for uint64_t — two independent states, 16 values per iteration
+  /// @brief Fills an array with 64-bits pseudo-random integers
+  /// @param array Destination, any alignment
+  /// @param n Number of values to generate
   inline void getRand(uint64_t* __restrict array, const uint32_t n) noexcept {
     size_t i = 0;
     for (; i + 16 <= n; i += 16) {
@@ -149,6 +155,9 @@ public:
   }
 
   // Overload for uint32_t — two independent states, 32 values per iteration
+  /// @brief Fills an array with 32-bits pseudo-random integers
+  /// @param array Destination, any alignment
+  /// @param n Number of values to generate
   inline void getRand(uint32_t* array, const uint32_t n) noexcept {
     size_t i = 0;
     for (; i + 32 <= n; i += 32) {
@@ -204,6 +213,9 @@ public:
 #elif defined(__AVX2__)
 
   // Overload for uint64_t — two independent states, 8 values per iteration
+  /// @brief Fills an array with 64-bits pseudo-random integers
+  /// @param array Destination, any alignment
+  /// @param n Number of values to generate
   inline void getRand(uint64_t* __restrict array, const uint32_t n) noexcept {
     size_t i = 0;
     for (; i + 8 <= n; i += 8) {
@@ -256,6 +268,9 @@ public:
   }
 
   // Overload for uint32_t — two independent states, 16 values per iteration
+  /// @brief Fills an array with 32-bits pseudo-random integers
+  /// @param array Destination, any alignment
+  /// @param n Number of values to generate
   inline void getRand(uint32_t* array, const uint32_t n) noexcept {
     size_t i = 0;
     for (; i + 16 <= n; i += 16) {
@@ -309,6 +324,9 @@ public:
 #else
 
   // Overload for uint64_t (most of the times this one is used)
+  /// @brief Fills an array with 64-bits pseudo-random integers
+  /// @param array Destination, any alignment
+  /// @param n Number of values to generate
   inline void getRand(uint64_t* __restrict array, const uint32_t n) {
     for (uint32_t i = 0; i < n; ++i) {
       const uint64_t randVal = s[0] + s[3];
@@ -326,6 +344,9 @@ public:
   }
 
   // Overload for uint32_t
+  /// @brief Fills an array with 32-bits pseudo-random integers
+  /// @param array Destination, any alignment
+  /// @param n Number of values to generate
   inline void getRand(uint32_t* __restrict array, const uint32_t n) {
     const uint32_t pairs = n >> 1;
     for (uint32_t i = 0; i < pairs; ++i) {
@@ -360,66 +381,96 @@ public:
 /** The top 53 bits k are mapped to (k + 1) * 2^-53. The range excludes 0
  * (and includes 1) so that the value can be passed to log() without
  * producing infinities, as needed by exponential and gaussian sampling.
+ * @param u Random bits
+ * @return Value in (0, 1]
  */
 constexpr double unitDouble(const uint64_t u) noexcept { return ((u >> 11) + 1) * 0x1p-53; }
 
 /// @brief Converts 32 random bits to a float uniformly distributed in (0, 1]
-/** The top 24 bits k are mapped to (k + 1) * 2^-24, see @ref unitDouble. */
+/** The top 24 bits k are mapped to (k + 1) * 2^-24, see unitDouble().
+ * @param u Random bits
+ * @return Value in (0, 1]
+ */
 constexpr float unitFloat(const uint32_t u) noexcept { return ((u >> 8) + 1) * 0x1p-24f; }
 
 class SiPMRandom {
 public:
   SiPMRandom() = default;
 
-  /// @brief Get a reference to the underlying PRNG */
+  /// @brief Get a reference to the underlying PRNG
   /// Use this method to seed the PRNG and to get the status
+  /// @return Reference to the Xorshift256plus generator
   SiPMRng::Xorshift256plus& rng() { return m_rng; }
 
-  // Seed underlying rng
+  /// @brief Seeds the underlying PRNG
+  /// @param x Seed, must not be 0
   void seed(const uint64_t x) { m_rng.seed(x); }
 
   /// @brief Gives an uniformly distributed random number in (0, 1]
+  /// @tparam T Type of the number: double (default) or float
+  /// @return Random number in (0, 1]
   template <typename T = double>
   inline T Rand() noexcept;
+  /// @brief Gives two uniformly distributed random floats in (0, 1] from a single 64-bits draw
+  /// @return The two numbers
   pair<float, float> RandF2() noexcept;
   /// @brief Gives an uniform random integer
-  uint32_t randInteger(const uint32_t) noexcept;
-  pair<uint32_t> randInteger2(const uint32_t) noexcept;
+  /// @param max Upper limit, excluded
+  /// @return Integer in [0, max)
+  uint32_t randInteger(const uint32_t max) noexcept;
+  /// @brief Gives two uniform random integers from a single draw
+  /// @param max Upper limit, excluded
+  /// @return Two integers in [0, max)
+  pair<uint32_t> randInteger2(const uint32_t max) noexcept;
 
   /// @brief Gives random value with gaussian distribution
-  double randGaussian(const double, const double) noexcept;
+  /// @param mu Mean value
+  /// @param sigma Standard deviation
+  /// @return Gaussian distributed value
+  double randGaussian(const double mu, const double sigma) noexcept;
   /// @brief Gives random float with gaussian distribution
-  float randGaussianF(const float, const float) noexcept;
-  /// @brief Gives random double with exponential distribution
-  double randExponential(const double) noexcept;
+  /// @param mu Mean value
+  /// @param sigma Standard deviation
+  /// @return Gaussian distributed value
+  float randGaussianF(const float mu, const float sigma) noexcept;
+  /// @brief Gives random value with exponential distribution
+  /// @param mu Mean value
+  /// @return Exponentially distributed value
+  double randExponential(const double mu) noexcept;
   /// @brief Gives random float with exponential distribution
-  float randExponentialF(const float) noexcept;
+  /// @param mu Mean value
+  /// @return Exponentially distributed value
+  float randExponentialF(const float mu) noexcept;
   /// @brief Gives random value with poisson distribution
+  /// Knuth's product method; for mu above 50 the gaussian approximation N(mu, sqrt(mu)) is used.
+  /// @param mu Mean value
+  /// @return Poisson distributed integer
   uint32_t randPoisson(const double mu) noexcept;
 
-  /// @brief Vector version of @ref Rand()
-  std::vector<double> Rand(const uint32_t);
-  /// @brief Vector version of @ref RandF()
-  std::vector<float> RandF(const uint32_t);
-  /// @brief Vector version of @ref randGaussian()
-  std::vector<double> randGaussian(const double, const double, const uint32_t);
-  /// @brief Vector version of @ref randGaussianF()
-  std::vector<float> randGaussianF(const float, const float, const uint32_t);
-  /// @brief Vector version of @ref randInteger()
+  /// @brief Vector version of Rand()
+  std::vector<double> Rand(const uint32_t n);
+  /// @brief Vector of floats in (0, 1], float version of Rand(n)
+  std::vector<float> RandF(const uint32_t n);
+  /// @brief Vector version of randGaussian(), generated with Box-Muller
+  std::vector<double> randGaussian(const double mu, const double sigma, const uint32_t n);
+  /// @brief Vector version of randGaussianF(), generated with a vectorized Box-Muller
+  std::vector<float> randGaussianF(const float mu, const float sigma, const uint32_t n);
+  /// @brief Vector version of randInteger()
   std::vector<uint32_t> randInteger(const uint32_t max, const uint32_t n);
-  /// @brief Vector version of @ref randExponential()
-  std::vector<double> randExponential(const double, const uint32_t);
-  /// @brief Vector version of @ref randExponentialF()
-  std::vector<float> randExponentialF(const float, const uint32_t);
+  /// @brief Vector version of randExponential()
+  std::vector<double> randExponential(const double mu, const uint32_t n);
+  /// @brief Vector version of randExponentialF()
+  std::vector<float> randExponentialF(const float mu, const uint32_t n);
 
 private:
-  SiPMRng::Xorshift256plus m_rng;
+  SiPMRng::Xorshift256plus m_rng;  ///< Underlying generator
 };
 
 /**
  * Returns a random double uniformly distributed in (0, 1].
  * Zero is excluded so the value can be safely passed to log(),
- * see @ref unitDouble.
+ * see unitDouble().
+ * @return Random number in (0, 1]
  */
 template <>
 inline double SiPMRandom::Rand<double>() noexcept {
@@ -429,7 +480,8 @@ inline double SiPMRandom::Rand<double>() noexcept {
 /**
  * Returns a random float uniformly distributed in (0, 1].
  * Zero is excluded so the value can be safely passed to log(),
- * see @ref unitFloat.
+ * see unitFloat().
+ * @return Random number in (0, 1]
  */
 template <>
 inline float SiPMRandom::Rand<float>() noexcept {
