@@ -10,7 +10,6 @@
 - Single main simulation class (`SiPMSensor`) orchestrates the complete event simulation
 - Header/Implementation separation with all logic in `include/` headers and `src/` implementations
 - Heavy reliance on value semantics and const-correctness for thread safety
-- Custom utility types (`SiPMTypes.h`) provide performance-critical infrastructure
 
 ## Layers
 
@@ -46,7 +45,7 @@
 - Purpose: Provide high-performance PRNG for simulation stochasticity
 - Location: `include/SiPMRandom.h`, `src/SiPMRandom.cpp`
 - Contains: `Xorshift256plus` (xoshiro256+ 1.0), distribution wrappers
-- Depends on: AVX512 intrinsics (optional), custom allocation (`sipmAlloc`)
+- Depends on: AVX2/AVX512 intrinsics (optional)
 - Used by: All random number generation calls throughout simulation
 
 ## Data Flow
@@ -143,7 +142,6 @@
 - **Smart pointers avoided** for performance-critical paths
 - `SiPMHit*` stored in `std::vector<SiPMHit*> m_Hits` with manual `new`/`delete`
 - Cleanup in `SiPMSensor::resetState()`
-- Custom allocator (`sipmAlloc`/`sipmFree`) for RNG buffers
 
 **Thread Safety:**
 - **No concurrent access guarantees** - `m_rng` returned by value
@@ -157,7 +155,6 @@
 
 **Optimization Patterns:**
 - **Value semantics** - `SiPMDebugInfo` passed by value, `const&` where large
-- **Avoid heap** - `SiPMSmallVector` with small-buffer optimization
 - **SIMD** - AVX512 intrinsics for RNG (conditional on `__AVX512F__`)
 - **Template specialization** - `Rand<float>`, `Rand<double>` for type safety
 - **Move semantics** - `std::move(wav)` in `SiPMAnalogSignal` constructor
@@ -170,8 +167,7 @@ SiPMSensor (main orchestrator)
 ├── SiPMRandom (PRNG)
 ├── SiPMAnalogSignal (waveform storage)
 ├── SiPMHit (event representation)
-├── SiPMDebugInfo (MC-truth)
-└── SiPMTypes (utility types, allocator)
+└── SiPMDebugInfo (MC-truth)
 ```
 
 ---

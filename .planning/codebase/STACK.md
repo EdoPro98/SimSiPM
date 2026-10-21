@@ -21,8 +21,6 @@
 
 **Environment:**
 - **System C++ Library** - Standard C library (glibc on Linux, libc on macOS)
-  - Uses `malloc`/`free`/`realloc` with custom `sipmAlloc`/`sipmFree` wrappers for alignment
-  - Supports `aligned_alloc` on AVX-512 capable systems
 
 **Package Manager:**
 - **setuptools** (Python) - Build backend for Python packaging

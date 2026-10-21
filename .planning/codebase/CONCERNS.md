@@ -38,9 +38,8 @@
   }
   return retval;
   ```
-- Integer underflow/overflow not checked (e.g., bit shifts in `SiPMTypes.h`)
+- Integer underflow/overflow not checked (e.g., bit shifts in the RNG)
 - Vector bounds checks rely on standard library (compiler optimization friendly)
-- Memory allocation via custom `sipmAlloc`/`sipmFree` with no error checking
 
 **Risk:** Silent failures where errors return default values may lead to:
 - Misinterpretation of results (e.g., peak = `-1` treated as valid value)
@@ -52,27 +51,6 @@
 - Return status codes or use `std::optional` for critical operations
 - Document all default return values clearly in API documentation
 
-## Memory Management
-
-**Current State:** Custom memory management with potential issues.
-
-**Observations:**
-- Custom allocators `sipmAlloc`/`sipmFree` in `SiPMTypes.h` (lines 50-61)
-- `sipmAlloc` uses `aligned_alloc` for AVX-512 alignment (64 bytes) or `malloc` otherwise
-- `SiPMSmallVector` class manages memory internally with heap fallback (lines 63-154)
-- Manual `sipmFree` calls throughout `SiPMRandom.cpp` (lines 333, 386, 442)
-- No RAII wrappers around `sipmAlloc` objects
-- `SiPMSmallVector` destructor only frees `m_HeapStorage` (lines 93-97)
-
-**Risk:**
-- Memory leaks if `sipmFree` is not called explicitly (though it appears to be in all current paths)
-- `sipmAlloc` alignment requirement may fail on non-aligned memory (e.g., heap fragmentation)
-- No detection of memory allocation failures from `aligned_alloc`
-
-**Recommendations:**
-- Wrap `sipmAlloc`/`sipmFree` in RAII smart pointer equivalents
-- Add allocation failure checks in debug builds
-- Consider replacing custom allocators with `std::aligned_allocator` when available
 
 ## Platform-Specific Code
 
@@ -137,7 +115,6 @@ target_compile_options(SiPM PRIVATE -fvisibility=hidden -ffast-math -O3)
 - All random number generation uses custom `Xorshift256plus` implementation
 - Vectorized generation via AVX-512 when available
 - Custom `SiPMAnalogSignal` integral/peak/tot/toa/top methods avoid unnecessary allocations
-- `SiPMSmallVector` uses stack allocation before falling back to heap
 - Signal processing in `src/SiPMAnalogSignal.cpp` (lines 16-115) operates on `std::vector<float>` directly
 
 **Benchmark Files:**

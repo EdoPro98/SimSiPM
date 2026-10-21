@@ -1,6 +1,5 @@
 #include "SiPMRandom.h"
 
-#include "SiPMTypes.h"
 #include <cstdint>
 #include <cmath>
 #include <cstdlib>
@@ -125,7 +124,7 @@ void Xorshift256plus::seed(const uint64_t aseed) {
 // SCALAR //
 
 // Generate two 32 bit floating from one 64 bit integer
-pair<float, float> SiPMRandom::RandF2() noexcept {
+std::pair<float, float> SiPMRandom::RandF2() noexcept {
   const uint64_t u64 = m_rng();
   const uint32_t lo = static_cast<uint32_t>(u64);
   const uint32_t hi = static_cast<uint32_t>(u64 >> 32);
@@ -186,7 +185,7 @@ float SiPMRandom::randGaussianF(const float mu, const float sigma) noexcept {
 
 uint32_t SiPMRandom::randInteger(const uint32_t max) noexcept { return ((m_rng() >> 32) * max) >> 32; }
 
-pair<uint32_t> SiPMRandom::randInteger2(const uint32_t max) noexcept {
+std::pair<uint32_t, uint32_t> SiPMRandom::randInteger2(const uint32_t max) noexcept {
   const uint64_t u64 = m_rng();
   // Use direct multiplication and bit-shifting
   // Use local variables to help compiler optimize

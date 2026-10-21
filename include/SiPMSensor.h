@@ -17,6 +17,7 @@
 #include <cstdint>
 #include <iostream>
 #include <sstream>
+#include <utility>
 #include <vector>
 
 #include "SiPMAnalogSignal.h"
@@ -24,7 +25,6 @@
 #include "SiPMHit.h"
 #include "SiPMProperties.h"
 #include "SiPMRandom.h"
-#include "SiPMTypes.h"
 
 namespace sipm {
 class SiPMSensor {
@@ -160,21 +160,21 @@ private:
   }
   /// @brief Cell hit with a uniform distribution
   /// @return Row and column of the cell
-  pair<uint32_t> hitUniform() const;
+  std::pair<uint32_t, uint32_t> hitUniform() const;
   /// @brief Cell hit with the kCircle distribution
   /// @return Row and column of the cell
-  pair<uint32_t> hitCircle() const;
+  std::pair<uint32_t, uint32_t> hitCircle() const;
   /// @brief Cell hit with the kGaussian distribution, from two standard normal numbers
   /// Points outside +-1.64 sigma on any axis are replaced by a uniform hit.
   /// @param x Standard normal number for the row
   /// @param y Standard normal number for the column
   /// @return Row and column of the cell
-  pair<uint32_t> hitGaussian(float x, float y) const;
+  std::pair<uint32_t, uint32_t> hitGaussian(float x, float y) const;
   /// @brief Cell hit by a photon with the distribution set in the properties
   /// @param gauss Standard normal (x, y) pairs, one per photon, used only by kGaussian
   /// @param photonIdx Index of the photon
   /// @return Row and column of the cell
-  pair<uint32_t> hitCell(const std::vector<float>& gauss, uint32_t photonIdx) const;
+  std::pair<uint32_t, uint32_t> hitCell(const std::vector<float>& gauss, uint32_t photonIdx) const;
   /// @brief Computes the pulse shape of one photoelectron into m_SignalShape
   /// Sum of a fast and an optional slow decaying exponential minus a rising one, scaled to a peak equal to the gain. Does nothing for a custom shape.
   /// Must be called every time the properties change.

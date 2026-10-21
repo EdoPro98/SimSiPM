@@ -9,6 +9,5 @@
 #include "SiPMProperties.h"
 #include "SiPMRandom.h"
 #include "SiPMSensor.h"
-#include "SiPMTypes.h"
 
 #endif

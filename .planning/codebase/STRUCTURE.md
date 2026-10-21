@@ -8,7 +8,6 @@
 /root/SimSiPM/
 ├── include/               # Public header files (interface layer)
 │   ├── SiPM.h            # Main include, aggregates all headers
-│   ├── SiPMTypes.h       # Custom types: pair, SiPMSmallVector, sipmAlloc
 │   ├── SiPMAnalogSignal.h # Signal waveform class
 │   ├── SiPMHit.h         # Detection event class
 │   ├── SiPMDebugInfo.h   # MC-truth metadata
@@ -76,7 +75,6 @@
 
 **Configuration:**
 - `src/SiPMProperties.cpp`: Property parsing and validation
-- `include/SiPMTypes.h`: Custom types and memory allocation
 
 **Core Logic:**
 - `src/SiPMSensor.cpp`: Complete event simulation pipeline
@@ -124,7 +122,6 @@
 - Example: `src/NewComponent.cpp` → `include/NewComponent.h`
 
 **Utilities:**
-- Shared helpers: Add to `include/SiPMTypes.h` (custom allocator, small vectors)
 - Signal processing: Add to `src/SiPMAnalogSignal.cpp`
 - Random distributions: Add to `src/SiPMRandom.cpp`
 

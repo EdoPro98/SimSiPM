@@ -64,8 +64,6 @@ std::vector<uint32_t> randInteger(uint32_t max, uint32_t n);
 - Uses STL containers for data:
   - `std::vector` for waveforms and photon lists
   - `std::map<double, double>` for PDE wavelength spectra
-  - `std::unordered_map` for hit hash tables
-  - `std::array` (via `SiPMSmallVector`) for small buffers
 
 **File Storage:**
 - **Local filesystem only**
@@ -73,17 +71,6 @@ std::vector<uint32_t> randInteger(uint32_t max, uint32_t n);
   - Format: Key-value pairs with `=` delimiter
   - Supports comments starting with `#` or `/`
   - Location: Any accessible file path passed to method
-
-**In-Memory Structures:**
-- **SmallVector:** `SiPMSmallVector<N = 3>` template class
-  - Stack-allocated storage for small counts
-  - Auto-promotes to heap when exceeding capacity
-  - Location: `include/SiPMTypes.h`
-  - Uses custom heap allocation to avoid `<vector>` overhead
-
-- **Pair:** Custom `pair` template (no runtime checks)
-  - Location: `include/SiPMTypes.h`
-  - Optimized for performance (no bounds checking)
 
 ## Authentication & Identity
 

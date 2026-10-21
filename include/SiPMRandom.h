@@ -23,9 +23,9 @@
 #include <cmath>
 #include <cstdint>
 #include <cstring>
+#include <utility>
 #include <vector>
 
-#include "SiPMTypes.h"
 
 // Musl implementation of lcg64
 // Keeping this function limited to this translation unit
@@ -413,7 +413,7 @@ public:
   inline T Rand() noexcept;
   /// @brief Gives two uniformly distributed random floats in (0, 1] from a single 64-bits draw
   /// @return The two numbers
-  pair<float, float> RandF2() noexcept;
+  std::pair<float, float> RandF2() noexcept;
   /// @brief Gives an uniform random integer
   /// @param max Upper limit, excluded
   /// @return Integer in [0, max)
@@ -421,7 +421,7 @@ public:
   /// @brief Gives two uniform random integers from a single draw
   /// @param max Upper limit, excluded
   /// @return Two integers in [0, max)
-  pair<uint32_t> randInteger2(const uint32_t max) noexcept;
+  std::pair<uint32_t, uint32_t> randInteger2(const uint32_t max) noexcept;
 
   /// @brief Gives random value with gaussian distribution
   /// @param mu Mean value
