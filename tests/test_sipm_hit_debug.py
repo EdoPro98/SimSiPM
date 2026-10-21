@@ -84,9 +84,9 @@ class TestHitAccessors:
         h, _ = _one_hit()
         assert h.hitType() == SiPM.SiPMHit.HitType.kPhotoelectron
 
-    def test_photoelectron_parent_is_none(self):
+    def test_photoelectron_has_no_parent(self):
         h, _ = _one_hit()
-        assert h.parent() is None
+        assert h.parentIdx() == -1
 
     def test_repr_nonempty(self):
         h, _ = _one_hit()
@@ -131,10 +131,11 @@ class TestXtHits:
         found = False
         for _ in range(200):
             s.resetState(); s.addPhoton(10.0); s.runEvent()
-            for h in s.hits():
+            hits = s.hits()
+            for h in hits:
                 if h.hitType() == SiPM.SiPMHit.HitType.kOpticalCrosstalk:
-                    parent = h.parent()
-                    assert parent is not None
+                    assert 0 <= h.parentIdx() < len(hits)
+                    parent = hits[h.parentIdx()]
                     assert not (h.row() == parent.row() and h.col() == parent.col())
                     found = True
         assert found
@@ -150,13 +151,15 @@ class TestApHits:
         found = False
         for _ in range(200):
             s.resetState(); s.addPhoton(10.0); s.runEvent()
-            for h in s.hits():
+            hits = s.hits()
+            for h in hits:
                 if h.hitType() in (SiPM.SiPMHit.HitType.kFastAfterPulse,
                                    SiPM.SiPMHit.HitType.kSlowAfterPulse):
-                    assert h.parent() is not None
-                    assert h.time() > h.parent().time()
-                    assert h.row() == h.parent().row()
-                    assert h.col() == h.parent().col()
+                    assert 0 <= h.parentIdx() < len(hits)
+                    parent = hits[h.parentIdx()]
+                    assert h.time() > parent.time()
+                    assert h.row() == parent.row()
+                    assert h.col() == parent.col()
                     found = True
         assert found
 
