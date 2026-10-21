@@ -146,15 +146,15 @@ BENCHMARK_F(RngFixture, ScalarRandF2)(benchmark::State& st) {
 // 4. Scalar derived distributions
 // ============================================================================
 
-// Gaussian (double) — acceptance-complement ratio (ACR).
-// Fast path: ~1.7 Rand() calls; slow path (tail): log + exp involved.
+// Gaussian (double) — Marsaglia polar: ~2.5 Rand(), one log, div and sqrt.
+// Rejection loop accepts 78.5% of points.
 BENCHMARK_F(RngFixture, ScalarGaussianDouble)(benchmark::State& st) {
   for (auto _ : st)
     benchmark::DoNotOptimize(m_rng.randGaussian(0.0, 1.0));
   st.SetItemsProcessed(st.iterations());
 }
 
-// Gaussian (float) — same ACR in single precision.
+// Gaussian (float) — the double method narrowed to float.
 BENCHMARK_F(RngFixture, ScalarGaussianFloat)(benchmark::State& st) {
   for (auto _ : st)
     benchmark::DoNotOptimize(m_rng.randGaussianF(0.0f, 1.0f));

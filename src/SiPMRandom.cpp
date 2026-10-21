@@ -173,194 +173,29 @@ double SiPMRandom::randExponential(const double mu) noexcept { return -log(Rand(
  */
 float SiPMRandom::randExponentialF(const float mu) noexcept { return -logf(Rand<float>()) * mu; }
 /**
-*   @brief Samples a random number from the standard Normal (Gaussian) Distribution with the given mean and sigma.
-*
-* Uses the Acceptance-complement ratio from W. Hoermann and G. Derflinger
-* This is one of the fastest existing method for generating normal random variables.
-* It is a factor 2/3 faster than the polar (Box-Muller) method used in the previous
-* version of TRandom::Gaus. The speed is comparable to the Ziggurat method (from Marsaglia)
-* implemented for example in GSL.
-*
-* REFERENCE:  - W. Hoermann and G. Derflinger (1990):
-*              The ACR Method for generating normal random variables,
-*              OR Spektrum 12 (1990), 181-185.
-*
-* Implementation taken from
-* UNURAN (c) 2000  W. Hoermann & J. Leydold, Institut f. Statistik, WU Wien
-
-* @param mu Mean value of the gaussian distribution
-* @param sigma Standard deviation of the gaussian distribution
-* @return double value from gaussian distribution
-*/
+ * Marsaglia polar method: a point uniform in the unit disk (accepted 78.5% of
+ * the time) needs only one log, one division and one sqrt, no trig. Measured
+ * faster than Box-Muller and the previous ACR method for single calls.
+ * @param mu Mean value of the gaussian distribution
+ * @param sigma Standard deviation of the gaussian distribution
+ * @return double value from gaussian distribution
+ */
 double SiPMRandom::randGaussian(const double mu, const double sigma) noexcept {
-  static constexpr double kC1 = 1.448242853;
-  static constexpr double kC2 = 3.307147487;
-  static constexpr double kC3 = 1.46754004;
-  static constexpr double kD1 = 1.036467755;
-  static constexpr double kD2 = 5.295844968;
-  static constexpr double kD3 = 3.631288474;
-  static constexpr double kHm = 0.483941449;
-  static constexpr double kZm = 0.107981933;
-  static constexpr double kHp = 4.132731354;
-  static constexpr double kZp = 18.52161694;
-  static constexpr double kPhln = 0.4515827053;
-  static constexpr double kHm1 = 0.516058551;
-  static constexpr double kHp1 = 3.132731354;
-  static constexpr double kHzm = 0.375959516;
-  static constexpr double kHzmp = 0.591923442;
-  /*zhm 0.967882898*/
-
-  static constexpr double kAs = 0.8853395638;
-  static constexpr double kBs = 0.2452635696;
-  static constexpr double kCs = 0.2770276848;
-  static constexpr double kB = 0.5029324303;
-  static constexpr double kX0 = 0.4571828819;
-  static constexpr double kYm = 0.187308492;
-  static constexpr double kS = 0.7270572718;
-  static constexpr double kT = 0.03895759111;
-
+  double x, y, r;
   do {
-    const double y = Rand();
-
-    if (y > kHm1) {
-      const double result = kHp * y - kHp1;
-      return result * sigma + mu;
-    }
-
-    if (y < kZm) {
-      const double rn = kZp * y - 1;
-      const double result = (rn > 0) ? (1 + rn) : (-1 + rn);
-      return result * sigma + mu;
-    }
-
-    if (y < kHm) {
-      const double rn = 2 * Rand() - 1;
-      const double z = (rn > 0) ? 2 - rn : -2 - rn;
-      if ((kC1 - y) * (kC3 + std::abs(z)) < kC2) {
-        return z * sigma + mu;
-      }
-      const double x = rn * rn;
-      if ((y + kD1) * (kD3 + x) < kD2) {
-        return rn * sigma + mu;
-      }
-      if (kHzmp - y < exp(-(z * z + kPhln) * 0.5)) {
-        return z * sigma + mu;
-      }
-      if (y + kHzm < exp(-(x + kPhln) * 0.5)) {
-        return rn * sigma + mu;
-      }
-    }
-
-    while (true) {
-      double x = Rand();
-      double y = kYm * Rand();
-      const double z = kX0 - kS * x - y;
-      double rn;
-      if (z > 0) {
-        rn = 2 + y / x;
-      } else {
-        x = 1 - x;
-        y = kYm - y;
-        rn = -(2 + y / x);
-      }
-      if ((y - kAs + x) * (kCs + x) + kBs < 0) {
-        return rn * sigma + mu;
-      }
-      if (y < x + kT) {
-        if (rn * rn < 4 * (kB - log(x))) {
-          return rn * sigma + mu;
-        }
-      }
-    }
-  } while (false);
+    x = 2 * Rand() - 1;
+    y = 2 * Rand() - 1;
+    r = x * x + y * y;
+  } while (r >= 1 || r == 0);
+  return x * std::sqrt(-2 * std::log(r) / r) * sigma + mu;
 }
 
 /**
- * Float implemented of @ref randGaussian.
- * It is not faster than double version but is kept to avoid
- * casting double to float.
+ * Float version of @ref randGaussian. Every float-only variant measured
+ * slower than the double method, so this just narrows its result.
  */
 float SiPMRandom::randGaussianF(const float mu, const float sigma) noexcept {
-  static constexpr float kC1 = 1.448242853;
-  static constexpr float kC2 = 3.307147487;
-  static constexpr float kC3 = 1.46754004;
-  static constexpr float kD1 = 1.036467755;
-  static constexpr float kD2 = 5.295844968;
-  static constexpr float kD3 = 3.631288474;
-  static constexpr float kHm = 0.483941449;
-  static constexpr float kZm = 0.107981933;
-  static constexpr float kHp = 4.132731354;
-  static constexpr float kZp = 18.52161694;
-  static constexpr float kPhln = 0.4515827053;
-  static constexpr float kHm1 = 0.516058551;
-  static constexpr float kHp1 = 3.132731354;
-  static constexpr float kHzm = 0.375959516;
-  static constexpr float kHzmp = 0.591923442;
-  /*zhm 0.967882898*/
-
-  static constexpr float kAs = 0.8853395638;
-  static constexpr float kBs = 0.2452635696;
-  static constexpr float kCs = 0.2770276848;
-  static constexpr float kB = 0.5029324303;
-  static constexpr float kX0 = 0.4571828819;
-  static constexpr float kYm = 0.187308492;
-  static constexpr float kS = 0.7270572718;
-  static constexpr float kT = 0.03895759111;
-
-  do {
-    const float y = Rand<float>();
-
-    if (y > kHm1) {
-      const float result = kHp * y - kHp1;
-      return result * sigma + mu;
-    }
-
-    if (y < kZm) {
-      const float rn = kZp * y - 1;
-      const float result = (rn > 0) ? (1 + rn) : (-1 + rn);
-      return result * sigma + mu;
-    }
-
-    if (y < kHm) {
-      const float rn = 2 * Rand<float>() - 1;
-      const float z = (rn > 0) ? 2 - rn : -2 - rn;
-      if ((kC1 - y) * (kC3 + std::abs(z)) < kC2) {
-        return z * sigma + mu;
-      }
-      const float x = rn * rn;
-      if ((y + kD1) * (kD3 + x) < kD2) {
-        return rn * sigma + mu;
-      }
-      if (kHzmp - y < exp(-(z * z + kPhln) * 0.5)) {
-        return z * sigma + mu;
-      }
-      if (y + kHzm < exp(-(x + kPhln) * 0.5)) {
-        return rn * sigma + mu;
-      }
-    }
-
-    while (true) {
-      float x = Rand<float>();
-      float y = kYm * Rand<float>();
-      const float z = kX0 - kS * x - y;
-      float rn;
-      if (z > 0) {
-        rn = 2 + y / x;
-      } else {
-        x = 1 - x;
-        y = kYm - y;
-        rn = -(2 + y / x);
-      }
-      if ((y - kAs + x) * (kCs + x) + kBs < 0) {
-        return rn * sigma + mu;
-      }
-      if (y < x + kT) {
-        if (rn * rn < 4 * (kB - logf(x))) {
-          return rn * sigma + mu;
-        }
-      }
-    }
-  } while (false);
+  return static_cast<float>(randGaussian(mu, sigma));
 }
 
 /**
