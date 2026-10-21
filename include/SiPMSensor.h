@@ -114,7 +114,7 @@ private:
   pair<uint32_t> hitUniform() const;
   pair<uint32_t> hitCircle() const;
   pair<uint32_t> hitGaussian(float x, float y) const;
-  pair<uint32_t> hitCell(uint32_t photonIdx) const;
+  pair<uint32_t> hitCell(const std::vector<float>& gauss, uint32_t photonIdx) const;
   void signalShape();
   void updatePdeTable();
 
@@ -146,7 +146,6 @@ private:
   float m_SignalNorm = 0; // gain / peak of the analytic shape, used by the recursive convolution
   std::vector<int32_t> m_CellHead; // per-cell first hit index, all -1 between events
   std::vector<double> m_PdeX, m_PdeSlope, m_PdeIntercept; // flat copy of pdeSpectrum segments
-  std::vector<float> m_HitGauss; // 2 gaussian coordinates per photon for kGaussian hit distribution
   SiPMAnalogSignal m_Signal;
 };
 

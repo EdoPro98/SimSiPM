@@ -216,14 +216,14 @@ pair<uint32_t> SiPMSensor::hitGaussian(const float x, const float y) const {
   return hit;
 }
 
-pair<uint32_t> SiPMSensor::hitCell(const uint32_t photonIdx) const {
+pair<uint32_t> SiPMSensor::hitCell(const std::vector<float>& gauss, const uint32_t photonIdx) const {
   switch (m_Properties.hitDistribution()) {
   case SiPMProperties::HitDistribution::kUniform:
     return hitUniform();
   case SiPMProperties::HitDistribution::kCircle:
     return hitCircle();
   case SiPMProperties::HitDistribution::kGaussian:
-    return hitGaussian(m_HitGauss[2 * photonIdx], m_HitGauss[2 * photonIdx + 1]);
+    return hitGaussian(gauss[2 * photonIdx], gauss[2 * photonIdx + 1]);
   }
 }
 
@@ -257,16 +257,18 @@ void SiPMSensor::addPhotoelectrons() {
   const SiPMProperties::PdeType pdeType = m_Properties.pdeType();
   constexpr SiPMHit::HitType photoelectron = SiPMHit::HitType::kPhotoelectron;
   m_Hits.reserve(m_Hits.size() + nPhotons);
-  // Gaussian hit positions are drawn in bulk: the vectorized generator is far cheaper than per-hit draws
+  // One (x, y) gaussian coordinate per photon, drawn in bulk (vectorized) before
+  // the PDE cut: coordinates of rejected photons are simply not used
+  std::vector<float> gauss;
   if (m_Properties.hitDistribution() == SiPMProperties::HitDistribution::kGaussian) {
-    m_HitGauss = m_rng.randGaussianF(0.0f, 1.0f, 2 * nPhotons);
+    gauss = m_rng.randGaussianF(0.0f, 1.0f, 2 * nPhotons);
   }
 
   switch (pdeType) {
     case SiPMProperties::PdeType::kNoPde:
       for (uint32_t i = 0; i < nPhotons; ++i) {
         if (m_PhotonTimes[i] < 0 || m_PhotonTimes[i] >= sigLen) { continue; }
-        const pair<uint32_t> position = hitCell(i);
+        const pair<uint32_t> position = hitCell(gauss, i);
         m_Hits.emplace_back(m_PhotonTimes[i], 1.f, position.first, position.second, photoelectron);
         m_nTotalHits++;
         m_nPe++;
@@ -276,7 +278,7 @@ void SiPMSensor::addPhotoelectrons() {
       for (uint32_t i = 0; i < nPhotons; ++i) {
         if (m_PhotonTimes[i] < 0 || m_PhotonTimes[i] >= sigLen) { continue; }
         if (m_rng.Rand() <= m_Properties.pde()) {
-          const pair<uint32_t> position = hitCell(i);
+          const pair<uint32_t> position = hitCell(gauss, i);
           m_Hits.emplace_back(m_PhotonTimes[i], 1.f, position.first, position.second, photoelectron);
           m_nTotalHits++;
           m_nPe++;
@@ -287,7 +289,7 @@ void SiPMSensor::addPhotoelectrons() {
       for (uint32_t i = 0; i < nPhotons; ++i) {
         if (m_PhotonTimes[i] < 0 || m_PhotonTimes[i] >= sigLen) { continue; }
         if (i < m_PhotonWavelengths.size() && m_rng.Rand() <= evaluatePde(m_PhotonWavelengths[i])) {
-          const pair<uint32_t> position = hitCell(i);
+          const pair<uint32_t> position = hitCell(gauss, i);
           m_Hits.emplace_back(m_PhotonTimes[i], 1.f, position.first, position.second, photoelectron);
           m_nTotalHits++;
           m_nPe++;
