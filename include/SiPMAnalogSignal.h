@@ -57,7 +57,7 @@ public:
   inline double sampling() const { return m_Sampling; }
   /// @brief Length of the signal
   /// @return Signal length in ns (size() * sampling())
-  inline double length() const { return (double)m_Waveform.size() / m_Sampling; }
+  inline double length() const { return (double)m_Waveform.size() * m_Sampling; }
   /// @brief Waveform samples
   /// @return Const reference to the samples (1 = amplitude of one photoelectron)
   inline const std::vector<float>& waveform() const noexcept {return m_Waveform; }

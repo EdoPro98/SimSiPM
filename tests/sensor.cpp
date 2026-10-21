@@ -608,6 +608,17 @@ TEST_F(TestSiPMSensor, HitsOnlyEventGivesSameHitsAndSignalAsFullEvent) {
   for (uint32_t i = 0; i < a.size(); ++i) ASSERT_EQ(a[i], b[i]) << i;
 }
 
+TEST_F(TestSiPMSensor, SignalLengthIsInNanoseconds) {
+  SiPMProperties p;
+  p.setSampling(0.5);
+  p.setSignalLength(200);
+  SiPMSensor sensor(p);
+  sensor.runEvent();
+  const SiPMAnalogSignal signal = sensor.signal();
+  ASSERT_EQ(signal.size(), 400u);
+  EXPECT_DOUBLE_EQ(signal.length(), 200.0);
+}
+
 TEST_F(TestSiPMSensor, LazySignalIsGeneratedOnlyOnce) {
   SiPMSensor sensor(noisyProps());
   fillPhotons(sensor);

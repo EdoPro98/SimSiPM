@@ -151,7 +151,7 @@ std::ostream& operator<<(std::ostream& out, const SiPMAnalogSignal& obj) {
   out << std::setprecision(2) << std::fixed;
   out << "===> SiPM Analog Signal <===\n";
   out << "Address: " << std::hex << std::addressof(obj) << "\n";
-  out << "Signal length is: " << std::dec << obj.m_Waveform.size() / obj.m_Sampling << " ns\n";
+  out << "Signal length is: " << std::dec << obj.length() << " ns\n";
   out << "Signal is sampled every: " << obj.m_Sampling << " ns\n";
   out << "Signal contains: " << obj.m_Waveform.size() << " points";
   return out;
