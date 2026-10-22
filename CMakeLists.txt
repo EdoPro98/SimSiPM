@@ -68,7 +68,8 @@ add_library(sipm SHARED
 # Include files
 target_include_directories(sipm PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/sipm>
 )
 
 target_link_libraries(sipm PRIVATE nlohmann_json::nlohmann_json)
