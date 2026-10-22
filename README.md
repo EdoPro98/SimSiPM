@@ -12,345 +12,579 @@
 [![Downloads](https://static.pepy.tech/personalized-badge/sipm?period=total&units=international_system&left_color=grey&right_color=blue&left_text=PyPi%20Downloads)](https://pepy.tech/project/sipm)
 [![Downloads](https://static.pepy.tech/personalized-badge/sipm?period=week&units=international_system&left_color=grey&right_color=blue&left_text=PyPi%20Downloads%20/%20Week)](https://pepy.tech/project/sipm)
 
+**A fast, dependency-free C++ library (with Python bindings) to simulate Silicon Photomultipliers: from photons to waveforms, including noise, crosstalk, afterpulses and saturation.**
+
+<p align="center"><img src="images/signals.png" width=640></p>
+<p align="center"><sub>The same sensor simulated with 1, 10 and 100 photons (scintillation-like arrival times). Each event takes a few microseconds.</sub></p>
+
 ## Authors
-SimSiPM has been developed by Edoardo Proserpio under the supervision of professor Romualdo Santoro at University of Insubria Como - Italy.  
-SimSiPM is distrubuted as an Open Source project and if you plan to use it please acknowledge us as authors or [cite](#cite) us in your paper.
+SimSiPM has been developed by Edoardo Proserpio under the supervision of professor Romualdo Santoro at University of Insubria Como - Italy.
+SimSiPM is distributed as an Open Source project and if you plan to use it please acknowledge us as authors or [cite](#cite) us in your paper.
 
 ## Table of contents
-1. [Introduction](#introduction)  
-2. [Features](#features)  
-3. [Installation](#installation)
-  - [C++](#c++install)
-  - [Python](#pyinstall)
-4. [C++ Basic use](#c++_basic_bsage)  
-5. [Python Basic use](#python_basic_usage)  
-6. [Advanced use](#advanced_use)  
-  - [Pde](#pde)
-  - [Hit distribution](#hit)
-7. [Contributing](#contrib)
+1. [Introduction](#introduction)
+2. [Features](#features)
+3. [How the simulation works](#how-the-simulation-works)
+4. [Installation](#installation)
+5. [Quick start](#quick-start)
+6. [User guide](#user-guide)
+7. [Physics models](#physics-models)
+8. [Results](#results)
+9. [Performance](#performance)
+10. [Examples, tests and documentation](#examples-tests-and-documentation)
+11. [Contributing](#contributing)
+12. [Cite](#cite)
+13. [Contacts](#contacts)
 
-## <a name="introduction"></a>Introduction
+## Introduction
 SimSiPM is a simple and easy to use C++ library providing a set of object-oriented tools with all the functionality needed to describe and simulate Silicon PhotonMultipliers (SiPM) sensors.
-The main goal of SimSiPM is to include the response of SiPM sensors, along with noise and saturation effects, in the description of a generic detector in order to have a more detailed simulation. It can also be used to perform optimization studies considering different SiPMs models allowing to choose the most suitable product available on the market.
+The main goal of SimSiPM is to include the response of SiPM sensors, along with noise and saturation effects, in the description of a generic detector in order to have a more detailed simulation. It can also be used to perform optimization studies considering different SiPM models, allowing to choose the most suitable product available on the market.
 
-SimSiPM code mostly follows FCCSW rules and guidelines concerning C++. SimSiPM has been developed especially for high-energy physics applications and particle physics experiments, however its flexibility allows to simulate any kind of experiments involving SiPM devices.
+SimSiPM has been developed especially for high-energy physics applications and particle physics experiments, however its flexibility allows to simulate any kind of experiment involving SiPM devices.
 
-SimSiPM does not have any major external dependency making it the perfect candidate to be used in an already existing environment (Geant4 or DD4HEP) or as "stand-alone".
+SimSiPM does not have any external runtime dependency, which makes it the perfect candidate to be used in an already existing environment (Geant4 or DD4HEP) or as "stand-alone".
 
-<p align="center"><img src="images/signals.svg" width=500></p>
+## Features
+- **Easy to use**
+  - Straightforward installation without external dependencies (C++17 and CMake)
+  - Object oriented API where a `std::vector` of photon times is all the input you need
+  - Python bindings via Pybind11, with zero-copy [NumPy](https://numpy.org) access to the waveforms
+  - Interactive real-time simulator in [`examples/gui`](examples/gui)
+- **Describes a real SiPM**
+  - Parameters that come from the datasheet or from laboratory measurements: size, cell pitch, DCR, crosstalk, afterpulses, PDE, cell recovery time, pulse shape, SNR
+  - Dark counts, optical crosstalk (also delayed), fast and slow afterpulses, cell-to-cell gain variation and saturation, all with their correlations: every hit knows which hit generated it
+  - Flat or wavelength-dependent photon detection efficiency, and three hit distributions on the sensor surface (uniform, circular, gaussian)
+  - Analytic pulse shape with optional slow component, or your own measured pulse shape
+  - No electronic circuit simulation
+- **Flexible output**
+  - Complete list of hits with time, cell, amplitude, type and parent, plus Monte Carlo truth counters
+  - Waveform and feature extraction: integral, peak, time of arrival, time over threshold, time of peak
+  - **Hit-only mode**: skip the waveform when you only need the hits, the signal is generated on demand
+- **High performance**
+  - A typical 25-photon event takes about 2 µs, a 1000-photon event about 30 µs ([benchmarks](#performance))
+  - Vectorized random number generation (AVX2 / AVX-512) and signal generation, low memory footprint
+- **Reliable**
+  - Unit tests in C++ (GoogleTest) and Python (pytest) and complete [Doxygen](#examples-tests-and-documentation) documentation
 
+## How the simulation works
+Everything starts from the arrival times of the photons on the sensor. The simulation is done in two stages that can be run together or separately: first the **hits** (which cells fire, when and how strongly), then the **signal** (the waveform made by those hits).
 
-## <a name="features"></a>Features
-- Easy to use:
-  - Straight forward installation without external dependencies
-  - Easy to use Object Oriented paradigm
-  - Python implementation via Pybind11
-- Description of SiPM sensors:
-  - Driven by parameters that can be obtained from the datasheet or laboratory measurements
-  - High level of customization allowing to describe a wide range of use cases
-  - Does not include tedious electronic circuit simulations
-- High performance:
-  - Very fast signal generation
-  - Reliable description of SiPM signals and related quantities over all the dynamic range
-  - Low memory footprint (if you do not intend to save all waveforms!)
+<p align="center"><img src="images/pipeline.svg" width=760></p>
 
+Every fired cell is a *hit*. Besides the photoelectrons that come from photons, hits can be produced by the sensor itself:
 
-## <a name="installation"></a>Installation
-SimSiPM is fully functional without any external dependencies other than CMake.
-#### Optional dependencies:
-- Pybind11: to generate python bindings
-- Doxygen: to generate documentation
-- GTest/Pytest: for advanced testing
+<p align="center"><img src="images/hits.png" width=640></p>
 
-### <a name="c++install"></a>C++
+| Hit type | Origin |
+|---|---|
+| Photoelectron | A photon that passed the PDE selection |
+| Dark count | Thermal generation, a Poisson process with rate DCR over the whole sensor |
+| Crosstalk | A secondary photon from an avalanche fires one of the 8 neighbouring cells at the same time |
+| Delayed crosstalk | Same, but the secondary photon is absorbed later (exponential delay) |
+| Afterpulse | A trapped carrier is released and fires the **same** cell again, after a fast or a slow exponential delay |
+
+Crosstalk and afterpulses are generated by *every* hit, including the ones they created, so they form chains. Each hit stores the index of its parent hit (`-1` for photoelectrons and dark counts).
+
+The amplitude of a hit is then set by the state of its cell. A cell that has just fired needs time to recharge, so a second hit in the same cell gives a smaller pulse. This is what produces **saturation** with many photons:
+
+<p align="center"><img src="images/recovery.png" width=760></p>
+
+$$A = 1 - e^{-\Delta t / \tau_{rec}}$$
+
+where $\Delta t$ is the time since the previous hit in that cell. A random cell-to-cell gain variation (CCGV) is also applied to each amplitude.
+
+In the second stage every hit becomes a pulse and the pulses are summed on top of the electronic noise. The pulse of one photoelectron is the difference of exponentials below, normalised so that its peak is **1** (all amplitudes in SimSiPM are in units of photoelectrons, p.e.):
+
+$$g(t) \propto (1-f)\,e^{-t/\tau_f} + f\,e^{-t/\tau_s} - e^{-t/\tau_r}$$
+
+<p align="center"><img src="images/pulse_shape.png" width=640></p>
+
+## Installation
+SimSiPM is fully functional without any external dependencies other than a C++17 compiler and CMake.
+#### Optional dependencies
+- Pybind11: to generate Python bindings
+- Google Benchmark: to run the benchmarks
+- GTest / Pytest: to run the tests
+- Doxygen (and Graphviz): to generate the documentation
+
+### C++
 SimSiPM can be installed using the standard CMake workflow:
 ```sh
 # In SimSiPM directory
 cmake -B build -S .
-make -C build
-make -C build install
-```
-It is advisable to enable compiler optimizations like `-O3` and `-mfma -mavx2` since some parts of code are specifically written to exploit vectorization capabilities of the compilers.
-
-Installation directory can be specified with `-DCMAKE_INSTALL_PREFIX` variable.
-
-Python bindings can be compiled and installed by adding the variable `-DCOMPILE_PYTHON_BINDINGS=ON` but this requires Pybind11.
-The corresponding python module is called `SiPM` and each class can be accessed as a sub-module.
-
-```py
-import SiPM
-from SiPM import SiPMSensor
-
-print(SiPM.__version__)
+cmake --build build -j
+cmake --install build            # installation directory: -DCMAKE_INSTALL_PREFIX=<dir>
 ```
 
+| CMake option | Default | Effect |
+|---|---|---|
+| `SIPM_BUILD_PYTHON` | OFF | Build the Python module `SiPM` (needs Pybind11) |
+| `SIPM_ENABLE_TEST` | OFF | Build the unit tests in `build/tests` |
+| `SIPM_ENABLE_BENCH` | OFF | Build the benchmarks in `build/bench` |
+| `SIPM_BUILD_DOCS` | OFF | Generate the Doxygen documentation |
+| `SIPM_BUILD_GUI` | OFF | Build the interactive simulator (fetches GLFW, Dear ImGui, ImPlot) |
 
-### <a name="pyinstall"></a>Python
-It is also possible to use pip to install only the Python version using a precompiled binary wheel. This installation method is easyer but performance may be impaired with respect to the C++/Pybind11 installation.
+The default build type is `Release` and the compiler flags include `-ffast-math`. Compiler optimizations matter: adding `-march=native` enables the AVX2 / AVX-512 implementations of the random number generator and vectorized loops (see [Performance](#performance)). Note that setting `CMAKE_CXX_FLAGS` replaces the default flags, so keep `-ffast-math`:
+```sh
+cmake -B build -S . -DCMAKE_CXX_FLAGS="-ffast-math -march=native"
+```
+
+To use the installed library from another CMake project:
+```cmake
+find_package(sipm REQUIRED)
+target_link_libraries(myapp PRIVATE sipm::sipm)
+```
+and in the code `#include <SiPM.h>`.
+
+### Python
+The easiest way to use SimSiPM from Python is the precompiled wheel:
 ```sh
 pip install SiPM
 ```
+It can also be built from the sources with `pip install .` or by adding `-DSIPM_BUILD_PYTHON=ON` to the CMake workflow above. Each class is available in the `SiPM` module:
+```python
+import SiPM
+print(SiPM.__version__)
+```
 
-## <a name="C++_basic_usage"></a>C++ basic use
-SimSiPM focuses on simplicity! It does not make use of pointers, or custom classes as parameters of the simulation or input. In most cases a std::vector is all that you need in order to get started.
-### SiPMProperties
-SiPMProperties class stores all SiPM and simulation parameters. It can be used to define the SiPM detector model in use and it can be shared among different SiPMs in case many identical sensors are needed.
+## Quick start
+This is a complete program: a sensor, 25 photons from a scintillator-like emission (exponential decay with a time constant of 40 ns, starting at 20 ns) and the features of the resulting signal.
+
+<!-- program -->
 ```cpp
-#include "SiPMProperties.h"
+#include <SiPM.h>
+#include <iostream>
 using namespace sipm;
 
-// Create a SiPMProperties object
-SiPMProperties myProperties;
+int main() {
+  SiPMProperties props;            // default sensor: 1x1 mm2, 25 um cells
+  props.setDcr(250e3);             // dark count rate in Hz
 
-// Edit some parameters
-myProperties.setDcr(250e3);           // Using proper setter
-myProperties.setProperty("Xt",0.03);  // Using parameter name
-std::cout<<myProperties<<"\n";        // All classes can be printed using std::cout
+  SiPMSensor sensor(props);
+  SiPMRandom rng;
 
-// ===> SiPM Properties <===
-// Address: 0x7f2cf11ea018
-// Size: 1.00 mm
-// Pitch: 25.00 um
-// Number of cells: 1600
-// Hit distribution: Uniform
-// Cell recovery time: 50.00 ns
-// Dark count rate: 250.00 kHz
-// Optical crosstalk probability: 3.00 %
-// Delayed optical crosstalk is OFF
-// Afterpulse probability: 3.00 %
-// Tau afterpulses (fast): 10.00 ns
-// Tau afterpulses (slow): 80.00 ns
-// Cell-to-cell gain variation: 5.00 %
-// SNR: 30.00 dB
-// Photon detection efficiency is OFF (100 %)
-// Rising time of signal: 1.00 ns
-// Falling time of signal (fast): 50.00 ns
-// Signal length: 500.00 ns
-// Sampling time: 1.00 ns
+  std::vector<double> times = rng.randExponential(40.0, 25);
+  for (double& t : times) t += 20.0;
+
+  sensor.addPhotons(times);        // arrival times in ns
+  sensor.runEvent();               // simulate the event
+
+  SiPMAnalogSignal signal = sensor.signal();
+  std::cout << "integral: " << signal.integral(10, 300, 0.5) << "\n";
+  std::cout << "peak:     " << signal.peak(10, 300, 0.5) << "\n";
+}
 ```
+
+The same in Python:
+<!-- python -->
+```python
+import numpy as np
+import SiPM
+
+props = SiPM.SiPMProperties()
+props.setDcr(250e3)
+
+sensor = SiPM.SiPMSensor(props)
+rng = SiPM.SiPMRandom()
+
+times = 20.0 + np.asarray(rng.randExponential(40.0, 25))
+sensor.addPhotons(times)
+sensor.runEvent()
+
+signal = sensor.signal()
+print("integral:", signal.integral(10, 300, 0.5))
+print("peak:    ", signal.peak(10, 300, 0.5))
+```
+The numbers change from event to event; for these 25 photons the integral is about 1300 (25 photoelectrons, each with an integral of about 50 ns) and the peak about 12.
+
+## User guide
+SimSiPM focuses on simplicity! It does not make use of pointers or custom classes as input of the simulation. In most cases a `std::vector` is all that you need. The following sections follow one C++ session, so each block continues the previous one (the same code is available in Python with the same method names).
+
+### SiPMProperties
+`SiPMProperties` stores all the parameters of the sensor and of the simulation. It defines the SiPM model in use and it can be shared among many sensors. Parameters can be set with a typed setter or by name:
+<!-- cpp -->
+```cpp
+#include <SiPM.h>
+#include <iostream>
+using namespace sipm;
+
+SiPMProperties props;                 // default sensor
+props.setDcr(250e3);                  // typed setter: dark count rate in Hz
+props.setProperty("Xt", 0.03);        // or by name (case-insensitive)
+std::cout << props << "\n";           // every class can be printed
+```
+<!-- output -->
+```text
+===> SiPM Properties <===
+Address: 0x7ffc3fbd3a58
+Size: 1.00 mm
+Pitch: 25.00 um
+Number of cells: 1600
+Hit distribution: Uniform
+Cell recovery time: 50.00 ns
+Dark count rate: 250.00 kHz
+Optical crosstalk probability: 3.00 %
+Delayed optical crosstalk is OFF
+Afterpulse probability: 3.00 %
+Tau afterpulses (fast): 10.00 ns
+Tau afterpulses (slow): 80.00 ns
+Cell-to-cell gain variation: 5.00 %
+SNR: 30.00 dB
+Photon detection efficiency is OFF (100 %)
+Rising time of signal: 1.00 ns
+Falling time of signal (fast): 50.00 ns
+Signal length: 500.00 ns
+Sampling time: 1.00 ns
+```
+
+| Parameter | Setter | Name for `setProperty` | Default |
+|---|---|---|---|
+| Sensor size [mm] | `setSize` | `Size` | 1 |
+| Cell pitch [µm] | `setPitch` | `Pitch` | 25 |
+| Signal length [ns] | `setSignalLength` | `SignalLength` | 500 |
+| Sampling time [ns] | `setSampling` | `Sampling` | 1 |
+| Rise time constant [ns] | `setRiseTime` | `RiseTime` | 1 |
+| Fast fall time constant [ns] | `setFallTimeFast` | `FallTimeFast` | 50 |
+| Slow fall time constant [ns] (switches the slow component on) | `setFallTimeSlow` | `FallTimeSlow` | 100 (off) |
+| Weight of the slow component | `setSlowComponentFraction` | `SlowComponentFraction` | 0.2 |
+| Cell recovery time [ns] | `setRecoveryTime` | `RecoveryTime` | 50 |
+| Dark count rate [Hz] | `setDcr` | `Dcr` | 200e3 |
+| Crosstalk probability | `setXt` | `Xt` | 0.05 |
+| Fraction of delayed crosstalk (switches it on) | `setDXt` | `DXt` | 0.05 (off) |
+| Delayed crosstalk time constant [ns] | `setDXtTau` | | 15 |
+| Afterpulse probability | `setAp` | `Ap` | 0.03 |
+| Fast / slow afterpulse time constant [ns] | `setTauApFastComponent` / `setTauApSlowComponent` | `TauApFast` / `TauApSlow` | 10 / 80 |
+| Fraction of slow afterpulses | `setApSlowFraction` | | 0.5 |
+| Cell-to-cell gain variation (relative) | `setCcgv` | `Ccgv` | 0.05 |
+| Signal to noise ratio [dB] | `setSnr` | `Snr` | 30 |
+| Photon detection efficiency | `setPde`, `setPdeType`, `setPdeSpectrum` | `Pde` | off |
+| Hit distribution | `setHitDistribution` | | uniform |
+
+Each noise source can be switched on and off with `setDcrOff()` / `setDcrOn()`, `setXtOff()`, `setDXtOff()`, `setApOff()`, `setSlowComponentOff()`, and so on. Switching everything off gives a clean, noise-free pulse.
+
+Properties can also be read from a JSON file or from a simple `key = value` file:
+<!-- file: sensor.json -->
+```json
+{
+  "size": 3,
+  "pitch": 50,
+  "dcr": 120000,
+  "xt": 0.08,
+  "pdeType": "kSimplePde",
+  "pde": 0.4,
+  "hitDistribution": "kGaussian",
+  "signalLength": 400
+}
+```
+<!-- file: sensor.conf -->
+```text
+# lines starting with # or / are comments
+Size  = 3
+Pitch = 50
+Dcr   = 120e3
+```
+<!-- cpp -->
+```cpp
+SiPMProperties fromJson = SiPMProperties::readSettingsJson("sensor.json");
+SiPMProperties fromConf = SiPMProperties::readSettings("sensor.conf");
+std::cout << fromJson.nCells() << " cells, DCR " << fromJson.dcr() / 1e3 << " kHz\n";
+```
+<!-- output -->
+```text
+3600 cells, DCR 120 kHz
+```
+The JSON file accepts all the parameters of the table above (`size`, `pitch`, `signalLength`, `risingTime`, `fallingTimeFast`, `dxtTau`, `apSlowFraction`, ...), the switches `hasDcr`, `hasXt`, `hasDXt`, `hasAp` and `hasSlowComponent`, `pdeType` and `hitDistribution` (by enumerator name), and `pdeSpectrum` as `{"wavelengths": [...], "pde": [...]}`. Missing keys keep their default value. The complete list is in the documentation of `readSettingsJson`.
 
 ### SiPMSensor
-SiPMSensor class is the core of the simulation and is created from a SiPMProperties class. It stores input photoelectrons, it runs the event simulation and gives a signal as output.
+`SiPMSensor` is the core of the simulation. It is created from a `SiPMProperties`, it stores the input photons, it runs the event simulation and it gives the hits and the signal as output.
+<!-- cpp -->
 ```cpp
-#include "SiPMProperties.h"
-using namespace sipm;
-
-// Create a SiPMSensor object
-SiPMSensor mySensor(myProperties);
-
-// Change parameters
-mySensor.properties().setAp(0.01);    // Using proper getter/setter
-mySensor.setProperty("Pitch", 25);    // Using parameter name
-std::cout<<mySensor<<"\n";
-
-// ===> SiPM Sensor <===
-// Address: 0x7f48ef5d62f0
-// ===> SiPM Properties <===
-// Address: 0x7f48ef5d62f0
-// Size: 1.00 mm
-// Pitch: 25.00 um
-// Number of cells: 1600
-// Hit distribution: Uniform
-// Cell recovery time: 50.00 ns
-// Dark count rate: 200.00 kHz
-// Optical crosstalk probability: 5.00 %
-// Delayed optical crosstalk is OFF
-// Afterpulse probability: 1.00 %
-// Tau afterpulses (fast): 10.00 ns
-// Tau afterpulses (slow): 80.00 ns
-// Cell-to-cell gain variation: 5.00 %
-// SNR: 30.00 dB
-// Photon detection efficiency is OFF (100 %)
-// Rising time of signal: 1.00 ns
-// Falling time of signal (fast): 50.00 ns
-// Signal length: 500.00 ns
-// Sampling time: 1.00 ns
-// Address :0x7ffcded8a300
-// ===> SiPM Debug Info <===
-// Number of photons impinging to the sensor: 0
-// Number of photoelectrons detected: 0
-// Number of dark count events (DCR): 0
-// Number of optical crosstalk events (XT + DTX): 0
-// Number of delayed optical crosstalk events (DXT): 0
-// Number of afterpulsing events (AP): 10.00
+SiPMSensor sensor(props);
+sensor.setProperty("Ap", 0.01);         // change a parameter of an existing sensor
+sensor.rng().seed(42);                  // optional: reproducible simulations
 ```
-
-### SiPMAnalogSignal
-SiPMAnalogSignal class is a wrapper around std::vector that expands its features. It contains the samples of the SiPM waveform along with some properties and methods used to extract features from the signal.
-```cpp
-SiPMAnalogSignal signal = mySensor.signal();
-double sampling = signal.sampling();
-double sample = signal[10];
-std::cout<<signal<<"\n";
-
-// ===> SiPM Analog Signal <===
-// Address: 0x7f48ef5d64e8
-// Signal length is: 0.00 ns
-// Signal is sampled every: 1.00 ns
-// Signal contains: 0 points
-```
+> [!NOTE]
+> The pulse shape is computed when the properties are set, so parameters that change it (`RiseTime`, `FallTimeFast`, `FallTimeSlow`, `SlowComponentFraction`, `Sampling`, `SignalLength`) must be changed through the sensor with `setProperty` or `setProperties`. `sensor.properties()` is a read-only reference in C++. In Python it is a live reference: it is fine for the noise parameters (`Dcr`, `Xt`, `Ap`, `Pde`, ...), but changes to the pulse shape parameters made through it are not applied until `setProperty` / `setProperties` is called.
 
 ### Input and simulation
-The only input needed for the simulation of a SiPM event is the arriving time of each photon to the sensitive surface of the SiPM detector.
-In order to have a detailed description of the dependency of the PDE with respect to the photon wavelength it is possible to add the wavelength information togheter with the time information.
-
-It is possible to add individual photons in a loop
+The only input needed for the simulation of a SiPM event is the arrival time of each photon on the sensitive surface (in ns, from the start of the signal window). Photons outside the window are ignored. Photons can be added one by one or all at once, and they **accumulate** until `resetState()` is called:
+<!-- cpp -->
 ```cpp
-mySensor.resetState();
-for(...){
-  // Generate times for photons
-  mySensor.addPhoton(time);   // Appends a single photon (time is in ns)
+SiPMRandom rng;                                              // the library random generator
+std::vector<double> times = rng.randExponential(40.0, 25);   // 25 photons, 40 ns decay time
+for (double& t : times) t += 20.0;                           // starting at 20 ns
+
+sensor.resetState();               // forget the previous event
+sensor.addPhotons(times);          // all at once ...
+sensor.runEvent();                 // simulate the event (hits and signal)
+
+sensor.resetState();
+for (double t : times) {
+  sensor.addPhoton(t);             // ... or one at a time
 }
-mySensor.runEvent();          // Runs the simulation
+sensor.runEvent();
 ```
+For a wavelength-dependent PDE the wavelength of each photon is needed too: `addPhoton(time, wavelength)` and `addPhotons(times, wavelengths)`, see [Spectral PDE](#spectral-pde).
 
-It is also possible to add all photons at once
+### Hits and Monte Carlo truth
+After `runEvent()` the sensor gives the complete list of hits. Each hit has a time, a cell (row and column), an amplitude, a type, and the index of its parent:
+<!-- cpp -->
 ```cpp
-std::vector<double> times = {13.12, 25.45, 33.68};
-mySensor.resetState();
-mySensor.addPhotons(times);    // Sets photon times (times are in ns) (not appending)
-mySensor.runEvent();           // Runs the simulation
-```
-
-### Signal output and signal features
-The simulation can output the signal waveform and can also perform some simple features extraction.
-```cpp
-SiPMAnalogSignal mySignal = mySensor.signal();
-
-double integral = signal.integral(5,250,0.5);   // (intStart, intGate, threshold)
-double peak = signal.peak(5,250,0.5);   // (intStart, intGate, threshold)
-double toa = signal.toa(5,250,0.5);   // (intStart, intGate, threshold)
-double tot = signal.tot(5,250,0.5);   // (intStart, intGate, threshold)
-
-// It is possible to iterate throw an analog signal
-for(int i=0;i<mySignal.size();++i){
-  double sample = mySignal[i]
-  // Do something with sample
+for (const SiPMHit& hit : sensor.hits()) {
+  if (hit.parentIdx() >= 0) {                      // -1: photoelectron or dark count
+    const SiPMHit& parent = sensor.hits()[hit.parentIdx()];
+    std::cout << "hit at " << hit.time() << " ns (cell " << hit.row() << "," << hit.col()
+              << ") was generated by the hit at " << parent.time() << " ns\n";
+  }
 }
-
-// It is possible to convert an analog signal to a simple vector
-std::vector<double> waveform = mySignal.waveform();
 ```
+`hit.hitType()` is one of `SiPMHit::HitType::kPhotoelectron`, `kDarkCount`, `kOpticalCrosstalk`, `kDelayedOpticalCrosstalk`, `kFastAfterPulse` and `kSlowAfterPulse`. The reference returned by `hits()` stays valid until the next `resetState()` or `runEvent()`.
+
+`debug()` gives the Monte Carlo truth counters of the event:
+<!-- cpp -->
+```cpp
+SiPMDebugInfo info = sensor.debug();
+std::cout << info.nPhotons << " photons -> " << info.nPhotoelectrons << " hit cells ("
+          << info.nDcr << " dark counts, " << info.nXt << " crosstalk, " << info.nAp << " afterpulses)\n";
+```
+
+### Signal and features
+The signal is a `SiPMAnalogSignal`, a waveform with its sampling time and some methods to extract features. All the features work on an integration gate, given as the start time and the length of the gate in ns, and on a threshold. They return `-1` if the signal never exceeds the threshold in the gate.
+
+| Method | Returns |
+|---|---|
+| `integral(start, gate, threshold)` | Sum of the samples times the sampling time |
+| `peak(start, gate, threshold)` | Amplitude of the highest sample |
+| `toa(start, gate, threshold)` | Time of the first sample above the threshold, relative to the start of the gate |
+| `tot(start, gate, threshold)` | Time spent above the threshold |
+| `top(start, gate, threshold)` | Time of the peak, relative to the start of the gate |
+
+<!-- cpp -->
+```cpp
+SiPMAnalogSignal signal = sensor.signal();
+double integral = signal.integral(10, 300, 0.5);   // (start [ns], gate [ns], threshold)
+double peak     = signal.peak(10, 300, 0.5);
+double toa      = signal.toa(10, 300, 0.5);
+double tot      = signal.tot(10, 300, 0.5);
+double top      = signal.top(10, 300, 0.5);
+std::cout << "integral " << integral << ", peak " << peak << ", ToA " << toa << " ns, ToT " << tot
+          << " ns, time of peak " << top << " ns\n";
+
+// the waveform can be accessed sample by sample
+double area = 0;
+for (uint32_t i = 0; i < signal.size(); ++i) {
+  area += signal[i] * signal.sampling();            // or: const std::vector<float>& w = signal.waveform();
+}
+std::cout << signal.length() << " ns long, area " << area << "\n";
+```
+In Python `np.asarray(signal.waveform())` gives a NumPy view of the samples without copying them.
+
+### Hits only: skip the signal generation
+Generating the waveform is the most expensive part of an event. If you only need the hits (for example to count the cells that fired, or because you build the waveform yourself) call `runEvent(false)`: only the hits are simulated.
+<!-- cpp -->
+```cpp
+sensor.resetState();
+sensor.addPhotons(times);
+sensor.runEvent(false);                     // hits only: no waveform is generated
+std::cout << sensor.hits().size() << " hits\n";
+
+SiPMAnalogSignal late = sensor.signal();    // the signal is generated now, from the same hits
+```
+The simulation API does not change: any method that needs the signal (`signal()`) generates it the first time it is called. With the same seed, `runEvent(false)` followed by `signal()` gives exactly the same hits and waveform as `runEvent()`. Skipping the signal makes an event up to 17 times faster (see [Performance](#performance)).
+
+> [!NOTE]
+> `signal()` may generate the waveform, so it modifies the sensor. Do not call it concurrently on the same sensor. In multi-threaded applications use one `SiPMSensor` per thread.
+
+### Custom pulse shape
+The pulse shape of one photoelectron can be replaced with a measured one using `setSignalShape(shape, sampling)`. The shape is used as it is (it is not normalised, so scale it to your gain) and it defines the length of the signal:
+<!-- cpp -->
+```cpp
+SiPMSensor custom(props);
+std::vector<float> shape(200);                         // 100 ns sampled every 0.5 ns
+for (int i = 0; i < 200; ++i) {
+  shape[i] = (i < 10) ? i / 10.0f : std::exp(-(i - 10) / 40.0f);   // linear rise, exponential decay
+}
+custom.setSignalShape(shape, 0.5);                     // samples, sampling time in ns
+custom.addPhoton(20.0);
+custom.runEvent();
+std::cout << custom.signal().size() << " samples, sampling " << custom.signal().sampling() << " ns\n";
+```
+Calling `setProperty` or `setProperties` with a rise or fall time goes back to the analytic shape.
 
 ### Complete event loop
-This is an example of "stand-alone" usage of SimSiPM. In case SimSiPM is used in Geant4 or other framework, then the generation of photon times has to be caryed by the user (usually in G4UserSteppingAction) and the event has to be simulated after all photons have been added (usually in G4UserEventAction).
+This is an example of "stand-alone" usage of SimSiPM. When SimSiPM is used in Geant4 or in another framework, the generation of the photon times is done by the user (usually in `G4UserSteppingAction`) and the event is simulated after all the photons have been added (usually in `G4UserEventAction`).
+<!-- cpp -->
 ```cpp
-// Create sensor and set parameters
-SiPMProperties myProperties;
-SiPMSensor mySensor(myProperties);
-// ...
+const int nEvents = 1000;
+std::vector<double> integrals(nEvents);
 
-// Store results in here
-std::vector<double> integral(NEVENTS);
-// peak
-// ...
+for (int i = 0; i < nEvents; ++i) {
+  std::vector<double> photons = rng.randExponential(40.0, 25);   // photon times of this event
+  for (double& t : photons) t += 20.0;
 
-for(int i=0;i<NEVENTS;++i){
-  // Generate photons times accordingly
-  // to your experimental setup
-  mySensor.resetState();
-  mySensor.addPhotons(times);
-  mySensor.runEvent();
+  sensor.resetState();
+  sensor.addPhotons(photons);
+  sensor.runEvent();
 
-  SiPMAnalogSignal mySignal = mySensor.signal();
-
-  integral[i] = signal.integral(10,250,0.5);
-  // peak
-  // ...
+  integrals[i] = sensor.signal().integral(10, 300, 0.5);
 }
 ```
-## <a name="python_basic_usage"></a>Python basic use
-Python bindings are generated for all the classes using Pybind11. This allows for an almost 1:1 mapping of the C++ functionalities in Python.
 
+### Python
+Python uses the same classes and method names. The main differences: `hits()` returns a list of `SiPMHit` (a copy), NumPy arrays can be used wherever a vector of numbers is expected, `signal.waveform()` is a NumPy view of the samples (no copy), and `runEvent` has a keyword argument.
+<!-- python -->
 ```python
-from SiPM import SiPMSensor, SiPMProperties
+sensor.resetState()
+sensor.addPhotons(times)                               # list or NumPy array
+sensor.runEvent(generateSignal=False)                  # hits only, see above
+hits = sensor.hits()
+nXt = sum(h.hitType() == SiPM.SiPMHit.HitType.kOpticalCrosstalk for h in hits)
+print(len(hits), "hits,", nXt, "crosstalk")
 
-myProperties = SiPMProperties()
-myProperties.setDcr(250e3)
-myProperties.setProperty("Xt",0.03)
+waveform = np.asarray(sensor.signal().waveform())      # the signal is generated now
+print(waveform.shape, waveform.max())
 
-mySensor = SiPMSensor(myProperties)
+props.setHitDistribution(SiPM.SiPMProperties.HitDistribution.kGaussian)   # enumerations are nested classes
+sensor.setProperties(props)
 
-mySensor.resetState()
-mySensor.addPhotons([13.12, 25.45, 33.68])
-mySensor.runEvent()
-
-mySignal = mySensor.signal()
-integral = mySignal.integral(10,250,0.5)
+sensor.setSignalShape(np.exp(-np.arange(200) / 40.0), 0.5)   # custom pulse shape, 0.5 ns sampling
+print(sensor.properties().hasCustomSignalShape())
 ```
-## <a name="adv"></a>Advanced use
-### <a name="pde"></a>PDE
-#### No Pde
-Tracking a large number of photons throwgh a scintillator crystal or optical fiber is a very CPU-intensive task. Since most of photons will not be detected due to photon detection efficiency (PDE) it is a waste of time to track all of them.
 
-By default SiPM sensors have PDE set to 100% meaning that every photon given as input is converted to a photoelectron, detected and generates a signal. This allows to generate and track only the photons that will be detected by the sensor. For example the geometry of IDEA dual-readout calorimeter requires the simulation of 130 millions of optical fibers and in each one of those photons are tracked by Geant4 requiring a lot of CPU time. It would be meaningless to track photons along the fibers if they are not detected, so PDE is evaluated before the tracking of photons.
+## Physics models
+### Photon detection efficiency
+Tracking a large number of photons through a scintillator crystal or an optical fiber is a very CPU-intensive task. Since most of the photons are not detected because of the photon detection efficiency (PDE), it is a waste of time to track all of them. For this reason SimSiPM can be used in three ways:
 
-#### Simple PDE
-It is possible to account for PDE in the simulation using a fixed value of PDE for all photons. In this case the probability to detect a photon is proportional to PDE. This option can be used if the spectrum of emitted photons is very narrow or if the SiPM has a wide and flat spectral response.
+| `PdeType` | What happens to the photons you add |
+|---|---|
+| `kNoPde` (default) | All of them become photoelectrons. Apply the PDE yourself **before** tracking the photons, so that only the detected ones are generated and tracked |
+| `kSimplePde` | Each photon is detected with the same probability `setPde(value)` |
+| `kSpectrumPde` | Each photon is detected with the probability given by its wavelength |
+
+For example the geometry of the IDEA dual-readout calorimeter requires the simulation of 130 millions of optical fibers and in each one of them photons are tracked by Geant4 requiring a lot of CPU time. It would be meaningless to track photons along the fibers if they are not detected, so the PDE is evaluated before the tracking of the photons.
+
+#### Flat PDE
+It is possible to account for the PDE in the simulation using a fixed value for all photons. This option can be used if the spectrum of the emitted photons is very narrow or if the SiPM has a wide and flat spectral response.
+<!-- cpp -->
 ```cpp
-// Set in SiPMProperties
-myProperties.setPdeType(sipm::SiPMProperties::PdeType::kSimplePde);
-myProperties.setPde(0.27);
-
-// Change setting of a sensor
-mySensor.properties().setPdeType(sipm::SiPMProperties::PdeType::kSimplePde);
-mySensor.setProperty("Pde",0.27); // or mySensor.properties().setPde(0.27);
+props.setPde(0.27);                                              // also selects kSimplePde
+sensor.setProperties(props);                                     // apply the new properties to the sensor
+// to go back to 100 %:  props.setPdeType(SiPMProperties::PdeType::kNoPde);
 ```
-To revert back at default setting of 100% PDE use `setPdeType(sipm::SiPMProperties::PdeType::kSimplePde)`
 
 #### Spectral PDE
-In SiPM sensors PDE strongly depends on photon wavelength. In some cases it might be necessary to consider the spectral response of the SiPM for a more accurate simulation.
-This can be done by feeding the SiPM settings with two arrays containing wavelengths and corresponding PDEs.
-
-In this case it is also necessary to input photon wavelength along with its time.
+In SiPM sensors the PDE strongly depends on the photon wavelength. In some cases it is necessary to consider the spectral response of the SiPM for a more accurate simulation. This is done by giving two arrays: the wavelengths and the corresponding PDEs. In this case the wavelength of each photon has to be given together with its time.
+<!-- cpp -->
 ```cpp
 std::vector<double> wlen = {800, 750, 700, 650, 600, 550, 500, 450, 400, 350, 300};
-std::vector<double> pde = {0.22, 0.30, 0.40, 0.45, 0.50, 0.50, 0.45, 0.35, 0.25, 0.15, 0.0};
+std::vector<double> pde  = {0.22, 0.30, 0.40, 0.45, 0.50, 0.50, 0.45, 0.35, 0.25, 0.15, 0.05};
+props.setPdeSpectrum(wlen, pde);                                 // also selects kSpectrumPde
+sensor.setProperties(props);
 
-myProperties.setPdeType(sipm::SiPMProperties::PdeType::kSpectrumPde);
-myProperties.setPdeSpectrum(wlen,pde);
-
-// Adding photons to the sensor
-mySensor.addPhoton(photonTime, photonWlen);
-// or mySensor.addPhotons(photonTimes, photonWlens);
+std::vector<double> wavelengths = rng.Rand(25);                  // 25 photons between 400 and 600 nm
+for (double& w : wavelengths) w = 400 + 200 * w;
+sensor.resetState();
+sensor.addPhotons(times, wavelengths);                           // or addPhoton(time, wavelength)
+sensor.runEvent();
 ```
-<p align="center"><img src="images/pde.png" width=500></p>
+<p align="center"><img src="images/pde.png" width=600></p>
 
-The input values for PDE given by the user are interpolated using the formula below to obtain additional 25 values over the given range. Then, during the simulation, values are linearly interpolated between the points of the newly obtained curve.
+The points given by the user are resampled on a uniform grid of 32 wavelengths between the first and the last one, interpolating in log space:
 
-<p align="center"><img src="images/interpolation.svg" width=400></p>
+$$\ln \mathrm{PDE}(\lambda) = \frac{\ln y_0 \,\ln(x_1/\lambda) + \ln y_1 \,\ln(\lambda/x_0)}{\ln(x_1/x_0)}$$
 
+where $(x_0, y_0)$ and $(x_1, y_1)$ are the two input points around $\lambda$. If one of the two points has a zero PDE the result in that interval is zero. During the simulation the PDE of each photon is linearly interpolated between the points of the resampled curve.
 
-### <a name="hit"></a>Hit distribution
-By default photoelectrons hits are considered to be uniformly distributed on the surface of the SiPM. In most cases this assumption resembles what happens in a typical setup but sometimes the geometry of the sensor or the optical characteristics of the setup lead to an inhomogeneous distribution of the light on the sensor's surface.
+### Hit distribution
+By default the photoelectrons are uniformly distributed on the surface of the SiPM. In most cases this assumption resembles what happens in a typical setup, but sometimes the geometry of the sensor or the optical characteristics of the setup lead to an inhomogeneous distribution of the light.
 
-#### Uniform hit distribution
-This is the default setting: each SiPM cell has the same probability to be hitted. This setting should work in most of scenarios.
+<p align="center"><img src="images/hit_distribution.png" width=700></p>
+
+- **`kUniform`** (default): each cell has the same probability to be hit.
+- **`kCircle`**: 90 % of the photons are uniformly distributed inside the circle inscribed in the sensor, the remaining 10 % uniformly outside of it. It resembles the cases where the light is focused in the central region.
+- **`kGaussian`**: photons follow a gaussian distribution centered on the sensor, with $\sigma$ equal to the side of the sensor divided by 3.28. The few photons that would fall further than 1.64 $\sigma$ from the center on one of the axes are distributed uniformly.
+
+<!-- cpp -->
 ```cpp
-myPropertie.setHitDistribution(sipm::SiPMProperties::HitDistribution::kUniform);
+props.setHitDistribution(SiPMProperties::HitDistribution::kGaussian);
+sensor.setProperties(props);
 ```
 
-#### Circular hit distribution
-In this case 90% of photons are placed in a circle centered in the sensor and with a diameter that is the same as the sensor's side lenght. The remaining 10% is distributed outside this circle. This setting resembles those cases where light is focused in the central region.
-<p align="center"><img src="images/circleHits.png" width=250></p>
+### Noise
+The sensor noise is described by a few parameters that can be measured in the laboratory. The figure shows the typical way to see them: for every pulse of a simulated dark-noise run without any light, the time since the previous pulse and the amplitude.
 
-```cpp
-myPropertie.setHitDistribution(sipm::SiPMProperties::HitDistribution::kCircle);
+<p align="center"><img src="images/dark_noise.png" width=820></p>
+
+- **Primary dark counts** are at 1 p.e. with long delays (the average delay is `1 / DCR` over the whole sensor).
+- **Direct crosstalk** adds up to the pulse of its parent (2, 3, 4 p.e.), with the same time.
+- **Delayed crosstalk** appears at 1 p.e. a few ns after its parent.
+- **Afterpulses** have short delays and a reduced amplitude, which grows with the delay following the recovery of the cell (the curve ending in 1 p.e.).
+
+Crosstalk and afterpulses use `Xt` and `Ap` as the average number of secondary hits generated by one hit (Poisson), so they can also produce chains of hits.
+
+## Results
+### Photoelectron spectrum
+With a pulsed light source the integral of the signal shows the characteristic peaks of the SiPM: each peak is a different number of fired cells. The width of the peaks comes from the electronic noise and from the cell-to-cell gain variation, and the events between the peaks from dark counts, crosstalk and afterpulses.
+
+<p align="center"><img src="images/spectrum.png" width=640></p>
+
+### Saturation
+A SiPM has a finite number of cells and a cell that has just fired cannot fire again at full amplitude: the response is linear for few photons and saturates when the number of photons approaches the number of cells. Smaller cells mean more cells, hence a larger dynamic range.
+
+<p align="center"><img src="images/saturation.png" width=560></p>
+
+## Performance
+SimSiPM is designed to simulate millions of events. The numbers below are the **time to simulate one complete event** (reset, input of the photons, `runEvent`) on a default sensor (1 mm, 25 µm cells, 500 ns window, DCR 200 kHz, XT 5 %, AP 3 %), with photon times following a scintillation-like exponential decay. Full means `runEvent()` (hits and signal), hits only means `runEvent(false)`.
+
+<p align="center"><img src="images/benchmarks.png" width=900></p>
+
+| Event | `runEvent()` | `runEvent(false)` | `runEvent()`, `-march=native` | `runEvent(false)`, `-march=native` |
+|---|---|---|---|---|
+| Empty event | 1.17 µs | 0.07 µs (17.3× faster) | 0.59 µs | 0.06 µs |
+| 25 photons | 2.31 µs | 0.50 µs (4.6× faster) | 1.45 µs | 0.49 µs |
+| 1000 photons | 32.3 µs | 25.2 µs (1.3× faster) | 29.8 µs | 24.1 µs |
+
+Median of 7 repetitions, Intel Core i5-14400F, Linux (WSL2), clang, `-O3 -ffast-math`; the last two columns also use `-march=native` (AVX2 + FMA). The relative spread of the repetitions is below 5 %.
+
+Where the time goes: for few photons the generation of the electronic noise of the waveform is the main cost (about 1 µs, none of it is spent when the signal is skipped); for many photons the cost is proportional to the number of hits, because of crosstalk, afterpulses, the cell recovery and the pulses. The pulses of the hits are summed with a recursive convolution, whose cost grows very slowly with the number of hits.
+
+### Impact of the PDE
+With a PDE the photons that are not detected are discarded early, so they do not produce hits, crosstalk, afterpulses and pulses. The PDE selection itself costs a random number per photon (and a table lookup per photon for the spectral PDE), which is cheaper than what it saves when there are many photons: the same 1000 photons are simulated faster with a PDE than without it. For small events the saving is too small to see, and the PDE costs a few tenths of a microsecond more. The table compares the same input photons (wavelengths between 400 and 600 nm); the spectral PDE averages 42 % on this range, like the flat one.
+
+| Photons | PDE | Hits from photons | `runEvent()` | `runEvent(false)` |
+|---|---|---|---|---|
+| 25 | none | ≈ 25 | 2.30 µs | 0.50 µs |
+| 25 | flat, 42 % | ≈ 10 | 2.31 µs | 0.67 µs |
+| 25 | spectral, 42 % on average | ≈ 10 | 2.60 µs | 0.88 µs |
+| 1000 | none | ≈ 1000 | 32.5 µs | 25.4 µs |
+| 1000 | flat, 42 % | ≈ 420 | 19.3 µs | 15.5 µs |
+| 1000 | spectral, 42 % on average | ≈ 418 | 27.8 µs | 23.0 µs |
+
+
+Even so, the fastest option for the whole simulation is still to apply the PDE before the photons are generated and tracked (`kNoPde` with only the detected photons), because it saves the tracking time too.
+
+The spectral PDE costs about 7 ns more per photon than the flat one with the default flags (an interpolation in the table of the spectrum), and more with `-march=native` in this build, so for very large numbers of photons a flat PDE is cheaper when it is accurate enough.
+
+To reproduce the numbers on your machine:
+```sh
+cmake -B build -S . -DSIPM_ENABLE_BENCH=ON
+cmake --build build -j
+./build/bench/events --benchmark_repetitions=7 --benchmark_report_aggregates_only=true
 ```
+`bench/sensor` and `bench/random` have many more benchmarks (every phase of the event, geometry, signal length, random number generators). Instruction level profiling is described at the top of `bench/sensor.cpp`.
 
-#### Gaussian hit distribution
-In this case 95% of the photons are distributed following a gaussian distribution centered in the sensor. The remaining 5% is distributed uniformly on the sensor.
-<p align="center"><img src="images/gaussianHits.png" width=250></p>
+## Examples, tests and documentation
+- [`examples/`](examples): Python scripts that use SimSiPM, among them the delay versus amplitude plot of the dark noise (`delays.py`), the signal of different sensors (`signals.py`), saturation (`saturation.py`), the staircase of the dark count rate (`staircase.py`) and a visual explanation of the recursive signal generation (`recursive_convolution.py`).
+- [`examples/gui`](examples/gui): an interactive real-time simulator (sources, scintillators, SiPM models, oscilloscope and histograms). Build it with `-DSIPM_BUILD_GUI=ON`.
+- **Tests**: configure with `-DSIPM_ENABLE_TEST=ON` and run `ctest --test-dir build`, or run the executables in `build/tests` directly. The Python tests run with `pytest tests` (with the module in `PYTHONPATH`).
+- **Documentation**: configure with `-DSIPM_BUILD_DOCS=ON` (needs Doxygen) to generate the HTML documentation of all the classes in `build/docs/html`.
+- **Figures**: the images of this page are generated by `docs/make_figures.py` with the Python module.
 
-```cpp
-myPropertie.setHitDistribution(sipm::SiPMProperties::HitDistribution::kGaussian);
-```
-
-## <a name="contrib"></a>Contributing
+## Contributing
 Feel free to contact me if you have any problem while including SimSiPM in your project, if you find a bug or have any suggestion or improvement. I would be pleased to discuss it with you.
 
-## <a name="cite"></a>Cite
-Even thou SimSiPM has been used in simulations related to published articles, there is not yet an article about SimSiPM itself. So if you need to cite SimSiPM please use:
+## Cite
+Even though SimSiPM has been used in simulations related to published articles, there is not yet an article about SimSiPM itself. So if you need to cite SimSiPM please use:
 ```
 @manual{,
 title = {{SimSiPM: a library for SiPM simulation}},
@@ -361,7 +595,9 @@ url = {https://github.com/EdoPro98/SimSiPM}
 }
 ```
 
-## <a name="contacts"></a>Contacts
-Author: Edoardo Proserpio  
-Email: edoardo.proserpio@gmail.com (private)  
-Email: eproserpio@studenti.uninsubria.it (instiutional)  
+## Contacts
+Author: Edoardo Proserpio
+Email: edoardo.proserpio@gmail.com (private)
+Email: eproserpio@studenti.uninsubria.it (institutional)
+
+SimSiPM is released under the [MIT license](LICENSE).
