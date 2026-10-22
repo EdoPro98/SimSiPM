@@ -86,7 +86,7 @@ public:
 
 private:
   std::vector<float> m_Waveform;  ///< Waveform samples
-  double m_Sampling;  ///< Sampling time in ns
+  double m_Sampling = 1;  ///< Sampling time in ns
 } /* SiPMAnalogSignal */;
 
 } /* namespace sipm */
