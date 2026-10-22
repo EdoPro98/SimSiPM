@@ -548,11 +548,16 @@ void SiPMSensor::generateSignal() const {
 }
 
 std::ostream& operator<<(std::ostream& out, const SiPMSensor& obj) {
+  // The caller's stream format is restored before returning
+  const std::ios_base::fmtflags flags = out.flags();
+  const std::streamsize precision = out.precision();
   out << std::setprecision(2) << std::fixed;
   out << "===> SiPM Sensor <===\n";
   out << "Address: " << std::hex << std::addressof(obj) << "\n";
   out << obj.m_Properties;
   out << obj.debug();
+  out.flags(flags);
+  out.precision(precision);
   return out;
 }
 } // namespace sipm

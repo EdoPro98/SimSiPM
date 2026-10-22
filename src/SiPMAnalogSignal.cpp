@@ -148,12 +148,17 @@ double SiPMAnalogSignal::top(const double intstart, const double intgate, const 
 }
 
 std::ostream& operator<<(std::ostream& out, const SiPMAnalogSignal& obj) {
+  // The caller's stream format is restored before returning
+  const std::ios_base::fmtflags flags = out.flags();
+  const std::streamsize precision = out.precision();
   out << std::setprecision(2) << std::fixed;
   out << "===> SiPM Analog Signal <===\n";
   out << "Address: " << std::hex << std::addressof(obj) << "\n";
   out << "Signal length is: " << std::dec << obj.length() << " ns\n";
   out << "Signal is sampled every: " << obj.m_Sampling << " ns\n";
   out << "Signal contains: " << obj.m_Waveform.size() << " points";
+  out.flags(flags);
+  out.precision(precision);
   return out;
 }
 } // namespace sipm

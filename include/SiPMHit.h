@@ -125,6 +125,9 @@ private:
 };
 
 inline std::ostream& operator<<(std::ostream& out, const SiPMHit& obj) {
+  // The caller's stream format is restored before returning
+  const std::ios_base::fmtflags flags = out.flags();
+  const std::streamsize precision = out.precision();
   out << std::setprecision(2) << std::fixed;
   out << "===> SiPM Hit <===\n";
   out << "Address: " << std::hex << std::addressof(obj) << "\n";
@@ -152,6 +155,8 @@ inline std::ostream& operator<<(std::ostream& out, const SiPMHit& obj) {
       out << "Delayed optical crosstalk\n";
       break;
   }
+  out.flags(flags);
+  out.precision(precision);
   return out;
 }
 } // namespace sipm

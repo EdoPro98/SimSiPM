@@ -48,6 +48,9 @@ struct SiPMDebugInfo {
 };
 
 inline std::ostream& operator<<(std::ostream& out, const SiPMDebugInfo& obj) {
+  // The caller's stream format is restored before returning
+  const std::ios_base::fmtflags flags = out.flags();
+  const std::streamsize precision = out.precision();
   out << std::setprecision(2) << std::fixed;
   out << "Address :" << std::hex << std::addressof(obj) << "\n";
   out << "===> SiPM Debug Info <===\n";
@@ -57,6 +60,8 @@ inline std::ostream& operator<<(std::ostream& out, const SiPMDebugInfo& obj) {
   out << "Number of optical crosstalk events (XT + DTX): " << obj.nXt << "\n";
   out << "Number of delayed optical crosstalk events (DXT): " << obj.nDXt << "\n";
   out << "Number of afterpulsing events (AP): " << obj.nAp << "\n";
+  out.flags(flags);
+  out.precision(precision);
   return out;
 }
 } /* namespace sipm */

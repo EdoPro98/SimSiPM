@@ -615,6 +615,21 @@ TEST_F(TestSiPMSensor, SignalBeforeAnyEventIsEmptyWithDefinedSampling) {
   EXPECT_DOUBLE_EQ(signal.length(), 0.0);
 }
 
+TEST_F(TestSiPMSensor, PrintingDoesNotChangeTheStreamFormat) {
+  SiPMSensor sensor;
+  sensor.addPhoton(10.0);
+  sensor.runEvent();
+  std::ostringstream os;
+  const std::ios_base::fmtflags flags = os.flags();
+  const std::streamsize precision = os.precision();
+  os << sensor << sensor.properties() << sensor.debug() << sensor.signal() << sensor.hits().front();
+  EXPECT_EQ(os.flags(), flags);
+  EXPECT_EQ(os.precision(), precision);
+  os.str("");
+  os << 120.0 / 3 << " " << 255;
+  EXPECT_EQ(os.str(), "40 255"); // not "40.00 ff"
+}
+
 TEST_F(TestSiPMSensor, SignalLengthIsInNanoseconds) {
   SiPMProperties p;
   p.setSampling(0.5);

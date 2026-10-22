@@ -224,6 +224,9 @@ SiPMProperties SiPMProperties::readSettingsJson(const std::string& fname) {
 }
 
 std::ostream& operator<<(std::ostream& out, const SiPMProperties& obj) {
+  // The caller's stream format is restored before returning
+  const std::ios_base::fmtflags flags = out.flags();
+  const std::streamsize precision = out.precision();
   out << std::setprecision(2) << std::fixed;
   out << "===> SiPM Properties <===" << '\n';
   out << "Address: " << std::hex << std::addressof(obj) << "\n";
@@ -286,6 +289,8 @@ std::ostream& operator<<(std::ostream& out, const SiPMProperties& obj) {
   }
   out << "Signal length: " << obj.m_SignalLength << " ns\n";
   out << "Sampling time: " << obj.m_Sampling << " ns\n";
+  out.flags(flags);
+  out.precision(precision);
   return out;
 }
 
