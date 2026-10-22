@@ -237,6 +237,7 @@ std::pair<uint32_t, uint32_t> SiPMSensor::hitCell(const std::vector<float>& gaus
   case SiPMProperties::HitDistribution::kGaussian:
     return hitGaussian(gauss[2 * photonIdx], gauss[2 * photonIdx + 1]);
   }
+  return hitUniform(); // not reachable with a valid HitDistribution
 }
 
 void SiPMSensor::addDcrEvents() {
