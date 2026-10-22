@@ -39,6 +39,7 @@ endif()
 
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	if(SIPM_ENABLE_TEST)
+	    enable_testing() # so that ctest also works from the top-level build directory
 	    add_subdirectory(tests)
 	endif(SIPM_ENABLE_TEST)
 endif ()
