@@ -21,6 +21,8 @@ void SiPMSensorPy(py::module& m) {
     .def("debug", &SiPMSensor::debug)
     .def("setProperty", &SiPMSensor::setProperty)
     .def("setProperties", &SiPMSensor::setProperties)
+    .def("setSignalShape", py::overload_cast<const std::vector<double>&, double>(&SiPMSensor::setSignalShape),
+         py::arg("shape"), py::arg("sampling"))
     .def("addPhoton", py::overload_cast<const double>(&SiPMSensor::addPhoton))
     .def("addPhoton", py::overload_cast<const double, const double>(&SiPMSensor::addPhoton))
     // List/iterable overloads (via pybind11/stl.h)

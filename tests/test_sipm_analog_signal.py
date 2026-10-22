@@ -21,6 +21,16 @@ def _make_signal(n_pe=1, t=50.0, snr=100, ccgv=0, signal_length=500.0):
 
 # ── Basics ─────────────────────────────────────────────────────────────────────
 
+def test_length_is_in_nanoseconds():
+    p = SiPM.SiPMProperties()
+    p.setSampling(0.5); p.setSignalLength(200.0)
+    s = SiPM.SiPMSensor(p)
+    s.runEvent()
+    sig = s.signal()
+    assert sig.size() == 400
+    assert sig.length() == pytest.approx(200.0)
+
+
 class TestBasics:
 
     def test_signal_returns_analog_signal(self):

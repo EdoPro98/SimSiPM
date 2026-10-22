@@ -20,6 +20,7 @@ void SiPMAnalogSignalPy(py::module& m) {
     })
     .def("size", &SiPMAnalogSignal::size)
     .def("sampling", &SiPMAnalogSignal::sampling)
+    .def("length", &SiPMAnalogSignal::length)
     // Returns numpy array; the array's base keeps this SiPMAnalogSignal alive (zero copy)
     .def("waveform",
          [](py::object self_obj) -> py::array_t<float> {

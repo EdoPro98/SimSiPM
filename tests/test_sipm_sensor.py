@@ -175,6 +175,29 @@ class TestRunEventWithoutSignal:
         assert s.signal().size() == 0
 
 
+# ── setSignalShape ─────────────────────────────────────────────────────────────
+
+class TestSetSignalShape:
+
+    def test_custom_shape_is_used_verbatim(self):
+        s = SiPM.SiPMSensor(_clean(Snr=100))
+        assert not s.properties().hasCustomSignalShape()
+        shape = [0.0, 1.0, 2.0, 1.0, 0.5]
+        s.setSignalShape(shape, 2.0)
+        assert s.properties().hasCustomSignalShape()
+        assert s.properties().sampling() == pytest.approx(2.0)
+        assert s.properties().nSignalPoints() == len(shape)
+        s.addPhoton(0.0); s.runEvent()
+        wf = np.asarray(s.signal().waveform())
+        assert len(wf) == len(shape)
+        assert np.argmax(wf) == 2 and wf[2] == pytest.approx(2.0, abs=0.1)
+
+    def test_accepts_numpy_array(self):
+        s = SiPM.SiPMSensor(_clean())
+        s.setSignalShape(np.linspace(0, 1, 20), 1.0)
+        assert s.properties().nSignalPoints() == 20
+
+
 # ── PDE behavior ───────────────────────────────────────────────────────────────
 
 class TestPde:

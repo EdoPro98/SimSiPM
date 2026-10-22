@@ -123,6 +123,7 @@ void SiPMPropertiesPy(py::module& m) {
     .def("hasDXt", &SiPMProperties::hasDXt)
     .def("hasAp", &SiPMProperties::hasAp)
     .def("hasSlowComponent", &SiPMProperties::hasSlowComponent)
+    .def("hasCustomSignalShape", &SiPMProperties::hasCustomSignalShape)
     .def("setProperty", &SiPMProperties::setProperty)
     .def("setSize", &SiPMProperties::setSize)
     .def("setPitch", &SiPMProperties::setPitch)
