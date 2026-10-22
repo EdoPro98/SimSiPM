@@ -1,0 +1,41 @@
+SimSiPM is designed to simulate millions of events. The numbers below are the **time to simulate one complete event** (reset, input of the photons, `runEvent`) on a default sensor (1 mm, 25 µm cells, 500 ns window, DCR 200 kHz, XT 5 %, AP 3 %), with photon times following a scintillation-like exponential decay. Full means `runEvent()` (hits and signal), hits only means `runEvent(false)`.
+
+### Time versus number of photons
+<p align="center"><img src="images/benchmarks.png" width=640></p>
+
+The plot shows the time of one event for 1 to 16384 photons (powers of two, mean and standard deviation of @@REPS@@ repetitions), and below it the time per hit cell ("p.e.": photoelectrons plus the crosstalk, afterpulse and dark-count hits they generate, about @@PE_PER_PHOTON@@ per photon here). Up to a few hundred photoelectrons the time is linear in the number of hit cells, $T = a + c\,n_{pe}$ (red line, fitted on 16 to 256 photons, the points deviate from it by at most @@FIT_DEV@@ %):
+
+| | `runEvent()` | `runEvent(false)` |
+|---|---|---|
+| Time per hit cell $c$ | @@C_FULL@@ ns | @@C_HITS@@ ns |
+| Fixed cost per event $a$ | @@A_FULL@@ µs | @@A_HITS@@ µs |
+
+The fixed cost is the electronic noise of the waveform, which is not generated when the signal is skipped. @@HIGH_N@@ The pulses of the hits are summed with a recursive convolution, whose cost grows very slowly with the number of hits.
+
+### Typical events
+@@EVENTS_TABLE@@
+
+Median of @@REPS@@ repetitions, @@HARDWARE@@, `@@FLAGS@@`@@NATIVE_NOTE@@ The relative spread of the repetitions is below @@SPREAD@@ %. Skipping the signal makes an empty event @@SKIP_EMPTY@@ times faster and a 25-photon event @@SKIP_25@@ times faster.
+
+### Impact of the PDE
+A PDE removes the photons that are not detected, so they do not produce hits, crosstalk, afterpulses and pulses, and the event is faster. This is partly an illusion: there are simply fewer hits to process. The fair comparison is the time per hit cell (lower row of the figure and the table). @@PDE_TEXT@@ The table compares the same input photons (wavelengths between 400 and 600 nm); the spectral PDE averages 42 % on this range, like the flat one.
+
+<p align="center"><img src="images/pde_impact.png" width=760></p>
+
+@@PDE_TABLE@@
+
+@@PDE_CONCLUSION@@ Even so, the fastest option for the whole simulation is to apply the PDE before the photons are generated and tracked (`kNoPde` with only the detected photons): the rejected photons then cost nothing, not even the selection, and the tracking time is saved too.
+
+### Reproduce
+The numbers and figures of this page come from `bench/events` and are regenerated on the machine where the script runs (run nothing else meanwhile, it is a timing measurement):
+```sh
+pip install numpy matplotlib mplhep     # once, needed for the figures
+python docs/update_readme.py            # build, benchmarks (25 repetitions), figures and this section
+```
+or just the benchmarks:
+```sh
+cmake -B build -S . -DSIPM_ENABLE_BENCH=ON
+cmake --build build -j
+./build/bench/events --benchmark_repetitions=25 --benchmark_report_aggregates_only=true
+```
+`bench/sensor` and `bench/random` have many more benchmarks (every phase of the event, geometry, signal length, random number generators). Instruction level profiling is described at the top of `bench/sensor.cpp`.

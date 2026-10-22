@@ -417,6 +417,12 @@ def load_bench(kind):
         return json.load(f)["results"]
 
 
+def bench_cpu():
+    """Short name of the CPU the benchmarks of docs/data were run on."""
+    with open(os.path.join(HERE, "data", "bench_default.json")) as f:
+        return json.load(f).get("cpu_short", "")
+
+
 def fig_benchmarks():
     """Time of an event versus the number of photons, with and without signal generation."""
     r = load_bench("default")
@@ -447,7 +453,7 @@ def fig_benchmarks():
     a2.set_xscale("log"); a2.set_yscale("log"); a2.set_ylim(8, 3000)
     a2.set_ylabel("Time per p.e. [ns]"); a2.set_xlabel("Photons per event")
     a2.set_xlim(0.7, 2.4e4)
-    tag(a1, "default sensor, i5-14400F")
+    tag(a1, f"default sensor, {bench_cpu()}".rstrip(", "))
     save(fig, "benchmarks.png")
 
 

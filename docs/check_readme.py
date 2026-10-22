@@ -10,6 +10,7 @@
 Usage:  PYTHONPATH=build python docs/check_readme.py [build_dir]
 """
 import io
+import shutil
 import contextlib
 import os
 import re
@@ -33,6 +34,7 @@ blocks = []  # (marker, language, code)
 for m in re.finditer(r"(?:<!-- (?P<marker>[^>]*?) -->\n)?```(?P<lang>\w*)\n(?P<code>.*?)```", text, re.S):
     blocks.append((m.group("marker"), m.group("lang"), m.group("code")))
 
+CXX = os.environ.get("CXX") or shutil.which("clang++") or shutil.which("g++") or "c++"
 work = tempfile.mkdtemp(prefix="readme_check_")
 for marker, lang, code in blocks:
     if marker and marker.startswith("file:"):
@@ -44,7 +46,7 @@ def compile_run(source, name):
     src = os.path.join(work, name + ".cpp")
     exe = os.path.join(work, name)
     open(src, "w").write(source)
-    cc = subprocess.run(["clang++", "-std=c++17", "-O1", "-Wall", "-I", os.path.join(ROOT, "include"), src, "-L", BUILD, "-lsipm",
+    cc = subprocess.run([CXX, "-std=c++17", "-O1", "-Wall", "-I", os.path.join(ROOT, "include"), src, "-L", BUILD, "-lsipm",
                          f"-Wl,-rpath,{BUILD}", "-o", exe], capture_output=True, text=True)
     if cc.returncode:
         fail(f"{name}: does not compile\n{cc.stderr[:2500]}")

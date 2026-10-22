@@ -20,3 +20,4 @@ test
 build/*
 docs/latex
 docs/html
+build-readme/
