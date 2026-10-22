@@ -4,8 +4,9 @@ include_directories(../include)
 
 add_executable(random "random.cpp")
 add_executable(sensor "sensor.cpp")
+add_executable(events "events.cpp")
 
-foreach(target random sensor)
+foreach(target random sensor events)
   target_link_libraries(${target} PRIVATE benchmark::benchmark sipm)
 
   # Frame pointers are required for perf/VTune call-graph sampling.

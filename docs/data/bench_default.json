@@ -1,0 +1,79 @@
+{
+ "cpu": "Intel Core i5-14400F, 16 threads, WSL2",
+ "flags": "-O3 -ffast-math (default Release, baseline x86-64)",
+ "unit": "ns per event (median of 7 repetitions)",
+ "results": {
+  "PdeBench/Photons25/SpectralPde/Full": {
+   "ns": 2596.0,
+   "cv": 0.0178
+  },
+  "PdeBench/Photons25/NoPde/Full": {
+   "ns": 2297.9,
+   "cv": 0.0199
+  },
+  "PdeBench/Photons25/NoPde/HitsOnly": {
+   "ns": 504.6,
+   "cv": 0.027
+  },
+  "Events/Photons25/HitsOnly": {
+   "ns": 501.7,
+   "cv": 0.0218
+  },
+  "Events/Empty/HitsOnly": {
+   "ns": 67.3,
+   "cv": 0.019
+  },
+  "Events/Photons1000/HitsOnly": {
+   "ns": 25229.8,
+   "cv": 0.0394
+  },
+  "PdeBench/Photons1000/NoPde/HitsOnly": {
+   "ns": 25405.9,
+   "cv": 0.0233
+  },
+  "PdeBench/Photons25/SpectralPde/HitsOnly": {
+   "ns": 883.8,
+   "cv": 0.0162
+  },
+  "PdeBench/Photons1000/NoPde/Full": {
+   "ns": 32500.7,
+   "cv": 0.0288
+  },
+  "PdeBench/Photons25/FlatPde/HitsOnly": {
+   "ns": 668.8,
+   "cv": 0.0319
+  },
+  "Events/Empty/Full": {
+   "ns": 1166.0,
+   "cv": 0.0297
+  },
+  "PdeBench/Photons1000/SpectralPde/HitsOnly": {
+   "ns": 22955.0,
+   "cv": 0.0288
+  },
+  "Events/Photons25/Full": {
+   "ns": 2306.7,
+   "cv": 0.0303
+  },
+  "PdeBench/Photons1000/FlatPde/HitsOnly": {
+   "ns": 15526.1,
+   "cv": 0.0162
+  },
+  "Events/Photons1000/Full": {
+   "ns": 32271.5,
+   "cv": 0.0204
+  },
+  "PdeBench/Photons1000/FlatPde/Full": {
+   "ns": 19295.0,
+   "cv": 0.0363
+  },
+  "PdeBench/Photons25/FlatPde/Full": {
+   "ns": 2313.1,
+   "cv": 0.0193
+  },
+  "PdeBench/Photons1000/SpectralPde/Full": {
+   "ns": 27767.3,
+   "cv": 0.0278
+  }
+ }
+}
