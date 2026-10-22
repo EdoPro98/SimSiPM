@@ -366,32 +366,50 @@ def fig_spectrum():
     save(fig, "spectrum.png")
 
 
-def fig_saturation():
-    """Response versus the number of photons for different cell sizes."""
+def _saturation(name, noise):
+    """Response versus the number of photons for different cell sizes, measured with the integral and with the peak."""
     rng = SiPM.SiPMRandom()
     n = np.unique(np.logspace(0, np.log10(30000), 20).astype(int))
-    fig, ax = plt.subplots(figsize=(9.5, 7))
+    fig, axs = plt.subplots(1, 2, figsize=(15, 6.8), gridspec_kw={"wspace": 0.22})
     for pitch, c in ((10, GREEN), (25, BLUE), (50, ORANGE)):
         p = SiPM.SiPMProperties(); p.setPitch(pitch); p.setSignalLength(400)
+        if not noise:
+            p.setDcrOff(); p.setXtOff(); p.setApOff()
         s = SiPM.SiPMSensor(p)
         ref = SiPM.SiPMSensor(clean(Pitch=pitch, SignalLength=400)); ref.addPhoton(25.0); ref.runEvent()
-        one_pe = ref.signal().integral(10, 350, -100)
-        mean, std = [], []
+        one = {"integral": ref.signal().integral(10, 350, -100), "peak": ref.signal().peak(10, 350, -100)}  # one photoelectron
+        mean = {k: [] for k in one}; std = {k: [] for k in one}
         for k in n:
-            v = []
+            v = {key: [] for key in one}
             for _ in range(10):
                 s.resetState(); s.addPhotons(list(25.0 + np.asarray(rng.randGaussian(0, 0.2, int(k))))); s.runEvent()
-                v.append(s.signal().integral(10, 350, -100) / one_pe)
-            mean.append(np.mean(v)); std.append(np.std(v))
-        data(ax, n, mean, std, color=c, label=f"{pitch} µm cells ({p.nCells()})", ms=6)
+                sig = s.signal()
+                v["integral"].append(sig.integral(10, 350, -100) / one["integral"])
+                v["peak"].append(sig.peak(10, 350, -100) / one["peak"])
+            for key in one:
+                mean[key].append(np.mean(v[key])); std[key].append(np.std(v[key]))
         cells = p.nCells()
-        ax.plot(n, cells * (1 - np.exp(-n / cells)), color=RED, lw=1.8, zorder=1)
-    ax.plot([], [], color=RED, lw=2, label=r"model $N_{cells}\,(1-e^{-N/N_{cells}})$")
-    ax.set_xscale("log"); ax.set_yscale("log"); ax.set_xlim(0.8, 4e4); ax.set_ylim(0.8, 1e5)
-    ax.set_xlabel("Photons on the sensor (all detected)"); ax.set_ylabel("Signal integral [p.e.]")
-    ax.legend(loc="upper left", fontsize=12.5)
-    tag(ax, "10 events per point")
-    save(fig, "saturation.png")
+        for ax, key in zip(axs, ("integral", "peak")):
+            data(ax, n, mean[key], std[key], color=c, label=f"{pitch} µm cells ({cells})", ms=6)
+            ax.plot(n, cells * (1 - np.exp(-n / cells)), color=RED, lw=1.8, zorder=1)
+    for ax, key in zip(axs, ("integral", "peak")):
+        ax.plot([], [], color=RED, lw=2, label=r"model $N_{cells}\,(1-e^{-N/N_{cells}})$")
+        ax.set_xscale("log"); ax.set_yscale("log"); ax.set_xlim(0.8, 4e4); ax.set_ylim(0.8, 1e5)
+        ax.set_xlabel("Photons on the sensor (all detected)"); ax.set_ylabel(f"Signal {key} [p.e.]")
+    axs[0].legend(loc="upper left", fontsize=12.5)
+    tag(axs[0], "default noise" if noise else "DCR, XT and AP off")
+    axs[1].text(1.0, 1.015, "10 events per point", transform=axs[1].transAxes, ha="right", va="bottom", fontsize=12)
+    save(fig, name)
+
+
+def fig_saturation():
+    """Saturation with the default noise."""
+    _saturation("saturation.png", True)
+
+
+def fig_saturation_clean():
+    """Saturation with dark counts, crosstalk and afterpulses switched off."""
+    _saturation("saturation_clean.png", False)
 
 
 def load_bench(kind):
@@ -434,25 +452,32 @@ def fig_benchmarks():
 
 
 def fig_pde_impact():
-    """Event time for no PDE, a flat PDE and a spectral PDE."""
+    """Event time and time per hit cell for no PDE, a flat PDE and a spectral PDE (the PDE removes photons)."""
     r = load_bench("default")
-    us = lambda key: r[key]["mean"] / 1000
-    fig, axs = plt.subplots(1, 2, figsize=(14, 6), gridspec_kw={"wspace": 0.25})
-    for ax, size, title in ((axs[0], "Photons25", "25 photons"), (axs[1], "Photons1000", "1000 photons")):
+    fig, axs = plt.subplots(2, 2, figsize=(14, 10.5), sharex="col", gridspec_kw={"wspace": 0.25, "hspace": 0.08})
+    for col, (size, title) in enumerate((("Photons25", "25 photons"), ("Photons1000", "1000 photons"))):
         names = ["None", "Flat", "Spectral"]; ks = ["NoPde", "FlatPde", "SpectralPde"]
         x = np.arange(3)
-        f = [us(f"PdeBench/{size}/{k}/Full") for k in ks]; h = [us(f"PdeBench/{size}/{k}/HitsOnly") for k in ks]
-        ef = [r[f"PdeBench/{size}/{k}/Full"]["std"] / 1000 for k in ks]; eh = [r[f"PdeBench/{size}/{k}/HitsOnly"]["std"] / 1000 for k in ks]
-        ax.bar(x - 0.19, f, 0.36, color=FULL, yerr=ef, error_kw={"elinewidth": 1.3, "ecolor": "black"}, label="runEvent()")
-        ax.bar(x + 0.19, h, 0.36, color=HITS, yerr=eh, error_kw={"elinewidth": 1.3, "ecolor": "black"}, label="runEvent(false)")
-        for xx, v in zip(x - 0.19, f): ax.text(xx, v * 1.04, f"{v:.1f}" if v < 10 else f"{v:.0f}", ha="center", va="bottom", fontsize=12)
-        for xx, v in zip(x + 0.19, h): ax.text(xx, v * 1.04, f"{v:.1f}" if v < 10 else f"{v:.0f}", ha="center", va="bottom", fontsize=12)
-        ax.set_xticks(x); ax.set_xticklabels(names); ax.set_xlabel("PDE"); ax.set_ylabel("Time per event [µs]")
-        ax.set_ylim(0, max(f + h) * 1.35)
-        ax.text(0.04, 0.95, title, transform=ax.transAxes, ha="left", va="top", fontsize=15)
-        ax.tick_params(axis="x", which="minor", bottom=False, top=False)
-    axs[0].legend(loc="upper right", fontsize=12.5)
-    tag(axs[0], "PDE impact")
+        for row, per_pe in enumerate((False, True)):
+            ax = axs[row, col]
+            vals, errs = {}, {}
+            for mode in ("Full", "HitsOnly"):
+                rec = [r[f"PdeBench/{size}/{k}/{mode}"] for k in ks]
+                div = [x_["pe"] if per_pe else 1000.0 for x_ in rec]       # ns per hit cell, or µs
+                vals[mode] = [x_["mean"] / d for x_, d in zip(rec, div)]
+                errs[mode] = [x_["std"] / d for x_, d in zip(rec, div)]
+            for off, mode, color, label in ((-0.19, "Full", FULL, "runEvent()"), (0.19, "HitsOnly", HITS, "runEvent(false)")):
+                ax.bar(x + off, vals[mode], 0.36, color=color, yerr=errs[mode], error_kw={"elinewidth": 1.3, "ecolor": "black"}, label=label)
+                for xx, v in zip(x + off, vals[mode]):
+                    ax.text(xx, v * 1.03, f"{v:.1f}" if v < 10 else f"{v:.0f}", ha="center", va="bottom", fontsize=12)
+            ax.set_ylim(0, max(vals["Full"] + vals["HitsOnly"]) * 1.3)
+            ax.set_ylabel("Time per p.e. [ns]" if per_pe else "Time per event [µs]")
+            ax.tick_params(axis="x", which="minor", bottom=False, top=False)
+            if row == 0:
+                ax.text(0.04, 0.95, title, transform=ax.transAxes, ha="left", va="top", fontsize=15)
+        axs[1, col].set_xticks(x); axs[1, col].set_xticklabels(names); axs[1, col].set_xlabel("PDE")
+    axs[0, 0].legend(loc="upper right", fontsize=12.5)
+    tag(axs[0, 0], "PDE impact")
     save(fig, "pde_impact.png")
 
 

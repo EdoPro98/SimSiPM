@@ -529,9 +529,15 @@ With a pulsed light source the integral of the signal shows the characteristic p
 <p align="center"><img src="images/spectrum.png" width=640></p>
 
 ### Saturation
-A SiPM has a finite number of cells and a cell that has just fired cannot fire again at full amplitude: the response is linear for few photons and saturates when the number of photons approaches the number of cells. Smaller cells mean more cells, hence a larger dynamic range. The red curves are the simple model $N_{cells}(1-e^{-N/N_{cells}})$ of the number of fired cells; the simulation also contains crosstalk and afterpulses, which fire additional cells, so with the 50 µm cells (only 400) the simulated response keeps growing slowly above the model.
+A SiPM has a finite number of cells and a cell that has just fired cannot fire again at full amplitude: the response is linear for few photons and saturates when the number of photons approaches the number of cells. Smaller cells mean more cells, hence a larger dynamic range. The figures show the response to a burst of simultaneous photons (all detected), measured both with the integral and with the peak of the signal, for three cell sizes (10 events per point). The red curves are the simple model $N_{cells}(1-e^{-N/N_{cells}})$ of the number of fired cells.
 
-<p align="center"><img src="images/saturation.png" width=560></p>
+With the dark counts, crosstalk and afterpulses switched off the simulation follows the model, with both the integral and the peak:
+
+<p align="center"><img src="images/saturation_clean.png" width=820></p>
+
+With the default noise the peak still follows the model, but the integral of the sensor with the largest cells (only 400) keeps growing slowly above it: the noise hits that arrive after the light pulse add charge to the integral, while they cannot increase the peak measured at the time of the light.
+
+<p align="center"><img src="images/saturation.png" width=820></p>
 
 ## Performance
 SimSiPM is designed to simulate millions of events. The numbers below are the **time to simulate one complete event** (reset, input of the photons, `runEvent`) on a default sensor (1 mm, 25 µm cells, 500 ns window, DCR 200 kHz, XT 5 %, AP 3 %), with photon times following a scintillation-like exponential decay. Full means `runEvent()` (hits and signal), hits only means `runEvent(false)`.
@@ -539,45 +545,45 @@ SimSiPM is designed to simulate millions of events. The numbers below are the **
 ### Time versus number of photons
 <p align="center"><img src="images/benchmarks.png" width=640></p>
 
-The plot shows the time of one event for 1 to 16384 photons (powers of two, mean and standard deviation of 7 repetitions), and below it the time per hit cell ("p.e.": photoelectrons plus the crosstalk, afterpulse and dark-count hits they generate, about 1.09 per photon here). Up to a few hundred photoelectrons the time is linear in the number of hit cells, $T = a + c\,n_{pe}$ (red line, fitted on 16 to 256 photons):
+The plot shows the time of one event for 1 to 16384 photons (powers of two, mean and standard deviation of 25 repetitions), and below it the time per hit cell ("p.e.": photoelectrons plus the crosstalk, afterpulse and dark-count hits they generate, about 1.09 per photon here). Up to a few hundred photoelectrons the time is linear in the number of hit cells, $T = a + c\,n_{pe}$ (red line, fitted on 16 to 256 photons):
 
 | | `runEvent()` | `runEvent(false)` |
 |---|---|---|
-| Time per hit cell $c$ | 21.5 ns | 15.6 ns |
-| Fixed cost per event $a$ | 1.71 µs | ≈ 0 |
+| Time per hit cell $c$ | 20.8 ns | 15.2 ns |
+| Fixed cost per event $a$ | 1.63 µs | ≈ 0 |
 
-The fixed cost is the electronic noise of the waveform, which is not generated when the signal is skipped. Above a few hundred photoelectrons the cost per hit cell grows slowly (the dashed extrapolation of the fit falls below the points): at 1000 photons it is 30 ns with the signal and 24 ns without, and at 16384 photons 40 ns and 34 ns. The pulses of the hits are summed with a recursive convolution, whose cost grows very slowly with the number of hits.
+The fixed cost is the electronic noise of the waveform, which is not generated when the signal is skipped. Above a few hundred photoelectrons the cost per hit cell grows slowly (the dashed extrapolation of the fit falls below the points): at 1000 photons it is 29 ns with the signal and 23 ns without, and at 16384 photons 38 ns and 33 ns. The pulses of the hits are summed with a recursive convolution, whose cost grows very slowly with the number of hits.
 
 ### Typical events
 | Event | `runEvent()` | `runEvent(false)` | `runEvent()`, `-march=native` | `runEvent(false)`, `-march=native` |
 |---|---|---|---|---|
-| Empty event | 1.16 µs | 0.07 µs (16.6× faster) | 0.62 µs | 0.06 µs |
-| 25 photons | 2.34 µs | 0.53 µs (4.4× faster) | 1.46 µs | 0.51 µs |
-| 1000 photons | 33.4 µs | 26.1 µs (1.3× faster) | 31.2 µs | 24.6 µs |
+| Empty event | 1.13 µs | 0.07 µs (17.3× faster) | 0.57 µs | 0.06 µs |
+| 25 photons | 2.21 µs | 0.50 µs (4.4× faster) | 1.37 µs | 0.47 µs |
+| 1000 photons | 31.1 µs | 24.5 µs (1.3× faster) | 28.9 µs | 22.2 µs |
 
-Median of 7 repetitions, Intel Core i5-14400F, Linux (WSL2), clang, `-O3 -ffast-math`; the last two columns also use `-march=native` (AVX2 + FMA), which mostly helps small events because the generation of the electronic noise is vectorized. The relative spread of the repetitions is below 9 %. Skipping the signal makes an empty event 17 times faster and a 25-photon event 4.4 times faster.
+Median of 25 repetitions, Intel Core i5-14400F, Linux (WSL2), clang, `-O3 -ffast-math`; the last two columns also use `-march=native` (AVX2 + FMA), which mostly helps small events because the generation of the electronic noise is vectorized. The relative spread of the repetitions is below 7 %. Skipping the signal makes an empty event 17 times faster and a 25-photon event 4.4 times faster.
 
 ### Impact of the PDE
-With a PDE the photons that are not detected are discarded early, so they do not produce hits, crosstalk, afterpulses and pulses. The PDE selection itself costs a random number per photon (and a table lookup per photon for the spectral PDE), which is cheaper than what it saves when there are many photons: the same 1000 photons are simulated faster with a PDE than without it. For small events the saving is too small to see, and the PDE costs a few tenths of a microsecond more. The table compares the same input photons (wavelengths between 400 and 600 nm); the spectral PDE averages 42 % on this range, like the flat one.
+A PDE removes the photons that are not detected, so they do not produce hits, crosstalk, afterpulses and pulses, and the event is faster. This is partly an illusion: there are simply fewer hits to process. The fair comparison is the time per hit cell (lower row of the figure and the table), and it goes **up** with a PDE: every input photon pays for the selection (a random number, plus an interpolation in the table of the spectrum for the spectral PDE) while only the detected ones become hits. With 1000 photons and the signal the cost per hit cell is 29 ns without PDE, 41 ns with the flat PDE and 57 ns with the spectral one. Taking the hits at the cost per hit cell of the no-PDE case, the selection itself costs about 4 ns per input photon with the flat PDE and 12 ns with the spectral PDE (an estimate from the 1000-photon hits-only events). For 25 photons the fixed costs of the event dominate, so the time per hit cell is large in all cases and the PDE costs a few tenths of a microsecond more. The table compares the same input photons (wavelengths between 400 and 600 nm); the spectral PDE averages 42 % on this range, like the flat one.
 
 <p align="center"><img src="images/pde_impact.png" width=760></p>
 
-| Photons | PDE | Hits from photons | `runEvent()` | `runEvent(false)` |
-|---|---|---|---|---|
-| 25 | none | ≈ 25 | 2.34 µs | 0.49 µs |
-| 25 | flat, 42 % | ≈ 10 | 2.44 µs | 0.69 µs |
-| 25 | spectral, 42 % on average | ≈ 10 | 2.62 µs | 0.89 µs |
-| 1000 | none | ≈ 1000 | 32.5 µs | 26.3 µs |
-| 1000 | flat, 42 % | ≈ 420 | 20.0 µs | 15.5 µs |
-| 1000 | spectral, 42 % on average | ≈ 418 | 28.0 µs | 23.8 µs |
+| Photons | PDE | Hit cells (measured) | `runEvent()` | per hit cell | `runEvent(false)` | per hit cell |
+|---|---|---|---|---|---|---|
+| 25 | none | 27 | 2.26 µs | 83 ns | 0.50 µs | 18 ns |
+| 25 | flat, 42 % | 12 | 2.32 µs | 202 ns | 0.66 µs | 57 ns |
+| 25 | spectral, 42 % on average | 11 | 2.47 µs | 215 ns | 0.80 µs | 70 ns |
+| 1000 | none | 1087 | 31.6 µs | 29 ns | 24.4 µs | 22 ns |
+| 1000 | flat, 42 % | 457 | 18.6 µs | 41 ns | 14.7 µs | 32 ns |
+| 1000 | spectral, 42 % on average | 454 | 25.8 µs | 57 ns | 22.3 µs | 49 ns |
 
-Even so, the fastest option for the whole simulation is still to apply the PDE before the photons are generated and tracked (`kNoPde` with only the detected photons), because it saves the tracking time too. The spectral PDE costs about 8 ns more per photon than the flat one with the default flags (an interpolation in the table of the spectrum), and more with `-march=native` in this build, so for very large numbers of photons a flat PDE is cheaper when it is accurate enough.
+The total time of a large event is still lower with a PDE because the detected hits are what costs most. Even so, the fastest option for the whole simulation is to apply the PDE before the photons are generated and tracked (`kNoPde` with only the detected photons): the rejected photons then cost nothing, not even the selection, and the tracking time is saved too.
 
 To reproduce the numbers on your machine:
 ```sh
 cmake -B build -S . -DSIPM_ENABLE_BENCH=ON
 cmake --build build -j
-./build/bench/events --benchmark_repetitions=7 --benchmark_report_aggregates_only=true
+./build/bench/events --benchmark_repetitions=25 --benchmark_report_aggregates_only=true
 ```
 `bench/sensor` and `bench/random` have many more benchmarks (every phase of the event, geometry, signal length, random number generators). Instruction level profiling is described at the top of `bench/sensor.cpp`.
 
