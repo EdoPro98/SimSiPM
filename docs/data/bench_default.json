@@ -1,79 +1,343 @@
 {
  "cpu": "Intel Core i5-14400F, 16 threads, WSL2",
  "flags": "-O3 -ffast-math (default Release, baseline x86-64)",
- "unit": "ns per event (median of 7 repetitions)",
+ "unit": "ns per event; median, mean and standard deviation of 7 repetitions; pe = mean number of hit cells per event",
  "results": {
-  "PdeBench/Photons25/SpectralPde/Full": {
-   "ns": 2596.0,
-   "cv": 0.0178
-  },
-  "PdeBench/Photons25/NoPde/Full": {
-   "ns": 2297.9,
-   "cv": 0.0199
-  },
-  "PdeBench/Photons25/NoPde/HitsOnly": {
-   "ns": 504.6,
-   "cv": 0.027
-  },
   "Events/Photons25/HitsOnly": {
-   "ns": 501.7,
-   "cv": 0.0218
+   "ns": 533.1,
+   "mean": 523.8,
+   "std": 16.8,
+   "cv": 0.032,
+   "pe": 27.283
   },
-  "Events/Empty/HitsOnly": {
-   "ns": 67.3,
-   "cv": 0.019
-  },
-  "Events/Photons1000/HitsOnly": {
-   "ns": 25229.8,
-   "cv": 0.0394
-  },
-  "PdeBench/Photons1000/NoPde/HitsOnly": {
-   "ns": 25405.9,
-   "cv": 0.0233
-  },
-  "PdeBench/Photons25/SpectralPde/HitsOnly": {
-   "ns": 883.8,
-   "cv": 0.0162
-  },
-  "PdeBench/Photons1000/NoPde/Full": {
-   "ns": 32500.7,
-   "cv": 0.0288
-  },
-  "PdeBench/Photons25/FlatPde/HitsOnly": {
-   "ns": 668.8,
-   "cv": 0.0319
-  },
-  "Events/Empty/Full": {
-   "ns": 1166.0,
-   "cv": 0.0297
-  },
-  "PdeBench/Photons1000/SpectralPde/HitsOnly": {
-   "ns": 22955.0,
-   "cv": 0.0288
-  },
-  "Events/Photons25/Full": {
-   "ns": 2306.7,
-   "cv": 0.0303
-  },
-  "PdeBench/Photons1000/FlatPde/HitsOnly": {
-   "ns": 15526.1,
-   "cv": 0.0162
-  },
-  "Events/Photons1000/Full": {
-   "ns": 32271.5,
-   "cv": 0.0204
-  },
-  "PdeBench/Photons1000/FlatPde/Full": {
-   "ns": 19295.0,
-   "cv": 0.0363
+  "Scan/Full/1": {
+   "ns": 1306.7,
+   "mean": 1309.1,
+   "std": 18.9,
+   "cv": 0.0144,
+   "pe": 1.196
   },
   "PdeBench/Photons25/FlatPde/Full": {
-   "ns": 2313.1,
-   "cv": 0.0193
+   "ns": 2443.2,
+   "mean": 2437.2,
+   "std": 54.1,
+   "cv": 0.0222,
+   "pe": 11.525
+  },
+  "PdeBench/Photons1000/SpectralPde/HitsOnly": {
+   "ns": 23820.1,
+   "mean": 23881.5,
+   "std": 269.1,
+   "cv": 0.0113,
+   "pe": 454.51
+  },
+  "Events/Empty/HitsOnly": {
+   "ns": 69.6,
+   "mean": 69.8,
+   "std": 0.7,
+   "cv": 0.0094,
+   "pe": 0.109
+  },
+  "PdeBench/Photons25/SpectralPde/Full": {
+   "ns": 2622.0,
+   "mean": 2595.2,
+   "std": 92.7,
+   "cv": 0.0357,
+   "pe": 11.453
+  },
+  "Scan/HitsOnly/8192": {
+   "ns": 287414.2,
+   "mean": 282834.9,
+   "std": 9170.8,
+   "cv": 0.0324,
+   "pe": 8904.739
+  },
+  "PdeBench/Photons1000/FlatPde/Full": {
+   "ns": 19984.5,
+   "mean": 19822.7,
+   "std": 666.8,
+   "cv": 0.0336,
+   "pe": 456.618
+  },
+  "Scan/HitsOnly/2": {
+   "ns": 138.6,
+   "mean": 137.5,
+   "std": 3.8,
+   "cv": 0.0279,
+   "pe": 2.283
+  },
+  "Scan/Full/512": {
+   "ns": 15529.7,
+   "mean": 15086.4,
+   "std": 578.4,
+   "cv": 0.0383,
+   "pe": 556.61
+  },
+  "Events/Photons25/Full": {
+   "ns": 2343.2,
+   "mean": 2313.5,
+   "std": 68.7,
+   "cv": 0.0297,
+   "pe": 27.284
+  },
+  "Scan/Full/4096": {
+   "ns": 161891.6,
+   "mean": 160053.0,
+   "std": 3780.2,
+   "cv": 0.0236,
+   "pe": 4452.22
+  },
+  "Scan/Full/128": {
+   "ns": 4671.6,
+   "mean": 4630.1,
+   "std": 106.7,
+   "cv": 0.023,
+   "pe": 139.238
+  },
+  "Scan/HitsOnly/16384": {
+   "ns": 624801.7,
+   "mean": 614359.8,
+   "std": 19907.8,
+   "cv": 0.0324,
+   "pe": 17808.809
+  },
+  "Scan/Full/32": {
+   "ns": 2495.8,
+   "mean": 2480.8,
+   "std": 42.0,
+   "cv": 0.0169,
+   "pe": 34.889
+  },
+  "PdeBench/Photons1000/FlatPde/HitsOnly": {
+   "ns": 15474.4,
+   "mean": 15448.8,
+   "std": 294.0,
+   "cv": 0.019,
+   "pe": 456.523
+  },
+  "PdeBench/Photons1000/NoPde/Full": {
+   "ns": 32530.5,
+   "mean": 32585.9,
+   "std": 697.9,
+   "cv": 0.0214,
+   "pe": 1087.079
+  },
+  "Events/Empty/Full": {
+   "ns": 1155.7,
+   "mean": 1145.0,
+   "std": 40.9,
+   "cv": 0.0357,
+   "pe": 0.108
+  },
+  "Scan/Full/256": {
+   "ns": 7765.7,
+   "mean": 7820.2,
+   "std": 242.4,
+   "cv": 0.031,
+   "pe": 278.362
+  },
+  "Scan/Full/2": {
+   "ns": 1402.4,
+   "mean": 1403.4,
+   "std": 15.6,
+   "cv": 0.0111,
+   "pe": 2.283
+  },
+  "PdeBench/Photons25/SpectralPde/HitsOnly": {
+   "ns": 886.3,
+   "mean": 875.7,
+   "std": 28.1,
+   "cv": 0.0321,
+   "pe": 11.457
   },
   "PdeBench/Photons1000/SpectralPde/Full": {
-   "ns": 27767.3,
-   "cv": 0.0278
+   "ns": 28005.0,
+   "mean": 27971.2,
+   "std": 457.0,
+   "cv": 0.0163,
+   "pe": 454.541
+  },
+  "Scan/Full/4": {
+   "ns": 1673.4,
+   "mean": 1629.0,
+   "std": 80.7,
+   "cv": 0.0495,
+   "pe": 4.457
+  },
+  "Scan/Full/16": {
+   "ns": 2124.3,
+   "mean": 2092.7,
+   "std": 77.7,
+   "cv": 0.0371,
+   "pe": 17.499
+  },
+  "Scan/Full/1024": {
+   "ns": 33888.4,
+   "mean": 33558.2,
+   "std": 1077.1,
+   "cv": 0.0321,
+   "pe": 1113.099
+  },
+  "PdeBench/Photons1000/NoPde/HitsOnly": {
+   "ns": 26311.3,
+   "mean": 26149.2,
+   "std": 537.9,
+   "cv": 0.0206,
+   "pe": 1087.059
+  },
+  "PdeBench/Photons25/NoPde/HitsOnly": {
+   "ns": 490.8,
+   "mean": 504.7,
+   "std": 21.4,
+   "cv": 0.0425,
+   "pe": 27.282
+  },
+  "PdeBench/Photons25/FlatPde/HitsOnly": {
+   "ns": 692.7,
+   "mean": 690.1,
+   "std": 10.9,
+   "cv": 0.0157,
+   "pe": 11.524
+  },
+  "Scan/HitsOnly/256": {
+   "ns": 4805.8,
+   "mean": 4758.3,
+   "std": 165.4,
+   "cv": 0.0348,
+   "pe": 278.364
+  },
+  "Scan/Full/8": {
+   "ns": 2139.2,
+   "mean": 2115.1,
+   "std": 45.2,
+   "cv": 0.0214,
+   "pe": 8.802
+  },
+  "Scan/HitsOnly/128": {
+   "ns": 2251.9,
+   "mean": 2230.1,
+   "std": 59.6,
+   "cv": 0.0267,
+   "pe": 139.235
+  },
+  "Scan/HitsOnly/4096": {
+   "ns": 132393.6,
+   "mean": 133320.4,
+   "std": 3882.1,
+   "cv": 0.0291,
+   "pe": 4452.283
+  },
+  "Scan/HitsOnly/2048": {
+   "ns": 62682.7,
+   "mean": 62582.6,
+   "std": 2115.2,
+   "cv": 0.0338,
+   "pe": 2226.285
+  },
+  "Scan/HitsOnly/1": {
+   "ns": 105.0,
+   "mean": 104.0,
+   "std": 3.8,
+   "cv": 0.0361,
+   "pe": 1.196
+  },
+  "Events/Photons1000/Full": {
+   "ns": 33372.4,
+   "mean": 32656.7,
+   "std": 1175.2,
+   "cv": 0.036,
+   "pe": 1087.091
+  },
+  "Events/Photons1000/HitsOnly": {
+   "ns": 26137.7,
+   "mean": 25939.2,
+   "std": 556.2,
+   "cv": 0.0214,
+   "pe": 1087.02
+  },
+  "PdeBench/Photons25/NoPde/Full": {
+   "ns": 2337.9,
+   "mean": 2312.3,
+   "std": 75.5,
+   "cv": 0.0327,
+   "pe": 27.285
+  },
+  "Scan/Full/8192": {
+   "ns": 337507.7,
+   "mean": 332883.5,
+   "std": 13054.8,
+   "cv": 0.0392,
+   "pe": 8904.534
+  },
+  "Scan/HitsOnly/4": {
+   "ns": 211.1,
+   "mean": 209.5,
+   "std": 5.2,
+   "cv": 0.0246,
+   "pe": 4.456
+  },
+  "Scan/Full/16384": {
+   "ns": 723991.7,
+   "mean": 710070.3,
+   "std": 27620.7,
+   "cv": 0.0389,
+   "pe": 17808.611
+  },
+  "Scan/Full/2048": {
+   "ns": 76283.4,
+   "mean": 75342.2,
+   "std": 2619.5,
+   "cv": 0.0348,
+   "pe": 2226.03
+  },
+  "Scan/HitsOnly/8": {
+   "ns": 403.6,
+   "mean": 395.3,
+   "std": 17.6,
+   "cv": 0.0444,
+   "pe": 8.805
+  },
+  "Scan/Full/64": {
+   "ns": 3207.8,
+   "mean": 3180.7,
+   "std": 71.5,
+   "cv": 0.0225,
+   "pe": 69.663
+  },
+  "Scan/HitsOnly/16": {
+   "ns": 354.3,
+   "mean": 357.0,
+   "std": 15.6,
+   "cv": 0.0436,
+   "pe": 17.501
+  },
+  "Scan/HitsOnly/64": {
+   "ns": 1104.8,
+   "mean": 1098.5,
+   "std": 29.5,
+   "cv": 0.0269,
+   "pe": 69.67
+  },
+  "Scan/HitsOnly/512": {
+   "ns": 10970.2,
+   "mean": 10917.9,
+   "std": 173.6,
+   "cv": 0.0159,
+   "pe": 556.64
+  },
+  "Scan/HitsOnly/32": {
+   "ns": 612.4,
+   "mean": 613.7,
+   "std": 20.0,
+   "cv": 0.0325,
+   "pe": 34.892
+  },
+  "Scan/HitsOnly/1024": {
+   "ns": 27176.7,
+   "mean": 26993.2,
+   "std": 507.3,
+   "cv": 0.0188,
+   "pe": 1113.146
   }
  }
 }

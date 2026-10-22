@@ -2,7 +2,9 @@
 //
 //   Events/<size>/<mode>      size: Empty, 25 photons, 1000 photons
 //                              mode: Full (hits + signal) or HitsOnly (runEvent(false))
-//   Pde/<size>/<type>/<mode>  same sizes with no PDE, a flat PDE and a spectral PDE
+//   PdeBench/<size>/<type>/<mode>  same sizes with no PDE, a flat PDE and a spectral PDE
+//   Scan/<mode>/<N>           N = 1, 2, 4, ... 16384 photons; the counter "pe" is the mean number
+//                              of hit cells (photoelectrons, crosstalk, afterpulses, dark counts)
 //
 // Default sensor (1 mm, 25 um cells, 500 ns window, DCR 200 kHz, XT 5%, AP 3%).
 // Photon times follow a scintillation-like exponential decay (tau = 40 ns) from t = 10 ns.
@@ -10,18 +12,20 @@
 //   ./events --benchmark_repetitions=7 --benchmark_report_aggregates_only=true
 
 #include "../include/SiPM.h"
+#include <algorithm>
 #include <benchmark/benchmark.h>
 #include <string>
 #include <vector>
 
 namespace {
-constexpr int kSets = 256; // photon sets cycled through, so branch prediction cannot learn one event
+// Photon sets cycled through, so branch prediction cannot learn one event (fewer for huge events)
+int numSets(const int n) { return std::max(8, std::min(256, 2000000 / std::max(n, 1))); }
 
 struct Photons {
   std::vector<std::vector<double>> times, wavelengths;
-  Photons(const int n) : times(kSets), wavelengths(kSets) {
+  Photons(const int n) : times(numSets(n)), wavelengths(numSets(n)) {
     sipm::SiPMRandom rng;
-    for (int s = 0; s < kSets; ++s) {
+    for (size_t s = 0; s < times.size(); ++s) {
       times[s] = rng.randExponential(40.0, n);
       for (double& t : times[s]) t += 10.0;
       wavelengths[s] = rng.Rand(n);
@@ -56,12 +60,13 @@ void run(benchmark::State& st, const int nPhotons, const Pde pde, const bool sig
   const Photons& ph = cache[idx];
 
   sipm::SiPMSensor sensor(props(pde));
-  for (int i = 0; i < 2000; ++i) { // warm-up
+  for (size_t i = 0; i < 2000; ++i) { // warm-up
     sensor.resetState();
-    sensor.addPhotons(ph.times[i % kSets]);
+    sensor.addPhotons(ph.times[i % ph.times.size()]);
     sensor.runEvent(signal);
   }
-  int k = 0;
+  size_t k = 0;
+  double hitCells = 0;
   for (auto _ : st) {
     sensor.resetState();
     if (nPhotons > 0) {
@@ -70,12 +75,15 @@ void run(benchmark::State& st, const int nPhotons, const Pde pde, const bool sig
     }
     sensor.runEvent(signal);
     benchmark::ClobberMemory();
-    k = (k + 1) % kSets;
+    hitCells += sensor.debug().nPhotoelectrons;
+    k = (k + 1) % ph.times.size();
   }
+  st.counters["pe"] = benchmark::Counter(hitCells, benchmark::Counter::kAvgIterations);
 }
 
 void Events(benchmark::State& st, int n, bool signal) { run(st, n, Pde::kNone, signal); }
 void PdeBench(benchmark::State& st, int n, Pde pde, bool signal) { run(st, n, pde, signal); }
+void Scan(benchmark::State& st, bool signal) { run(st, static_cast<int>(st.range(0)), Pde::kNone, signal); }
 } // namespace
 
 #define EVENTS(label, n)                                                  \
@@ -94,5 +102,8 @@ EVENTS(Photons1000, 1000)
   BENCHMARK_CAPTURE(PdeBench, label / SpectralPde / HitsOnly, n, Pde::kSpectral, false);
 PDES(Photons25, 25)
 PDES(Photons1000, 1000)
+
+BENCHMARK_CAPTURE(Scan, Full, true)->RangeMultiplier(2)->Range(1, 1 << 14);
+BENCHMARK_CAPTURE(Scan, HitsOnly, false)->RangeMultiplier(2)->Range(1, 1 << 14);
 
 BENCHMARK_MAIN();
