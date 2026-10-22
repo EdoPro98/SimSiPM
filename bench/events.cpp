@@ -9,7 +9,7 @@
 // Default sensor (1 mm, 25 um cells, 500 ns window, DCR 200 kHz, XT 5%, AP 3%).
 // Photon times follow a scintillation-like exponential decay (tau = 40 ns) from t = 10 ns.
 //
-//   ./events --benchmark_repetitions=7 --benchmark_report_aggregates_only=true
+//   ./events --benchmark_repetitions=25 --benchmark_report_aggregates_only=true
 
 #include "../include/SiPM.h"
 #include <algorithm>

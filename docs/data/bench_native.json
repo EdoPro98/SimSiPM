@@ -1,343 +1,343 @@
 {
  "cpu": "Intel Core i5-14400F, 16 threads, WSL2",
  "flags": "-O3 -ffast-math -march=native (AVX2 + FMA)",
- "unit": "ns per event; median, mean and standard deviation of 7 repetitions; pe = mean number of hit cells per event",
+ "unit": "ns per event; median, mean and standard deviation of 25 repetitions; pe = mean number of hit cells per event",
  "results": {
-  "Scan/Full/1024": {
-   "ns": 32118.1,
-   "mean": 32073.6,
-   "std": 251.8,
-   "cv": 0.0079,
-   "pe": 1113.229
-  },
-  "Events/Photons25/HitsOnly": {
-   "ns": 513.3,
-   "mean": 527.7,
-   "std": 47.1,
-   "cv": 0.0893,
-   "pe": 27.281
-  },
-  "Scan/Full/256": {
-   "ns": 6782.8,
-   "mean": 6748.7,
-   "std": 75.2,
-   "cv": 0.0111,
-   "pe": 278.371
-  },
-  "Scan/HitsOnly/128": {
-   "ns": 2049.8,
-   "mean": 2011.4,
-   "std": 78.5,
-   "cv": 0.039,
-   "pe": 139.238
-  },
-  "Scan/HitsOnly/256": {
-   "ns": 4415.3,
-   "mean": 4370.3,
-   "std": 115.5,
-   "cv": 0.0264,
-   "pe": 278.367
-  },
-  "Scan/HitsOnly/1": {
-   "ns": 99.6,
-   "mean": 99.0,
-   "std": 1.8,
-   "cv": 0.0183,
-   "pe": 1.196
-  },
-  "Events/Photons1000/Full": {
-   "ns": 31212.5,
-   "mean": 30748.4,
-   "std": 1190.2,
-   "cv": 0.0387,
-   "pe": 1087.101
-  },
-  "Scan/Full/4": {
-   "ns": 962.5,
-   "mean": 959.8,
-   "std": 16.9,
-   "cv": 0.0176,
-   "pe": 4.457
-  },
-  "Scan/Full/32": {
-   "ns": 1573.5,
-   "mean": 1577.9,
-   "std": 23.4,
-   "cv": 0.0148,
-   "pe": 34.892
-  },
-  "Scan/HitsOnly/32": {
-   "ns": 596.2,
-   "mean": 587.9,
-   "std": 22.4,
-   "cv": 0.0382,
-   "pe": 34.892
-  },
-  "PdeBench/Photons1000/SpectralPde/HitsOnly": {
-   "ns": 26780.3,
-   "mean": 26870.5,
-   "std": 449.7,
-   "cv": 0.0167,
-   "pe": 454.182
-  },
-  "Scan/Full/1": {
-   "ns": 711.5,
-   "mean": 710.9,
-   "std": 28.6,
-   "cv": 0.0402,
-   "pe": 1.196
-  },
-  "Scan/HitsOnly/16": {
-   "ns": 353.4,
-   "mean": 351.7,
-   "std": 9.4,
-   "cv": 0.0268,
-   "pe": 17.5
-  },
-  "Scan/Full/16": {
-   "ns": 1233.3,
-   "mean": 1248.6,
-   "std": 51.6,
-   "cv": 0.0413,
-   "pe": 17.5
-  },
-  "Scan/Full/128": {
-   "ns": 3660.8,
-   "mean": 3638.6,
-   "std": 104.2,
-   "cv": 0.0286,
-   "pe": 139.238
-  },
-  "Scan/Full/4096": {
-   "ns": 151512.3,
-   "mean": 148829.6,
-   "std": 5948.1,
-   "cv": 0.04,
-   "pe": 4452.217
-  },
   "PdeBench/Photons1000/FlatPde/HitsOnly": {
-   "ns": 15108.3,
-   "mean": 15078.1,
-   "std": 229.1,
-   "cv": 0.0152,
-   "pe": 456.634
-  },
-  "PdeBench/Photons1000/FlatPde/Full": {
-   "ns": 18217.5,
-   "mean": 18248.2,
-   "std": 124.7,
-   "cv": 0.0068,
-   "pe": 456.663
-  },
-  "Scan/HitsOnly/2048": {
-   "ns": 60525.9,
-   "mean": 61224.0,
-   "std": 3321.5,
-   "cv": 0.0543,
-   "pe": 2226.139
-  },
-  "PdeBench/Photons1000/SpectralPde/Full": {
-   "ns": 29347.3,
-   "mean": 29147.2,
-   "std": 1288.2,
-   "cv": 0.0442,
-   "pe": 454.254
-  },
-  "PdeBench/Photons25/NoPde/HitsOnly": {
-   "ns": 505.5,
-   "mean": 495.3,
-   "std": 24.0,
-   "cv": 0.0484,
-   "pe": 27.282
-  },
-  "PdeBench/Photons25/SpectralPde/HitsOnly": {
-   "ns": 891.6,
-   "mean": 895.4,
-   "std": 30.6,
-   "cv": 0.0342,
-   "pe": 11.463
-  },
-  "PdeBench/Photons25/FlatPde/Full": {
-   "ns": 1540.0,
-   "mean": 1538.6,
-   "std": 90.0,
-   "cv": 0.0585,
-   "pe": 11.519
-  },
-  "Events/Empty/Full": {
-   "ns": 623.9,
-   "mean": 609.2,
-   "std": 28.7,
-   "cv": 0.0471,
-   "pe": 0.108
-  },
-  "Scan/HitsOnly/16384": {
-   "ns": 577440.7,
-   "mean": 572325.0,
-   "std": 21910.1,
-   "cv": 0.0383,
-   "pe": 17810.054
-  },
-  "PdeBench/Photons1000/NoPde/Full": {
-   "ns": 31203.8,
-   "mean": 30409.3,
-   "std": 1205.4,
-   "cv": 0.0396,
-   "pe": 1087.111
-  },
-  "Scan/Full/2048": {
-   "ns": 69854.9,
-   "mean": 70518.6,
-   "std": 2189.1,
-   "cv": 0.031,
-   "pe": 2226.125
-  },
-  "Scan/HitsOnly/8192": {
-   "ns": 263069.6,
-   "mean": 264015.7,
-   "std": 8984.9,
-   "cv": 0.034,
-   "pe": 8904.275
-  },
-  "PdeBench/Photons25/SpectralPde/Full": {
-   "ns": 1805.9,
-   "mean": 1805.1,
-   "std": 37.7,
-   "cv": 0.0209,
-   "pe": 11.462
-  },
-  "PdeBench/Photons1000/NoPde/HitsOnly": {
-   "ns": 23165.2,
-   "mean": 23470.8,
-   "std": 719.0,
-   "cv": 0.0306,
-   "pe": 1087.103
-  },
-  "Events/Empty/HitsOnly": {
-   "ns": 60.9,
-   "mean": 60.4,
-   "std": 1.9,
-   "cv": 0.0315,
-   "pe": 0.109
-  },
-  "Scan/HitsOnly/4096": {
-   "ns": 129005.6,
-   "mean": 126429.9,
-   "std": 4145.9,
-   "cv": 0.0328,
-   "pe": 4452.272
-  },
-  "Scan/Full/512": {
-   "ns": 14021.9,
-   "mean": 13689.0,
-   "std": 600.2,
-   "cv": 0.0438,
-   "pe": 556.631
-  },
-  "Scan/Full/2": {
-   "ns": 793.9,
-   "mean": 793.1,
-   "std": 12.2,
-   "cv": 0.0154,
-   "pe": 2.282
-  },
-  "PdeBench/Photons25/NoPde/Full": {
-   "ns": 1469.2,
-   "mean": 1486.9,
-   "std": 39.0,
-   "cv": 0.0262,
-   "pe": 27.283
-  },
-  "Scan/HitsOnly/1024": {
-   "ns": 25249.8,
-   "mean": 24907.7,
-   "std": 832.6,
-   "cv": 0.0334,
-   "pe": 1113.093
-  },
-  "Events/Photons25/Full": {
-   "ns": 1460.5,
-   "mean": 1451.2,
-   "std": 38.1,
-   "cv": 0.0262,
-   "pe": 27.28
-  },
-  "Scan/Full/8192": {
-   "ns": 316580.6,
-   "mean": 315524.5,
-   "std": 5133.0,
-   "cv": 0.0163,
-   "pe": 8904.482
-  },
-  "Events/Photons1000/HitsOnly": {
-   "ns": 24620.8,
-   "mean": 24492.8,
-   "std": 314.3,
-   "cv": 0.0128,
-   "pe": 1087.008
-  },
-  "Scan/HitsOnly/64": {
-   "ns": 1058.9,
-   "mean": 1034.7,
-   "std": 51.0,
-   "cv": 0.0493,
-   "pe": 69.676
-  },
-  "Scan/Full/64": {
-   "ns": 2279.8,
-   "mean": 2276.1,
-   "std": 40.1,
-   "cv": 0.0176,
-   "pe": 69.675
-  },
-  "PdeBench/Photons25/FlatPde/HitsOnly": {
-   "ns": 630.0,
-   "mean": 624.3,
-   "std": 19.4,
-   "cv": 0.031,
-   "pe": 11.522
-  },
-  "Scan/HitsOnly/4": {
-   "ns": 198.6,
-   "mean": 195.2,
-   "std": 7.4,
-   "cv": 0.0378,
-   "pe": 4.457
+   "ns": 13898.8,
+   "mean": 14086.6,
+   "std": 950.2,
+   "cv": 0.0675,
+   "pe": 456.588
   },
   "Scan/Full/8": {
-   "ns": 1256.4,
-   "mean": 1245.3,
+   "ns": 1165.2,
+   "mean": 1169.4,
+   "std": 37.1,
+   "cv": 0.0317,
+   "pe": 8.804
+  },
+  "PdeBench/Photons25/NoPde/Full": {
+   "ns": 1355.4,
+   "mean": 1375.0,
+   "std": 51.4,
+   "cv": 0.0374,
+   "pe": 27.283
+  },
+  "PdeBench/Photons25/FlatPde/HitsOnly": {
+   "ns": 611.4,
+   "mean": 608.4,
+   "std": 30.2,
+   "cv": 0.0497,
+   "pe": 11.521
+  },
+  "Scan/Full/256": {
+   "ns": 6434.3,
+   "mean": 6371.1,
+   "std": 249.8,
+   "cv": 0.0392,
+   "pe": 278.369
+  },
+  "Events/Empty/Full": {
+   "ns": 572.1,
+   "mean": 571.7,
+   "std": 21.7,
+   "cv": 0.0379,
+   "pe": 0.109
+  },
+  "Scan/Full/128": {
+   "ns": 3343.6,
+   "mean": 3376.8,
+   "std": 144.3,
+   "cv": 0.0427,
+   "pe": 139.236
+  },
+  "PdeBench/Photons1000/SpectralPde/HitsOnly": {
+   "ns": 25980.3,
+   "mean": 26391.2,
+   "std": 1132.2,
+   "cv": 0.0429,
+   "pe": 454.282
+  },
+  "Scan/Full/4": {
+   "ns": 909.8,
+   "mean": 911.2,
+   "std": 47.2,
+   "cv": 0.0518,
+   "pe": 4.456
+  },
+  "Scan/Full/1024": {
+   "ns": 29028.3,
+   "mean": 29362.3,
+   "std": 1098.3,
+   "cv": 0.0374,
+   "pe": 1113.118
+  },
+  "PdeBench/Photons1000/NoPde/Full": {
+   "ns": 28229.5,
+   "mean": 28662.8,
+   "std": 1203.2,
+   "cv": 0.042,
+   "pe": 1087.05
+  },
+  "Scan/HitsOnly/16384": {
+   "ns": 539503.2,
+   "mean": 542552.0,
+   "std": 19566.6,
+   "cv": 0.0361,
+   "pe": 17808.912
+  },
+  "PdeBench/Photons1000/SpectralPde/Full": {
+   "ns": 29427.3,
+   "mean": 29417.0,
+   "std": 1196.7,
+   "cv": 0.0407,
+   "pe": 454.221
+  },
+  "Scan/HitsOnly/2048": {
+   "ns": 54980.6,
+   "mean": 56388.6,
+   "std": 3120.5,
+   "cv": 0.0553,
+   "pe": 2226.17
+  },
+  "Scan/HitsOnly/16": {
+   "ns": 331.5,
+   "mean": 330.6,
+   "std": 11.6,
+   "cv": 0.0351,
+   "pe": 17.5
+  },
+  "Events/Photons1000/HitsOnly": {
+   "ns": 22167.9,
+   "mean": 22552.3,
+   "std": 1203.8,
+   "cv": 0.0534,
+   "pe": 1087.099
+  },
+  "Events/Photons1000/Full": {
+   "ns": 28932.0,
+   "mean": 28961.7,
+   "std": 1232.1,
+   "cv": 0.0425,
+   "pe": 1087.081
+  },
+  "Scan/HitsOnly/256": {
+   "ns": 4013.8,
+   "mean": 4103.5,
+   "std": 170.0,
+   "cv": 0.0414,
+   "pe": 278.373
+  },
+  "PdeBench/Photons25/SpectralPde/Full": {
+   "ns": 1709.6,
+   "mean": 1735.3,
    "std": 52.7,
-   "cv": 0.0423,
-   "pe": 8.804
+   "cv": 0.0304,
+   "pe": 11.502
   },
-  "Scan/HitsOnly/8": {
-   "ns": 373.1,
-   "mean": 371.3,
-   "std": 5.7,
-   "cv": 0.0155,
-   "pe": 8.804
+  "Scan/HitsOnly/1": {
+   "ns": 95.2,
+   "mean": 95.0,
+   "std": 4.7,
+   "cv": 0.0498,
+   "pe": 1.196
   },
-  "Scan/Full/16384": {
-   "ns": 681054.8,
-   "mean": 677443.1,
-   "std": 16940.3,
-   "cv": 0.025,
-   "pe": 17810.014
+  "Scan/Full/16": {
+   "ns": 1191.5,
+   "mean": 1205.6,
+   "std": 49.0,
+   "cv": 0.0407,
+   "pe": 17.5
   },
-  "Scan/HitsOnly/512": {
-   "ns": 10126.4,
-   "mean": 10187.9,
-   "std": 282.9,
-   "cv": 0.0278,
-   "pe": 556.626
+  "Scan/HitsOnly/1024": {
+   "ns": 23282.7,
+   "mean": 23390.2,
+   "std": 856.7,
+   "cv": 0.0366,
+   "pe": 1113.125
+  },
+  "Scan/Full/2048": {
+   "ns": 67290.6,
+   "mean": 67878.9,
+   "std": 2973.9,
+   "cv": 0.0438,
+   "pe": 2226.155
+  },
+  "PdeBench/Photons25/FlatPde/Full": {
+   "ns": 1464.8,
+   "mean": 1470.3,
+   "std": 81.3,
+   "cv": 0.0553,
+   "pe": 11.521
+  },
+  "Scan/Full/4096": {
+   "ns": 140929.8,
+   "mean": 142830.6,
+   "std": 6442.8,
+   "cv": 0.0451,
+   "pe": 4452.352
+  },
+  "Scan/HitsOnly/8192": {
+   "ns": 246718.5,
+   "mean": 251237.2,
+   "std": 10769.1,
+   "cv": 0.0429,
+   "pe": 8904.455
+  },
+  "Events/Empty/HitsOnly": {
+   "ns": 58.1,
+   "mean": 58.6,
+   "std": 3.0,
+   "cv": 0.0515,
+   "pe": 0.109
+  },
+  "PdeBench/Photons1000/NoPde/HitsOnly": {
+   "ns": 22702.0,
+   "mean": 22712.2,
+   "std": 997.8,
+   "cv": 0.0439,
+   "pe": 1087.068
+  },
+  "Scan/HitsOnly/64": {
+   "ns": 973.4,
+   "mean": 991.7,
+   "std": 45.0,
+   "cv": 0.0454,
+   "pe": 69.674
+  },
+  "Scan/Full/8192": {
+   "ns": 295214.4,
+   "mean": 297297.7,
+   "std": 13370.0,
+   "cv": 0.045,
+   "pe": 8904.164
+  },
+  "Scan/Full/2": {
+   "ns": 752.5,
+   "mean": 748.0,
+   "std": 25.2,
+   "cv": 0.0337,
+   "pe": 2.282
+  },
+  "Events/Photons25/HitsOnly": {
+   "ns": 468.3,
+   "mean": 470.4,
+   "std": 18.3,
+   "cv": 0.0388,
+   "pe": 27.283
+  },
+  "Events/Photons25/Full": {
+   "ns": 1371.9,
+   "mean": 1377.0,
+   "std": 54.9,
+   "cv": 0.0398,
+   "pe": 27.283
+  },
+  "Scan/HitsOnly/4096": {
+   "ns": 119262.9,
+   "mean": 120515.9,
+   "std": 5231.0,
+   "cv": 0.0434,
+   "pe": 4452.205
+  },
+  "Scan/Full/64": {
+   "ns": 2121.6,
+   "mean": 2144.6,
+   "std": 108.7,
+   "cv": 0.0507,
+   "pe": 69.674
+  },
+  "Scan/HitsOnly/32": {
+   "ns": 541.1,
+   "mean": 553.4,
+   "std": 26.8,
+   "cv": 0.0484,
+   "pe": 34.891
+  },
+  "Scan/Full/512": {
+   "ns": 12723.3,
+   "mean": 12848.5,
+   "std": 504.2,
+   "cv": 0.0392,
+   "pe": 556.627
+  },
+  "Scan/HitsOnly/128": {
+   "ns": 1895.4,
+   "mean": 1927.5,
+   "std": 121.3,
+   "cv": 0.0629,
+   "pe": 139.235
   },
   "Scan/HitsOnly/2": {
-   "ns": 130.6,
-   "mean": 129.9,
-   "std": 2.7,
-   "cv": 0.0208,
+   "ns": 120.8,
+   "mean": 122.2,
+   "std": 5.9,
+   "cv": 0.0479,
    "pe": 2.283
+  },
+  "PdeBench/Photons25/NoPde/HitsOnly": {
+   "ns": 462.3,
+   "mean": 472.3,
+   "std": 21.8,
+   "cv": 0.0463,
+   "pe": 27.283
+  },
+  "Scan/Full/32": {
+   "ns": 1491.6,
+   "mean": 1508.2,
+   "std": 69.3,
+   "cv": 0.046,
+   "pe": 34.892
+  },
+  "Scan/HitsOnly/4": {
+   "ns": 184.3,
+   "mean": 187.5,
+   "std": 8.6,
+   "cv": 0.0461,
+   "pe": 4.456
+  },
+  "Scan/Full/1": {
+   "ns": 668.3,
+   "mean": 671.6,
+   "std": 23.4,
+   "cv": 0.0349,
+   "pe": 1.196
+  },
+  "PdeBench/Photons25/SpectralPde/HitsOnly": {
+   "ns": 900.8,
+   "mean": 914.3,
+   "std": 36.8,
+   "cv": 0.0403,
+   "pe": 11.503
+  },
+  "Scan/Full/16384": {
+   "ns": 649381.4,
+   "mean": 644347.4,
+   "std": 26839.5,
+   "cv": 0.0417,
+   "pe": 17808.383
+  },
+  "PdeBench/Photons1000/FlatPde/Full": {
+   "ns": 16650.7,
+   "mean": 16844.1,
+   "std": 631.5,
+   "cv": 0.0375,
+   "pe": 456.61
+  },
+  "Scan/HitsOnly/8": {
+   "ns": 345.2,
+   "mean": 349.6,
+   "std": 18.0,
+   "cv": 0.0516,
+   "pe": 8.805
+  },
+  "Scan/HitsOnly/512": {
+   "ns": 9390.4,
+   "mean": 9472.8,
+   "std": 406.1,
+   "cv": 0.0429,
+   "pe": 556.618
   }
  }
 }
